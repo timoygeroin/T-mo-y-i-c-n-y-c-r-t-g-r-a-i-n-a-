@@ -1,0 +1,44 @@
+name: Monday Platform CI
+
+on:
+  push:
+    branches:
+      - main
+      - monday-platform-genesis-01
+    paths:
+      - "platform/**"
+      - ".github/workflows/platform-ci.yml"
+  pull_request:
+    paths:
+      - "platform/**"
+      - ".github/workflows/platform-ci.yml"
+
+jobs:
+  route-governor:
+    name: Route governor proof surface
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: platform/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Typecheck route governor
+        run: npm run typecheck:route-governor
+
+      - name: Test route governor
+        run: npm run test:route-governor
+
+      - name: Run proof examples
+        run: npm run proof:route-governor
