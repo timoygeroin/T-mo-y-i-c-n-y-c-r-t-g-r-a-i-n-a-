@@ -1,0 +1,17 @@
+{
+  "name": "@mondayid/platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "External platform scaffold for MondayiD runtime manifestation.",
+  "workspaces": [
+    "packages/route-governor"
+  ],
+  "scripts": {
+    "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
+    "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
