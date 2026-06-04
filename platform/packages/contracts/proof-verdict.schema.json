@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProofVerdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "truth_verdict",
+    "drift_verdict",
+    "consequence_verdict",
+    "superiority_verdict",
+    "blocking_issues",
+    "surviving_weaknesses"
+  ],
+  "properties": {
+    "truth_verdict": {
+      "type": "string",
+      "enum": ["survives_strongly", "survives_with_bounded_weakness", "fails", "blocked_by_missing_external_layer"]
+    },
+    "drift_verdict": {
+      "type": "string",
+      "enum": ["survives_strongly", "survives_with_bounded_weakness", "fails", "blocked_by_missing_external_layer"]
+    },
+    "consequence_verdict": {
+      "type": "string",
+      "enum": ["survives_strongly", "survives_with_bounded_weakness", "fails", "blocked_by_missing_external_layer"]
+    },
+    "superiority_verdict": {
+      "type": "string",
+      "enum": ["survives_strongly", "survives_with_bounded_weakness", "fails", "blocked_by_missing_external_layer"]
+    },
+    "blocking_issues": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "surviving_weaknesses": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}
