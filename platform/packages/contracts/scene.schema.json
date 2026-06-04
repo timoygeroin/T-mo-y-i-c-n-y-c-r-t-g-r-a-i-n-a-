@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Scene",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scene_id",
+    "origin",
+    "user_pressure",
+    "target_state",
+    "available_sources",
+    "durable_context_refs",
+    "time_budget",
+    "risk_class"
+  ],
+  "properties": {
+    "scene_id": {"type": "string", "minLength": 1},
+    "origin": {"type": "string", "minLength": 1},
+    "user_pressure": {"type": "string", "minLength": 1},
+    "target_state": {"type": "string", "minLength": 1},
+    "available_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "source_tier", "kind"],
+        "properties": {
+          "source_id": {"type": "string", "minLength": 1},
+          "source_tier": {
+            "type": "string",
+            "enum": ["raw", "direct_archive", "archive_derived", "summary_derived", "inferred"]
+          },
+          "kind": {"type": "string", "minLength": 1},
+          "ref": {"type": "string"}
+        }
+      }
+    },
+    "durable_context_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "time_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["tight", "normal", "deep"]},
+        "max_minutes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "risk_class": {"type": "string", "enum": ["low", "medium", "high", "critical"]}
+  }
+}
