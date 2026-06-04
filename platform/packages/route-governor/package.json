@@ -1,0 +1,15 @@
+{
+  "name": "@mondayid/route-governor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Route-selection guard for MondayiD platform proof scenes.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
