@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BranchWorkItem",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "branch_id",
+    "job",
+    "evidence_scope",
+    "processor_assignment",
+    "success_test",
+    "artifact_type"
+  ],
+  "properties": {
+    "branch_id": {"type": "string", "minLength": 1},
+    "job": {"type": "string", "minLength": 1},
+    "evidence_scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "processor_assignment": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "success_test": {"type": "string", "minLength": 1},
+    "artifact_type": {"type": "string", "minLength": 1}
+  }
+}
