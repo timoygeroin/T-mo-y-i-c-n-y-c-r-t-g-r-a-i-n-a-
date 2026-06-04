@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
+    "test:route-governor": "npm --workspace @mondayid/route-governor test",
     "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck"
   },
   "devDependencies": {
