@@ -1,0 +1,40 @@
+name: Route Governor Proof
+
+on:
+  push:
+    branches:
+      - monday-platform-genesis-01
+    paths:
+      - "platform/package.json"
+      - "platform/package-lock.json"
+      - "platform/packages/route-governor/**"
+      - ".github/workflows/route-governor-proof.yml"
+  pull_request:
+    paths:
+      - "platform/package.json"
+      - "platform/package-lock.json"
+      - "platform/packages/route-governor/**"
+      - ".github/workflows/route-governor-proof.yml"
+  workflow_dispatch:
+
+jobs:
+  proof:
+    name: Route governor proof examples
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run route governor proof
+        run: npm run proof:route-governor
