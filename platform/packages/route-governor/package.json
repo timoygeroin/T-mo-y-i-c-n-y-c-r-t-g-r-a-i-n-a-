@@ -8,7 +8,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js"
   },
   "dependencies": {},
   "devDependencies": {}
