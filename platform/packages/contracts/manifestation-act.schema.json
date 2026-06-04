@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ManifestationAct",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "act_type",
+    "content_ref",
+    "durable_outputs",
+    "external_gap",
+    "next_executable_step"
+  ],
+  "properties": {
+    "act_type": {
+      "type": "string",
+      "enum": [
+        "answer",
+        "file_artifact",
+        "repo_plan",
+        "skill_mutation",
+        "instruction_mutation",
+        "external_blocker"
+      ]
+    },
+    "content_ref": {"type": "string", "minLength": 1},
+    "durable_outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": {"type": "string", "minLength": 1},
+          "ref": {"type": "string", "minLength": 1},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "external_gap": {
+      "type": ["string", "null"]
+    },
+    "next_executable_step": {"type": "string", "minLength": 1}
+  }
+}
