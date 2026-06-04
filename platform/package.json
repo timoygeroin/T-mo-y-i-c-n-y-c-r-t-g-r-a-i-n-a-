@@ -13,6 +13,7 @@
     "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck"
   },
   "devDependencies": {
+    "@types/node": "^22.15.30",
     "typescript": "^5.8.3"
   }
 }
