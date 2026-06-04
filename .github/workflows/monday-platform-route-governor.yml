@@ -36,3 +36,7 @@ jobs:
       - name: Run route governor proof examples
         working-directory: platform
         run: npm run proof:route-governor
+
+      - name: Run route governor tests
+        working-directory: platform
+        run: npm run test:route-governor
