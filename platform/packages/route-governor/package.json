@@ -9,7 +9,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js",
+    "test": "tsc -p tsconfig.json && node --test dist/route-governor.test.js"
   },
   "dependencies": {},
   "devDependencies": {}
