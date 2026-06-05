@@ -2,7 +2,6 @@
 
 const DEFAULT_REPO = "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-";
 const DEFAULT_PR = "2";
-const DEFAULT_EXPECTED_HEAD = "39c591bf0c8ed636a1dfe6a12d9b5ce74200fdc9";
 
 function argValue(name, fallback) {
   const prefix = `--${name}=`;
@@ -12,7 +11,7 @@ function argValue(name, fallback) {
 
 const repo = argValue("repo", process.env.GITHUB_REPOSITORY || DEFAULT_REPO);
 const prNumber = argValue("pr", process.env.PR_NUMBER || DEFAULT_PR);
-const expectedHead = argValue("expected-head", process.env.EXPECTED_HEAD || DEFAULT_EXPECTED_HEAD);
+const expectedHead = argValue("expected-head", process.env.EXPECTED_HEAD || "");
 const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
 if (!token) {
