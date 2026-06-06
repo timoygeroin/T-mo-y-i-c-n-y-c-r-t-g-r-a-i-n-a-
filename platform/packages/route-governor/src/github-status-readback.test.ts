@@ -105,7 +105,7 @@ test("emits an exact blocker from a failing current-head readback", () => {
   assert.equal(verdict.ok, false);
   assert.equal(verdict.action, "emit_exact_blocker");
   assert.deepEqual(verdict.failures, [
-    "combined status / Route Governor Proof / Typecheck route governor https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/27070000004 (Route Governor Proof / Typecheck route governor): failure",
+    "combined status / Route Governor Proof / Typecheck route governor (Route Governor Proof / Typecheck route governor) https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/27070000004: failure",
   ]);
 });
 
