@@ -14,12 +14,16 @@
     "./resolved-head-boundary": {
       "types": "./dist/resolved-head-boundary.d.ts",
       "default": "./dist/resolved-head-boundary.js"
+    },
+    "./continuation-handoff": {
+      "types": "./dist/continuation-handoff.d.ts",
+      "default": "./dist/continuation-handoff.js"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js",
     "test": "tsc -p tsconfig.json && node --test dist/*.test.js"
   },
   "dependencies": {},
