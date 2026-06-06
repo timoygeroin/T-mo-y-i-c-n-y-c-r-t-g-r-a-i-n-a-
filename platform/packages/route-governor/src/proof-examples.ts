@@ -1,4 +1,10 @@
-import { evaluateContinuationMove, evaluateRoute, type RouteGuardInput } from "./index.js";
+import {
+  evaluateContinuationMove,
+  evaluateRoute,
+  selectNextContinuationMove,
+  type ContinuationMoveInput,
+  type RouteGuardInput,
+} from "./index.js";
 
 function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
   return {
@@ -29,6 +35,19 @@ function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
       "commit with proof examples",
       "externally retrievable artifact platform/packages/route-governor/src/proof-examples.ts",
     ],
+    ...overrides,
+  };
+}
+
+function continuationInput(overrides: Partial<ContinuationMoveInput> = {}): ContinuationMoveInput {
+  return {
+    move_class: "external_platform_embodiment",
+    current_head_sha: "next-head",
+    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    changed_files: ["platform/packages/route-governor/src/index.ts"],
+    executable_artifacts: ["selectNextContinuationMove"],
+    routing_artifacts: ["continuation preflight selector"],
+    new_check_run_ids: [],
     ...overrides,
   };
 }
@@ -78,32 +97,57 @@ export function runRouteGovernorProofExamples(): void {
     "finalization route does not terminate in an external act or exact blocker",
   );
 
-  const nextEmbodiment = evaluateContinuationMove({
-    move_class: "external_platform_embodiment",
-    current_head_sha: "next-head",
-    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
-    changed_files: ["platform/packages/route-governor/src/index.ts"],
-    executable_artifacts: ["evaluateContinuationMove"],
-    routing_artifacts: ["continuation move verdict"],
-    new_check_run_ids: [],
-  });
+  const nextEmbodiment = evaluateContinuationMove(continuationInput());
   expectOk("new executable continuation move", nextEmbodiment.ok, nextEmbodiment.failures);
 
-  const staleReadback = evaluateContinuationMove({
-    move_class: "fresh_status_readback",
-    current_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
-    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
-    changed_files: [],
-    executable_artifacts: [],
-    routing_artifacts: [],
-    new_check_run_ids: [],
-  });
+  const staleReadback = evaluateContinuationMove(
+    continuationInput({
+      move_class: "fresh_status_readback",
+      current_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+      previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: [],
+    }),
+  );
   expectFailure(
     "stale repaired-head readback",
     staleReadback.ok,
     staleReadback.failures,
     "fresh status readback requires a moved PR head or new check runs",
   );
+
+  const preflight = selectNextContinuationMove([
+    {
+      candidate_id: "duplicate-comment",
+      input: continuationInput({
+        move_class: "duplicate_comment",
+        changed_files: [],
+        executable_artifacts: [],
+        routing_artifacts: [],
+      }),
+    },
+    {
+      candidate_id: "exact-blocker",
+      input: continuationInput({
+        move_class: "exact_external_blocker",
+        changed_files: [],
+        executable_artifacts: [],
+        routing_artifacts: [],
+        blocker: "no writable external branch surface is available",
+      }),
+    },
+    {
+      candidate_id: "embodiment",
+      input: continuationInput(),
+    },
+  ]);
+
+  expectOk("continuation preflight selector", preflight.ok, preflight.failures);
+  if (preflight.selected?.candidate_id !== "embodiment") {
+    throw new Error(`preflight selected ${preflight.selected?.candidate_id ?? "nothing"} instead of embodiment`);
+  }
 }
 
 runRouteGovernorProofExamples();
