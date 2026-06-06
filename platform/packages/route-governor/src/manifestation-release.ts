@@ -127,3 +127,118 @@ export function compileManifestationRelease(input: ManifestationReleaseInput): M
     preflight,
   };
 }
+
+export type PostEmbodimentHandoffAction =
+  | "read_current_head_status"
+  | "advance_review_handoff"
+  | "emit_exact_blocker"
+  | "hold_handoff";
+
+export interface PostEmbodimentHandoffInput {
+  current_head_sha: string;
+  last_status_readback_head_sha: string;
+  changed_files_since_readback: string[];
+  executable_artifacts_since_readback: string[];
+  routing_artifacts_since_readback: string[];
+  pr_ready_for_review: boolean;
+  blocker_issue_open: boolean;
+  status_surface?: StatusSurfaceClassification;
+  status_surface_head_sha?: string;
+}
+
+export interface PostEmbodimentHandoffVerdict {
+  ok: boolean;
+  action: PostEmbodimentHandoffAction;
+  decisive_evidence: string[];
+  failures: string[];
+}
+
+function isExecutableHandoffPath(path: string): boolean {
+  return (
+    path.startsWith("platform/packages/") &&
+    (path.endsWith(".ts") || path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".json"))
+  );
+}
+
+function hasExecutableEmbodiment(input: PostEmbodimentHandoffInput): boolean {
+  return (
+    input.changed_files_since_readback.some(isExecutableHandoffPath) &&
+    input.executable_artifacts_since_readback.length > 0 &&
+    input.routing_artifacts_since_readback.length > 0
+  );
+}
+
+function blockerVerdict(blocker: string, decisive_evidence: string[] = []): PostEmbodimentHandoffVerdict {
+  return {
+    ok: true,
+    action: "emit_exact_blocker",
+    decisive_evidence: decisive_evidence.length > 0 ? decisive_evidence : [blocker],
+    failures: [blocker],
+  };
+}
+
+export function compilePostEmbodimentHandoff(input: PostEmbodimentHandoffInput): PostEmbodimentHandoffVerdict {
+  const headMovedSinceReadback = input.current_head_sha !== input.last_status_readback_head_sha;
+  const executableEmbodiment = hasExecutableEmbodiment(input);
+
+  if (headMovedSinceReadback && executableEmbodiment && !input.status_surface) {
+    return {
+      ok: true,
+      action: "read_current_head_status",
+      decisive_evidence: [
+        `head moved from ${input.last_status_readback_head_sha} to ${input.current_head_sha}`,
+        ...input.executable_artifacts_since_readback,
+        ...input.routing_artifacts_since_readback,
+      ],
+      failures: [],
+    };
+  }
+
+  if (input.status_surface && input.status_surface_head_sha !== input.current_head_sha) {
+    return {
+      ok: true,
+      action: "read_current_head_status",
+      decisive_evidence: [
+        `status surface is stale for ${input.status_surface_head_sha ?? "unknown head"}`,
+        `current head is ${input.current_head_sha}`,
+      ],
+      failures: [],
+    };
+  }
+
+  if (input.status_surface && !input.status_surface.ok) {
+    return blockerVerdict(statusBlocker(input.status_surface));
+  }
+
+  if (input.status_surface?.ok) {
+    if (!input.pr_ready_for_review) {
+      return blockerVerdict("PR is not ready for review after current-head passing status");
+    }
+
+    if (input.blocker_issue_open) {
+      return blockerVerdict("status blocker issue remains open after current-head passing status");
+    }
+
+    return {
+      ok: true,
+      action: "advance_review_handoff",
+      decisive_evidence: [
+        `current head ${input.current_head_sha} has passing status evidence`,
+        "PR is ready for review",
+        "status blocker issue is closed",
+      ],
+      failures: [],
+    };
+  }
+
+  if (headMovedSinceReadback && !executableEmbodiment) {
+    return blockerVerdict("head moved since readback but no executable embodiment evidence was supplied");
+  }
+
+  return {
+    ok: false,
+    action: "hold_handoff",
+    decisive_evidence: [],
+    failures: ["no moved executable head, current-head status, or exact blocker is available for handoff"],
+  };
+}
