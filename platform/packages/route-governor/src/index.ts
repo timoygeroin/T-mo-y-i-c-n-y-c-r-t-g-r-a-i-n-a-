@@ -44,6 +44,11 @@ export type ContinuationMoveClass =
   | "internal_memory_guard"
   | "metadata_reread";
 
+export interface ContinuationCheckRunEvidence {
+  id: string;
+  head_sha: string;
+}
+
 export interface ContinuationMoveInput {
   move_class: ContinuationMoveClass;
   current_head_sha: string;
@@ -52,6 +57,7 @@ export interface ContinuationMoveInput {
   executable_artifacts: string[];
   routing_artifacts: string[];
   new_check_run_ids: string[];
+  new_check_runs?: ContinuationCheckRunEvidence[];
   blocker?: string;
 }
 
@@ -113,6 +119,10 @@ function isExecutablePlatformPath(path: string): boolean {
     path.startsWith("platform/packages/") &&
     (path.endsWith(".ts") || path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".json"))
   );
+}
+
+function currentHeadCheckRuns(input: ContinuationMoveInput): ContinuationCheckRunEvidence[] {
+  return (input.new_check_runs ?? []).filter((run) => run.head_sha === input.current_head_sha);
 }
 
 function continuationPriority(classification: ContinuationEvidenceClassification): number {
@@ -191,7 +201,7 @@ export function evaluateRoute(input: RouteGuardInput): RouteGuardVerdict {
 export function evaluateContinuationMove(input: ContinuationMoveInput): ContinuationMoveVerdict {
   const failures: string[] = [];
   const headMoved = input.current_head_sha !== input.previous_readback_head_sha;
-  const hasFreshChecks = input.new_check_run_ids.length > 0;
+  const hasFreshChecks = currentHeadCheckRuns(input).length > 0;
   const hasExecutableChange = input.changed_files.some(isExecutablePlatformPath);
 
   if (DUPLICATE_MOVE_CLASSES.includes(input.move_class)) {
@@ -199,7 +209,15 @@ export function evaluateContinuationMove(input: ContinuationMoveInput): Continua
   }
 
   if (input.move_class === "fresh_status_readback" && !headMoved && !hasFreshChecks) {
-    failures.push("fresh status readback requires a moved PR head or new check runs");
+    failures.push("fresh status readback requires a moved PR head or new current-head check runs");
+  }
+
+  if (
+    input.move_class === "fresh_status_readback" &&
+    input.new_check_run_ids.length > 0 &&
+    (input.new_check_runs ?? []).length === 0
+  ) {
+    failures.push("fresh status readback check ids must be tied to a PR head sha");
   }
 
   if (input.move_class === "external_platform_embodiment") {
@@ -240,7 +258,7 @@ export function evaluateContinuationMove(input: ContinuationMoveInput): Continua
     return {
       ok: true,
       next_allowed_move: "read_fresh_status",
-      reason: headMoved ? "PR head moved since last readback" : "new check runs appeared",
+      reason: headMoved ? "PR head moved since last readback" : "new current-head check runs appeared",
       failures,
     };
   }
@@ -281,7 +299,7 @@ export function classifyContinuationEvidence(input: ContinuationMoveInput): Cont
       release_instruction: "read_fresh_status",
       decisive_evidence: [
         ...(headMoved ? [`head moved from ${input.previous_readback_head_sha} to ${input.current_head_sha}`] : []),
-        ...input.new_check_run_ids.map((id) => `new check run ${id}`),
+        ...currentHeadCheckRuns(input).map((run) => `new current-head check run ${run.id}`),
       ],
       blocked_reasons: [],
     };
