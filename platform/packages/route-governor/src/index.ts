@@ -62,6 +62,19 @@ export interface ContinuationMoveVerdict {
   failures: string[];
 }
 
+export type ContinuationEvidenceClass =
+  | "external_embodiment_ready"
+  | "fresh_status_readback_ready"
+  | "exact_blocker_ready"
+  | "blocked_duplicate_or_incomplete";
+
+export interface ContinuationEvidenceClassification {
+  evidence_class: ContinuationEvidenceClass;
+  release_instruction: "commit_external_embodiment" | "read_fresh_status" | "emit_exact_blocker" | "block_release";
+  decisive_evidence: string[];
+  blocked_reasons: string[];
+}
+
 const ACT_OR_BLOCKER_TERMS = ["external durable act", "exact external blocker"];
 const MANIFESTATION_TERMS = ["branch", "commit", "externally retrievable artifact"];
 const DUPLICATE_MOVE_CLASSES: ContinuationMoveClass[] = [
@@ -200,6 +213,48 @@ export function evaluateContinuationMove(input: ContinuationMoveInput): Continua
     next_allowed_move: "emit_exact_blocker",
     reason: input.blocker ?? "exact external blocker supplied",
     failures,
+  };
+}
+
+export function classifyContinuationEvidence(input: ContinuationMoveInput): ContinuationEvidenceClassification {
+  const verdict = evaluateContinuationMove(input);
+
+  if (!verdict.ok) {
+    return {
+      evidence_class: "blocked_duplicate_or_incomplete",
+      release_instruction: "block_release",
+      decisive_evidence: [],
+      blocked_reasons: verdict.failures,
+    };
+  }
+
+  if (verdict.next_allowed_move === "commit_external_embodiment") {
+    return {
+      evidence_class: "external_embodiment_ready",
+      release_instruction: "commit_external_embodiment",
+      decisive_evidence: [...input.changed_files, ...input.executable_artifacts, ...input.routing_artifacts],
+      blocked_reasons: [],
+    };
+  }
+
+  if (verdict.next_allowed_move === "read_fresh_status") {
+    const headMoved = input.current_head_sha !== input.previous_readback_head_sha;
+    return {
+      evidence_class: "fresh_status_readback_ready",
+      release_instruction: "read_fresh_status",
+      decisive_evidence: [
+        ...(headMoved ? [`head moved from ${input.previous_readback_head_sha} to ${input.current_head_sha}`] : []),
+        ...input.new_check_run_ids.map((id) => `new check run ${id}`),
+      ],
+      blocked_reasons: [],
+    };
+  }
+
+  return {
+    evidence_class: "exact_blocker_ready",
+    release_instruction: "emit_exact_blocker",
+    decisive_evidence: [input.blocker ?? verdict.reason],
+    blocked_reasons: [],
   };
 }
 
