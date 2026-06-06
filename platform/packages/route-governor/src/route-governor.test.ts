@@ -3,10 +3,12 @@ import assert from "node:assert/strict";
 
 import {
   classifyContinuationEvidence,
+  compileContinuationReleaseReceipt,
   evaluateContinuationMove,
   evaluateRoute,
   selectNextContinuationMove,
   type ContinuationMoveInput,
+  type ContinuationPreflightVerdict,
   type RouteGuardInput,
 } from "./index.js";
 
@@ -54,6 +56,10 @@ function continuationInput(overrides: Partial<ContinuationMoveInput> = {}): Cont
     new_check_run_ids: [],
     ...overrides,
   };
+}
+
+function preflight(overrides: Partial<ContinuationMoveInput> = {}): ContinuationPreflightVerdict {
+  return selectNextContinuationMove([{ candidate_id: "candidate", input: continuationInput(overrides) }]);
 }
 
 test("accepts a manifestation bridge with source tiers, organs, proof, and external evidence", () => {
@@ -297,4 +303,70 @@ test("preflight blocks release when every candidate repeats a spent progress cla
   assert.equal(verdict.ok, false);
   assert.equal(verdict.selected, null);
   assert.deepEqual(verdict.failures, ["no continuation candidate survives the external-act preflight"]);
+});
+
+test("receipt allows an external embodiment without pretending status was read", () => {
+  const receipt = compileContinuationReleaseReceipt({
+    branch: "monday-platform-genesis-01",
+    current_head_sha: "next-head",
+    preflight: preflight(),
+  });
+
+  assert.equal(receipt.ok, true);
+  assert.equal(receipt.release_class, "external_embodiment");
+  assert.equal(receipt.release_instruction, "commit_external_embodiment");
+  assert.deepEqual(receipt.blockers, []);
+  assert.equal(receipt.next_route, "after the branch moves, read only head-bound checks before making a status claim");
+});
+
+test("receipt blocks moved-head readback when no status surface is attached", () => {
+  const receipt = compileContinuationReleaseReceipt({
+    branch: "monday-platform-genesis-01",
+    current_head_sha: "moved-head",
+    preflight: preflight({
+      move_class: "fresh_status_readback",
+      current_head_sha: "moved-head",
+      previous_readback_head_sha: "old-head",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: [],
+    }),
+  });
+
+  assert.equal(receipt.ok, false);
+  assert.equal(receipt.release_instruction, "block_release");
+  assert.deepEqual(receipt.blockers, ["fresh status readback selected without an attached current-head status surface"]);
+  assert.equal(receipt.next_route, "obtain a current-head status surface before making a pass/fail status claim");
+});
+
+test("receipt accepts a fresh status readback only with current-head successes", () => {
+  const receipt = compileContinuationReleaseReceipt({
+    branch: "monday-platform-genesis-01",
+    current_head_sha: "same-head",
+    preflight: preflight({
+      move_class: "fresh_status_readback",
+      current_head_sha: "same-head",
+      previous_readback_head_sha: "same-head",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: ["new-current-check"],
+      new_check_runs: [{ id: "new-current-check", head_sha: "same-head" }],
+    }),
+    status_surface: {
+      verdict: "passing_with_warnings",
+      ok: true,
+      decisive_successes: ["Route Governor Proof / proof examples: success"],
+      blocking_failures: [],
+      pending_surfaces: [],
+      non_blocking_warnings: ["Node.js 20 Actions deprecation notice"],
+    },
+  });
+
+  assert.equal(receipt.ok, true);
+  assert.equal(receipt.release_class, "fresh_status_readback");
+  assert.deepEqual(receipt.blockers, []);
+  assert.deepEqual(receipt.warnings, ["Node.js 20 Actions deprecation notice"]);
+  assert.equal(receipt.next_route, "continue with the next non-repeated executable platform embodiment increment");
 });
