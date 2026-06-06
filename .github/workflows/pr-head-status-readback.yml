@@ -1,0 +1,67 @@
+name: PR Head Status Readback
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number to read
+        required: false
+        default: "2"
+      expected_head:
+        description: Optional expected PR head SHA guard
+        required: false
+        default: ""
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: read
+  statuses: read
+
+jobs:
+  read-pr-head-status:
+    name: Read PR head status
+    runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ inputs.pr || github.event.pull_request.number || '2' }}
+      EXPECTED_HEAD: ${{ inputs.expected_head || github.event.pull_request.head.sha || github.sha }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Read status for guarded PR head
+        id: readback
+        run: |
+          set +e
+          node platform/tools/read-github-head-status.mjs \
+            --repo="${GITHUB_REPOSITORY}" \
+            --pr="${PR_NUMBER}" \
+            --expected-head="${EXPECTED_HEAD}" \
+            > pr-head-status-readback.json
+          status=$?
+          echo "exit_code=${status}" >> "$GITHUB_OUTPUT"
+          {
+            echo "# PR head status readback"
+            echo
+            echo "Repository: \`${GITHUB_REPOSITORY}\`"
+            echo "PR: \`${PR_NUMBER}\`"
+            echo "Expected head: \`${EXPECTED_HEAD}\`"
+            echo "Tool exit code: \`${status}\`"
+            echo
+            echo '```json'
+            cat pr-head-status-readback.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Upload readback artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-head-status-readback
+          path: pr-head-status-readback.json
+          if-no-files-found: warn
