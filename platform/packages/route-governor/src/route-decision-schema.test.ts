@@ -14,6 +14,7 @@ type JsonSchema = {
   items?: JsonSchema;
   minItems?: number;
   maxItems?: number;
+  minLength?: number;
   minimum?: number;
   maximum?: number;
 };
