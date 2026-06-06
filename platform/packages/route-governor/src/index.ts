@@ -105,6 +105,36 @@ export interface ContinuationPreflightVerdict {
   failures: string[];
 }
 
+export type ReceiptStatusVerdict = "passing_with_warnings" | "passing" | "pending" | "failing" | "no_status_surface";
+
+export interface ContinuationStatusReceiptSurface {
+  verdict: ReceiptStatusVerdict;
+  ok: boolean;
+  decisive_successes: string[];
+  blocking_failures: string[];
+  pending_surfaces: string[];
+  non_blocking_warnings: string[];
+}
+
+export interface ContinuationReleaseReceiptInput {
+  branch: string;
+  current_head_sha: string;
+  preflight: ContinuationPreflightVerdict;
+  status_surface?: ContinuationStatusReceiptSurface;
+}
+
+export interface ContinuationReleaseReceipt {
+  ok: boolean;
+  branch: string;
+  head_sha: string;
+  release_class: "external_embodiment" | "fresh_status_readback" | "exact_external_blocker" | "blocked";
+  release_instruction: "commit_external_embodiment" | "read_fresh_status" | "emit_exact_blocker" | "block_release";
+  decisive_evidence: string[];
+  blockers: string[];
+  warnings: string[];
+  next_route: string;
+}
+
 const ACT_OR_BLOCKER_TERMS = ["external durable act", "exact external blocker"];
 const MANIFESTATION_TERMS = ["branch", "commit", "externally retrievable artifact"];
 const DUPLICATE_MOVE_CLASSES: ContinuationMoveClass[] = [
@@ -365,6 +395,101 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
     selected,
     rejected,
     failures: [],
+  };
+}
+
+export function compileContinuationReleaseReceipt(input: ContinuationReleaseReceiptInput): ContinuationReleaseReceipt {
+  const { branch, current_head_sha: headSha, preflight, status_surface: statusSurface } = input;
+
+  if (!preflight.ok || !preflight.selected) {
+    return {
+      ok: false,
+      branch,
+      head_sha: headSha,
+      release_class: "blocked",
+      release_instruction: "block_release",
+      decisive_evidence: [],
+      blockers: preflight.failures,
+      warnings: [],
+      next_route: "emit one exact external blocker or produce a non-repeated executable embodiment before release",
+    };
+  }
+
+  if (preflight.selected.release_instruction === "read_fresh_status") {
+    if (!statusSurface) {
+      return {
+        ok: false,
+        branch,
+        head_sha: headSha,
+        release_class: "blocked",
+        release_instruction: "block_release",
+        decisive_evidence: preflight.selected.decisive_evidence,
+        blockers: ["fresh status readback selected without an attached current-head status surface"],
+        warnings: [],
+        next_route: "obtain a current-head status surface before making a pass/fail status claim",
+      };
+    }
+
+    if (!statusSurface.ok) {
+      return {
+        ok: false,
+        branch,
+        head_sha: headSha,
+        release_class: "fresh_status_readback",
+        release_instruction: "read_fresh_status",
+        decisive_evidence: [
+          ...preflight.selected.decisive_evidence,
+          ...statusSurface.blocking_failures,
+          ...statusSurface.pending_surfaces,
+        ],
+        blockers:
+          statusSurface.blocking_failures.length > 0
+            ? statusSurface.blocking_failures
+            : statusSurface.pending_surfaces.length > 0
+              ? statusSurface.pending_surfaces
+              : ["current-head status surface returned no decisive success evidence"],
+        warnings: statusSurface.non_blocking_warnings,
+        next_route: statusSurface.blocking_failures.length > 0 ? "repair the concrete current-head failure" : "wait for current-head checks to complete",
+      };
+    }
+
+    return {
+      ok: true,
+      branch,
+      head_sha: headSha,
+      release_class: "fresh_status_readback",
+      release_instruction: "read_fresh_status",
+      decisive_evidence: [...preflight.selected.decisive_evidence, ...statusSurface.decisive_successes],
+      blockers: [],
+      warnings: statusSurface.non_blocking_warnings,
+      next_route: "continue with the next non-repeated executable platform embodiment increment",
+    };
+  }
+
+  if (preflight.selected.release_instruction === "commit_external_embodiment") {
+    return {
+      ok: true,
+      branch,
+      head_sha: headSha,
+      release_class: "external_embodiment",
+      release_instruction: "commit_external_embodiment",
+      decisive_evidence: preflight.selected.decisive_evidence,
+      blockers: [],
+      warnings: [],
+      next_route: "after the branch moves, read only head-bound checks before making a status claim",
+    };
+  }
+
+  return {
+    ok: true,
+    branch,
+    head_sha: headSha,
+    release_class: "exact_external_blocker",
+    release_instruction: "emit_exact_blocker",
+    decisive_evidence: preflight.selected.decisive_evidence,
+    blockers: preflight.selected.decisive_evidence,
+    warnings: [],
+    next_route: "remove the named blocker before attempting another progress class",
   };
 }
 
