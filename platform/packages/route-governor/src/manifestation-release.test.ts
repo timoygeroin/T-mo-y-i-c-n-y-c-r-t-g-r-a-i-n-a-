@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { compileManifestationRelease, type ManifestationReleaseInput } from "./manifestation-release.js";
+import {
+  compileManifestationRelease,
+  compilePostEmbodimentHandoff,
+  type ManifestationReleaseInput,
+  type PostEmbodimentHandoffInput,
+} from "./manifestation-release.js";
 import { classifyStatusSurface, type StatusSurfaceInput } from "./status-surface.js";
 
 const previousHead = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
@@ -39,6 +44,19 @@ function releaseInput(overrides: Partial<ManifestationReleaseInput> = {}): Manif
     previous_readback_head_sha: previousHead,
     new_check_run_ids: [],
     status_surface: statusSurface(),
+    ...overrides,
+  };
+}
+
+function handoffInput(overrides: Partial<PostEmbodimentHandoffInput> = {}): PostEmbodimentHandoffInput {
+  return {
+    current_head_sha: movedHead,
+    last_status_readback_head_sha: previousHead,
+    changed_files_since_readback: ["platform/packages/route-governor/src/manifestation-release.ts"],
+    executable_artifacts_since_readback: ["compilePostEmbodimentHandoff"],
+    routing_artifacts_since_readback: ["post-embodiment handoff compiler"],
+    pr_ready_for_review: true,
+    blocker_issue_open: false,
     ...overrides,
   };
 }
@@ -106,4 +124,62 @@ test("emits a concrete blocker from failing current-head status", () => {
   assert.equal(verdict.action, "emit_exact_blocker");
   assert.equal(verdict.selected_candidate_id, "status-surface-blocker");
   assert.deepEqual(verdict.decisive_evidence, ["Route Governor Proof / Typecheck route governor (failed-check): failure"]);
+});
+
+test("post-embodiment handoff forces current-head status after executable head movement", () => {
+  const verdict = compilePostEmbodimentHandoff(handoffInput());
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.action, "read_current_head_status");
+  assert.deepEqual(verdict.failures, []);
+  assert.ok(verdict.decisive_evidence.includes(`head moved from ${previousHead} to ${movedHead}`));
+  assert.ok(verdict.decisive_evidence.includes("compilePostEmbodimentHandoff"));
+});
+
+test("post-embodiment handoff rejects stale status for an older head", () => {
+  const verdict = compilePostEmbodimentHandoff(
+    handoffInput({
+      status_surface: statusSurface(),
+      status_surface_head_sha: previousHead,
+    }),
+  );
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.action, "read_current_head_status");
+  assert.deepEqual(verdict.decisive_evidence, [
+    `status surface is stale for ${previousHead}`,
+    `current head is ${movedHead}`,
+  ]);
+});
+
+test("post-embodiment handoff advances review only after current-head passing status and closed blocker", () => {
+  const verdict = compilePostEmbodimentHandoff(
+    handoffInput({
+      status_surface: statusSurface(),
+      status_surface_head_sha: movedHead,
+    }),
+  );
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.action, "advance_review_handoff");
+  assert.deepEqual(verdict.failures, []);
+  assert.deepEqual(verdict.decisive_evidence, [
+    `current head ${movedHead} has passing status evidence`,
+    "PR is ready for review",
+    "status blocker issue is closed",
+  ]);
+});
+
+test("post-embodiment handoff blocks review handoff while blocker issue remains open", () => {
+  const verdict = compilePostEmbodimentHandoff(
+    handoffInput({
+      status_surface: statusSurface(),
+      status_surface_head_sha: movedHead,
+      blocker_issue_open: true,
+    }),
+  );
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.action, "emit_exact_blocker");
+  assert.deepEqual(verdict.failures, ["status blocker issue remains open after current-head passing status"]);
 });
