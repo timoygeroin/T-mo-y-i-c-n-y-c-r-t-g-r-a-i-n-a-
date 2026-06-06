@@ -5,6 +5,7 @@ import {
   type ContinuationMoveInput,
   type RouteGuardInput,
 } from "./index.js";
+import { selectActiveSinkContinuation, type ActiveManifestationSink, type ActiveSinkCandidate } from "./active-sink-contract.js";
 import { compileManifestationRelease } from "./manifestation-release.js";
 import { classifyStatusSurface } from "./status-surface.js";
 
@@ -49,6 +50,37 @@ function continuationInput(overrides: Partial<ContinuationMoveInput> = {}): Cont
     changed_files: ["platform/packages/route-governor/src/index.ts"],
     executable_artifacts: ["selectNextContinuationMove"],
     routing_artifacts: ["continuation preflight selector"],
+    new_check_run_ids: [],
+    ...overrides,
+  };
+}
+
+function activeSink(overrides: Partial<ActiveManifestationSink> = {}): ActiveManifestationSink {
+  return {
+    repository_full_name: "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    pr_number: 2,
+    branch: "monday-platform-genesis-01",
+    current_head_sha: "da864c246ce5b777f53525c99ff0a53863e31c17",
+    repaired_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    last_status_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    ...overrides,
+  };
+}
+
+function activeCandidate(overrides: Partial<ActiveSinkCandidate> = {}): ActiveSinkCandidate {
+  const sink = activeSink();
+  return {
+    candidate_id: "active-sink-embodiment",
+    move_class: "external_platform_embodiment",
+    target: {
+      repository_full_name: sink.repository_full_name,
+      pr_number: sink.pr_number,
+      branch: sink.branch,
+      head_sha: sink.current_head_sha,
+    },
+    changed_files: ["platform/packages/route-governor/src/active-sink-contract.ts"],
+    executable_artifacts: ["selectActiveSinkContinuation"],
+    routing_artifacts: ["active manifestation sink contract"],
     new_check_run_ids: [],
     ...overrides,
   };
@@ -149,6 +181,30 @@ export function runRouteGovernorProofExamples(): void {
   expectOk("continuation preflight selector", preflight.ok, preflight.failures);
   if (preflight.selected?.candidate_id !== "embodiment") {
     throw new Error(`preflight selected ${preflight.selected?.candidate_id ?? "nothing"} instead of embodiment`);
+  }
+
+  const activeSelection = selectActiveSinkContinuation(activeSink(), [
+    activeCandidate({
+      candidate_id: "metadata-reread",
+      move_class: "pr_metadata_reread",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+    }),
+    activeCandidate({
+      candidate_id: "fresh-active-readback",
+      move_class: "fresh_status_readback",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+    }),
+    activeCandidate(),
+  ]);
+  expectOk("active manifestation sink selector", activeSelection.ok, activeSelection.failures);
+  if (activeSelection.selected_candidate_id !== "active-sink-embodiment") {
+    throw new Error(
+      `active sink selected ${activeSelection.selected_candidate_id ?? "nothing"} instead of active-sink-embodiment`,
+    );
   }
 
   const movedHead = "62a8956b032bde60830c0391da47fb7af945f339";
