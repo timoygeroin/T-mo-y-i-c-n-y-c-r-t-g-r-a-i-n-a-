@@ -6,6 +6,16 @@
   "description": "Route-selection guard for MondayiD platform proof scenes.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./resolved-head-boundary": {
+      "types": "./dist/resolved-head-boundary.d.ts",
+      "default": "./dist/resolved-head-boundary.js"
+    }
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
