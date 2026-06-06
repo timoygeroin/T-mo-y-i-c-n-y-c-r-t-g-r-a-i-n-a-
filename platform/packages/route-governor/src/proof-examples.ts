@@ -1,4 +1,4 @@
-import { evaluateRoute, type RouteGuardInput } from "./index.js";
+import { evaluateContinuationMove, evaluateRoute, type RouteGuardInput } from "./index.js";
 
 function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
   return {
@@ -33,48 +33,76 @@ function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
   };
 }
 
-function expectOk(name: string, input: RouteGuardInput): void {
-  const verdict = evaluateRoute(input);
-  if (!verdict.ok) {
-    throw new Error(`${name} should pass, failed with: ${verdict.failures.join("; ")}`);
+function expectOk(name: string, ok: boolean, failures: string[]): void {
+  if (!ok) {
+    throw new Error(`${name} should pass, failed with: ${failures.join("; ")}`);
   }
 }
 
-function expectFailure(name: string, input: RouteGuardInput, expected: string): void {
-  const verdict = evaluateRoute(input);
-  if (verdict.ok) {
+function expectFailure(name: string, ok: boolean, failures: string[], expected: string): void {
+  if (ok) {
     throw new Error(`${name} should fail, but passed`);
   }
-  if (!verdict.failures.some((failure) => failure.includes(expected))) {
-    throw new Error(`${name} did not fail for ${expected}; failures: ${verdict.failures.join("; ")}`);
+  if (!failures.some((failure) => failure.includes(expected))) {
+    throw new Error(`${name} did not fail for ${expected}; failures: ${failures.join("; ")}`);
   }
 }
 
 export function runRouteGovernorProofExamples(): void {
-  expectOk("external manifestation evidence", baseInput());
+  const externalManifestation = evaluateRoute(baseInput());
+  expectOk("external manifestation evidence", externalManifestation.ok, externalManifestation.failures);
 
-  expectFailure(
-    "exhausted explanation move",
-    baseInput({ move_class: "explanation_instead_of_act" }),
-    "move class already exhausted",
-  );
+  const exhaustedMove = evaluateRoute(baseInput({ move_class: "explanation_instead_of_act" }));
+  expectFailure("exhausted explanation move", exhaustedMove.ok, exhaustedMove.failures, "move class already exhausted");
 
+  const missingManifestation = evaluateRoute(baseInput({ manifestation_artifacts: ["commit with proof examples"] }));
   expectFailure(
     "missing manifestation evidence",
-    baseInput({ manifestation_artifacts: ["commit with proof examples"] }),
+    missingManifestation.ok,
+    missingManifestation.failures,
     "manifestation route lacks branch, commit, or externally retrievable artifact evidence",
   );
 
+  const internalFinalization = evaluateRoute({
+    ...baseInput(),
+    decision: {
+      ...baseInput().decision,
+      scene_class: "finalization_pressure",
+      termination_goal: "internal readiness report",
+    },
+  });
   expectFailure(
     "finalization without act or blocker",
-    baseInput({
-      decision: {
-        ...baseInput().decision,
-        scene_class: "finalization_pressure",
-        termination_goal: "internal readiness report",
-      },
-    }),
+    internalFinalization.ok,
+    internalFinalization.failures,
     "finalization route does not terminate in an external act or exact blocker",
+  );
+
+  const nextEmbodiment = evaluateContinuationMove({
+    move_class: "external_platform_embodiment",
+    current_head_sha: "next-head",
+    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    changed_files: ["platform/packages/route-governor/src/index.ts"],
+    executable_artifacts: ["evaluateContinuationMove"],
+    routing_artifacts: ["continuation move verdict"],
+    new_check_run_ids: [],
+  });
+  expectOk("new executable continuation move", nextEmbodiment.ok, nextEmbodiment.failures);
+
+  const staleReadback = evaluateContinuationMove({
+    move_class: "fresh_status_readback",
+    current_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    changed_files: [],
+    executable_artifacts: [],
+    routing_artifacts: [],
+    new_check_run_ids: [],
+  });
+  expectFailure(
+    "stale repaired-head readback",
+    staleReadback.ok,
+    staleReadback.failures,
+    "fresh status readback requires a moved PR head or new check runs",
   );
 }
 
