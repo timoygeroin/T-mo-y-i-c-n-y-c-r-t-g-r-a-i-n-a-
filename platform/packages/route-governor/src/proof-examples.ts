@@ -5,6 +5,8 @@ import {
   type ContinuationMoveInput,
   type RouteGuardInput,
 } from "./index.js";
+import { compileManifestationRelease } from "./manifestation-release.js";
+import { classifyStatusSurface } from "./status-surface.js";
 
 function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
   return {
@@ -148,6 +150,51 @@ export function runRouteGovernorProofExamples(): void {
   if (preflight.selected?.candidate_id !== "embodiment") {
     throw new Error(`preflight selected ${preflight.selected?.candidate_id ?? "nothing"} instead of embodiment`);
   }
+
+  const movedHead = "62a8956b032bde60830c0391da47fb7af945f339";
+  const status = classifyStatusSurface({
+    expected_head_sha: movedHead,
+    check_runs: [
+      {
+        id: "proof-check",
+        name: "Monday Platform CI / Route governor proof surface",
+        status: "completed",
+        conclusion: "success",
+        head_sha: movedHead,
+      },
+    ],
+    workflow_runs: [],
+    notices: [],
+  });
+
+  const release = compileManifestationRelease({
+    current_head_sha: movedHead,
+    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    new_check_run_ids: [],
+    status_surface: status,
+    embodiment: {
+      changed_files: ["platform/packages/route-governor/src/manifestation-release.ts"],
+      executable_artifacts: ["compileManifestationRelease"],
+      routing_artifacts: ["manifestation release compiler"],
+    },
+  });
+  expectOk("manifestation release compiler", release.ok, release.failures);
+  if (release.action !== "commit_external_embodiment") {
+    throw new Error(`manifestation release compiler chose ${release.action} instead of commit_external_embodiment`);
+  }
+
+  const staleRelease = compileManifestationRelease({
+    current_head_sha: movedHead,
+    previous_readback_head_sha: movedHead,
+    new_check_run_ids: [],
+    status_surface: status,
+  });
+  expectFailure(
+    "stale manifestation release",
+    staleRelease.ok,
+    staleRelease.failures,
+    "fresh status readback requires a moved PR head",
+  );
 }
 
 runRouteGovernorProofExamples();
