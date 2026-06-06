@@ -8,6 +8,7 @@ import {
 import { selectActiveSinkContinuation, type ActiveManifestationSink, type ActiveSinkCandidate } from "./active-sink-contract.js";
 import { compileGithubStatusReadback, type GithubHeadStatusReadback } from "./github-status-readback.js";
 import { compileManifestationRelease } from "./manifestation-release.js";
+import { compileReceiptReplayGuard } from "./release-receipt-replay.js";
 import { classifyStatusSurface } from "./status-surface.js";
 
 function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
@@ -318,6 +319,58 @@ export function runRouteGovernorProofExamples(): void {
     staleGithubReadback.failures,
     "does not match expected head",
   );
+
+  const receiptReplay = compileReceiptReplayGuard({
+    current_head_sha: "next-head",
+    previous_receipts: [
+      {
+        receipt_id: "github-status-readback-compiler",
+        branch: "monday-platform-genesis-01",
+        head_sha: readbackHead,
+        release_class: "external_embodiment",
+        decisive_evidence: ["platform/packages/route-governor/src/github-status-readback.ts"],
+        executable_artifacts: ["compileGithubStatusReadback"],
+        routing_artifacts: ["github status readback compiler"],
+        status_surface_ids: ["27070000003"],
+      },
+    ],
+    candidate: {
+      branch: "monday-platform-genesis-01",
+      head_sha: "next-head",
+      release_class: "external_embodiment",
+      changed_files: ["platform/packages/route-governor/src/release-receipt-replay.ts"],
+      executable_artifacts: ["compileReceiptReplayGuard"],
+      routing_artifacts: ["continuation receipt replay guard"],
+      status_surface_ids: [],
+    },
+  });
+  expectOk("continuation receipt replay guard", receiptReplay.ok, receiptReplay.failures);
+
+  const replayedReceipt = compileReceiptReplayGuard({
+    current_head_sha: "next-head",
+    previous_receipts: [
+      {
+        receipt_id: "receipt-replay-guard",
+        branch: "monday-platform-genesis-01",
+        head_sha: "next-head",
+        release_class: "external_embodiment",
+        decisive_evidence: ["platform/packages/route-governor/src/release-receipt-replay.ts"],
+        executable_artifacts: ["compileReceiptReplayGuard"],
+        routing_artifacts: ["continuation receipt replay guard"],
+        status_surface_ids: [],
+      },
+    ],
+    candidate: {
+      branch: "monday-platform-genesis-01",
+      head_sha: "next-head",
+      release_class: "external_embodiment",
+      changed_files: ["platform/packages/route-governor/src/release-receipt-replay.ts"],
+      executable_artifacts: ["compileReceiptReplayGuard"],
+      routing_artifacts: ["continuation receipt replay guard"],
+      status_surface_ids: [],
+    },
+  });
+  expectFailure("replayed receipt", replayedReceipt.ok, replayedReceipt.failures, "repeats the last receipt");
 }
 
 runRouteGovernorProofExamples();
