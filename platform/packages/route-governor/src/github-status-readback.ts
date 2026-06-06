@@ -58,14 +58,10 @@ export interface GithubStatusReadbackCompileVerdict {
   failures: string[];
 }
 
-function statusContext(entry: GithubCombinedStatusEntry): string {
-  return entry.target_url ? `${entry.context} ${entry.target_url}` : entry.context;
-}
-
 function combinedStatusRuns(readback: GithubHeadStatusReadback): StatusRunSurface[] {
   return readback.combined_status.statuses.map((status) => ({
     id: status.context,
-    name: `combined status / ${statusContext(status)}`,
+    name: `combined status / ${status.context}`,
     status: status.state === "pending" ? "pending" : "completed",
     conclusion:
       status.state === "success"
