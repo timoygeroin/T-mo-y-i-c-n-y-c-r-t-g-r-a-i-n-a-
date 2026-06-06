@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { evaluateRoute, type RouteGuardInput } from "./index.js";
+import { evaluateContinuationMove, evaluateRoute, type RouteGuardInput } from "./index.js";
 
 function baseInput(overrides: Partial<RouteGuardInput> = {}): RouteGuardInput {
   return {
@@ -88,4 +88,54 @@ test("rejects proof scenes without a durable evidence surface", () => {
 
   assert.equal(verdict.ok, false);
   assert.ok(verdict.failures.some((failure) => failure.includes("proof scene has no durable evidence surface")));
+});
+
+test("allows a new external platform embodiment with executable and routing artifacts", () => {
+  assert.deepEqual(
+    evaluateContinuationMove({
+      move_class: "external_platform_embodiment",
+      current_head_sha: "next-head",
+      previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+      changed_files: ["platform/packages/route-governor/src/index.ts"],
+      executable_artifacts: ["evaluateContinuationMove"],
+      routing_artifacts: ["continuation move verdict"],
+      new_check_run_ids: [],
+    }),
+    {
+      ok: true,
+      next_allowed_move: "commit_external_embodiment",
+      reason: "move changes executable platform behavior and leaves a routing artifact",
+      failures: [],
+    },
+  );
+});
+
+test("rejects duplicate repaired-head status readback when the head and check surface did not move", () => {
+  const verdict = evaluateContinuationMove({
+    move_class: "fresh_status_readback",
+    current_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    previous_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    changed_files: [],
+    executable_artifacts: [],
+    routing_artifacts: [],
+    new_check_run_ids: [],
+  });
+
+  assert.equal(verdict.ok, false);
+  assert.ok(verdict.failures.some((failure) => failure.includes("requires a moved PR head or new check runs")));
+});
+
+test("rejects metadata rereads and duplicate comments as continuation progress", () => {
+  const verdict = evaluateContinuationMove({
+    move_class: "metadata_reread",
+    current_head_sha: "same-head",
+    previous_readback_head_sha: "same-head",
+    changed_files: [],
+    executable_artifacts: [],
+    routing_artifacts: [],
+    new_check_run_ids: [],
+  });
+
+  assert.equal(verdict.ok, false);
+  assert.ok(verdict.failures.some((failure) => failure.includes("explicitly non-progress")));
 });
