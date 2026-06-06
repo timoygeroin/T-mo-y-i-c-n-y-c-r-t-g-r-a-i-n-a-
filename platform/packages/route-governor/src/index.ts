@@ -35,8 +35,48 @@ export interface RouteGuardVerdict {
   failures: string[];
 }
 
+export type ContinuationMoveClass =
+  | "external_platform_embodiment"
+  | "fresh_status_readback"
+  | "exact_external_blocker"
+  | "duplicate_status_readback"
+  | "duplicate_comment"
+  | "internal_memory_guard"
+  | "metadata_reread";
+
+export interface ContinuationMoveInput {
+  move_class: ContinuationMoveClass;
+  current_head_sha: string;
+  previous_readback_head_sha: string;
+  changed_files: string[];
+  executable_artifacts: string[];
+  routing_artifacts: string[];
+  new_check_run_ids: string[];
+  blocker?: string;
+}
+
+export interface ContinuationMoveVerdict {
+  ok: boolean;
+  next_allowed_move: "commit_external_embodiment" | "read_fresh_status" | "emit_exact_blocker" | "blocked";
+  reason: string;
+  failures: string[];
+}
+
 const ACT_OR_BLOCKER_TERMS = ["external durable act", "exact external blocker"];
 const MANIFESTATION_TERMS = ["branch", "commit", "externally retrievable artifact"];
+const DUPLICATE_MOVE_CLASSES: ContinuationMoveClass[] = [
+  "duplicate_status_readback",
+  "duplicate_comment",
+  "internal_memory_guard",
+  "metadata_reread",
+];
+
+function isExecutablePlatformPath(path: string): boolean {
+  return (
+    path.startsWith("platform/packages/") &&
+    (path.endsWith(".ts") || path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".json"))
+  );
+}
 
 export function evaluateRoute(input: RouteGuardInput): RouteGuardVerdict {
   const failures: string[] = [];
@@ -94,6 +134,71 @@ export function evaluateRoute(input: RouteGuardInput): RouteGuardVerdict {
 
   return {
     ok: failures.length === 0,
+    failures,
+  };
+}
+
+export function evaluateContinuationMove(input: ContinuationMoveInput): ContinuationMoveVerdict {
+  const failures: string[] = [];
+  const headMoved = input.current_head_sha !== input.previous_readback_head_sha;
+  const hasFreshChecks = input.new_check_run_ids.length > 0;
+  const hasExecutableChange = input.changed_files.some(isExecutablePlatformPath);
+
+  if (DUPLICATE_MOVE_CLASSES.includes(input.move_class)) {
+    failures.push(`continuation move is explicitly non-progress: ${input.move_class}`);
+  }
+
+  if (input.move_class === "fresh_status_readback" && !headMoved && !hasFreshChecks) {
+    failures.push("fresh status readback requires a moved PR head or new check runs");
+  }
+
+  if (input.move_class === "external_platform_embodiment") {
+    if (!hasExecutableChange) {
+      failures.push("external embodiment must change executable platform files");
+    }
+    if (input.executable_artifacts.length === 0) {
+      failures.push("external embodiment has no executable artifact");
+    }
+    if (input.routing_artifacts.length === 0) {
+      failures.push("external embodiment has no future-routing artifact");
+    }
+  }
+
+  if (input.move_class === "exact_external_blocker" && !input.blocker?.trim()) {
+    failures.push("exact blocker move must name the blocker");
+  }
+
+  if (failures.length > 0) {
+    return {
+      ok: false,
+      next_allowed_move: "blocked",
+      reason: failures.join("; "),
+      failures,
+    };
+  }
+
+  if (input.move_class === "external_platform_embodiment") {
+    return {
+      ok: true,
+      next_allowed_move: "commit_external_embodiment",
+      reason: "move changes executable platform behavior and leaves a routing artifact",
+      failures,
+    };
+  }
+
+  if (input.move_class === "fresh_status_readback") {
+    return {
+      ok: true,
+      next_allowed_move: "read_fresh_status",
+      reason: headMoved ? "PR head moved since last readback" : "new check runs appeared",
+      failures,
+    };
+  }
+
+  return {
+    ok: true,
+    next_allowed_move: "emit_exact_blocker",
+    reason: input.blocker ?? "exact external blocker supplied",
     failures,
   };
 }
