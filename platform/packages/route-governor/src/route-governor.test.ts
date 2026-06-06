@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  classifyContinuationEvidence,
   evaluateContinuationMove,
   evaluateRoute,
   selectNextContinuationMove,
@@ -132,7 +133,85 @@ test("rejects duplicate repaired-head status readback when the head and check su
   );
 
   assert.equal(verdict.ok, false);
-  assert.ok(verdict.failures.some((failure) => failure.includes("requires a moved PR head or new check runs")));
+  assert.ok(verdict.failures.some((failure) => failure.includes("requires a moved PR head or new current-head check runs")));
+});
+
+test("accepts fresh readback when new checks are bound to the current PR head", () => {
+  const verdict = evaluateContinuationMove(
+    continuationInput({
+      move_class: "fresh_status_readback",
+      current_head_sha: "same-head",
+      previous_readback_head_sha: "same-head",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: ["new-current-check"],
+      new_check_runs: [{ id: "new-current-check", head_sha: "same-head" }],
+    }),
+  );
+
+  assert.deepEqual(verdict, {
+    ok: true,
+    next_allowed_move: "read_fresh_status",
+    reason: "new current-head check runs appeared",
+    failures: [],
+  });
+});
+
+test("rejects fresh readback when check evidence belongs to an older head", () => {
+  const verdict = evaluateContinuationMove(
+    continuationInput({
+      move_class: "fresh_status_readback",
+      current_head_sha: "same-head",
+      previous_readback_head_sha: "same-head",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: ["old-check"],
+      new_check_runs: [{ id: "old-check", head_sha: "old-head" }],
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.ok(verdict.failures.some((failure) => failure.includes("new current-head check runs")));
+});
+
+test("rejects unbound check ids as fresh status evidence", () => {
+  const verdict = evaluateContinuationMove(
+    continuationInput({
+      move_class: "fresh_status_readback",
+      current_head_sha: "same-head",
+      previous_readback_head_sha: "same-head",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: ["unbound-check"],
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.ok(verdict.failures.some((failure) => failure.includes("check ids must be tied to a PR head sha")));
+});
+
+test("classifies only current-head checks as decisive readback evidence", () => {
+  const verdict = classifyContinuationEvidence(
+    continuationInput({
+      move_class: "fresh_status_readback",
+      current_head_sha: "same-head",
+      previous_readback_head_sha: "same-head",
+      changed_files: [],
+      executable_artifacts: [],
+      routing_artifacts: [],
+      new_check_run_ids: ["old-check", "new-current-check"],
+      new_check_runs: [
+        { id: "old-check", head_sha: "old-head" },
+        { id: "new-current-check", head_sha: "same-head" },
+      ],
+    }),
+  );
+
+  assert.equal(verdict.evidence_class, "fresh_status_readback_ready");
+  assert.deepEqual(verdict.decisive_evidence, ["new current-head check run new-current-check"]);
 });
 
 test("rejects metadata rereads and duplicate comments as continuation progress", () => {
