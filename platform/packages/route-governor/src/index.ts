@@ -75,6 +75,30 @@ export interface ContinuationEvidenceClassification {
   blocked_reasons: string[];
 }
 
+export interface ContinuationMoveCandidate {
+  candidate_id: string;
+  input: ContinuationMoveInput;
+}
+
+export interface RejectedContinuationCandidate {
+  candidate_id: string;
+  reasons: string[];
+}
+
+export interface SelectedContinuationCandidate {
+  candidate_id: string;
+  evidence_class: Exclude<ContinuationEvidenceClass, "blocked_duplicate_or_incomplete">;
+  release_instruction: Exclude<ContinuationEvidenceClassification["release_instruction"], "block_release">;
+  decisive_evidence: string[];
+}
+
+export interface ContinuationPreflightVerdict {
+  ok: boolean;
+  selected: SelectedContinuationCandidate | null;
+  rejected: RejectedContinuationCandidate[];
+  failures: string[];
+}
+
 const ACT_OR_BLOCKER_TERMS = ["external durable act", "exact external blocker"];
 const MANIFESTATION_TERMS = ["branch", "commit", "externally retrievable artifact"];
 const DUPLICATE_MOVE_CLASSES: ContinuationMoveClass[] = [
@@ -89,6 +113,19 @@ function isExecutablePlatformPath(path: string): boolean {
     path.startsWith("platform/packages/") &&
     (path.endsWith(".ts") || path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".json"))
   );
+}
+
+function continuationPriority(classification: ContinuationEvidenceClassification): number {
+  switch (classification.evidence_class) {
+    case "external_embodiment_ready":
+      return 3;
+    case "fresh_status_readback_ready":
+      return 2;
+    case "exact_blocker_ready":
+      return 1;
+    case "blocked_duplicate_or_incomplete":
+      return 0;
+  }
 }
 
 export function evaluateRoute(input: RouteGuardInput): RouteGuardVerdict {
@@ -255,6 +292,61 @@ export function classifyContinuationEvidence(input: ContinuationMoveInput): Cont
     release_instruction: "emit_exact_blocker",
     decisive_evidence: [input.blocker ?? verdict.reason],
     blocked_reasons: [],
+  };
+}
+
+export function selectNextContinuationMove(candidates: ContinuationMoveCandidate[]): ContinuationPreflightVerdict {
+  const rejected: RejectedContinuationCandidate[] = [];
+  const selectable: SelectedContinuationCandidate[] = [];
+
+  for (const candidate of candidates) {
+    const classification = classifyContinuationEvidence(candidate.input);
+
+    if (classification.release_instruction === "block_release") {
+      rejected.push({ candidate_id: candidate.candidate_id, reasons: classification.blocked_reasons });
+      continue;
+    }
+
+    selectable.push({
+      candidate_id: candidate.candidate_id,
+      evidence_class: classification.evidence_class,
+      release_instruction: classification.release_instruction,
+      decisive_evidence: classification.decisive_evidence,
+    } as SelectedContinuationCandidate);
+  }
+
+  selectable.sort((left, right) => {
+    const rightPriority = continuationPriority({
+      evidence_class: right.evidence_class,
+      release_instruction: right.release_instruction,
+      decisive_evidence: right.decisive_evidence,
+      blocked_reasons: [],
+    });
+    const leftPriority = continuationPriority({
+      evidence_class: left.evidence_class,
+      release_instruction: left.release_instruction,
+      decisive_evidence: left.decisive_evidence,
+      blocked_reasons: [],
+    });
+    return rightPriority - leftPriority;
+  });
+
+  const selected = selectable[0] ?? null;
+
+  if (!selected) {
+    return {
+      ok: false,
+      selected,
+      rejected,
+      failures: ["no continuation candidate survives the external-act preflight"],
+    };
+  }
+
+  return {
+    ok: true,
+    selected,
+    rejected,
+    failures: [],
   };
 }
 
