@@ -6,6 +6,7 @@ import {
   type RouteGuardInput,
 } from "./index.js";
 import { selectActiveSinkContinuation, type ActiveManifestationSink, type ActiveSinkCandidate } from "./active-sink-contract.js";
+import { compileGithubStatusReadback, type GithubHeadStatusReadback } from "./github-status-readback.js";
 import { compileManifestationRelease } from "./manifestation-release.js";
 import { classifyStatusSurface } from "./status-surface.js";
 
@@ -82,6 +83,50 @@ function activeCandidate(overrides: Partial<ActiveSinkCandidate> = {}): ActiveSi
     executable_artifacts: ["selectActiveSinkContinuation"],
     routing_artifacts: ["active manifestation sink contract"],
     new_check_run_ids: [],
+    ...overrides,
+  };
+}
+
+function githubReadback(overrides: Partial<GithubHeadStatusReadback> = {}): GithubHeadStatusReadback {
+  const head = "34b6e5fae4fa81ca41a500cb2ceb77dfff2634e2";
+  return {
+    repo: "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    pr: 2,
+    branch: "monday-platform-genesis-01",
+    head_sha: head,
+    draft: false,
+    mergeable: true,
+    combined_status: {
+      state: "success",
+      total_count: 1,
+      statuses: [
+        {
+          context: "Monday Platform CI / Route governor proof surface",
+          state: "success",
+          target_url: "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/27070000001",
+        },
+      ],
+    },
+    check_runs: [
+      {
+        id: "27070000002",
+        name: "Route Governor Proof / Route governor proof examples",
+        status: "completed",
+        conclusion: "success",
+        html_url: "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/27070000002",
+      },
+    ],
+    workflow_runs: [
+      {
+        id: "27070000003",
+        name: "PR Head Status Readback / Read PR head status",
+        status: "completed",
+        conclusion: "success",
+        head_sha: head,
+        html_url: "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/27070000003",
+      },
+    ],
+    verdict: "passing_or_neutral",
     ...overrides,
   };
 }
@@ -250,6 +295,28 @@ export function runRouteGovernorProofExamples(): void {
     staleRelease.ok,
     staleRelease.failures,
     "fresh status readback requires a moved PR head",
+  );
+
+  const readbackHead = "34b6e5fae4fa81ca41a500cb2ceb77dfff2634e2";
+  const compiledReadback = compileGithubStatusReadback({
+    expected_head_sha: readbackHead,
+    readback: githubReadback(),
+    notices: ["Node.js 20 Actions deprecation notice for checkout/setup/upload-artifact actions"],
+  });
+  expectOk("github status readback compiler", compiledReadback.ok, compiledReadback.failures);
+  if (compiledReadback.action !== "classify_current_head_status") {
+    throw new Error(`github status readback compiler chose ${compiledReadback.action} instead of classify_current_head_status`);
+  }
+
+  const staleGithubReadback = compileGithubStatusReadback({
+    expected_head_sha: readbackHead,
+    readback: githubReadback({ head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841" }),
+  });
+  expectFailure(
+    "stale github readback artifact",
+    staleGithubReadback.ok,
+    staleGithubReadback.failures,
+    "does not match expected head",
   );
 }
 
