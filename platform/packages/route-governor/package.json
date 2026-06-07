@@ -18,12 +18,16 @@
     "./continuation-handoff": {
       "types": "./dist/continuation-handoff.d.ts",
       "default": "./dist/continuation-handoff.js"
+    },
+    "./post-readback-embodiment-planner": {
+      "types": "./dist/post-readback-embodiment-planner.d.ts",
+      "default": "./dist/post-readback-embodiment-planner.js"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/proof-chain-proof.js",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/proof-chain-proof.js",
     "test": "tsc -p tsconfig.json && node --test dist/*.test.js"
   },
   "dependencies": {},
