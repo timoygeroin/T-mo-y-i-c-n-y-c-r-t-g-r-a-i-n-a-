@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   compileManifestationRelease,
   compilePostEmbodimentHandoff,
+  type ManifestationEmbodimentPlan,
   type ManifestationReleaseInput,
   type PostEmbodimentHandoffInput,
 } from "./manifestation-release.js";
@@ -48,6 +49,27 @@ function releaseInput(overrides: Partial<ManifestationReleaseInput> = {}): Manif
   };
 }
 
+function embodimentPlan(overrides: Partial<ManifestationEmbodimentPlan> = {}): ManifestationEmbodimentPlan {
+  return {
+    candidate_id: "planned-release-coupling",
+    branch: "monday-platform-genesis-01",
+    artifact_class: "manifestation_release_planner_coupling",
+    prohibited_move_classes: ["metadata_reread", "duplicate_status_readback", "duplicate_comment", "internal_memory_guard"],
+    prior_receipts: [
+      {
+        receipt_id: "embodiment-increment-planner",
+        head_sha: "06790fc3f0eb5fd05d614ae711d6567ac352d831",
+        move_class: "external_platform_embodiment",
+        artifact_class: "post_readback_embodiment_planner",
+        changed_files: ["platform/packages/route-governor/src/embodiment-increment.ts"],
+        executable_artifacts: ["evaluateEmbodimentIncrement", "selectEmbodimentIncrement"],
+        routing_artifacts: ["blocks repeated artifact classes before branch release"],
+      },
+    ],
+    ...overrides,
+  };
+}
+
 function handoffInput(overrides: Partial<PostEmbodimentHandoffInput> = {}): PostEmbodimentHandoffInput {
   return {
     current_head_sha: movedHead,
@@ -85,6 +107,46 @@ test("selects executable embodiment over lower-class status readback", () => {
   assert.equal(verdict.action, "commit_external_embodiment");
   assert.equal(verdict.selected_candidate_id, "external-embodiment");
   assert.ok(verdict.decisive_evidence.includes("compileManifestationRelease"));
+});
+
+test("selects an executable embodiment only after the embodiment planner accepts its artifact class", () => {
+  const verdict = compileManifestationRelease(
+    releaseInput({
+      embodiment: {
+        changed_files: ["platform/packages/route-governor/src/manifestation-release.ts"],
+        executable_artifacts: ["compileManifestationRelease"],
+        routing_artifacts: ["manifestation release planner coupling"],
+      },
+      embodiment_plan: embodimentPlan(),
+    }),
+  );
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.action, "commit_external_embodiment");
+  assert.equal(verdict.selected_candidate_id, "planned-release-coupling");
+  assert.ok(verdict.decisive_evidence.includes("manifestation release planner coupling"));
+});
+
+test("blocks a planned executable embodiment that repeats a prior artifact class", () => {
+  const verdict = compileManifestationRelease(
+    releaseInput({
+      status_surface: undefined,
+      embodiment: {
+        changed_files: ["platform/packages/route-governor/src/embodiment-increment.ts"],
+        executable_artifacts: ["evaluateEmbodimentIncrement", "selectEmbodimentIncrement"],
+        routing_artifacts: ["blocks repeated artifact classes before branch release"],
+      },
+      embodiment_plan: embodimentPlan({
+        candidate_id: "repeat-planner",
+        artifact_class: "post_readback_embodiment_planner",
+      }),
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.equal(verdict.action, "hold_release");
+  assert.equal(verdict.selected_candidate_id, null);
+  assert.ok(verdict.failures.some((failure) => failure.includes("repeats artifact class post_readback_embodiment_planner")));
 });
 
 test("holds stale passing status when neither head nor checks moved", () => {
