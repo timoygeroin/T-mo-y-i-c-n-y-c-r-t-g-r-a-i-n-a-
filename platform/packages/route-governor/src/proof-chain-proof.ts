@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -64,6 +64,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     source_path: "platform/packages/route-governor/src/progress-boundary.ts",
     proof_module: "dist/progress-boundary-proof.js",
     route_gain: "non-progress classes are rejected before release while embodiment, fresh readback, and exact blockers remain admissible",
+  },
+  {
+    artifact_id: "head-source-arbitration",
+    source_path: "platform/packages/route-governor/src/head-source-arbitration.ts",
+    proof_module: "dist/head-source-arbitration-proof.js",
+    route_gain: "prompt-carried heads and PR-body readbacks must yield to live PR metadata before status or blocker selection",
   },
   {
     artifact_id: "proof-chain-completeness",
