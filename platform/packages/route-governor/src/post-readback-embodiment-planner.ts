@@ -19,6 +19,7 @@ export interface EmbodimentPlannerCandidate {
   executable_artifacts: string[];
   routing_artifacts: string[];
   proof_command: string;
+  route_signature?: string;
 }
 
 export interface EmbodimentPlannerInput {
@@ -28,6 +29,7 @@ export interface EmbodimentPlannerInput {
   readback_head_sha: string;
   status_verdict: EmbodimentPlannerStatus;
   candidates: EmbodimentPlannerCandidate[];
+  exhausted_route_signatures?: string[];
 }
 
 export interface EmbodimentPlannerRejectedCandidate {
@@ -41,6 +43,7 @@ export interface EmbodimentPlannerSelectedCandidate {
   changed_files: string[];
   decisive_evidence: string[];
   proof_command: string;
+  route_signature: string | null;
 }
 
 export interface EmbodimentPlannerVerdict {
@@ -76,11 +79,25 @@ function isExecutablePlatformPath(path: string): boolean {
   );
 }
 
-function evaluateCandidate(candidate: EmbodimentPlannerCandidate): string[] {
+function normalizedRouteSignature(candidate: EmbodimentPlannerCandidate): string | null {
+  const signature = candidate.route_signature?.trim();
+  return signature ? signature : null;
+}
+
+function evaluateCandidate(candidate: EmbodimentPlannerCandidate, exhaustedRouteSignatures: Set<string>): string[] {
   const failures: string[] = [];
+  const routeSignature = normalizedRouteSignature(candidate);
 
   if (NON_PROGRESS_CLASSES.has(candidate.move_class)) {
     failures.push(`candidate repeats non-progress move class: ${candidate.move_class}`);
+  }
+
+  if (exhaustedRouteSignatures.size > 0 && !routeSignature) {
+    failures.push("candidate has no route signature for anti-repeat comparison");
+  }
+
+  if (routeSignature && exhaustedRouteSignatures.has(routeSignature)) {
+    failures.push(`candidate repeats exhausted route signature: ${routeSignature}`);
   }
 
   if (!candidate.changed_files.some(isExecutablePlatformPath)) {
@@ -133,9 +150,10 @@ export function planPostReadbackEmbodiment(input: EmbodimentPlannerInput): Embod
     };
   }
 
+  const exhaustedRouteSignatures = new Set(input.exhausted_route_signatures ?? []);
   const rejected: EmbodimentPlannerRejectedCandidate[] = [];
   const selectable = input.candidates.filter((candidate) => {
-    const reasons = evaluateCandidate(candidate);
+    const reasons = evaluateCandidate(candidate, exhaustedRouteSignatures);
     if (reasons.length > 0) {
       rejected.push({ candidate_id: candidate.candidate_id, reasons });
       return false;
@@ -158,6 +176,8 @@ export function planPostReadbackEmbodiment(input: EmbodimentPlannerInput): Embod
     };
   }
 
+  const routeSignature = normalizedRouteSignature(selected);
+
   return {
     ok: true,
     branch: input.branch,
@@ -168,10 +188,12 @@ export function planPostReadbackEmbodiment(input: EmbodimentPlannerInput): Embod
       changed_files: selected.changed_files,
       decisive_evidence: [
         `current-head readback ${input.current_head_sha}: ${input.status_verdict}`,
+        ...(routeSignature ? [`route signature ${routeSignature}`] : []),
         ...selected.executable_artifacts,
         ...selected.routing_artifacts,
       ],
       proof_command: selected.proof_command,
+      route_signature: routeSignature,
     },
     rejected,
     blockers: [],
