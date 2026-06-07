@@ -502,3 +502,4 @@ export function assertRoute(input: RouteGuardInput): RouteDecision {
 }
 
 export * from "./post-readback-embodiment-step.js";
+export * from "./merge-readiness.js";
