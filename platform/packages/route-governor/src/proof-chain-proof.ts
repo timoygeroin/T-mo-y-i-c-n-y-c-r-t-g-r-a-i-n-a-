@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -76,6 +76,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     source_path: "platform/packages/route-governor/src/proof-chain-extension.ts",
     proof_module: "dist/proof-chain-extension-proof.js",
     route_gain: "future proof-chain extensions must be wired into source, proof script, and registry before progress is claimed",
+  },
+  {
+    artifact_id: "external-embodiment-receipt",
+    source_path: "platform/packages/route-governor/src/external-embodiment-receipt.ts",
+    proof_module: "dist/external-embodiment-receipt-proof.js",
+    route_gain: "external embodiment progress must prove the PR head moved and reject old-head or pending status surfaces",
   },
   {
     artifact_id: "proof-chain-completeness",
