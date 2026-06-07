@@ -478,3 +478,4 @@ export * from "./proof-chain.js";
 export * from "./head-source-arbitration.js";
 export * from "./proof-chain-extension.js";
 export * from "./external-embodiment-receipt.js";
+export * from "./post-readback-continuation-router.js";
