@@ -74,11 +74,22 @@ export type ContinuationEvidenceClass =
   | "exact_blocker_ready"
   | "blocked_duplicate_or_incomplete";
 
+export type ReadyContinuationEvidenceClass = Exclude<ContinuationEvidenceClass, "blocked_duplicate_or_incomplete">;
+export type ReadyContinuationReleaseInstruction = Exclude<
+  ContinuationEvidenceClassification["release_instruction"],
+  "block_release"
+>;
+
 export interface ContinuationEvidenceClassification {
   evidence_class: ContinuationEvidenceClass;
   release_instruction: "commit_external_embodiment" | "read_fresh_status" | "emit_exact_blocker" | "block_release";
   decisive_evidence: string[];
   blocked_reasons: string[];
+}
+
+export interface ReadyContinuationEvidenceClassification extends ContinuationEvidenceClassification {
+  evidence_class: ReadyContinuationEvidenceClass;
+  release_instruction: ReadyContinuationReleaseInstruction;
 }
 
 export interface ContinuationMoveCandidate {
@@ -93,8 +104,8 @@ export interface RejectedContinuationCandidate {
 
 export interface SelectedContinuationCandidate {
   candidate_id: string;
-  evidence_class: Exclude<ContinuationEvidenceClass, "blocked_duplicate_or_incomplete">;
-  release_instruction: Exclude<ContinuationEvidenceClassification["release_instruction"], "block_release">;
+  evidence_class: ReadyContinuationEvidenceClass;
+  release_instruction: ReadyContinuationReleaseInstruction;
   decisive_evidence: string[];
 }
 
@@ -155,7 +166,16 @@ function currentHeadCheckRuns(input: ContinuationMoveInput): ContinuationCheckRu
   return (input.new_check_runs ?? []).filter((run) => run.head_sha === input.current_head_sha);
 }
 
-function continuationPriority(classification: ContinuationEvidenceClassification): number {
+function isReadyClassification(
+  classification: ContinuationEvidenceClassification,
+): classification is ReadyContinuationEvidenceClassification {
+  return (
+    classification.release_instruction !== "block_release" &&
+    classification.evidence_class !== "blocked_duplicate_or_incomplete"
+  );
+}
+
+function continuationPriority(classification: SelectedContinuationCandidate): number {
   switch (classification.evidence_class) {
     case "external_embodiment_ready":
       return 3;
@@ -163,8 +183,6 @@ function continuationPriority(classification: ContinuationEvidenceClassification
       return 2;
     case "exact_blocker_ready":
       return 1;
-    case "blocked_duplicate_or_incomplete":
-      return 0;
   }
 }
 
@@ -350,7 +368,7 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
   for (const candidate of candidates) {
     const classification = classifyContinuationEvidence(candidate.input);
 
-    if (classification.release_instruction === "block_release") {
+    if (!isReadyClassification(classification)) {
       rejected.push({ candidate_id: candidate.candidate_id, reasons: classification.blocked_reasons });
       continue;
     }
