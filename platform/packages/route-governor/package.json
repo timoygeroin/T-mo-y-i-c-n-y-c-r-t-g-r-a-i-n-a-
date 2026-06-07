@@ -23,7 +23,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/proof-chain-proof.js",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/proof-chain-proof.js",
     "test": "tsc -p tsconfig.json && node --test dist/*.test.js"
   },
   "dependencies": {},
