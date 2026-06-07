@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -52,6 +52,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     source_path: "platform/packages/route-governor/src/current-head-failure-intake.ts",
     proof_module: "dist/current-head-failure-intake-proof.js",
     route_gain: "failing current-head checks must expose an actionable log or assertion before repair is selected",
+  },
+  {
+    artifact_id: "post-readback-cycle-router",
+    source_path: "platform/packages/route-governor/src/post-readback-cycle-router.ts",
+    proof_module: "dist/post-readback-cycle-router-proof.js",
+    route_gain: "post-readback continuation must choose between moved-head status, actionable repair, exact blocker, or non-repeated embodiment",
   },
   {
     artifact_id: "proof-chain-completeness",
