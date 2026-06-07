@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -70,6 +70,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     source_path: "platform/packages/route-governor/src/head-source-arbitration.ts",
     proof_module: "dist/head-source-arbitration-proof.js",
     route_gain: "prompt-carried heads and PR-body readbacks must yield to live PR metadata before status or blocker selection",
+  },
+  {
+    artifact_id: "proof-chain-extension-gate",
+    source_path: "platform/packages/route-governor/src/proof-chain-extension.ts",
+    proof_module: "dist/proof-chain-extension-proof.js",
+    route_gain: "future proof-chain extensions must be wired into source, proof script, and registry before progress is claimed",
   },
   {
     artifact_id: "proof-chain-completeness",
