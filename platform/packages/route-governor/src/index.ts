@@ -470,3 +470,4 @@ export * from "./post-readback-embodiment-step.js";
 export * from "./merge-readiness.js";
 export * from "./post-commit-status-boundary.js";
 export * from "./embodiment-class-router.js";
+export * from "./prompt-head-reconciliation.js";
