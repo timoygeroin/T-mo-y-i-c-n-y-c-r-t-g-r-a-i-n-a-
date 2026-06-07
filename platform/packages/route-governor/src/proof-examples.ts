@@ -195,7 +195,7 @@ export function runRouteGovernorProofExamples(): void {
     "stale repaired-head readback",
     staleReadback.ok,
     staleReadback.failures,
-    "fresh status readback requires a moved PR head or new check runs",
+    "fresh status readback requires a moved PR head or new current-head check runs",
   );
 
   const preflight = selectNextContinuationMove([
