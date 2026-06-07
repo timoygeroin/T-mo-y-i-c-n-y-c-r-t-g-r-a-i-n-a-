@@ -360,33 +360,18 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
       evidence_class: classification.evidence_class,
       release_instruction: classification.release_instruction,
       decisive_evidence: classification.decisive_evidence,
-    } as SelectedContinuationCandidate);
+    });
   }
 
-  selectable.sort((left, right) => {
-    const rightPriority = continuationPriority({
-      evidence_class: right.evidence_class,
-      release_instruction: right.release_instruction,
-      decisive_evidence: right.decisive_evidence,
-      blocked_reasons: [],
-    });
-    const leftPriority = continuationPriority({
-      evidence_class: left.evidence_class,
-      release_instruction: left.release_instruction,
-      decisive_evidence: left.decisive_evidence,
-      blocked_reasons: [],
-    });
-    return rightPriority - leftPriority;
-  });
-
+  selectable.sort((left, right) => continuationPriority(right) - continuationPriority(left));
   const selected = selectable[0] ?? null;
 
   if (!selected) {
     return {
       ok: false,
-      selected,
+      selected: null,
       rejected,
-      failures: ["no continuation candidate survives the external-act preflight"],
+      failures: ["no continuation candidate survived preflight"],
     };
   }
 
@@ -399,9 +384,10 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
 }
 
 export function compileContinuationReleaseReceipt(input: ContinuationReleaseReceiptInput): ContinuationReleaseReceipt {
-  const { branch, current_head_sha: headSha, preflight, status_surface: statusSurface } = input;
+  const branch = input.branch;
+  const headSha = input.current_head_sha;
 
-  if (!preflight.ok || !preflight.selected) {
+  if (!input.preflight.ok || !input.preflight.selected) {
     return {
       ok: false,
       branch,
@@ -409,71 +395,50 @@ export function compileContinuationReleaseReceipt(input: ContinuationReleaseRece
       release_class: "blocked",
       release_instruction: "block_release",
       decisive_evidence: [],
-      blockers: preflight.failures,
-      warnings: [],
-      next_route: "emit one exact external blocker or produce a non-repeated executable embodiment before release",
+      blockers: input.preflight.failures,
+      warnings: input.status_surface?.non_blocking_warnings ?? [],
+      next_route: "supply a valid external embodiment, fresh status readback, or exact external blocker candidate",
     };
   }
 
-  if (preflight.selected.release_instruction === "read_fresh_status") {
-    if (!statusSurface) {
+  if (input.preflight.selected.release_instruction === "read_fresh_status") {
+    if (!input.status_surface) {
       return {
         ok: false,
         branch,
         head_sha: headSha,
         release_class: "blocked",
         release_instruction: "block_release",
-        decisive_evidence: preflight.selected.decisive_evidence,
-        blockers: ["fresh status readback selected without an attached current-head status surface"],
+        decisive_evidence: input.preflight.selected.decisive_evidence,
+        blockers: ["fresh status readback candidate has no status surface attached"],
         warnings: [],
-        next_route: "obtain a current-head status surface before making a pass/fail status claim",
-      };
-    }
-
-    if (!statusSurface.ok) {
-      return {
-        ok: false,
-        branch,
-        head_sha: headSha,
-        release_class: "fresh_status_readback",
-        release_instruction: "read_fresh_status",
-        decisive_evidence: [
-          ...preflight.selected.decisive_evidence,
-          ...statusSurface.blocking_failures,
-          ...statusSurface.pending_surfaces,
-        ],
-        blockers:
-          statusSurface.blocking_failures.length > 0
-            ? statusSurface.blocking_failures
-            : statusSurface.pending_surfaces.length > 0
-              ? statusSurface.pending_surfaces
-              : ["current-head status surface returned no decisive success evidence"],
-        warnings: statusSurface.non_blocking_warnings,
-        next_route: statusSurface.blocking_failures.length > 0 ? "repair the concrete current-head failure" : "wait for current-head checks to complete",
+        next_route: "attach current-head status/check-run evidence before publishing a fresh readback",
       };
     }
 
     return {
-      ok: true,
+      ok: input.status_surface.ok,
       branch,
       head_sha: headSha,
-      release_class: "fresh_status_readback",
-      release_instruction: "read_fresh_status",
-      decisive_evidence: [...preflight.selected.decisive_evidence, ...statusSurface.decisive_successes],
-      blockers: [],
-      warnings: statusSurface.non_blocking_warnings,
-      next_route: "continue with the next non-repeated executable platform embodiment increment",
+      release_class: input.status_surface.ok ? "fresh_status_readback" : "blocked",
+      release_instruction: input.status_surface.ok ? "read_fresh_status" : "block_release",
+      decisive_evidence: input.status_surface.decisive_successes,
+      blockers: [...input.status_surface.blocking_failures, ...input.status_surface.pending_surfaces],
+      warnings: input.status_surface.non_blocking_warnings,
+      next_route: input.status_surface.ok
+        ? "status readback may be published; then choose a non-repeated embodiment class"
+        : "repair or wait on the current-head status surface before release",
     };
   }
 
-  if (preflight.selected.release_instruction === "commit_external_embodiment") {
+  if (input.preflight.selected.release_instruction === "commit_external_embodiment") {
     return {
       ok: true,
       branch,
       head_sha: headSha,
       release_class: "external_embodiment",
       release_instruction: "commit_external_embodiment",
-      decisive_evidence: preflight.selected.decisive_evidence,
+      decisive_evidence: input.preflight.selected.decisive_evidence,
       blockers: [],
       warnings: [],
       next_route: "after the branch moves, read only head-bound checks before making a status claim",
@@ -486,8 +451,8 @@ export function compileContinuationReleaseReceipt(input: ContinuationReleaseRece
     head_sha: headSha,
     release_class: "exact_external_blocker",
     release_instruction: "emit_exact_blocker",
-    decisive_evidence: preflight.selected.decisive_evidence,
-    blockers: preflight.selected.decisive_evidence,
+    decisive_evidence: input.preflight.selected.decisive_evidence,
+    blockers: input.preflight.selected.decisive_evidence,
     warnings: [],
     next_route: "remove the named blocker before attempting another progress class",
   };
@@ -504,3 +469,4 @@ export function assertRoute(input: RouteGuardInput): RouteDecision {
 export * from "./post-readback-embodiment-step.js";
 export * from "./merge-readiness.js";
 export * from "./post-commit-status-boundary.js";
+export * from "./embodiment-class-router.js";
