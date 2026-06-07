@@ -4,6 +4,7 @@ import {
   type ContinuationPreflightVerdict,
   type ContinuationMoveInput,
 } from "./index.js";
+import { selectEmbodimentIncrement, type PriorEmbodimentReceipt } from "./embodiment-increment.js";
 import type { StatusSurfaceClassification } from "./status-surface.js";
 
 export type ManifestationReleaseAction =
@@ -18,12 +19,21 @@ export interface ManifestationEmbodimentEvidence {
   routing_artifacts: string[];
 }
 
+export interface ManifestationEmbodimentPlan {
+  candidate_id: string;
+  branch: string;
+  artifact_class: string;
+  prohibited_move_classes: string[];
+  prior_receipts: PriorEmbodimentReceipt[];
+}
+
 export interface ManifestationReleaseInput {
   current_head_sha: string;
   previous_readback_head_sha: string;
   new_check_run_ids: string[];
   status_surface?: StatusSurfaceClassification;
   embodiment?: ManifestationEmbodimentEvidence;
+  embodiment_plan?: ManifestationEmbodimentPlan;
   blocker?: string;
 }
 
@@ -93,15 +103,66 @@ function releaseAction(preflight: ContinuationPreflightVerdict): ManifestationRe
   }
 }
 
+function plannedEmbodimentCandidate(input: ManifestationReleaseInput): {
+  candidate: ContinuationMoveCandidate | null;
+  failures: string[];
+} {
+  if (!input.embodiment) {
+    return { candidate: null, failures: [] };
+  }
+
+  if (!input.embodiment_plan) {
+    return {
+      candidate: {
+        candidate_id: "external-embodiment",
+        input: continuationInput(input, "external_platform_embodiment", input.embodiment),
+      },
+      failures: [],
+    };
+  }
+
+  const plan = input.embodiment_plan;
+  const planned = selectEmbodimentIncrement(
+    [
+      {
+        candidate_id: plan.candidate_id,
+        branch: plan.branch,
+        current_head_sha: input.current_head_sha,
+        move_class: "external_platform_embodiment",
+        artifact_class: plan.artifact_class,
+        changed_files: input.embodiment.changed_files,
+        executable_artifacts: input.embodiment.executable_artifacts,
+        routing_artifacts: input.embodiment.routing_artifacts,
+        prohibited_move_classes: plan.prohibited_move_classes,
+      },
+    ],
+    plan.prior_receipts,
+  );
+
+  if (!planned.ok || !planned.selected) {
+    return {
+      candidate: null,
+      failures: [
+        ...planned.failures,
+        ...planned.rejected.flatMap((verdict) => verdict.failures.map((failure) => `${verdict.candidate_id}: ${failure}`)),
+      ],
+    };
+  }
+
+  return {
+    candidate: {
+      candidate_id: planned.selected.candidate_id,
+      input: continuationInput(input, "external_platform_embodiment", input.embodiment),
+    },
+    failures: [],
+  };
+}
+
 export function compileManifestationRelease(input: ManifestationReleaseInput): ManifestationReleaseVerdict {
   const candidates: ContinuationMoveCandidate[] = [];
+  const planner = plannedEmbodimentCandidate(input);
 
-  if (input.embodiment) {
-    candidates.push({
-      candidate_id: "external-embodiment",
-      input: continuationInput(input, "external_platform_embodiment", input.embodiment),
-    });
-  }
+  if (planner.candidate) candidates.push(planner.candidate);
 
   const status = statusCandidate(input);
   if (status) candidates.push(status);
@@ -123,7 +184,7 @@ export function compileManifestationRelease(input: ManifestationReleaseInput): M
     action: releaseAction(preflight),
     selected_candidate_id: preflight.selected?.candidate_id ?? null,
     decisive_evidence: preflight.selected?.decisive_evidence ?? [],
-    failures: [...preflight.failures, ...rejectedFailures],
+    failures: [...planner.failures, ...preflight.failures, ...rejectedFailures],
     preflight,
   };
 }
