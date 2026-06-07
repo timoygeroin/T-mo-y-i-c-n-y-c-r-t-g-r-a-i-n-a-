@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/readback-access-boundary-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -84,10 +84,28 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "external embodiment progress must prove the PR head moved and reject old-head or pending status surfaces",
   },
   {
+    artifact_id: "post-readback-continuation-router",
+    source_path: "platform/packages/route-governor/src/post-readback-continuation-router.ts",
+    proof_module: "dist/post-readback-continuation-router-proof.js",
+    route_gain: "after a successful current-head readback, continuation must reject non-progress classes and select embodiment or exact live blocker",
+  },
+  {
+    artifact_id: "post-readback-embodiment-planner",
+    source_path: "platform/packages/route-governor/src/post-readback-embodiment-planner.ts",
+    proof_module: "dist/post-readback-embodiment-planner-proof.js",
+    route_gain: "post-readback embodiment candidates must include executable platform changes, routing artifacts, and proof commands",
+  },
+  {
     artifact_id: "scheduled-finalization-router",
     source_path: "platform/packages/route-governor/src/scheduled-finalization-router.ts",
     proof_module: "dist/scheduled-finalization-router-proof.js",
     route_gain: "scheduled runs with stale prompt heads must reject old blockers and choose live-head status, exact live blocker, or executable embodiment",
+  },
+  {
+    artifact_id: "readback-access-boundary",
+    source_path: "platform/packages/route-governor/src/readback-access-boundary.ts",
+    proof_module: "dist/readback-access-boundary-proof.js",
+    route_gain: "status claims must be backed by Checks, Actions, or workflow-published readback evidence instead of PR metadata or commit diffs",
   },
   {
     artifact_id: "proof-chain-completeness",
@@ -124,6 +142,17 @@ export function runProofChainProof(): void {
   );
   assert(!missing.ok, "missing proof-chain proof module must block readiness");
   assert(missing.action === "repair_proof_chain", `expected repair_proof_chain, got ${missing.action}`);
+
+  const unregistered = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "readback-access-boundary"),
+    }),
+  );
+  assert(!unregistered.ok, "unregistered readback access proof must block proof-chain readiness");
+  assert(
+    unregistered.blockers.some((blocker) => blocker.includes("readback-access-boundary-proof")),
+    "unregistered proof blocker should name readback-access-boundary-proof",
+  );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
   assert(!spent.ok, "spent proof-chain proof must not count as new progress");
