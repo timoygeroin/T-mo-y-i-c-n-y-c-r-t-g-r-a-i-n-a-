@@ -476,3 +476,4 @@ export * from "./post-readback-cycle-router.js";
 export * from "./progress-boundary.js";
 export * from "./proof-chain.js";
 export * from "./head-source-arbitration.js";
+export * from "./proof-chain-extension.js";
