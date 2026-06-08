@@ -50,6 +50,10 @@
     "./post-embodiment-head-cursor": {
       "types": "./dist/post-embodiment-head-cursor.d.ts",
       "default": "./dist/post-embodiment-head-cursor.js"
+    },
+    "./status-to-embodiment-handoff": {
+      "types": "./dist/status-to-embodiment-handoff.d.ts",
+      "default": "./dist/status-to-embodiment-handoff.js"
     }
   },
   "scripts": {
