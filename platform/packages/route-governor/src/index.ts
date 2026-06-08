@@ -503,3 +503,4 @@ export * from "./public-route-exports.js";
 export * from "./loading20-continuation-gate.js";
 export * from "./live-head-advance-policy.js";
 export * from "./external-write-surface.js";
+export * from "./proof-failure-repair-plan.js";
