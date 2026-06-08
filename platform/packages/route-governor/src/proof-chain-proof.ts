@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/readback-access-boundary-proof.js && node dist/public-route-exports-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/readback-access-boundary-proof.js && node dist/public-route-exports-proof.js && node dist/external-write-surface-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -114,6 +114,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "public route surfaces must be wired through package exports, index exports, and proof before progress is claimed",
   },
   {
+    artifact_id: "external-write-surface",
+    source_path: "platform/packages/route-governor/src/external-write-surface.ts",
+    proof_module: "dist/external-write-surface-proof.js",
+    route_gain: "when local checkout or gh CLI are absent, available GitHub contents writes must route to executable embodiment instead of false no-surface blockers",
+  },
+  {
     artifact_id: "proof-chain-completeness",
     source_path: "platform/packages/route-governor/src/proof-chain.ts",
     proof_module: "dist/proof-chain-proof.js",
@@ -169,6 +175,17 @@ export function runProofChainProof(): void {
   assert(
     unregisteredPublicExport.blockers.some((blocker) => blocker.includes("public-route-exports-proof")),
     "unregistered public route export blocker should name public-route-exports-proof",
+  );
+
+  const unregisteredExternalWriteSurface = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "external-write-surface"),
+    }),
+  );
+  assert(!unregisteredExternalWriteSurface.ok, "unregistered external write surface proof must block proof-chain readiness");
+  assert(
+    unregisteredExternalWriteSurface.blockers.some((blocker) => blocker.includes("external-write-surface-proof")),
+    "unregistered external write surface blocker should name external-write-surface-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
