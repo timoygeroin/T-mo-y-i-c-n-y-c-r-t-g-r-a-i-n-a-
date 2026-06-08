@@ -505,3 +505,4 @@ export * from "./live-head-advance-policy.js";
 export * from "./external-write-surface.js";
 export * from "./proof-failure-repair-plan.js";
 export * from "./finalization-progress-contract.js";
+export * from "./finalization-runner.js";
