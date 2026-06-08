@@ -1,8 +1,23 @@
+import { readFileSync } from "node:fs";
+
 import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from "./proof-chain.js";
 
 const branch = "monday-platform-genesis-01";
-const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/readback-access-boundary-proof.js && node dist/public-route-exports-proof.js && node dist/loading20-continuation-gate-proof.js && node dist/live-head-advance-policy-proof.js && node dist/external-write-surface-proof.js && node dist/proof-failure-repair-plan-proof.js && node dist/finalization-progress-contract-proof.js && node dist/proof-chain-proof.js";
+
+interface PackageJson {
+  scripts?: Record<string, string>;
+}
+
+function readProofCommand(): string {
+  const packageJson = JSON.parse(readFileSync("package.json", "utf8")) as PackageJson;
+  const command = packageJson.scripts?.["proof:examples"];
+
+  if (!command) {
+    throw new Error("package.json has no proof:examples script");
+  }
+
+  return command;
+}
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -144,10 +159,64 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "Loading 20 finalization progress must reject repaired-head blocker replay and distinguish live-head readback from executable embodiment",
   },
   {
+    artifact_id: "finalization-runner",
+    source_path: "platform/packages/route-governor/src/finalization-runner.ts",
+    proof_module: "dist/finalization-runner-proof.js",
+    route_gain: "scheduled finalization must collapse to one executable act, live-head readback, or exact blocker without leaking commentary",
+  },
+  {
+    artifact_id: "finalization-delivery-gate",
+    source_path: "platform/packages/route-governor/src/finalization-delivery-gate.ts",
+    proof_module: "dist/finalization-delivery-gate-proof.js",
+    route_gain: "delivery claims must be backed by changed executable behavior, status evidence, or an exact external blocker",
+  },
+  {
+    artifact_id: "finalization-live-head-handoff",
+    source_path: "platform/packages/route-governor/src/finalization-live-head-handoff.ts",
+    proof_module: "dist/finalization-live-head-handoff-proof.js",
+    route_gain: "finalization handoff must bind any prompt-carried head to the live PR head before release routing",
+  },
+  {
+    artifact_id: "post-embodiment-head-cursor",
+    source_path: "platform/packages/route-governor/src/post-embodiment-head-cursor.ts",
+    proof_module: "dist/post-embodiment-head-cursor-proof.js",
+    route_gain: "after each embodiment commit, the next cursor must target the new PR head instead of the previous repaired head",
+  },
+  {
+    artifact_id: "post-embodiment-status-router",
+    source_path: "platform/packages/route-governor/src/post-embodiment-status-router.ts",
+    proof_module: "dist/post-embodiment-status-router-proof.js",
+    route_gain: "post-embodiment routing must choose current-head status readback, actionable repair, or exact blocker before release claims",
+  },
+  {
+    artifact_id: "status-to-embodiment-handoff",
+    source_path: "platform/packages/route-governor/src/status-to-embodiment-handoff.ts",
+    proof_module: "dist/status-to-embodiment-handoff-proof.js",
+    route_gain: "passing current-head status must hand off to a new embodiment class instead of duplicate CI summaries",
+  },
+  {
+    artifact_id: "embodiment-progression-contract",
+    source_path: "platform/packages/route-governor/src/embodiment-progression-contract.ts",
+    proof_module: "dist/embodiment-progression-contract-proof.js",
+    route_gain: "embodiment progression must advance artifact class and proof evidence before counting as platform movement",
+  },
+  {
+    artifact_id: "live-head-readback-cursor",
+    source_path: "platform/packages/route-governor/src/live-head-readback-cursor.ts",
+    proof_module: "dist/live-head-readback-cursor-proof.js",
+    route_gain: "fresh readback cursors must bind to the live PR head and reject old repaired-head status reuse",
+  },
+  {
+    artifact_id: "status-readback-transport",
+    source_path: "platform/packages/route-governor/src/status-readback-transport.ts",
+    proof_module: "dist/status-readback-transport-proof.js",
+    route_gain: "status readback transport must reject PR metadata and commit diffs as non-status surfaces before status claims",
+  },
+  {
     artifact_id: "proof-chain-completeness",
     source_path: "platform/packages/route-governor/src/proof-chain.ts",
     proof_module: "dist/proof-chain-proof.js",
-    route_gain: "future proof claims must prove proof-script completeness before status is treated as complete",
+    route_gain: "future proof claims must prove the package proof script and proof registry are synchronized before status is treated as complete",
   },
 ];
 
@@ -155,7 +224,7 @@ function input(overrides: Partial<ProofChainInput> = {}): ProofChainInput {
   return {
     branch,
     active_branch: branch,
-    proof_script_command: proofCommand,
+    proof_script_command: readProofCommand(),
     required_artifacts: requiredArtifacts,
     spent_proof_modules: [],
     ...overrides,
@@ -173,87 +242,21 @@ export function runProofChainProof(): void {
 
   const missing = compileProofChain(
     input({
-      proof_script_command: proofCommand.replace(" && node dist/proof-chain-proof.js", ""),
+      proof_script_command: readProofCommand().replace(" && node dist/proof-chain-proof.js", ""),
     }),
   );
   assert(!missing.ok, "missing proof-chain proof module must block readiness");
   assert(missing.action === "repair_proof_chain", `expected repair_proof_chain, got ${missing.action}`);
 
-  const unregistered = compileProofChain(
+  const unregisteredTransport = compileProofChain(
     input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "readback-access-boundary"),
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "status-readback-transport"),
     }),
   );
-  assert(!unregistered.ok, "unregistered readback access proof must block proof-chain readiness");
+  assert(!unregisteredTransport.ok, "unregistered status-readback transport proof must block proof-chain readiness");
   assert(
-    unregistered.blockers.some((blocker) => blocker.includes("readback-access-boundary-proof")),
-    "unregistered proof blocker should name readback-access-boundary-proof",
-  );
-
-  const unregisteredPublicExport = compileProofChain(
-    input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "public-route-exports"),
-    }),
-  );
-  assert(!unregisteredPublicExport.ok, "unregistered public route export proof must block proof-chain readiness");
-  assert(
-    unregisteredPublicExport.blockers.some((blocker) => blocker.includes("public-route-exports-proof")),
-    "unregistered public route export blocker should name public-route-exports-proof",
-  );
-
-  const unregisteredLoading20Gate = compileProofChain(
-    input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "loading20-continuation-gate"),
-    }),
-  );
-  assert(!unregisteredLoading20Gate.ok, "unregistered Loading 20 proof must block proof-chain readiness");
-  assert(
-    unregisteredLoading20Gate.blockers.some((blocker) => blocker.includes("loading20-continuation-gate-proof")),
-    "unregistered Loading 20 blocker should name loading20-continuation-gate-proof",
-  );
-
-  const unregisteredLiveHeadPolicy = compileProofChain(
-    input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "live-head-advance-policy"),
-    }),
-  );
-  assert(!unregisteredLiveHeadPolicy.ok, "unregistered live-head advance proof must block proof-chain readiness");
-  assert(
-    unregisteredLiveHeadPolicy.blockers.some((blocker) => blocker.includes("live-head-advance-policy-proof")),
-    "unregistered live-head blocker should name live-head-advance-policy-proof",
-  );
-
-  const unregisteredExternalWriteSurface = compileProofChain(
-    input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "external-write-surface"),
-    }),
-  );
-  assert(!unregisteredExternalWriteSurface.ok, "unregistered external write surface proof must block proof-chain readiness");
-  assert(
-    unregisteredExternalWriteSurface.blockers.some((blocker) => blocker.includes("external-write-surface-proof")),
-    "unregistered external write surface blocker should name external-write-surface-proof",
-  );
-
-  const unregisteredProofFailureRepair = compileProofChain(
-    input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "proof-failure-repair-plan"),
-    }),
-  );
-  assert(!unregisteredProofFailureRepair.ok, "unregistered proof-failure repair proof must block proof-chain readiness");
-  assert(
-    unregisteredProofFailureRepair.blockers.some((blocker) => blocker.includes("proof-failure-repair-plan-proof")),
-    "unregistered proof-failure repair blocker should name proof-failure-repair-plan-proof",
-  );
-
-  const unregisteredFinalizationProgress = compileProofChain(
-    input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "finalization-progress-contract"),
-    }),
-  );
-  assert(!unregisteredFinalizationProgress.ok, "unregistered finalization progress proof must block proof-chain readiness");
-  assert(
-    unregisteredFinalizationProgress.blockers.some((blocker) => blocker.includes("finalization-progress-contract-proof")),
-    "unregistered finalization progress blocker should name finalization-progress-contract-proof",
+    unregisteredTransport.blockers.some((blocker) => blocker.includes("status-readback-transport-proof")),
+    "unregistered transport blocker should name status-readback-transport-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
