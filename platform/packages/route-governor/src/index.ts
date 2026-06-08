@@ -506,3 +506,4 @@ export * from "./external-write-surface.js";
 export * from "./proof-failure-repair-plan.js";
 export * from "./finalization-progress-contract.js";
 export * from "./finalization-runner.js";
+export * from "./finalization-live-head-handoff.js";
