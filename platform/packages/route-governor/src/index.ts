@@ -490,7 +490,14 @@ export * from "./post-commit-status-boundary.js";
 export * from "./embodiment-class-router.js";
 export * from "./prompt-head-reconciliation.js";
 export * from "./current-head-failure-intake.js";
-export * from "./post-readback-cycle-router.js";
+export {
+  routePostReadbackCycle,
+  type FailureIntakeAction,
+  type PostReadbackCycleAction,
+  type PostReadbackEmbodimentCandidate,
+  type PostReadbackCycleInput,
+  type PostReadbackCycleVerdict,
+} from "./post-readback-cycle-router.js";
 export * from "./progress-boundary.js";
 export * from "./proof-chain.js";
 export * from "./head-source-arbitration.js";
