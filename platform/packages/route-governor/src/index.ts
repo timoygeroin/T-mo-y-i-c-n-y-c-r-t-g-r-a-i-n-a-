@@ -516,3 +516,4 @@ export * from "./finalization-runner.js";
 export * from "./finalization-live-head-handoff.js";
 export * from "./post-embodiment-head-cursor.js";
 export * from "./post-embodiment-status-router.js";
+export * from "./live-head-readback-cursor.js";
