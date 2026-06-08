@@ -507,3 +507,5 @@ export * from "./proof-failure-repair-plan.js";
 export * from "./finalization-progress-contract.js";
 export * from "./finalization-runner.js";
 export * from "./finalization-live-head-handoff.js";
+export * from "./post-embodiment-head-cursor.js";
+export * from "./post-embodiment-status-router.js";
