@@ -6,7 +6,7 @@ export type HeadSourceArbitrationAction =
   | "block_stale_source"
   | "block_release";
 
-export type HeadSourceKind = "prompt" | "pr_body_readback" | "live_pr_metadata" | "actions_readback";
+export type HeadSourceKind = "prompt" | "pr_body_readback" | "live_pr_metadata" | "actions_readback" | "public_checks_page";
 
 export type HeadStatusVerdict = "passing" | "passing_with_warnings" | "pending" | "failing" | "no_status_surface";
 
@@ -51,12 +51,13 @@ function liveSource(input: HeadSourceArbitrationInput): HeadSourceEvidence | und
   return input.sources.find((source) => source.kind === "live_pr_metadata" && source.head_sha === input.live_head_sha);
 }
 
+function isStatusSource(source: HeadSourceEvidence): boolean {
+  return source.kind === "actions_readback" || source.kind === "pr_body_readback" || source.kind === "public_checks_page";
+}
+
 function liveStatusSource(input: HeadSourceArbitrationInput): HeadSourceEvidence | undefined {
   return input.sources.find(
-    (source) =>
-      (source.kind === "actions_readback" || source.kind === "pr_body_readback") &&
-      source.head_sha === input.live_head_sha &&
-      Boolean(source.status_verdict),
+    (source) => isStatusSource(source) && source.head_sha === input.live_head_sha && Boolean(source.status_verdict),
   );
 }
 
@@ -113,7 +114,7 @@ export function arbitrateHeadSources(input: HeadSourceArbitrationInput): HeadSou
       decisive_evidence: [],
       blockers: [`no live PR metadata source is attached for ${input.live_head_sha}`],
       warnings: [],
-      next_route: "attach live PR metadata before reconciling prompt or PR-body head claims",
+      next_route: "attach live PR metadata before reconciling prompt, PR-body, or public-checks head claims",
     };
   }
 
@@ -145,7 +146,7 @@ export function arbitrateHeadSources(input: HeadSourceArbitrationInput): HeadSou
       ],
       blockers: [],
       warnings: [],
-      next_route: "read status for the live PR head before using prompt-carried or PR-body status claims",
+      next_route: "read status for the live PR head before using prompt-carried, PR-body, or public-checks status claims",
     };
   }
 
@@ -172,7 +173,7 @@ export function arbitrateHeadSources(input: HeadSourceArbitrationInput): HeadSou
       decisive_evidence: status.evidence,
       blockers: [],
       warnings,
-      next_route: "continue from the live PR head; stale prompt or PR-body heads may not override this status",
+      next_route: "continue from the live PR head; stale prompt, PR-body, or public-checks heads may not override this status",
     };
   }
 
