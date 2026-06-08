@@ -17,6 +17,9 @@ on:
       - ".github/workflows/route-governor-proof.yml"
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   proof:
     name: Route governor proof examples
