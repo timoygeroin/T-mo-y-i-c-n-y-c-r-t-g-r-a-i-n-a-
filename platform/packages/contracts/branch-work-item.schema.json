@@ -15,9 +15,25 @@
     "branch_id": {"type": "string", "minLength": 1},
     "job": {"type": "string", "minLength": 1},
     "evidence_scope": {
-      "type": "array",
-      "minItems": 1,
-      "items": {"type": "string", "minLength": 1}
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_refs", "source_tiers"],
+      "properties": {
+        "source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "source_tiers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["raw", "direct_archive", "archive_derived", "summary_derived", "inferred"]
+          }
+        },
+        "shard_axis": {"type": "string", "minLength": 1}
+      }
     },
     "processor_assignment": {
       "type": "array",
