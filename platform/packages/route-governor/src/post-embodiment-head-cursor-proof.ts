@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 
 import { compilePostEmbodimentHeadCursor, type PostEmbodimentHeadCursorInput } from "./post-embodiment-head-cursor.js";
 
-const previousHead = "3165a46cb99eea6d2d43a291820c9109e42f7f04";
-const newHead = "7af671236be73efd983cb50050e0aa828e9996bf";
+const previousHead = "previous-pr-head-sha";
+const newHead = "new-pr-head-sha";
 
 function base(overrides: Partial<PostEmbodimentHeadCursorInput> = {}): PostEmbodimentHeadCursorInput {
   return {
