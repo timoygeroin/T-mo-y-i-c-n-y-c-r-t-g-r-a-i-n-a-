@@ -2,7 +2,7 @@ import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from
 
 const branch = "monday-platform-genesis-01";
 const proofCommand =
-  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/readback-access-boundary-proof.js && node dist/public-route-exports-proof.js && node dist/loading20-continuation-gate-proof.js && node dist/live-head-advance-policy-proof.js && node dist/external-write-surface-proof.js && node dist/proof-failure-repair-plan-proof.js && node dist/proof-chain-proof.js";
+  "tsc -p tsconfig.json && node dist/proof-examples.js && node dist/head-transition-proof.js && node dist/embodiment-increment-proof.js && node dist/continuation-handoff-proof.js && node dist/merge-readiness-proof.js && node dist/post-commit-status-boundary-proof.js && node dist/embodiment-class-router-proof.js && node dist/prompt-head-reconciliation-proof.js && node dist/current-head-failure-intake-proof.js && node dist/post-readback-cycle-router-proof.js && node dist/progress-boundary-proof.js && node dist/head-source-arbitration-proof.js && node dist/proof-chain-extension-proof.js && node dist/external-embodiment-receipt-proof.js && node dist/post-readback-continuation-router-proof.js && node dist/post-readback-embodiment-planner-proof.js && node dist/scheduled-finalization-router-proof.js && node dist/readback-access-boundary-proof.js && node dist/public-route-exports-proof.js && node dist/loading20-continuation-gate-proof.js && node dist/live-head-advance-policy-proof.js && node dist/external-write-surface-proof.js && node dist/proof-failure-repair-plan-proof.js && node dist/finalization-progress-contract-proof.js && node dist/proof-chain-proof.js";
 
 const requiredArtifacts: ProofChainArtifact[] = [
   {
@@ -138,6 +138,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "proof-example repairs must bind to a live-head actionable failure line before code edits can count as progress",
   },
   {
+    artifact_id: "finalization-progress-contract",
+    source_path: "platform/packages/route-governor/src/finalization-progress-contract.ts",
+    proof_module: "dist/finalization-progress-contract-proof.js",
+    route_gain: "Loading 20 finalization progress must reject repaired-head blocker replay and distinguish live-head readback from executable embodiment",
+  },
+  {
     artifact_id: "proof-chain-completeness",
     source_path: "platform/packages/route-governor/src/proof-chain.ts",
     proof_module: "dist/proof-chain-proof.js",
@@ -237,6 +243,17 @@ export function runProofChainProof(): void {
   assert(
     unregisteredProofFailureRepair.blockers.some((blocker) => blocker.includes("proof-failure-repair-plan-proof")),
     "unregistered proof-failure repair blocker should name proof-failure-repair-plan-proof",
+  );
+
+  const unregisteredFinalizationProgress = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "finalization-progress-contract"),
+    }),
+  );
+  assert(!unregisteredFinalizationProgress.ok, "unregistered finalization progress proof must block proof-chain readiness");
+  assert(
+    unregisteredFinalizationProgress.blockers.some((blocker) => blocker.includes("finalization-progress-contract-proof")),
+    "unregistered finalization progress blocker should name finalization-progress-contract-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
