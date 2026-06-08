@@ -38,6 +38,10 @@
     "./external-write-surface": {
       "types": "./dist/external-write-surface.d.ts",
       "default": "./dist/external-write-surface.js"
+    },
+    "./finalization-runner": {
+      "types": "./dist/finalization-runner.d.ts",
+      "default": "./dist/finalization-runner.js"
     }
   },
   "scripts": {
