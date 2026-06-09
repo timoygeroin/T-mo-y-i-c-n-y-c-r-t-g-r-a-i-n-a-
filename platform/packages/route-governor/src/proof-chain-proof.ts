@@ -64,6 +64,7 @@ const registeredProofModules = [
   "scheduled-live-head-admission",
   "runtime-execution-queue",
   "failure-detail-escalation",
+  "github-contents-executor",
   "proof-chain",
 ];
 
@@ -110,15 +111,15 @@ export function runProofChainProof(): void {
   assert(!missing.ok, "missing proof-chain proof module must block readiness");
   assert(missing.action === "repair_proof_chain", `expected repair_proof_chain, got ${missing.action}`);
 
-  const unregisteredFailureEscalation = compileProofChain(
+  const unregisteredExecutor = compileProofChain(
     input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "failure-detail-escalation"),
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "github-contents-executor"),
     }),
   );
-  assert(!unregisteredFailureEscalation.ok, "unregistered failure-detail-escalation proof must block readiness");
+  assert(!unregisteredExecutor.ok, "unregistered github contents executor proof must block readiness");
   assert(
-    unregisteredFailureEscalation.blockers.some((blocker) => blocker.includes("failure-detail-escalation-proof")),
-    "unregistered failure-detail escalation blocker should name failure-detail-escalation-proof",
+    unregisteredExecutor.blockers.some((blocker) => blocker.includes("github-contents-executor-proof")),
+    "unregistered executor blocker should name github-contents-executor-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
