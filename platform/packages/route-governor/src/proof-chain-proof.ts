@@ -243,6 +243,24 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "external embodiment completion receipts must bind repository, branch, head movement, executable evidence, and any status claim before release",
   },
   {
+    artifact_id: "source-ranked-finalization-admission",
+    source_path: "platform/packages/route-governor/src/source-ranked-finalization-admission.ts",
+    proof_module: "dist/source-ranked-finalization-admission-proof.js",
+    route_gain: "finalization admission must reject summary-only authority when a raw corpus gate is required and preserve exact blockers",
+  },
+  {
+    artifact_id: "current-head-repair-admission",
+    source_path: "platform/packages/route-governor/src/current-head-repair-admission.ts",
+    proof_module: "dist/current-head-repair-admission-proof.js",
+    route_gain: "current-head repairs must require actionable failure logs and reject repaired-head success replay",
+  },
+  {
+    artifact_id: "embodiment-runtime-budget",
+    source_path: "platform/packages/route-governor/src/embodiment-runtime-budget.ts",
+    proof_module: "dist/embodiment-runtime-budget-proof.js",
+    route_gain: "guard-only embodiment saturation now forces runtime, executor, or adapter behavior before another routing guard can count as progress",
+  },
+  {
     artifact_id: "proof-chain-completeness",
     source_path: "platform/packages/route-governor/src/proof-chain.ts",
     proof_module: "dist/proof-chain-proof.js",
@@ -278,15 +296,15 @@ export function runProofChainProof(): void {
   assert(!missing.ok, "missing proof-chain proof module must block readiness");
   assert(missing.action === "repair_proof_chain", `expected repair_proof_chain, got ${missing.action}`);
 
-  const unregisteredTransport = compileProofChain(
+  const unregisteredRuntimeBudget = compileProofChain(
     input({
-      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "status-readback-transport"),
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "embodiment-runtime-budget"),
     }),
   );
-  assert(!unregisteredTransport.ok, "unregistered status-readback transport proof must block proof-chain readiness");
+  assert(!unregisteredRuntimeBudget.ok, "unregistered embodiment-runtime-budget proof must block proof-chain readiness");
   assert(
-    unregisteredTransport.blockers.some((blocker) => blocker.includes("status-readback-transport-proof")),
-    "unregistered transport blocker should name status-readback-transport-proof",
+    unregisteredRuntimeBudget.blockers.some((blocker) => blocker.includes("embodiment-runtime-budget-proof")),
+    "unregistered runtime budget blocker should name embodiment-runtime-budget-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
