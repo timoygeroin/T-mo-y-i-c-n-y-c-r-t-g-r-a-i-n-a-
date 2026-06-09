@@ -524,3 +524,4 @@ export * from "./finalization-next-step-admission.js";
 export * from "./live-head-readback-cursor.js";
 export * from "./status-readback-transport.js";
 export * from "./manifestation-source-arbitration.js";
+export * from "./capability-frontier-admission.js";
