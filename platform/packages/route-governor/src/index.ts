@@ -525,3 +525,5 @@ export * from "./live-head-readback-cursor.js";
 export * from "./status-readback-transport.js";
 export * from "./manifestation-source-arbitration.js";
 export * from "./capability-frontier-admission.js";
+export * from "./embodiment-completion-receipt.js";
+export * from "./source-ranked-finalization-admission.js";
