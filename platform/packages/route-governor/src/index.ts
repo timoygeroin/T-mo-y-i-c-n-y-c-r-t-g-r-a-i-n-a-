@@ -527,3 +527,4 @@ export * from "./manifestation-source-arbitration.js";
 export * from "./capability-frontier-admission.js";
 export * from "./embodiment-completion-receipt.js";
 export * from "./source-ranked-finalization-admission.js";
+export * from "./current-head-repair-admission.js";
