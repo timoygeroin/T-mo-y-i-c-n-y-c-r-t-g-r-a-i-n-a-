@@ -129,6 +129,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "public route surfaces must be wired through package exports, index exports, and proof before progress is claimed",
   },
   {
+    artifact_id: "public-route-completeness",
+    source_path: "platform/packages/route-governor/src/public-route-completeness.ts",
+    proof_module: "dist/public-route-completeness-proof.js",
+    route_gain: "package-public route surfaces must be synchronized across package exports, root index exports, and proof visibility",
+  },
+  {
     artifact_id: "loading20-continuation-gate",
     source_path: "platform/packages/route-governor/src/loading20-continuation-gate.ts",
     proof_module: "dist/loading20-continuation-gate-proof.js",
@@ -201,6 +207,12 @@ const requiredArtifacts: ProofChainArtifact[] = [
     route_gain: "embodiment progression must advance artifact class and proof evidence before counting as platform movement",
   },
   {
+    artifact_id: "finalization-next-step-admission",
+    source_path: "platform/packages/route-governor/src/finalization-next-step-admission.ts",
+    proof_module: "dist/finalization-next-step-admission-proof.js",
+    route_gain: "finalization next steps must admit only executable embodiment, moved-head or new-check readback, or exact external blockers",
+  },
+  {
     artifact_id: "live-head-readback-cursor",
     source_path: "platform/packages/route-governor/src/live-head-readback-cursor.ts",
     proof_module: "dist/live-head-readback-cursor-proof.js",
@@ -211,6 +223,24 @@ const requiredArtifacts: ProofChainArtifact[] = [
     source_path: "platform/packages/route-governor/src/status-readback-transport.ts",
     proof_module: "dist/status-readback-transport-proof.js",
     route_gain: "status readback transport must reject PR metadata and commit diffs as non-status surfaces before status claims",
+  },
+  {
+    artifact_id: "manifestation-source-arbitration",
+    source_path: "platform/packages/route-governor/src/manifestation-source-arbitration.ts",
+    proof_module: "dist/manifestation-source-arbitration-proof.js",
+    route_gain: "manifestation source arbitration must let live PR metadata and live-head status outrank stale prompt-carried repaired heads",
+  },
+  {
+    artifact_id: "capability-frontier-admission",
+    source_path: "platform/packages/route-governor/src/capability-frontier-admission.ts",
+    proof_module: "dist/capability-frontier-admission-proof.js",
+    route_gain: "future embodiment must advance a distinct platform capability instead of repeating the same proof family",
+  },
+  {
+    artifact_id: "embodiment-completion-receipt",
+    source_path: "platform/packages/route-governor/src/embodiment-completion-receipt.ts",
+    proof_module: "dist/embodiment-completion-receipt-proof.js",
+    route_gain: "external embodiment completion receipts must bind repository, branch, head movement, executable evidence, and any status claim before release",
   },
   {
     artifact_id: "proof-chain-completeness",
