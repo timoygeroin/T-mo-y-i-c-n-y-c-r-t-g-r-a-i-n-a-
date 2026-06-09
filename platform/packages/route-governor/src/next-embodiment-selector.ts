@@ -5,9 +5,7 @@ export type EmbodimentCapabilityAxis =
   | "external_write"
   | "status_readback";
 
-export type NextEmbodimentDecision =
-  | "select_next_embodiment"
-  | "block_no_selectable_embodiment";
+export type NextEmbodimentDecision = "select_next_embodiment" | "block_no_selectable_embodiment";
 
 export interface NextEmbodimentCandidate {
   candidate_id: string;
@@ -21,6 +19,7 @@ export interface NextEmbodimentCandidate {
   routing_artifacts: string[];
   proof_artifacts: string[];
   compounds_future_runs: boolean;
+  decisive_weight: number;
 }
 
 export interface NextEmbodimentSelectorInput {
@@ -184,10 +183,4 @@ export function selectNextEmbodimentIncrement(
     blockers: [],
     next_route: "commit the selected embodiment increment, then bind status readback to the resulting new head",
   };
-}
-
-declare module "./next-embodiment-selector.js" {
-  interface NextEmbodimentCandidate {
-    decisive_weight: number;
-  }
 }
