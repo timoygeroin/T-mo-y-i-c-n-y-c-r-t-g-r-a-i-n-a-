@@ -534,3 +534,5 @@ export * from "./scheduled-live-head-admission.js";
 export * from "./runtime-execution-queue.js";
 export * from "./failure-detail-escalation.js";
 export * from "./github-contents-executor.js";
+export * from "./next-embodiment-selector.js";
+export * from "./github-contents-result-receipt.js";
