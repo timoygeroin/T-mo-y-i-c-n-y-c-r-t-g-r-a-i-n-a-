@@ -52,7 +52,7 @@ export interface FailureDetailEscalationVerdict {
   next_route: string;
 }
 
-const DETAIL_KINDS: FailureDetailSurfaceKind[] = [
+const DETAIL_KINDS: Array<Exclude<FailureDetailSurfaceKind, "public_checks_summary">> = [
   "actions_step_log",
   "check_run_annotation",
   "workflow_artifact",
