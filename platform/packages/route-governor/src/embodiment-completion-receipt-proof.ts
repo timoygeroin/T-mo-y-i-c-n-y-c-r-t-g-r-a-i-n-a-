@@ -7,8 +7,8 @@ import {
 
 const repository = "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-";
 const branch = "monday-platform-genesis-01";
-const previousHead = "11057f67da52b7df34615fa92475b4eedf768315";
-const newHead = "957b0d3e467f8e7848bf8334f2cf1fd1cbcb86d6";
+const previousHead = "previous-live-head-before-receipt";
+const newHead = "new-live-head-after-receipt";
 
 function input(overrides: Partial<EmbodimentCompletionReceiptInput> = {}): EmbodimentCompletionReceiptInput {
   return {
