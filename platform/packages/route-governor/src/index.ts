@@ -520,6 +520,7 @@ export * from "./post-embodiment-head-cursor.js";
 export * from "./post-embodiment-status-router.js";
 export * from "./status-to-embodiment-handoff.js";
 export * from "./embodiment-progression-contract.js";
+export * from "./finalization-next-step-admission.js";
 export * from "./live-head-readback-cursor.js";
 export * from "./status-readback-transport.js";
 export * from "./manifestation-source-arbitration.js";
