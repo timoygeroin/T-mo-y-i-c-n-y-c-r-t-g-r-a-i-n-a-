@@ -205,6 +205,15 @@ export function routeWarningMaintenance(input: WarningMaintenanceRouterInput): W
   }
 
   const candidate = input.candidate;
+  if (!candidate) {
+    return block(
+      input,
+      "block_incomplete_maintenance",
+      ["warning maintenance route has no maintenance candidate"],
+      "supply executable warning maintenance bound to a current non-blocking warning",
+    );
+  }
+
   return {
     ...base(input),
     ok: true,
