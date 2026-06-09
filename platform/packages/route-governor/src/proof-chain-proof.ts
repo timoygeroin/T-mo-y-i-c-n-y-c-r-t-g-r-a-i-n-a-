@@ -65,6 +65,10 @@ const registeredProofModules = [
   "runtime-execution-queue",
   "failure-detail-escalation",
   "github-contents-executor",
+  "next-embodiment-selector",
+  "github-contents-result-receipt",
+  "route-state-transition",
+  "warning-maintenance-router",
   "proof-chain",
 ];
 
