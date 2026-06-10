@@ -22,6 +22,7 @@ function readProofCommand(): string {
 const registeredProofModules = [
   "head-transition",
   "embodiment-increment",
+  "embodiment-impact-classifier",
   "continuation-handoff",
   "merge-readiness",
   "post-commit-status-boundary",
@@ -71,7 +72,9 @@ const registeredProofModules = [
   "route-state-transition",
   "warning-maintenance-router",
   "statusless-embodiment-admission",
+  "continuation-authority",
   "live-status-authority",
+  "live-blocker-retirement",
   "proof-chain",
 ];
 
@@ -127,6 +130,17 @@ export function runProofChainProof(): void {
   assert(
     missingLiveStatusAuthority.blockers.some((blocker) => blocker.includes("live-status-authority-proof")),
     "missing live status authority blocker should name live-status-authority-proof",
+  );
+
+  const missingLiveBlockerRetirement = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/live-blocker-retirement-proof.js", ""),
+    }),
+  );
+  assert(!missingLiveBlockerRetirement.ok, "missing live-blocker-retirement proof module must block readiness");
+  assert(
+    missingLiveBlockerRetirement.blockers.some((blocker) => blocker.includes("live-blocker-retirement-proof")),
+    "missing live blocker retirement blocker should name live-blocker-retirement-proof",
   );
 
   const missingMutationBatch = compileProofChain(
