@@ -67,6 +67,7 @@ const registeredProofModules = [
   "github-contents-executor",
   "next-embodiment-selector",
   "github-contents-result-receipt",
+  "github-contents-mutation-batch",
   "route-state-transition",
   "warning-maintenance-router",
   "statusless-embodiment-admission",
@@ -126,6 +127,17 @@ export function runProofChainProof(): void {
   assert(
     missingLiveStatusAuthority.blockers.some((blocker) => blocker.includes("live-status-authority-proof")),
     "missing live status authority blocker should name live-status-authority-proof",
+  );
+
+  const missingMutationBatch = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/github-contents-mutation-batch-proof.js", ""),
+    }),
+  );
+  assert(!missingMutationBatch.ok, "missing mutation-batch proof module must block readiness");
+  assert(
+    missingMutationBatch.blockers.some((blocker) => blocker.includes("github-contents-mutation-batch-proof")),
+    "missing mutation batch blocker should name github-contents-mutation-batch-proof",
   );
 
   const unregisteredExecutor = compileProofChain(
