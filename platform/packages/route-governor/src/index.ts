@@ -539,3 +539,4 @@ export * from "./github-contents-result-receipt.js";
 export * from "./route-state-transition.js";
 export * from "./live-status-authority.js";
 export * from "./post-status-embodiment-queue.js";
+export * from "./pr-body-head-drift-boundary.js";
