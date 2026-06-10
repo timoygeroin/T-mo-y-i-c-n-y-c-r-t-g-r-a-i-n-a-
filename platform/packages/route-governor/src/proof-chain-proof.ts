@@ -69,6 +69,7 @@ const registeredProofModules = [
   "github-contents-result-receipt",
   "route-state-transition",
   "warning-maintenance-router",
+  "statusless-embodiment-admission",
   "proof-chain",
 ];
 
