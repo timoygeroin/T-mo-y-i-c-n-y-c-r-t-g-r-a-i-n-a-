@@ -537,3 +537,4 @@ export * from "./github-contents-executor.js";
 export * from "./next-embodiment-selector.js";
 export * from "./github-contents-result-receipt.js";
 export * from "./route-state-transition.js";
+export * from "./live-status-authority.js";
