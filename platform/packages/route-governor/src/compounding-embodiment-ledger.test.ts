@@ -23,6 +23,7 @@ function candidate(overrides: Partial<CompoundingEmbodimentCandidate> = {}): Com
   return {
     increment_id: "compounding-embodiment-ledger",
     branch,
+    active_branch: branch,
     live_head_sha: head,
     artifact_class: "compounding-ledger-gate",
     capability_axes: ["runtime_execution"],
