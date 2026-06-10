@@ -100,7 +100,7 @@ function escalationTransport(input: FailureDetailEscalationInput): FailureDetail
   return undefined;
 }
 
-function actionFor(kind: FailureDetailTransport["kind"]): FailureDetailEscalationAction {
+function actionFor(kind: FailureDetailSurfaceKind): FailureDetailEscalationAction {
   switch (kind) {
     case "actions_step_log":
       return "request_actions_step_log";
@@ -110,6 +110,8 @@ function actionFor(kind: FailureDetailTransport["kind"]): FailureDetailEscalatio
       return "request_workflow_artifact";
     case "issue_published_readback":
       return "request_issue_readback";
+    case "public_checks_summary":
+      return "request_actions_step_log";
   }
 }
 
