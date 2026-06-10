@@ -5,7 +5,7 @@ export type StatusToEmbodimentHandoffAction =
   | "block_incomplete_embodiment"
   | "block_head_mismatch";
 
-export type PostStatusMoveClass =
+export type StatusToEmbodimentMoveClass =
   | "external_platform_embodiment"
   | "fresh_status_readback"
   | "exact_external_blocker"
@@ -24,7 +24,7 @@ export interface StatusToEmbodimentHandoffInput {
   status_head_sha: string;
   live_head_sha: string;
   status_verdict: "passing" | "passing_with_warnings";
-  next_move_class: PostStatusMoveClass;
+  next_move_class: StatusToEmbodimentMoveClass;
   changed_files: string[];
   executable_artifacts: string[];
   routing_artifacts: string[];
@@ -43,7 +43,7 @@ export interface StatusToEmbodimentHandoffVerdict {
   next_route: string;
 }
 
-const STATUS_REPLAY_CLASSES = new Set<PostStatusMoveClass>([
+const STATUS_REPLAY_CLASSES = new Set<StatusToEmbodimentMoveClass>([
   "fresh_status_readback",
   "metadata_reread",
   "duplicate_ci_summary",
