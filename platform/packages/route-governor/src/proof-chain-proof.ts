@@ -71,6 +71,7 @@ const registeredProofModules = [
   "github-contents-mutation-batch",
   "route-state-transition",
   "warning-maintenance-router",
+  "live-progress-receipt",
   "statusless-embodiment-admission",
   "continuation-authority",
   "live-status-authority",
@@ -121,6 +122,17 @@ export function runProofChainProof(): void {
   assert(!missing.ok, "missing proof-chain proof module must block readiness");
   assert(missing.action === "repair_proof_chain", `expected repair_proof_chain, got ${missing.action}`);
 
+  const missingLiveProgressReceipt = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/live-progress-receipt-proof.js", ""),
+    }),
+  );
+  assert(!missingLiveProgressReceipt.ok, "missing live-progress-receipt proof module must block readiness");
+  assert(
+    missingLiveProgressReceipt.blockers.some((blocker) => blocker.includes("live-progress-receipt-proof")),
+    "missing live progress receipt blocker should name live-progress-receipt-proof",
+  );
+
   const missingLiveStatusAuthority = compileProofChain(
     input({
       proof_script_command: readProofCommand().replace(" && node dist/live-status-authority-proof.js", ""),
@@ -163,6 +175,17 @@ export function runProofChainProof(): void {
   assert(
     unregisteredExecutor.blockers.some((blocker) => blocker.includes("github-contents-executor-proof")),
     "unregistered executor blocker should name github-contents-executor-proof",
+  );
+
+  const unregisteredLiveProgressReceipt = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "live-progress-receipt"),
+    }),
+  );
+  assert(!unregisteredLiveProgressReceipt.ok, "unregistered live progress receipt proof must block readiness");
+  assert(
+    unregisteredLiveProgressReceipt.blockers.some((blocker) => blocker.includes("live-progress-receipt-proof")),
+    "unregistered live progress receipt blocker should name live-progress-receipt-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
