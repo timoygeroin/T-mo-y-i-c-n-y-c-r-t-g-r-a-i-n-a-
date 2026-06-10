@@ -389,7 +389,7 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
       ok: false,
       selected: null,
       rejected,
-      failures: ["no continuation candidate survived preflight"],
+      failures: ["no continuation candidate survives the external-act preflight"],
     };
   }
 
@@ -428,9 +428,9 @@ export function compileContinuationReleaseReceipt(input: ContinuationReleaseRece
         release_class: "blocked",
         release_instruction: "block_release",
         decisive_evidence: input.preflight.selected.decisive_evidence,
-        blockers: ["fresh status readback candidate has no status surface attached"],
+        blockers: ["fresh status readback selected without an attached current-head status surface"],
         warnings: [],
-        next_route: "attach current-head status/check-run evidence before publishing a fresh readback",
+        next_route: "obtain a current-head status surface before making a pass/fail status claim",
       };
     }
 
@@ -444,7 +444,7 @@ export function compileContinuationReleaseReceipt(input: ContinuationReleaseRece
       blockers: [...input.status_surface.blocking_failures, ...input.status_surface.pending_surfaces],
       warnings: input.status_surface.non_blocking_warnings,
       next_route: input.status_surface.ok
-        ? "status readback may be published; then choose a non-repeated embodiment class"
+        ? "continue with the next non-repeated executable platform embodiment increment"
         : "repair or wait on the current-head status surface before release",
     };
   }
