@@ -70,6 +70,7 @@ const registeredProofModules = [
   "route-state-transition",
   "warning-maintenance-router",
   "statusless-embodiment-admission",
+  "live-status-authority",
   "proof-chain",
 ];
 
@@ -115,6 +116,17 @@ export function runProofChainProof(): void {
   );
   assert(!missing.ok, "missing proof-chain proof module must block readiness");
   assert(missing.action === "repair_proof_chain", `expected repair_proof_chain, got ${missing.action}`);
+
+  const missingLiveStatusAuthority = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/live-status-authority-proof.js", ""),
+    }),
+  );
+  assert(!missingLiveStatusAuthority.ok, "missing live-status-authority proof module must block readiness");
+  assert(
+    missingLiveStatusAuthority.blockers.some((blocker) => blocker.includes("live-status-authority-proof")),
+    "missing live status authority blocker should name live-status-authority-proof",
+  );
 
   const unregisteredExecutor = compileProofChain(
     input({
