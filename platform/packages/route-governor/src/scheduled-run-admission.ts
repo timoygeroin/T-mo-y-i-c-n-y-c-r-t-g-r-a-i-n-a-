@@ -41,6 +41,7 @@ export interface ScheduledRunAdmissionInput {
   candidate: ScheduledRunCandidate;
   spent_artifact_classes: string[];
   prohibited_move_classes: ScheduledRunMoveClass[];
+  prohibited_blockers?: string[];
 }
 
 export interface ScheduledRunAdmissionVerdict {
@@ -165,7 +166,8 @@ export function admitScheduledRunProgress(input: ScheduledRunAdmissionInput): Sc
   }
 
   if (candidate.move_class === "exact_external_blocker") {
-    if (!candidate.blocker?.trim()) {
+    const blockerText = candidate.blocker?.trim();
+    if (!blockerText) {
       return block(
         input,
         "block_incomplete_scheduled_candidate",
@@ -174,13 +176,22 @@ export function admitScheduledRunProgress(input: ScheduledRunAdmissionInput): Sc
       );
     }
 
+    if (input.prohibited_blockers?.includes(blockerText)) {
+      return block(
+        input,
+        "block_scheduled_non_progress",
+        [`scheduled run cannot emit prohibited blocker: ${blockerText}`],
+        "preserve the resolved boundary and choose external embodiment, moved-head status readback, or a different exact blocker",
+      );
+    }
+
     return {
       ...base(input),
       ok: true,
       action: "emit_scheduled_exact_blocker",
       admitted_candidate_id: candidate.candidate_id,
-      decisive_evidence: [candidate.blocker],
-      blockers: [candidate.blocker],
+      decisive_evidence: [blockerText],
+      blockers: [blockerText],
       next_route: "remove the exact blocker before the next scheduled embodiment attempt",
     };
   }
