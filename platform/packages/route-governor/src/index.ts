@@ -90,8 +90,7 @@ export interface ContinuationEvidenceClassification {
 export interface ReadyContinuationEvidenceClassification extends ContinuationEvidenceClassification {
   evidence_class: ReadyContinuationEvidenceClass;
   release_instruction: ReadyContinuationReleaseInstruction;
-}
-
+}\n
 export interface ContinuationMoveCandidate {
   candidate_id: string;
   input: ContinuationMoveInput;
@@ -541,3 +540,4 @@ export * from "./live-status-authority.js";
 export * from "./post-status-embodiment-queue.js";
 export * from "./pr-body-head-drift-boundary.js";
 export * from "./route-progress-ledger.js";
+export * from "./scheduled-finalization-decision-router.js";
