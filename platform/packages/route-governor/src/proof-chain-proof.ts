@@ -76,6 +76,7 @@ const registeredProofModules = [
   "continuation-authority",
   "live-status-authority",
   "live-blocker-retirement",
+  "capability-escalation-policy",
   "proof-chain",
 ];
 
@@ -186,6 +187,17 @@ export function runProofChainProof(): void {
   assert(
     unregisteredLiveProgressReceipt.blockers.some((blocker) => blocker.includes("live-progress-receipt-proof")),
     "unregistered live progress receipt blocker should name live-progress-receipt-proof",
+  );
+
+  const unregisteredCapabilityEscalationPolicy = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "capability-escalation-policy"),
+    }),
+  );
+  assert(!unregisteredCapabilityEscalationPolicy.ok, "unregistered capability escalation policy proof must block readiness");
+  assert(
+    unregisteredCapabilityEscalationPolicy.blockers.some((blocker) => blocker.includes("capability-escalation-policy-proof")),
+    "unregistered capability escalation policy blocker should name capability-escalation-policy-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
