@@ -81,6 +81,7 @@ const registeredProofModules = [
   "pr-body-head-drift-boundary",
   "scheduled-finalization-head-rebase",
   "scheduled-finalization-decision-router",
+  "current-instruction-head-boundary",
   "capability-escalation-policy",
   "proof-chain",
 ];
@@ -172,6 +173,19 @@ export function runProofChainProof(): void {
     "missing mutation batch blocker should name github-contents-mutation-batch-proof",
   );
 
+  const missingCurrentInstructionHeadBoundary = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/current-instruction-head-boundary-proof.js", ""),
+    }),
+  );
+  assert(!missingCurrentInstructionHeadBoundary.ok, "missing current-instruction-head-boundary proof module must block readiness");
+  assert(
+    missingCurrentInstructionHeadBoundary.blockers.some((blocker) =>
+      blocker.includes("current-instruction-head-boundary-proof"),
+    ),
+    "missing current instruction head boundary blocker should name current-instruction-head-boundary-proof",
+  );
+
   const unregisteredExecutor = compileProofChain(
     input({
       required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "github-contents-executor"),
@@ -192,6 +206,21 @@ export function runProofChainProof(): void {
   assert(
     unregisteredLiveProgressReceipt.blockers.some((blocker) => blocker.includes("live-progress-receipt-proof")),
     "unregistered live progress receipt blocker should name live-progress-receipt-proof",
+  );
+
+  const unregisteredCurrentInstructionHeadBoundary = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter(
+        (artifact) => artifact.artifact_id !== "current-instruction-head-boundary",
+      ),
+    }),
+  );
+  assert(!unregisteredCurrentInstructionHeadBoundary.ok, "unregistered current instruction proof must block readiness");
+  assert(
+    unregisteredCurrentInstructionHeadBoundary.blockers.some((blocker) =>
+      blocker.includes("current-instruction-head-boundary-proof"),
+    ),
+    "unregistered current instruction blocker should name current-instruction-head-boundary-proof",
   );
 
   const unregisteredCapabilityEscalationPolicy = compileProofChain(
