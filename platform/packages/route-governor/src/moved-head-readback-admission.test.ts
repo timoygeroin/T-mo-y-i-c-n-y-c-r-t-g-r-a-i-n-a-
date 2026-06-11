@@ -112,7 +112,7 @@ test("admits a complete executable embodiment on the live moved head", () => {
   assert.deepEqual(verdict.blockers, []);
 });
 
-test("requires exact external blockers to name the live moved head", () => {
+test("blocks exact external blockers that replay the resolved repaired head", () => {
   const verdict = compileMovedHeadReadbackAdmission(
     input({
       candidate: candidate({
@@ -124,5 +124,5 @@ test("requires exact external blockers to name the live moved head", () => {
   );
 
   assert.equal(verdict.ok, false);
-  assert.equal(verdict.action, "block_incomplete_blocker");
+  assert.equal(verdict.action, "block_repaired_head_replay");
 });
