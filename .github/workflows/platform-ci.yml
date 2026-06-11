@@ -44,4 +44,29 @@ jobs:
         run: npm run test:route-governor
 
       - name: Run proof examples
-        run: npm run proof:route-governor
+        id: proof_examples
+        run: |
+          set +e
+          npm run proof:route-governor 2>&1 | tee route-governor-proof-output.log
+          status=${PIPESTATUS[0]}
+          {
+            echo "## Route governor proof output"
+            echo
+            echo "Head: \`${GITHUB_SHA}\`"
+            echo "Exit code: \`${status}\`"
+            echo
+            echo "Last 120 output lines:"
+            echo
+            echo '```text'
+            tail -n 120 route-governor-proof-output.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Upload route governor proof output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-governor-proof-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: platform/route-governor-proof-output.log
+          if-no-files-found: warn
