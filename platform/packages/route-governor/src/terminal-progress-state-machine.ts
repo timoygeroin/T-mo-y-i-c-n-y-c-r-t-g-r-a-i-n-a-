@@ -78,6 +78,12 @@ function embodimentBlockers(event: TerminalProgressEvent, spentArtifactClasses: 
   return blockers;
 }
 
+function prohibitedNext(cursorState: TerminalProgressCursorState, invalidBlockers: string[]): TerminalProgressEventKind[] {
+  if (invalidBlockers.length > 0 || cursorState === "needs_live_status") return ["external_platform_embodiment"];
+  if (cursorState === "blocked") return ["external_platform_embodiment", "fresh_status_readback"];
+  return ["fresh_status_readback"];
+}
+
 function baseVerdict(
   input: TerminalProgressStateMachineInput,
   cursorState: TerminalProgressCursorState,
@@ -87,9 +93,10 @@ function baseVerdict(
   decisiveEvidence: string[],
   blockers: string[],
   nextRoute: TerminalProgressNextRoute,
+  ok?: boolean,
 ): TerminalProgressStateMachineVerdict {
   return {
-    ok: blockers.length === 0,
+    ok: ok ?? blockers.length === 0,
     branch: input.active_branch,
     head_sha: input.live_head_sha,
     cursor_state: cursorState,
@@ -97,8 +104,7 @@ function baseVerdict(
     quarantined_prompt_head_sha: input.prompt_head_sha === input.live_head_sha ? null : input.prompt_head_sha,
     spent_event_ids: unique(spentEventIds),
     spent_artifact_classes: unique(spentArtifactClasses),
-    prohibited_next_progress_classes:
-      blockers.length > 0 || cursorState === "needs_live_status" ? ["external_platform_embodiment"] : ["fresh_status_readback"],
+    prohibited_next_progress_classes: prohibitedNext(cursorState, ok === true ? [] : blockers),
     decisive_evidence: decisiveEvidence,
     blockers,
     next_route: nextRoute,
@@ -182,6 +188,7 @@ export function reduceTerminalProgressState(
       decisiveEvidence,
       ["terminal progress is held by an exact external blocker"],
       "remove_exact_external_blocker",
+      true,
     );
   }
 
