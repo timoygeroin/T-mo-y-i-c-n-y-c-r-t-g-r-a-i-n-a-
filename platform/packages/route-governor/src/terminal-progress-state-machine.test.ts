@@ -42,6 +42,22 @@ function status(overrides: Partial<TerminalProgressEvent> = {}): TerminalProgres
   };
 }
 
+function blocker(overrides: Partial<TerminalProgressEvent> = {}): TerminalProgressEvent {
+  return {
+    event_id: "terminal-state-machine-blocker",
+    branch,
+    head_sha: liveHead,
+    kind: "exact_external_blocker",
+    changed_files: [],
+    executable_artifacts: [],
+    routing_artifacts: [],
+    proof_artifacts: [],
+    status_surface_ids: [],
+    blocker: "GitHub contents API rejected the live branch write",
+    ...overrides,
+  };
+}
+
 function input(overrides: Partial<TerminalProgressStateMachineInput> = {}): TerminalProgressStateMachineInput {
   return {
     active_branch: branch,
@@ -99,6 +115,15 @@ test("after live-head status is satisfied, selects external embodiment and prohi
   assert.equal(verdict.cursor_state, "status_satisfied");
   assert.equal(verdict.next_route, "select_next_external_embodiment");
   assert.deepEqual(verdict.prohibited_next_progress_classes, ["fresh_status_readback"]);
+});
+
+test("holds an exact external blocker as a valid terminal state", () => {
+  const verdict = reduceTerminalProgressState(input({ events: [blocker()] }));
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.cursor_state, "blocked");
+  assert.equal(verdict.next_route, "remove_exact_external_blocker");
+  assert.deepEqual(verdict.prohibited_next_progress_classes, ["external_platform_embodiment", "fresh_status_readback"]);
 });
 
 test("blocks replayed terminal progress event ids", () => {
