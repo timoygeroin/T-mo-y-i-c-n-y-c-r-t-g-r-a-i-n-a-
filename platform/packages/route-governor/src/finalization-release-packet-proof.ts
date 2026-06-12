@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { compileFinalizationReleasePacket } from "./finalization-release-packet.js";
+import { compileFinalizationReleasePacket, type FinalizationReleaseTarget } from "./finalization-release-packet.js";
 import type { FinalizationTerminalProgressVerdict } from "./finalization-terminal-progress-contract.js";
 import type { LiveProgressReceiptVerdict } from "./live-progress-receipt.js";
 
@@ -8,6 +8,13 @@ const repository = "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-";
 const prNumber = 2;
 const branch = "monday-platform-genesis-01";
 const head = "release-head";
+
+const target: FinalizationReleaseTarget = {
+  repository_full_name: repository,
+  pr_number: prNumber,
+  branch,
+  head_sha: head,
+};
 
 function terminal(overrides: Partial<FinalizationTerminalProgressVerdict> = {}): FinalizationTerminalProgressVerdict {
   return {
@@ -52,6 +59,7 @@ const accepted = compileFinalizationReleasePacket({
   repository_full_name: repository,
   pr_number: prNumber,
   active_branch: branch,
+  target,
   terminal: terminal(),
   receipt: receipt(),
   release_class: "external_platform_embodiment",
@@ -66,6 +74,7 @@ const mismatchedReceipt = compileFinalizationReleasePacket({
   repository_full_name: repository,
   pr_number: prNumber,
   active_branch: branch,
+  target,
   terminal: terminal(),
   receipt: receipt({ action: "accept_status_receipt" }),
   release_class: "external_platform_embodiment",
@@ -79,6 +88,7 @@ const prematureStatus = compileFinalizationReleasePacket({
   repository_full_name: repository,
   pr_number: prNumber,
   active_branch: branch,
+  target,
   terminal: terminal(),
   receipt: receipt(),
   release_class: "external_platform_embodiment",
@@ -92,6 +102,7 @@ const statusPacket = compileFinalizationReleasePacket({
   repository_full_name: repository,
   pr_number: prNumber,
   active_branch: branch,
+  target,
   terminal: terminal({
     action: "admit_fresh_status_readback",
     decisive_evidence: ["live-head status surface 27049651467"],
