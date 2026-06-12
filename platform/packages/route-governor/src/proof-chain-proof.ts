@@ -83,6 +83,7 @@ const registeredProofModules = [
   "scheduled-finalization-decision-router",
   "current-instruction-head-boundary",
   "capability-escalation-policy",
+  "finalization-terminal-progress-contract",
   "proof-chain",
 ];
 
@@ -186,6 +187,22 @@ export function runProofChainProof(): void {
     "missing current instruction head boundary blocker should name current-instruction-head-boundary-proof",
   );
 
+  const missingTerminalProgressContract = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(
+        " && node dist/finalization-terminal-progress-contract-proof.js",
+        "",
+      ),
+    }),
+  );
+  assert(!missingTerminalProgressContract.ok, "missing terminal-progress contract proof module must block readiness");
+  assert(
+    missingTerminalProgressContract.blockers.some((blocker) =>
+      blocker.includes("finalization-terminal-progress-contract-proof"),
+    ),
+    "missing terminal progress contract blocker should name finalization-terminal-progress-contract-proof",
+  );
+
   const unregisteredExecutor = compileProofChain(
     input({
       required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "github-contents-executor"),
@@ -232,6 +249,21 @@ export function runProofChainProof(): void {
   assert(
     unregisteredCapabilityEscalationPolicy.blockers.some((blocker) => blocker.includes("capability-escalation-policy-proof")),
     "unregistered capability escalation policy blocker should name capability-escalation-policy-proof",
+  );
+
+  const unregisteredTerminalProgressContract = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter(
+        (artifact) => artifact.artifact_id !== "finalization-terminal-progress-contract",
+      ),
+    }),
+  );
+  assert(!unregisteredTerminalProgressContract.ok, "unregistered terminal progress proof must block readiness");
+  assert(
+    unregisteredTerminalProgressContract.blockers.some((blocker) =>
+      blocker.includes("finalization-terminal-progress-contract-proof"),
+    ),
+    "unregistered terminal progress blocker should name finalization-terminal-progress-contract-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
