@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 
 import {
+  compileGithubContentsContinuationState,
   compileGithubContentsResultReceipt,
   type GithubContentsResultReceiptInput,
   type GithubContentsWriteResult,
@@ -86,6 +87,56 @@ assert.equal(accepted.action, "accept_contents_result_receipt");
 assert.equal(accepted.required_status_head_sha, finalCommit);
 assert.match(accepted.next_route, /final GitHub contents commit/);
 assert(accepted.decisive_evidence.includes(`head moved from ${before} to ${finalCommit}`));
+
+const continuation = compileGithubContentsContinuationState({
+  receipt: accepted,
+  active_branch: branch,
+  artifact_class: "contents_result_continuation_state",
+  spent_artifact_classes: ["github_contents_result_receipt"],
+  spent_move_classes: ["fresh_status_readback"],
+  executable_artifacts: ["compileGithubContentsContinuationState"],
+  routing_artifacts: ["GitHub contents result to route continuation state"],
+  proof_artifacts: ["platform/packages/route-governor/src/github-contents-result-receipt-proof.ts"],
+});
+assert.equal(continuation.ok, true);
+assert.equal(continuation.action, "advance_contents_receipt_state");
+assert.equal(continuation.required_status_head_sha, finalCommit);
+assert.equal(continuation.next_state.required_status_head_sha, finalCommit);
+assert.equal(continuation.next_state.status_cursor, "required");
+assert(continuation.next_state.spent_artifact_classes.includes("contents_result_continuation_state"));
+assert.match(continuation.next_route, /do not treat the contents commit as a status verdict/);
+
+const staleContinuationBranch = compileGithubContentsContinuationState({
+  receipt: accepted,
+  active_branch: "main",
+  artifact_class: "contents_result_continuation_state",
+  spent_artifact_classes: [],
+  spent_move_classes: [],
+  executable_artifacts: ["compileGithubContentsContinuationState"],
+  routing_artifacts: ["GitHub contents result to route continuation state"],
+  proof_artifacts: ["platform/packages/route-governor/src/github-contents-result-receipt-proof.ts"],
+});
+assert.equal(staleContinuationBranch.ok, false);
+assert.equal(staleContinuationBranch.action, "block_contents_receipt_state");
+assert.deepEqual(staleContinuationBranch.blockers, [`receipt branch ${branch} does not match active branch main`]);
+
+const falseStatusClaim = compileGithubContentsContinuationState({
+  receipt: accepted,
+  active_branch: branch,
+  artifact_class: "contents_result_continuation_state_again",
+  spent_artifact_classes: [],
+  spent_move_classes: [],
+  executable_artifacts: ["compileGithubContentsContinuationState"],
+  routing_artifacts: ["GitHub contents result to route continuation state"],
+  proof_artifacts: ["platform/packages/route-governor/src/github-contents-result-receipt-proof.ts"],
+  status_claim: "passing",
+  status_readback_head_sha: before,
+});
+assert.equal(falseStatusClaim.ok, false);
+assert.equal(falseStatusClaim.action, "block_contents_receipt_state");
+assert.deepEqual(falseStatusClaim.blockers, [
+  `status claim passing belongs to ${before}, not current head ${finalCommit}`,
+]);
 
 const nonWritable = compileGithubContentsResultReceipt(
   input({ executor: executor({ action: "publish_without_contents_write", operations: [] }) }),
