@@ -12,12 +12,21 @@ export type FinalizationReleasePacketAction =
   | "release_exact_blocker_packet"
   | "block_terminal_progress"
   | "block_receipt_mismatch"
+  | "block_target_mismatch"
   | "block_status_claim_before_readback";
+
+export interface FinalizationReleaseTarget {
+  repository_full_name: string;
+  pr_number: number;
+  branch: string;
+  head_sha: string;
+}
 
 export interface FinalizationReleasePacketInput {
   repository_full_name: string;
   pr_number: number;
   active_branch: string;
+  target: FinalizationReleaseTarget;
   terminal: FinalizationTerminalProgressVerdict;
   receipt: LiveProgressReceiptVerdict;
   release_class: FinalizationReleasePacketClass;
@@ -106,6 +115,29 @@ function releaseActionFor(releaseClass: FinalizationReleasePacketClass): Finaliz
   }
 }
 
+function targetBlockers(input: FinalizationReleasePacketInput): string[] {
+  const blockers: string[] = [];
+  const target = input.target;
+
+  if (input.repository_full_name !== target.repository_full_name) {
+    blockers.push(`packet repository ${input.repository_full_name} does not match target ${target.repository_full_name}`);
+  }
+  if (input.pr_number !== target.pr_number) {
+    blockers.push(`packet PR #${input.pr_number} does not match target PR #${target.pr_number}`);
+  }
+  if (input.active_branch !== target.branch) {
+    blockers.push(`packet branch ${input.active_branch} does not match target branch ${target.branch}`);
+  }
+  if (input.terminal.head_sha !== target.head_sha) {
+    blockers.push(`terminal head ${input.terminal.head_sha} does not match target head ${target.head_sha}`);
+  }
+  if (input.receipt.head_sha !== target.head_sha) {
+    blockers.push(`receipt head ${input.receipt.head_sha} does not match target head ${target.head_sha}`);
+  }
+
+  return blockers;
+}
+
 export function compileFinalizationReleasePacket(
   input: FinalizationReleasePacketInput,
 ): FinalizationReleasePacketVerdict {
@@ -176,6 +208,17 @@ export function compileFinalizationReleasePacket(
     );
   }
 
+  const targetFailures = targetBlockers(input);
+  if (targetFailures.length > 0) {
+    return block(
+      input,
+      "block_target_mismatch",
+      targetFailures,
+      "release only a packet bound to the active repository, PR, branch, and live head target",
+      [...input.terminal.decisive_evidence, ...input.receipt.decisive_evidence],
+    );
+  }
+
   if (input.release_class === "external_platform_embodiment") {
     if (input.status_claim !== "none" && input.status_readback_head_sha !== input.receipt.head_sha) {
       return block(
@@ -198,6 +241,7 @@ export function compileFinalizationReleasePacket(
     action: releaseActionFor(input.release_class),
     decisive_evidence: [
       `${input.repository_full_name}#${input.pr_number}`,
+      `target ${input.target.branch}@${input.target.head_sha}`,
       ...input.terminal.decisive_evidence,
       ...input.receipt.decisive_evidence,
       ...(input.status_claim === "none"
