@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { compileFinalizationReleasePacket } from "./finalization-release-packet.js";
+import { compileFinalizationReleasePacket, type FinalizationReleaseTarget } from "./finalization-release-packet.js";
 import type { FinalizationTerminalProgressVerdict } from "./finalization-terminal-progress-contract.js";
 import type { LiveProgressReceiptVerdict } from "./live-progress-receipt.js";
 
@@ -9,6 +9,13 @@ const repository = "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-";
 const prNumber = 2;
 const branch = "monday-platform-genesis-01";
 const head = "release-head";
+
+const target: FinalizationReleaseTarget = {
+  repository_full_name: repository,
+  pr_number: prNumber,
+  branch,
+  head_sha: head,
+};
 
 function terminal(overrides: Partial<FinalizationTerminalProgressVerdict> = {}): FinalizationTerminalProgressVerdict {
   return {
@@ -54,6 +61,7 @@ test("accepts an external embodiment packet without a status claim", () => {
     repository_full_name: repository,
     pr_number: prNumber,
     active_branch: branch,
+    target,
     terminal: terminal(),
     receipt: receipt(),
     release_class: "external_platform_embodiment",
@@ -63,6 +71,7 @@ test("accepts an external embodiment packet without a status claim", () => {
   assert.equal(accepted.ok, true);
   assert.equal(accepted.action, "release_external_embodiment_packet");
   assert.equal(accepted.next_status_expected_head, head);
+  assert.match(accepted.decisive_evidence.join("\n"), /target monday-platform-genesis-01@release-head/);
   assert.match(accepted.decisive_evidence.join("\n"), /no status claim made/);
 });
 
@@ -71,6 +80,7 @@ test("blocks a receipt whose class does not match the packet", () => {
     repository_full_name: repository,
     pr_number: prNumber,
     active_branch: branch,
+    target,
     terminal: terminal(),
     receipt: receipt({ action: "accept_status_receipt" }),
     release_class: "external_platform_embodiment",
@@ -82,11 +92,56 @@ test("blocks a receipt whose class does not match the packet", () => {
   assert.match(mismatchedReceipt.blockers.join("\n"), /does not match release class/);
 });
 
+test("blocks a packet whose target repository or PR does not match", () => {
+  const wrongTarget = compileFinalizationReleasePacket({
+    repository_full_name: repository,
+    pr_number: prNumber,
+    active_branch: branch,
+    target: {
+      repository_full_name: "timoygeroin/other-monday-sink",
+      pr_number: 3,
+      branch,
+      head_sha: head,
+    },
+    terminal: terminal(),
+    receipt: receipt(),
+    release_class: "external_platform_embodiment",
+    status_claim: "none",
+  });
+
+  assert.equal(wrongTarget.ok, false);
+  assert.equal(wrongTarget.action, "block_target_mismatch");
+  assert.match(wrongTarget.blockers.join("\n"), /does not match target/);
+  assert.match(wrongTarget.blockers.join("\n"), /PR #2 does not match target PR #3/);
+});
+
+test("blocks a packet whose terminal and receipt are not bound to the target head", () => {
+  const staleTarget = compileFinalizationReleasePacket({
+    repository_full_name: repository,
+    pr_number: prNumber,
+    active_branch: branch,
+    target: {
+      ...target,
+      head_sha: "newer-live-head",
+    },
+    terminal: terminal(),
+    receipt: receipt(),
+    release_class: "external_platform_embodiment",
+    status_claim: "none",
+  });
+
+  assert.equal(staleTarget.ok, false);
+  assert.equal(staleTarget.action, "block_target_mismatch");
+  assert.match(staleTarget.blockers.join("\n"), /terminal head release-head does not match target head newer-live-head/);
+  assert.match(staleTarget.blockers.join("\n"), /receipt head release-head does not match target head newer-live-head/);
+});
+
 test("blocks an embodiment packet that claims status before moved-head readback", () => {
   const prematureStatus = compileFinalizationReleasePacket({
     repository_full_name: repository,
     pr_number: prNumber,
     active_branch: branch,
+    target,
     terminal: terminal(),
     receipt: receipt(),
     release_class: "external_platform_embodiment",
@@ -103,6 +158,7 @@ test("accepts a fresh status packet when status is bound to the packet head", ()
     repository_full_name: repository,
     pr_number: prNumber,
     active_branch: branch,
+    target,
     terminal: terminal({
       action: "admit_fresh_status_readback",
       decisive_evidence: ["live-head status surface 27049651467"],
