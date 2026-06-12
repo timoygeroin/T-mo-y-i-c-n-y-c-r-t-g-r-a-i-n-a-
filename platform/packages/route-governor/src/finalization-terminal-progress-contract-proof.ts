@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 
+import "./moved-head-status-contract-proof.js";
+
 import {
   enforceFinalizationTerminalProgress,
   type FinalizationTerminalProgressInput,
