@@ -542,3 +542,4 @@ export * from "./post-status-embodiment-queue.js";
 export * from "./pr-body-head-drift-boundary.js";
 export * from "./route-progress-ledger.js";
 export * from "./scheduled-finalization-decision-router.js";
+export * from "./finalization-terminal-progress-contract.js";
