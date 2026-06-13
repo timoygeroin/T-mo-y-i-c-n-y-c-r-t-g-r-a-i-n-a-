@@ -83,7 +83,11 @@ const registeredProofModules = [
   "scheduled-finalization-decision-router",
   "current-instruction-head-boundary",
   "capability-escalation-policy",
+  "current-surface-intake",
   "finalization-terminal-progress-contract",
+  "status-readback-authority-lease",
+  "embodiment-sequence-compiler",
+  "review-request-command",
   "proof-chain",
 ];
 
@@ -187,6 +191,17 @@ export function runProofChainProof(): void {
     "missing current instruction head boundary blocker should name current-instruction-head-boundary-proof",
   );
 
+  const missingCurrentSurfaceIntake = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/current-surface-intake-proof.js", ""),
+    }),
+  );
+  assert(!missingCurrentSurfaceIntake.ok, "missing current-surface-intake proof module must block readiness");
+  assert(
+    missingCurrentSurfaceIntake.blockers.some((blocker) => blocker.includes("current-surface-intake-proof")),
+    "missing current surface intake blocker should name current-surface-intake-proof",
+  );
+
   const missingTerminalProgressContract = compileProofChain(
     input({
       proof_script_command: readProofCommand().replace(
@@ -201,6 +216,43 @@ export function runProofChainProof(): void {
       blocker.includes("finalization-terminal-progress-contract-proof"),
     ),
     "missing terminal progress contract blocker should name finalization-terminal-progress-contract-proof",
+  );
+
+  const missingStatusReadbackAuthorityLease = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/status-readback-authority-lease-proof.js", ""),
+    }),
+  );
+  assert(!missingStatusReadbackAuthorityLease.ok, "missing status-readback-authority-lease proof module must block readiness");
+  assert(
+    missingStatusReadbackAuthorityLease.blockers.some((blocker) =>
+      blocker.includes("status-readback-authority-lease-proof"),
+    ),
+    "missing status readback authority lease blocker should name status-readback-authority-lease-proof",
+  );
+
+  const missingEmbodimentSequenceCompiler = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/embodiment-sequence-compiler-proof.js", ""),
+    }),
+  );
+  assert(!missingEmbodimentSequenceCompiler.ok, "missing embodiment-sequence-compiler proof module must block readiness");
+  assert(
+    missingEmbodimentSequenceCompiler.blockers.some((blocker) =>
+      blocker.includes("embodiment-sequence-compiler-proof"),
+    ),
+    "missing embodiment sequence compiler blocker should name embodiment-sequence-compiler-proof",
+  );
+
+  const missingReviewRequestCommand = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/review-request-command-proof.js", ""),
+    }),
+  );
+  assert(!missingReviewRequestCommand.ok, "missing review-request-command proof module must block readiness");
+  assert(
+    missingReviewRequestCommand.blockers.some((blocker) => blocker.includes("review-request-command-proof")),
+    "missing review request command blocker should name review-request-command-proof",
   );
 
   const unregisteredExecutor = compileProofChain(
@@ -251,6 +303,17 @@ export function runProofChainProof(): void {
     "unregistered capability escalation policy blocker should name capability-escalation-policy-proof",
   );
 
+  const unregisteredCurrentSurfaceIntake = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "current-surface-intake"),
+    }),
+  );
+  assert(!unregisteredCurrentSurfaceIntake.ok, "unregistered current surface intake proof must block readiness");
+  assert(
+    unregisteredCurrentSurfaceIntake.blockers.some((blocker) => blocker.includes("current-surface-intake-proof")),
+    "unregistered current surface intake blocker should name current-surface-intake-proof",
+  );
+
   const unregisteredTerminalProgressContract = compileProofChain(
     input({
       required_artifacts: requiredArtifacts.filter(
@@ -264,6 +327,45 @@ export function runProofChainProof(): void {
       blocker.includes("finalization-terminal-progress-contract-proof"),
     ),
     "unregistered terminal progress blocker should name finalization-terminal-progress-contract-proof",
+  );
+
+  const unregisteredStatusReadbackAuthorityLease = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter(
+        (artifact) => artifact.artifact_id !== "status-readback-authority-lease",
+      ),
+    }),
+  );
+  assert(!unregisteredStatusReadbackAuthorityLease.ok, "unregistered status readback authority lease proof must block readiness");
+  assert(
+    unregisteredStatusReadbackAuthorityLease.blockers.some((blocker) =>
+      blocker.includes("status-readback-authority-lease-proof"),
+    ),
+    "unregistered status readback authority lease blocker should name status-readback-authority-lease-proof",
+  );
+
+  const unregisteredEmbodimentSequenceCompiler = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "embodiment-sequence-compiler"),
+    }),
+  );
+  assert(!unregisteredEmbodimentSequenceCompiler.ok, "unregistered embodiment sequence compiler proof must block readiness");
+  assert(
+    unregisteredEmbodimentSequenceCompiler.blockers.some((blocker) =>
+      blocker.includes("embodiment-sequence-compiler-proof"),
+    ),
+    "unregistered embodiment sequence compiler blocker should name embodiment-sequence-compiler-proof",
+  );
+
+  const unregisteredReviewRequestCommand = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "review-request-command"),
+    }),
+  );
+  assert(!unregisteredReviewRequestCommand.ok, "unregistered review request command proof must block readiness");
+  assert(
+    unregisteredReviewRequestCommand.blockers.some((blocker) => blocker.includes("review-request-command-proof")),
+    "unregistered review request command blocker should name review-request-command-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
