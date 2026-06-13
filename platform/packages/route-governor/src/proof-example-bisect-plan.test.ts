@@ -63,7 +63,7 @@ function input(overrides: Partial<ProofExampleBisectInput> = {}): ProofExampleBi
   };
 }
 
-test("emits isolated proof-module probe commands for generic proof example failures", () => {
+test("emits head-bound isolated proof-module probe commands for generic proof example failures", () => {
   const plan = compileProofExampleBisectPlan(input());
 
   assert.equal(plan.ok, true);
@@ -73,6 +73,12 @@ test("emits isolated proof-module probe commands for generic proof example failu
     ["review-handoff-readiness", "proof-chain"],
   );
   assert.equal(plan.commands[0]?.source_path, "platform/packages/route-governor/src/review-handoff-readiness.ts");
+  assert.equal(plan.commands[0]?.command, "node dist/review-handoff-readiness-proof.js");
+  assert.equal(
+    plan.commands[0]?.head_bound_command,
+    `MONDAY_ACTIVE_BRANCH='${branch}' MONDAY_LIVE_HEAD_SHA='${liveHead}' node dist/review-handoff-readiness-proof.js`,
+  );
+  assert.match(plan.next_route, /head-bound isolated proof-module commands/);
 });
 
 test("routes directly to repair when the exact failing proof module is known", () => {
@@ -83,6 +89,14 @@ test("routes directly to repair when the exact failing proof module is known", (
   assert.equal(exact.ok, true);
   assert.equal(exact.action, "repair_from_exact_proof_module");
   assert.equal(exact.commands.length, 0);
+});
+
+test("blocks missing live head before probe emission", () => {
+  const missingHead = compileProofExampleBisectPlan(input({ live_head_sha: "" }));
+
+  assert.equal(missingHead.ok, false);
+  assert.equal(missingHead.action, "block_missing_live_head");
+  assert.deepEqual(missingHead.commands, []);
 });
 
 test("blocks stale, wrong-branch, non-failing, and exhausted probe surfaces", () => {
