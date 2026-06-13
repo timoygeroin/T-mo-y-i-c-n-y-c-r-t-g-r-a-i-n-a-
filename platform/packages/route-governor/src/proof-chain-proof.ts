@@ -88,6 +88,7 @@ const registeredProofModules = [
   "status-readback-authority-lease",
   "embodiment-sequence-compiler",
   "review-request-command",
+  "scheduled-surface-reconciliation",
   "proof-chain",
 ];
 
