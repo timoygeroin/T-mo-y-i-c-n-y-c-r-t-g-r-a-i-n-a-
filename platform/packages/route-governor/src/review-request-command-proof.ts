@@ -29,7 +29,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
 function input(overrides: Partial<ReviewRequestCommandInput> = {}): ReviewRequestCommandInput {
   return {
     handoff: handoff(),
-    requested_reviewers: ["platform-reviewer"],
+    requested_reviewers: ["timoygeroin"],
     requested_team_reviewers: [],
     command_id: `review-request:${head}`,
     spent_command_ids: [],
@@ -43,6 +43,7 @@ assert.equal(compiled.ok, true);
 assert.equal(compiled.action, "compile_review_request_command");
 assert.equal(compiled.command?.operation, "request_pull_request_reviewers");
 assert.equal(compiled.command?.guard.require_live_head_sha, head);
+assert.deepEqual(compiled.command?.reviewers, ["timoygeroin"]);
 assert.deepEqual(compiled.command?.guard.forbidden_fallbacks, [
   "duplicate_comment",
   "metadata_reread",
@@ -54,6 +55,11 @@ const noTarget = compileReviewRequestCommand(input({ requested_reviewers: [], re
 assert.equal(noTarget.ok, false);
 assert.equal(noTarget.action, "block_missing_review_target");
 assert.deepEqual(noTarget.blockers, ["review request command has no reviewer or team reviewer target"]);
+
+const placeholderTarget = compileReviewRequestCommand(input({ requested_reviewers: ["platform-reviewer"] }));
+assert.equal(placeholderTarget.ok, false);
+assert.equal(placeholderTarget.action, "block_placeholder_review_target");
+assert.deepEqual(placeholderTarget.blockers, ["review request target is a placeholder: platform-reviewer"]);
 
 const staleHandoff = compileReviewRequestCommand(
   input({
