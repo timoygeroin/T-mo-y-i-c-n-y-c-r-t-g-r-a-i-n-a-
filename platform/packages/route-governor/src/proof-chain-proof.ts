@@ -71,6 +71,7 @@ const registeredProofModules = [
   "github-contents-mutation-batch",
   "route-state-transition",
   "warning-maintenance-router",
+  "prompt-head-move-router",
   "live-progress-receipt",
   "route-progress-ledger",
   "statusless-embodiment-admission",
@@ -256,6 +257,17 @@ export function runProofChainProof(): void {
     "missing review request command blocker should name review-request-command-proof",
   );
 
+  const missingPromptHeadMoveRouter = compileProofChain(
+    input({
+      proof_script_command: readProofCommand().replace(" && node dist/prompt-head-move-router-proof.js", ""),
+    }),
+  );
+  assert(!missingPromptHeadMoveRouter.ok, "missing prompt-head-move-router proof module must block readiness");
+  assert(
+    missingPromptHeadMoveRouter.blockers.some((blocker) => blocker.includes("prompt-head-move-router-proof")),
+    "missing prompt head move router blocker should name prompt-head-move-router-proof",
+  );
+
   const unregisteredExecutor = compileProofChain(
     input({
       required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "github-contents-executor"),
@@ -367,6 +379,17 @@ export function runProofChainProof(): void {
   assert(
     unregisteredReviewRequestCommand.blockers.some((blocker) => blocker.includes("review-request-command-proof")),
     "unregistered review request command blocker should name review-request-command-proof",
+  );
+
+  const unregisteredPromptHeadMoveRouter = compileProofChain(
+    input({
+      required_artifacts: requiredArtifacts.filter((artifact) => artifact.artifact_id !== "prompt-head-move-router"),
+    }),
+  );
+  assert(!unregisteredPromptHeadMoveRouter.ok, "unregistered prompt head move router proof must block readiness");
+  assert(
+    unregisteredPromptHeadMoveRouter.blockers.some((blocker) => blocker.includes("prompt-head-move-router-proof")),
+    "unregistered prompt head move router blocker should name prompt-head-move-router-proof",
   );
 
   const spent = compileProofChain(input({ spent_proof_modules: ["proof-chain-proof"] }));
