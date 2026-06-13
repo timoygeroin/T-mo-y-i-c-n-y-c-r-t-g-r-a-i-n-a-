@@ -4,6 +4,7 @@ export type ProofExampleBisectAction =
   | "block_branch_mismatch"
   | "block_stale_failure_surface"
   | "block_non_failing_surface"
+  | "block_missing_live_head"
   | "block_missing_proof_command"
   | "block_no_probe_modules";
 
@@ -37,6 +38,7 @@ export interface ProofExampleBisectInput {
 export interface ProofExampleBisectCommand {
   module_id: string;
   command: string;
+  head_bound_command: string;
   source_path: string;
 }
 
@@ -102,16 +104,36 @@ function compactSurface(surface: ProofExampleFailureSurface): string {
     .join("; ");
 }
 
-function commandFor(module: ProofExampleProbeModule): ProofExampleBisectCommand {
+function shellQuote(value: string): string {
+  return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+function commandFor(input: ProofExampleBisectInput, module: ProofExampleProbeModule): ProofExampleBisectCommand {
+  const command = `node ${module.dist_path}`;
+
   return {
     module_id: module.module_id,
-    command: `node ${module.dist_path}`,
+    command,
+    head_bound_command: [
+      `MONDAY_ACTIVE_BRANCH=${shellQuote(input.active_branch)}`,
+      `MONDAY_LIVE_HEAD_SHA=${shellQuote(input.live_head_sha)}`,
+      command,
+    ].join(" "),
     source_path: module.source_path,
   };
 }
 
 export function compileProofExampleBisectPlan(input: ProofExampleBisectInput): ProofExampleBisectVerdict {
   const surface = input.failure_surface;
+
+  if (!input.live_head_sha.trim()) {
+    return block(
+      input,
+      "block_missing_live_head",
+      ["live PR head SHA is empty"],
+      "read the active PR head before constructing proof-example probe commands",
+    );
+  }
 
   if (surface.branch !== input.active_branch) {
     return block(
@@ -179,9 +201,9 @@ export function compileProofExampleBisectPlan(input: ProofExampleBisectInput): P
     ok: true,
     action: "emit_bisect_plan",
     decisive_evidence: [compactSurface(surface), ...modules.map((module) => module.module_id)],
-    commands: modules.map(commandFor),
+    commands: modules.map((module) => commandFor(input, module)),
     blockers: [],
     next_route:
-      "run isolated proof-module commands until the exact failing proof module is known; do not edit code from a generic proof-examples failure",
+      "run head-bound isolated proof-module commands until the exact failing proof module is known; do not edit code from a generic proof-examples failure",
   };
 }
