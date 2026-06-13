@@ -4,6 +4,7 @@ export type ReviewRequestCommandAction =
   | "compile_review_request_command"
   | "block_unadmitted_handoff"
   | "block_missing_review_target"
+  | "block_placeholder_review_target"
   | "block_repeated_command"
   | "block_external_boundary";
 
@@ -40,8 +41,21 @@ export interface ReviewRequestCommandVerdict {
   next_route: string;
 }
 
+const PLACEHOLDER_REVIEW_TARGETS = new Set([
+  "platform-reviewer",
+  "reviewer",
+  "todo",
+  "tbd",
+  "example-reviewer",
+  "placeholder-reviewer",
+]);
+
 function normalizeTargets(targets: string[]): string[] {
   return [...new Set(targets.map((target) => target.trim()).filter(Boolean))].sort();
+}
+
+function placeholderTargets(targets: string[]): string[] {
+  return targets.filter((target) => PLACEHOLDER_REVIEW_TARGETS.has(target.toLowerCase()));
 }
 
 function block(
@@ -90,6 +104,7 @@ export function compileReviewRequestCommand(input: ReviewRequestCommandInput): R
 
   const reviewers = normalizeTargets(input.requested_reviewers);
   const teamReviewers = normalizeTargets(input.requested_team_reviewers);
+  const placeholders = placeholderTargets([...reviewers, ...teamReviewers]);
 
   if (reviewers.length === 0 && teamReviewers.length === 0) {
     return block(
@@ -97,6 +112,15 @@ export function compileReviewRequestCommand(input: ReviewRequestCommandInput): R
       evidence,
       ["review request command has no reviewer or team reviewer target"],
       "name an external reviewer target before issuing the GitHub review request command",
+    );
+  }
+
+  if (placeholders.length > 0) {
+    return block(
+      "block_placeholder_review_target",
+      evidence,
+      placeholders.map((target) => `review request target is a placeholder: ${target}`),
+      "replace placeholder review targets with real GitHub reviewer or team slugs before issuing the command",
     );
   }
 
