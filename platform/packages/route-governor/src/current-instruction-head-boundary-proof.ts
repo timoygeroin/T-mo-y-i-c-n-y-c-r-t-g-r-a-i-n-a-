@@ -14,6 +14,7 @@ function candidate(overrides: Partial<CurrentInstructionEmbodimentCandidate> = {
     changed_files: ["platform/packages/route-governor/src/current-instruction-head-boundary.ts"],
     executable_artifacts: ["arbitrateCurrentInstructionHeadBoundary"],
     routing_artifacts: ["current instruction head boundary"],
+    proof_artifacts: ["current-instruction-head-boundary-proof"],
     ...overrides,
   };
 }
@@ -33,6 +34,26 @@ if (!admitted.ok || admitted.action !== "admit_live_head_embodiment") {
 }
 if (admitted.historical_head_sha !== instructionHead || admitted.quarantined_head_sha !== instructionHead) {
   throw new Error("current instruction head boundary should preserve the resolved repaired head only as historical context");
+}
+if (!admitted.decisive_evidence.includes("current-instruction-head-boundary-proof")) {
+  throw new Error("current instruction embodiment admission must preserve proof evidence");
+}
+
+const missingProof = arbitrateCurrentInstructionHeadBoundary({
+  active_branch: branch,
+  instruction_branch: branch,
+  instruction_head_sha: instructionHead,
+  live_head_sha: liveHead,
+  repaired_head_status_resolved: true,
+  resolved_repaired_head_sha: instructionHead,
+  prohibited_blockers: [],
+  candidate: candidate({ proof_artifacts: [] }),
+});
+if (missingProof.ok || missingProof.action !== "block_incomplete_embodiment") {
+  throw new Error("current instruction embodiment without proof evidence must be blocked");
+}
+if (!missingProof.blockers.some((blocker) => blocker.includes("proof artifact"))) {
+  throw new Error("missing proof evidence must be named as the blocker");
 }
 
 const staleBase = arbitrateCurrentInstructionHeadBoundary({
