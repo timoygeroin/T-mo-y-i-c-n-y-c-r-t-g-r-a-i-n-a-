@@ -18,6 +18,7 @@ function lease(overrides: Partial<ExternalWriteLeaseVerdict> = {}): ExternalWrit
     branch,
     head_sha: head,
     lease_id: `${repository}|pr-${pr}|${branch}|${head}|github-contents-mutation-batch`,
+    next_status_expected_head: head,
     decisive_evidence: ["accepted write lease", "github-contents-mutation-batch"],
     blockers: [],
     next_route: "execute the leased branch write",
