@@ -10,7 +10,8 @@ export type ExternalWriteLeaseAction =
   | "block_stale_observed_head"
   | "block_missing_write_surface"
   | "block_repeated_write_class"
-  | "block_incomplete_write_plan";
+  | "block_incomplete_write_plan"
+  | "block_unmoved_result_head";
 
 export interface ExternalWriteLeaseInput {
   repository_full_name: string;
@@ -26,6 +27,8 @@ export interface ExternalWriteLeaseInput {
   executable_artifacts: string[];
   routing_artifacts: string[];
   proof_artifacts: string[];
+  resulting_head_sha?: string;
+  next_status_expected_head?: string;
 }
 
 export interface ExternalWriteLeaseVerdict {
@@ -36,6 +39,7 @@ export interface ExternalWriteLeaseVerdict {
   branch: string;
   head_sha: string;
   lease_id: string | null;
+  next_status_expected_head: string | null;
   decisive_evidence: string[];
   blockers: string[];
   next_route: string;
@@ -50,13 +54,14 @@ function executablePlatformPath(path: string): boolean {
 
 function base(input: ExternalWriteLeaseInput): Pick<
   ExternalWriteLeaseVerdict,
-  "repository_full_name" | "pr_number" | "branch" | "head_sha"
+  "repository_full_name" | "pr_number" | "branch" | "head_sha" | "next_status_expected_head"
 > {
   return {
     repository_full_name: input.repository_full_name,
     pr_number: input.pr_number,
     branch: input.branch,
     head_sha: input.live_head_sha,
+    next_status_expected_head: input.next_status_expected_head ?? input.resulting_head_sha ?? null,
   };
 }
 
@@ -95,6 +100,10 @@ function incompletePlanBlockers(input: ExternalWriteLeaseInput): string[] {
 
 function leaseId(input: ExternalWriteLeaseInput): string {
   return [input.repository_full_name, `pr-${input.pr_number}`, input.branch, input.live_head_sha, input.write_class].join("|");
+}
+
+function nextStatusHead(input: ExternalWriteLeaseInput): string {
+  return input.next_status_expected_head ?? input.resulting_head_sha ?? "post-write-head";
 }
 
 export function compileExternalWriteLease(input: ExternalWriteLeaseInput): ExternalWriteLeaseVerdict {
@@ -144,11 +153,38 @@ export function compileExternalWriteLease(input: ExternalWriteLeaseInput): Exter
     );
   }
 
+  if (input.resulting_head_sha && input.resulting_head_sha === input.live_head_sha) {
+    return block(
+      input,
+      "block_unmoved_result_head",
+      [`resulting head ${input.resulting_head_sha} does not move beyond live head ${input.live_head_sha}`],
+      "execute a branch-moving write before compiling the external write receipt",
+    );
+  }
+
+  if (
+    input.resulting_head_sha &&
+    input.next_status_expected_head &&
+    input.next_status_expected_head !== input.resulting_head_sha
+  ) {
+    return block(
+      input,
+      "block_unmoved_result_head",
+      [
+        `next status expected head ${input.next_status_expected_head} does not match resulting head ${input.resulting_head_sha}`,
+      ],
+      "bind the next status readback to the exact resulting branch head",
+    );
+  }
+
+  const expectedHead = nextStatusHead(input);
+
   return {
     ...base(input),
     ok: true,
     action: "accept_write_lease",
     lease_id: leaseId(input),
+    next_status_expected_head: expectedHead,
     decisive_evidence: [
       `observed live head ${input.live_head_sha}`,
       `write surface ${input.write_surface}`,
@@ -157,8 +193,9 @@ export function compileExternalWriteLease(input: ExternalWriteLeaseInput): Exter
       ...input.executable_artifacts,
       ...input.routing_artifacts,
       ...input.proof_artifacts,
+      `next status expected head ${expectedHead}`,
     ],
     blockers: [],
-    next_route: "execute the leased branch write, then compile a completion receipt and new-head status cursor for the resulting head",
+    next_route: `execute the leased branch write, then compile a completion receipt and status cursor for ${expectedHead}`,
   };
 }
