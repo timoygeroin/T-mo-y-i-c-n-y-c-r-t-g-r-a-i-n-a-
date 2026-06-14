@@ -196,6 +196,6 @@ export function compileExternalWriteLease(input: ExternalWriteLeaseInput): Exter
       `next status expected head ${expectedHead}`,
     ],
     blockers: [],
-    next_route: `execute the leased branch write, then compile a completion receipt and status cursor for ${expectedHead}`,
+    next_route: `execute the leased branch write, then compile a completion receipt and new-head status cursor for ${expectedHead}`,
   };
 }
