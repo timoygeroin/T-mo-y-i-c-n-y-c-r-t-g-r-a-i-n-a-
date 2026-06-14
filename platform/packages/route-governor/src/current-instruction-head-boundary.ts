@@ -15,6 +15,7 @@ export interface CurrentInstructionEmbodimentCandidate {
   changed_files: string[];
   executable_artifacts: string[];
   routing_artifacts: string[];
+  proof_artifacts?: string[];
   blocker?: string;
 }
 
@@ -82,6 +83,9 @@ function incompleteEmbodiment(candidate: CurrentInstructionEmbodimentCandidate):
   }
   if (candidate.routing_artifacts.length === 0) {
     blockers.push("embodiment candidate has no future-routing artifact evidence");
+  }
+  if ((candidate.proof_artifacts ?? []).length === 0) {
+    blockers.push("embodiment candidate has no proof artifact evidence");
   }
 
   return blockers;
@@ -169,7 +173,7 @@ export function arbitrateCurrentInstructionHeadBoundary(
       action: "block_incomplete_embodiment",
       decisive_evidence: [],
       blockers,
-      next_route: "complete executable, routing, and changed-file evidence before moving the branch",
+      next_route: "complete executable, routing, proof, and changed-file evidence before moving the branch",
     };
   }
 
@@ -184,6 +188,7 @@ export function arbitrateCurrentInstructionHeadBoundary(
       ...candidate.changed_files.filter(executablePlatformPath),
       ...candidate.executable_artifacts,
       ...candidate.routing_artifacts,
+      ...(candidate.proof_artifacts ?? []),
     ],
     blockers: [],
     next_route: "commit the live-head embodiment, then bind the next status readback to the moved head",
