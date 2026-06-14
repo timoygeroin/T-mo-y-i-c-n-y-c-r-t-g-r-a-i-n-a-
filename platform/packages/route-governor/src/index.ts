@@ -508,6 +508,7 @@ export * from "./post-readback-embodiment-planner.js";
 export * from "./readback-access-boundary.js";
 export * from "./public-route-exports.js";
 export * from "./public-route-completeness.js";
+export * from "./loading20-scheduled-continuation.js";
 export * from "./loading20-continuation-gate.js";
 export * from "./live-head-advance-policy.js";
 export * from "./external-write-surface.js";
