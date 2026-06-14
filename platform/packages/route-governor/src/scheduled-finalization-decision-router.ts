@@ -1,6 +1,7 @@
 import type { FailureDetailEscalationVerdict } from "./failure-detail-escalation.js";
 import type { LiveStatusAuthorityVerdict } from "./live-status-authority.js";
 import type { NextEmbodimentSelectorVerdict } from "./next-embodiment-selector.js";
+import type { PostRepairAdmissionVerdict } from "./post-repair-embodiment-admission.js";
 import type { ScheduledFinalizationHeadRebaseVerdict } from "./scheduled-finalization-head-rebase.js";
 
 export type ScheduledFinalizationDecisionAction =
@@ -18,6 +19,7 @@ export interface ScheduledFinalizationDecisionRouterInput {
   live_status?: LiveStatusAuthorityVerdict;
   failure_detail?: FailureDetailEscalationVerdict;
   embodiment?: NextEmbodimentSelectorVerdict;
+  post_repair_admission?: PostRepairAdmissionVerdict;
   prohibited_release_classes: string[];
 }
 
@@ -64,6 +66,27 @@ function prohibits(input: ScheduledFinalizationDecisionRouterInput, releaseClass
 
 function directStatusIsActionable(status: LiveStatusAuthorityVerdict): boolean {
   return status.action === "repair_live_failure" || status.action === "accept_live_status_evidence";
+}
+
+function postRepairAdmissionBlockers(input: ScheduledFinalizationDecisionRouterInput): string[] {
+  const admission = input.post_repair_admission;
+  if (!admission) return [];
+
+  const blockers: string[] = [];
+  if (admission.branch !== input.active_branch) {
+    blockers.push(`post-repair admission branch ${admission.branch} does not match active branch ${input.active_branch}`);
+  }
+  if (admission.head_sha !== input.live_head_sha) {
+    blockers.push(`post-repair admission head ${admission.head_sha} does not match live head ${input.live_head_sha}`);
+  }
+  if (!admission.ok) {
+    blockers.push(...admission.blockers);
+  }
+  if (admission.ok && admission.action !== "admit_post_repair_embodiment") {
+    blockers.push(`post-repair admission did not admit embodiment: ${admission.action}`);
+  }
+
+  return blockers;
 }
 
 export function routeScheduledFinalizationDecision(
@@ -135,6 +158,40 @@ export function routeScheduledFinalizationDecision(
       decisive_evidence: input.live_status.decisive_evidence,
       blockers: [],
       next_route: "publish the live-head status readback, then choose a non-repeated embodiment",
+    };
+  }
+
+  if (input.post_repair_admission) {
+    const admissionBlockers = postRepairAdmissionBlockers(input);
+    if (admissionBlockers.length > 0) {
+      return {
+        ...base(input),
+        ok: false,
+        action: "route_to_exact_blocker",
+        decisive_evidence: input.post_repair_admission.decisive_evidence,
+        blockers: admissionBlockers,
+        next_route: input.post_repair_admission.next_route,
+      };
+    }
+
+    if (input.embodiment?.ok && input.embodiment.selected && prohibits(input, input.embodiment.selected.artifact_class)) {
+      return block(
+        input,
+        [`embodiment artifact class is prohibited: ${input.embodiment.selected.artifact_class}`],
+        "select an unspent embodiment artifact class before moving the branch",
+      );
+    }
+
+    return {
+      ...base(input),
+      ok: true,
+      action: "route_to_external_embodiment",
+      decisive_evidence: [
+        ...input.post_repair_admission.decisive_evidence,
+        ...(input.embodiment?.selected?.decisive_evidence ?? []),
+      ],
+      blockers: [],
+      next_route: "commit the post-repair embodiment admitted for the live head, then bind the next readback to the moved head",
     };
   }
 
