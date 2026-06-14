@@ -545,3 +545,4 @@ export * from "./route-progress-ledger.js";
 export * from "./scheduled-finalization-decision-router.js";
 export * from "./finalization-terminal-progress-contract.js";
 export * from "./prompt-head-move-router.js";
+export * from "./post-repair-embodiment-admission.js";
