@@ -1,6 +1,8 @@
 import {
+  admitPostRepairEmbodiment,
   evaluateContinuationMove,
   evaluateRoute,
+  routeScheduledFinalizationDecision,
   selectNextContinuationMove,
   type ContinuationMoveInput,
   type RouteGuardInput,
@@ -319,6 +321,98 @@ export function runRouteGovernorProofExamples(): void {
     staleGithubReadback.failures,
     "does not match expected head",
   );
+
+  const admittedPostRepair = admitPostRepairEmbodiment({
+    active_branch: "monday-platform-genesis-01",
+    live_head_sha: "green-live-head",
+    repaired_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    last_status_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    resolved_blocker_ids: ["issue-1-ci-status-readback"],
+    live_status_verdict: "passing_with_warnings",
+    candidate: {
+      candidate_id: "scheduled-post-repair-admission",
+      move_class: "external_platform_embodiment",
+      branch: "monday-platform-genesis-01",
+      base_head_sha: "green-live-head",
+      changed_files: ["platform/packages/route-governor/src/scheduled-finalization-decision-router.ts"],
+      executable_artifacts: ["routeScheduledFinalizationDecision"],
+      routing_artifacts: ["post-repair admission handoff"],
+      proof_artifacts: ["platform/packages/route-governor/src/proof-examples.ts"],
+    },
+  });
+  expectOk("post-repair embodiment admission", admittedPostRepair.ok, admittedPostRepair.blockers);
+
+  const scheduledPostRepairDecision = routeScheduledFinalizationDecision({
+    active_branch: "monday-platform-genesis-01",
+    live_head_sha: "green-live-head",
+    prompt_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    rebase: {
+      ok: true,
+      action: "admit_live_head_external_embodiment",
+      branch: "monday-platform-genesis-01",
+      admitted_head_sha: "green-live-head",
+      quarantined_head_shas: ["b38ea247602ae8ebba80c4120ad03b41b26bd841"],
+      decisive_evidence: ["live head green-live-head"],
+      blockers: [],
+      next_route: "commit live-head embodiment",
+    },
+    post_repair_admission: admittedPostRepair,
+    prohibited_release_classes: [],
+  });
+  expectOk("scheduled post-repair admission handoff", scheduledPostRepairDecision.ok, scheduledPostRepairDecision.blockers);
+  if (scheduledPostRepairDecision.action !== "route_to_external_embodiment") {
+    throw new Error(
+      `scheduled post-repair decision chose ${scheduledPostRepairDecision.action} instead of route_to_external_embodiment`,
+    );
+  }
+
+  const blockedPostRepair = admitPostRepairEmbodiment({
+    active_branch: "monday-platform-genesis-01",
+    live_head_sha: "pending-live-head",
+    repaired_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    last_status_readback_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    resolved_blocker_ids: ["issue-1-ci-status-readback"],
+    live_status_verdict: "pending",
+    candidate: {
+      candidate_id: "scheduled-post-repair-admission",
+      move_class: "external_platform_embodiment",
+      branch: "monday-platform-genesis-01",
+      base_head_sha: "pending-live-head",
+      changed_files: ["platform/packages/route-governor/src/scheduled-finalization-decision-router.ts"],
+      executable_artifacts: ["routeScheduledFinalizationDecision"],
+      routing_artifacts: ["post-repair admission handoff"],
+      proof_artifacts: ["platform/packages/route-governor/src/proof-examples.ts"],
+    },
+  });
+
+  const blockedScheduledDecision = routeScheduledFinalizationDecision({
+    active_branch: "monday-platform-genesis-01",
+    live_head_sha: "pending-live-head",
+    prompt_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    rebase: {
+      ok: true,
+      action: "admit_live_head_external_embodiment",
+      branch: "monday-platform-genesis-01",
+      admitted_head_sha: "pending-live-head",
+      quarantined_head_shas: ["b38ea247602ae8ebba80c4120ad03b41b26bd841"],
+      decisive_evidence: ["live head pending-live-head"],
+      blockers: [],
+      next_route: "commit live-head embodiment",
+    },
+    post_repair_admission: blockedPostRepair,
+    prohibited_release_classes: [],
+  });
+  expectFailure(
+    "scheduled post-repair blocked status handoff",
+    blockedScheduledDecision.ok,
+    blockedScheduledDecision.blockers,
+    "live head status is pending",
+  );
+  if (blockedScheduledDecision.action !== "route_to_exact_blocker") {
+    throw new Error(
+      `blocked scheduled post-repair decision chose ${blockedScheduledDecision.action} instead of route_to_exact_blocker`,
+    );
+  }
 
   const receiptReplay = compileReceiptReplayGuard({
     current_head_sha: "next-head",
