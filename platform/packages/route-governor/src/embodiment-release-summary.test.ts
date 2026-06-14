@@ -4,8 +4,8 @@ import { test } from "node:test";
 import { compileEmbodimentReleaseSummary, type EmbodimentReleaseSummaryInput } from "./embodiment-release-summary.js";
 
 const branch = "monday-platform-genesis-01";
-const previous = "61d938a675b864cbad745007a550a9881ac0a106";
-const resulting = "5d810083c9b4d8d099e3855c0acf6a70e24587b1";
+const previous = "previous-live-head";
+const resulting = "resulting-moved-head";
 const repaired = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
 
 function input(overrides: Partial<EmbodimentReleaseSummaryInput> = {}): EmbodimentReleaseSummaryInput {
