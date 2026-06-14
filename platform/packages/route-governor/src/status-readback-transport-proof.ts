@@ -90,6 +90,41 @@ assert.equal(metadataOnly.ok, false);
 assert.equal(metadataOnly.action, "reject_non_status_surface");
 assert.match(metadataOnly.blocker ?? "", /NON_STATUS_SURFACE_ONLY/);
 
+const fallbackEmbodiment = compileStatusReadbackTransport(
+  input({
+    embodiment_fallback: {
+      candidate_id: "transport-blocked-embodiment-fallback",
+      changed_files: [
+        "platform/packages/route-governor/src/status-readback-transport.ts",
+        "platform/packages/route-governor/src/status-readback-transport-proof.ts",
+      ],
+      executable_artifacts: ["compileStatusReadbackTransport"],
+      routing_artifacts: ["blocked status transport routes to complete executable embodiment fallback"],
+      proof_artifacts: ["dist/status-readback-transport-proof.js"],
+    },
+  }),
+);
+assert.equal(fallbackEmbodiment.ok, true);
+assert.equal(fallbackEmbodiment.action, "route_to_executable_embodiment");
+assert.equal(fallbackEmbodiment.blocker, null);
+assert(fallbackEmbodiment.decisive_evidence.includes("transport-blocked-embodiment-fallback"));
+assert.match(fallbackEmbodiment.next_route, /skip status-claim release/);
+
+const proofOnlyFallback = compileStatusReadbackTransport(
+  input({
+    embodiment_fallback: {
+      candidate_id: "proof-only-fallback",
+      changed_files: ["platform/packages/route-governor/src/status-readback-transport-proof.ts"],
+      executable_artifacts: ["compileStatusReadbackTransport"],
+      routing_artifacts: ["proof-only fallback should not count"],
+      proof_artifacts: ["dist/status-readback-transport-proof.js"],
+    },
+  }),
+);
+assert.equal(proofOnlyFallback.ok, false);
+assert.equal(proofOnlyFallback.action, "emit_exact_status_access_blocker");
+assert.match(proofOnlyFallback.decisive_evidence.join("\n"), /no behavior-bearing platform file/);
+
 const staleChecks = compileStatusReadbackTransport(
   input({
     surfaces: [
