@@ -4,12 +4,14 @@ import {
   compileRuntimeExecutionQueue,
   type RuntimeExecutionQueueInput,
 } from "./runtime-execution-queue.js";
+import { observeRuntimeExecution, type RuntimeExecutionObservedEvent } from "./runtime-execution-observer.js";
 import type { FinalizationRuntimeDispatchVerdict } from "./finalization-runtime-dispatch.js";
 
 const repository = "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-";
 const pr = 2;
 const branch = "monday-platform-genesis-01";
 const head = "609b2be54264aa2bed5b02224e1cead7b82538e1";
+const observedMovedHead = "runtime-observer-moved-head";
 
 function dispatch(overrides: Partial<FinalizationRuntimeDispatchVerdict> = {}): FinalizationRuntimeDispatchVerdict {
   return {
@@ -49,6 +51,59 @@ assert.deepEqual(
   ["verify_live_head", "write_branch", "record_receipt", "read_moved_head_status"],
 );
 assert.equal(embodiment.steps[1]?.rollback_on_failure, true);
+
+function observed(stepId: string, status: RuntimeExecutionObservedEvent["status"] = "completed"): RuntimeExecutionObservedEvent {
+  const step = embodiment.steps.find((candidate) => candidate.step_id === stepId);
+  assert.ok(step);
+  return {
+    step_id: stepId,
+    kind: step.kind,
+    command: step.command,
+    status,
+    produced_head_sha: step.kind === "write_branch" && status === "completed" ? observedMovedHead : undefined,
+    evidence: [`${stepId}:${status}`],
+  };
+}
+
+const observedRequired = [
+  observed("verify-live-head"),
+  observed("write-external-embodiment"),
+  observed("record-execution-receipt"),
+];
+
+const observedExecution = observeRuntimeExecution({
+  queue: embodiment,
+  active_branch: branch,
+  pre_execution_head_sha: head,
+  post_execution_head_sha: observedMovedHead,
+  observed_events: observedRequired,
+  status_claim: "none",
+});
+assert.equal(observedExecution.ok, true);
+assert.equal(observedExecution.action, "accept_runtime_execution_observation");
+assert.equal(observedExecution.required_status_head_sha, observedMovedHead);
+
+const missingReceiptObservation = observeRuntimeExecution({
+  queue: embodiment,
+  active_branch: branch,
+  pre_execution_head_sha: head,
+  post_execution_head_sha: observedMovedHead,
+  observed_events: [observed("verify-live-head"), observed("write-external-embodiment")],
+  status_claim: "none",
+});
+assert.equal(missingReceiptObservation.ok, false);
+assert.equal(missingReceiptObservation.action, "block_missing_required_step");
+
+const statusSmugglingObservation = observeRuntimeExecution({
+  queue: embodiment,
+  active_branch: branch,
+  pre_execution_head_sha: head,
+  post_execution_head_sha: observedMovedHead,
+  observed_events: observedRequired,
+  status_claim: "passing",
+});
+assert.equal(statusSmugglingObservation.ok, false);
+assert.equal(statusSmugglingObservation.action, "block_status_claim_from_write");
 
 const status = compileRuntimeExecutionQueue(
   input({
