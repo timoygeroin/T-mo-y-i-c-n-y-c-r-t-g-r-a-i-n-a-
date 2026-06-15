@@ -4,7 +4,8 @@ import { test } from "node:test";
 import { compileReviewRequestCommand, type ReviewRequestCommandInput } from "./review-request-command.js";
 import type { TerminalReviewHandoffVerdict } from "./terminal-review-handoff.js";
 
-const head = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
+const head = "dab4833713220c27fc590d476d2c34313189f269";
+const olderHead = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
 
 function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): TerminalReviewHandoffVerdict {
   return {
@@ -14,9 +15,9 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
     pr_number: 2,
     branch: "monday-platform-genesis-01",
     head_sha: head,
-    decisive_evidence: [`live head ${head}`, "status surface repaired-head-readback-b38"],
+    decisive_evidence: [`live head ${head}`, "status surface live-head-readback-dab483"],
     blockers: [],
-    quarantined_heads: [],
+    quarantined_heads: [olderHead],
     warnings: ["Node.js 20 Actions deprecation notice"],
     next_route: "request final review on the live PR head",
     ...overrides,
@@ -26,6 +27,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
 function input(overrides: Partial<ReviewRequestCommandInput> = {}): ReviewRequestCommandInput {
   return {
     handoff: handoff(),
+    live_head_sha: head,
     requested_reviewers: ["z-reviewer", "a-reviewer", "a-reviewer"],
     requested_team_reviewers: ["platform-team"],
     command_id: `review-request:${head}`,
@@ -43,6 +45,7 @@ test("compiles admitted terminal handoff into a guarded GitHub reviewer request 
   assert.equal(verdict.command?.repository_full_name, "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-");
   assert.equal(verdict.command?.pr_number, 2);
   assert.equal(verdict.command?.head_sha, head);
+  assert.equal(verdict.command?.guard.require_live_head_sha, head);
   assert.deepEqual(verdict.command?.reviewers, ["a-reviewer", "z-reviewer"]);
   assert.deepEqual(verdict.command?.team_reviewers, ["platform-team"]);
   assert(verdict.decisive_evidence.includes(`review-request:${head}`));
@@ -62,6 +65,20 @@ test("blocks a review command when the terminal handoff is not admitted", () => 
   assert.equal(verdict.ok, false);
   assert.equal(verdict.action, "block_unadmitted_handoff");
   assert(verdict.blockers.includes("terminal handoff action is route_to_external_embodiment, not admit_review_request"));
+});
+
+test("blocks admitted handoff evidence after the live PR head moves", () => {
+  const verdict = compileReviewRequestCommand(
+    input({
+      handoff: handoff({ head_sha: olderHead }),
+      live_head_sha: head,
+      command_id: `review-request:${olderHead}`,
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.equal(verdict.action, "block_stale_handoff_head");
+  assert.deepEqual(verdict.blockers, [`terminal handoff head ${olderHead} is not live head ${head}`]);
 });
 
 test("blocks missing reviewer targets", () => {
