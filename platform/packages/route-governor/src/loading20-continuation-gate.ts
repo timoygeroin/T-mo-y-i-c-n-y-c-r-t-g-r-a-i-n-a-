@@ -14,7 +14,7 @@ export type Loading20MoveClass =
   | "duplicate_status_readback"
   | "old_repaired_head_blocker";
 
-export type Loading20ContinuationAction =
+export type Loading20GateContinuationAction =
   | "read_moved_head_status"
   | "commit_external_embodiment"
   | "emit_exact_external_blocker"
@@ -53,7 +53,7 @@ export interface Loading20ContinuationInput {
 
 export interface Loading20ContinuationVerdict {
   ok: boolean;
-  action: Loading20ContinuationAction;
+  action: Loading20GateContinuationAction;
   branch: string;
   head_sha: string;
   decisive_evidence: string[];
