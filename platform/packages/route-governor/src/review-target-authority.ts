@@ -4,12 +4,14 @@ export type ReviewTargetAuthorityAction =
   | "admit_review_targets"
   | "emit_exact_review_target_blocker"
   | "block_unadmitted_handoff"
+  | "block_stale_live_head"
   | "block_placeholder_targets"
   | "block_self_review_targets"
   | "block_replayed_target_set";
 
 export interface ReviewTargetAuthorityInput {
   handoff: TerminalReviewHandoffVerdict;
+  live_head_sha?: string;
   requested_reviewers: string[];
   requested_team_reviewers: string[];
   acting_user: string;
@@ -70,6 +72,7 @@ export function resolveReviewTargetAuthority(input: ReviewTargetAuthorityInput):
     `handoff action ${input.handoff.action}`,
     `head ${input.handoff.head_sha}`,
     `branch ${input.handoff.branch}`,
+    ...(input.live_head_sha ? [`live head ${input.live_head_sha}`] : []),
   ];
 
   if (!input.handoff.ok || input.handoff.action !== "admit_review_request") {
@@ -78,6 +81,15 @@ export function resolveReviewTargetAuthority(input: ReviewTargetAuthorityInput):
       evidence,
       [...input.handoff.blockers, `terminal handoff action is ${input.handoff.action}, not admit_review_request`],
       "admit terminal review handoff before resolving reviewer targets",
+    );
+  }
+
+  if (input.live_head_sha && input.handoff.head_sha !== input.live_head_sha) {
+    return block(
+      "block_stale_live_head",
+      evidence,
+      [`review target handoff head ${input.handoff.head_sha} is not live head ${input.live_head_sha}`],
+      "refresh terminal review handoff against the live PR head before resolving reviewer targets",
     );
   }
 
