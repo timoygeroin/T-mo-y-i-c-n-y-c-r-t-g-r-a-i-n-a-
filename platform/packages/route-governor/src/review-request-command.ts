@@ -3,6 +3,7 @@ import type { TerminalReviewHandoffVerdict } from "./terminal-review-handoff.js"
 export type ReviewRequestCommandAction =
   | "compile_review_request_command"
   | "block_unadmitted_handoff"
+  | "block_stale_handoff_head"
   | "block_missing_review_target"
   | "block_placeholder_review_target"
   | "block_repeated_command"
@@ -10,6 +11,7 @@ export type ReviewRequestCommandAction =
 
 export interface ReviewRequestCommandInput {
   handoff: TerminalReviewHandoffVerdict;
+  live_head_sha: string;
   requested_reviewers: string[];
   requested_team_reviewers: string[];
   command_id: string;
@@ -77,7 +79,8 @@ function block(
 export function compileReviewRequestCommand(input: ReviewRequestCommandInput): ReviewRequestCommandVerdict {
   const evidence = [
     `handoff action ${input.handoff.action}`,
-    `head ${input.handoff.head_sha}`,
+    `handoff head ${input.handoff.head_sha}`,
+    `live head ${input.live_head_sha}`,
     `branch ${input.handoff.branch}`,
   ];
 
@@ -99,6 +102,15 @@ export function compileReviewRequestCommand(input: ReviewRequestCommandInput): R
         `terminal handoff action is ${input.handoff.action}, not admit_review_request`,
       ],
       "resolve terminal handoff blockers before compiling a review request command",
+    );
+  }
+
+  if (input.handoff.head_sha !== input.live_head_sha) {
+    return block(
+      "block_stale_handoff_head",
+      evidence,
+      [`terminal handoff head ${input.handoff.head_sha} is not live head ${input.live_head_sha}`],
+      "refresh terminal handoff against the live PR head before compiling a review request command",
     );
   }
 
@@ -152,11 +164,12 @@ export function compileReviewRequestCommand(input: ReviewRequestCommandInput): R
     reviewers,
     team_reviewers: teamReviewers,
     guard: {
-      require_live_head_sha: input.handoff.head_sha,
+      require_live_head_sha: input.live_head_sha,
       forbidden_fallbacks: [
         "duplicate_comment",
         "metadata_reread",
         "stale_repaired_head_status",
+        "stale_terminal_handoff",
         "local_memory_guard",
       ],
     },
