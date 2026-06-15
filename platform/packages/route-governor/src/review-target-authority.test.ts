@@ -5,6 +5,7 @@ import { resolveReviewTargetAuthority, type ReviewTargetAuthorityInput } from ".
 import type { TerminalReviewHandoffVerdict } from "./terminal-review-handoff.js";
 
 const head = "4ad710770b24946f2f7ccc95282bcd4b180fa63f";
+const staleHead = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
 
 function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): TerminalReviewHandoffVerdict {
   return {
@@ -16,7 +17,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
     head_sha: head,
     decisive_evidence: [`live head ${head}`, "status surface current-head-readback"],
     blockers: [],
-    quarantined_heads: ["b38ea247602ae8ebba80c4120ad03b41b26bd841"],
+    quarantined_heads: [staleHead],
     warnings: ["Node.js 20 Actions deprecation notice"],
     next_route: "request final review on the live PR head",
     ...overrides,
@@ -26,6 +27,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
 function input(overrides: Partial<ReviewTargetAuthorityInput> = {}): ReviewTargetAuthorityInput {
   return {
     handoff: handoff(),
+    live_head_sha: head,
     requested_reviewers: ["z-reviewer", "a-reviewer", "a-reviewer"],
     requested_team_reviewers: ["platform-team"],
     acting_user: "mondayid-bot",
@@ -45,6 +47,20 @@ test("admits normalized non-self review targets for an admitted terminal handoff
   assert.deepEqual(verdict.team_reviewers, ["platform-team"]);
   assert.equal(verdict.target_set_id, `review-targets:${head}:01`);
   assert(verdict.decisive_evidence.includes(`reviewer:a-reviewer`));
+  assert(verdict.decisive_evidence.includes(`live head ${head}`));
+});
+
+test("blocks review target resolution when handoff is stale against the live head", () => {
+  const verdict = resolveReviewTargetAuthority(
+    input({
+      handoff: handoff({ head_sha: staleHead }),
+      live_head_sha: head,
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.equal(verdict.action, "block_stale_live_head");
+  assert.deepEqual(verdict.blockers, [`review target handoff head ${staleHead} is not live head ${head}`]);
 });
 
 test("converts missing targets into an exact external blocker", () => {
