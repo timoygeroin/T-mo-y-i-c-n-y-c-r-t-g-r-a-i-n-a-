@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { compileReviewRequestCommand, type ReviewRequestCommandInput } from "./review-request-command.js";
 import type { TerminalReviewHandoffVerdict } from "./terminal-review-handoff.js";
 
-const head = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
+const head = "dab4833713220c27fc590d476d2c34313189f269";
+const olderHead = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
 
 function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): TerminalReviewHandoffVerdict {
   return {
@@ -15,11 +16,11 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
     head_sha: head,
     decisive_evidence: [
       `live head ${head}`,
-      "status surface repaired-head-readback-b38",
-      "seven repaired-head checks succeeded",
+      "status surface live-head-readback-dab483",
+      "current head checks succeeded",
     ],
     blockers: [],
-    quarantined_heads: [],
+    quarantined_heads: [olderHead],
     warnings: ["Node.js 20 Actions deprecation notice"],
     next_route: "request final review on the live PR head; do not recycle repaired-head status or add another readiness guard",
     ...overrides,
@@ -29,6 +30,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
 function input(overrides: Partial<ReviewRequestCommandInput> = {}): ReviewRequestCommandInput {
   return {
     handoff: handoff(),
+    live_head_sha: head,
     requested_reviewers: ["timoygeroin"],
     requested_team_reviewers: [],
     command_id: `review-request:${head}`,
@@ -42,14 +44,27 @@ const compiled = compileReviewRequestCommand(input());
 assert.equal(compiled.ok, true);
 assert.equal(compiled.action, "compile_review_request_command");
 assert.equal(compiled.command?.operation, "request_pull_request_reviewers");
+assert.equal(compiled.command?.head_sha, head);
 assert.equal(compiled.command?.guard.require_live_head_sha, head);
 assert.deepEqual(compiled.command?.reviewers, ["timoygeroin"]);
 assert.deepEqual(compiled.command?.guard.forbidden_fallbacks, [
   "duplicate_comment",
   "metadata_reread",
   "stale_repaired_head_status",
+  "stale_terminal_handoff",
   "local_memory_guard",
 ]);
+
+const staleHandoffHead = compileReviewRequestCommand(
+  input({
+    handoff: handoff({ head_sha: olderHead }),
+    live_head_sha: head,
+    command_id: `review-request:${olderHead}`,
+  }),
+);
+assert.equal(staleHandoffHead.ok, false);
+assert.equal(staleHandoffHead.action, "block_stale_handoff_head");
+assert.deepEqual(staleHandoffHead.blockers, [`terminal handoff head ${olderHead} is not live head ${head}`]);
 
 const noTarget = compileReviewRequestCommand(input({ requested_reviewers: [], requested_team_reviewers: [] }));
 assert.equal(noTarget.ok, false);
