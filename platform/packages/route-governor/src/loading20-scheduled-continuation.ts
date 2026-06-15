@@ -13,7 +13,7 @@ export type Loading20ContinuationMoveClass =
 
 export type Loading20StatusClaim = "none" | "passing" | "passing_with_warnings" | "pending" | "failing";
 
-export type Loading20ContinuationAction =
+export type Loading20ScheduledContinuationAction =
   | "admit_live_external_embodiment"
   | "admit_fresh_live_status_readback"
   | "emit_exact_external_blocker"
@@ -55,7 +55,7 @@ export interface Loading20ScheduledContinuationInput {
 
 export interface Loading20ScheduledContinuationVerdict {
   ok: boolean;
-  action: Loading20ContinuationAction;
+  action: Loading20ScheduledContinuationAction;
   branch: string;
   live_head_sha: string;
   quarantined_head_shas: string[];
@@ -100,7 +100,7 @@ function base(input: Loading20ScheduledContinuationInput): Pick<
 function block(
   input: Loading20ScheduledContinuationInput,
   action: Exclude<
-    Loading20ContinuationAction,
+    Loading20ScheduledContinuationAction,
     "admit_live_external_embodiment" | "admit_fresh_live_status_readback" | "emit_exact_external_blocker"
   >,
   blockers: string[],
