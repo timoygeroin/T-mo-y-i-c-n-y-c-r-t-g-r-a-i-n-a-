@@ -4,6 +4,7 @@ import { resolveReviewTargetAuthority, type ReviewTargetAuthorityInput } from ".
 import type { TerminalReviewHandoffVerdict } from "./terminal-review-handoff.js";
 
 const head = "4ad710770b24946f2f7ccc95282bcd4b180fa63f";
+const staleHead = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
 
 function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): TerminalReviewHandoffVerdict {
   return {
@@ -15,7 +16,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
     head_sha: head,
     decisive_evidence: [`live head ${head}`, "status surface current-head-readback"],
     blockers: [],
-    quarantined_heads: ["b38ea247602ae8ebba80c4120ad03b41b26bd841"],
+    quarantined_heads: [staleHead],
     warnings: ["Node.js 20 Actions deprecation notice"],
     next_route: "request final review on the live PR head",
     ...overrides,
@@ -25,6 +26,7 @@ function handoff(overrides: Partial<TerminalReviewHandoffVerdict> = {}): Termina
 function input(overrides: Partial<ReviewTargetAuthorityInput> = {}): ReviewTargetAuthorityInput {
   return {
     handoff: handoff(),
+    live_head_sha: head,
     requested_reviewers: ["external-reviewer"],
     requested_team_reviewers: ["platform-review-team"],
     acting_user: "mondayid-bot",
@@ -41,6 +43,12 @@ assert.equal(admitted.action, "admit_review_targets");
 assert.deepEqual(admitted.reviewers, ["external-reviewer"]);
 assert.deepEqual(admitted.team_reviewers, ["platform-review-team"]);
 assert.equal(admitted.next_route, "compile the GitHub review request command only with this admitted target set and live-head guard");
+assert.ok(admitted.decisive_evidence.includes(`live head ${head}`));
+
+const staleHandoff = resolveReviewTargetAuthority(input({ handoff: handoff({ head_sha: staleHead }) }));
+assert.equal(staleHandoff.ok, false);
+assert.equal(staleHandoff.action, "block_stale_live_head");
+assert.deepEqual(staleHandoff.blockers, [`review target handoff head ${staleHead} is not live head ${head}`]);
 
 const missingTarget = resolveReviewTargetAuthority(
   input({
