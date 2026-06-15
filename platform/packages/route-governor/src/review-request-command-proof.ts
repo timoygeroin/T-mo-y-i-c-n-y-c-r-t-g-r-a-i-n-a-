@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 
+import "./review-cycle-exit-router-proof.js";
 import { compileReviewRequestCommand, type ReviewRequestCommandInput } from "./review-request-command.js";
 import type { TerminalReviewHandoffVerdict } from "./terminal-review-handoff.js";
 
