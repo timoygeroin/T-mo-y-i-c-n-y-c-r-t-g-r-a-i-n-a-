@@ -3,11 +3,13 @@ import assert from "node:assert/strict";
 import { admitMergeAttempt } from "./merge-attempt-admission.js";
 
 const liveHead = "01616aa1fa7fc5a89357e4be551d074a24e54f66";
+const repository = "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-";
+const branch = "monday-platform-genesis-01";
 
 const admitted = admitMergeAttempt({
-  repository_full_name: "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  repository_full_name: repository,
   pr_number: 2,
-  branch: "monday-platform-genesis-01",
+  branch,
   live_head_sha: liveHead,
   command_head_sha: liveHead,
   status_head_sha: liveHead,
@@ -27,10 +29,9 @@ assert.equal(admitted.action, "admit_merge_attempt");
 assert.equal(admitted.next_route, "issue the merge command only with expected_head_sha bound to this live head");
 
 const staleStatus = admitMergeAttempt({
-  ...admitted,
-  repository_full_name: "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  repository_full_name: repository,
   pr_number: 2,
-  branch: "monday-platform-genesis-01",
+  branch,
   live_head_sha: liveHead,
   command_head_sha: liveHead,
   status_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
@@ -49,9 +50,9 @@ assert.equal(staleStatus.ok, false);
 assert.equal(staleStatus.action, "block_stale_status_head");
 
 const missingReview = admitMergeAttempt({
-  repository_full_name: "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  repository_full_name: repository,
   pr_number: 2,
-  branch: "monday-platform-genesis-01",
+  branch,
   live_head_sha: liveHead,
   command_head_sha: liveHead,
   status_head_sha: liveHead,
