@@ -553,3 +553,4 @@ export * from "./review-target-policy.js";
 export * from "./tri-surface-convergence.js";
 export * from "./merge-finalization-command.js";
 export * from "./review-request-result-receipt.js";
+export * from "./post-repair-merge-handoff.js";
