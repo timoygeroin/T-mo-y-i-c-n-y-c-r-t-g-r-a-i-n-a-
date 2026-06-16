@@ -552,3 +552,4 @@ export * from "./status-denial-recovery.js";
 export * from "./review-target-policy.js";
 export * from "./tri-surface-convergence.js";
 export * from "./merge-finalization-command.js";
+export * from "./review-request-result-receipt.js";
