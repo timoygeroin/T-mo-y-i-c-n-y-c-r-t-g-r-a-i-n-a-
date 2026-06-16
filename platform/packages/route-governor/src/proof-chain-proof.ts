@@ -91,6 +91,7 @@ const registeredProofModules = [
   "review-request-command",
   "scheduled-surface-reconciliation",
   "post-repair-embodiment-admission",
+  "merge-result-receipt",
   "proof-chain",
 ];
 
@@ -132,6 +133,10 @@ export function runProofChainProof(): void {
   const ready = compileProofChain(input());
   expect(ready.ok, `proof chain should be ready: ${ready.blockers.join("; ")}`);
   expect(ready.action === "proof_chain_ready", `expected proof_chain_ready, got ${ready.action}`);
+  expect(
+    ready.decisive_evidence.some((evidence) => evidence.includes("merge-result-receipt")),
+    "merge result receipt must be part of decisive proof-chain evidence",
+  );
   expect(
     ready.decisive_evidence.some((evidence) => evidence.includes("post-repair-embodiment-admission")),
     "post-repair embodiment admission must be part of decisive proof-chain evidence",
