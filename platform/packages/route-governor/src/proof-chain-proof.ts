@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 
+import "./review-request-result-receipt-proof.js";
 import { compileProofChain, type ProofChainArtifact, type ProofChainInput } from "./proof-chain.js";
 
 const branch = "monday-platform-genesis-01";
