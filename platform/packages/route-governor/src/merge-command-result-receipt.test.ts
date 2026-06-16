@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type { MergeCommand } from "./merge-command-admission.js";
-import { compileMergeCommandResultReceipt } from "./merge-command-result-receipt.js";
+import {
+  compileMergeCommandResultReceipt,
+  type MergeCommandResultReceiptInput,
+} from "./merge-command-result-receipt.js";
 
 const head = "e6b5b11516615e75d18472281ea3449a14588ee2";
 const mergeCommit = "1111111111111111111111111111111111111111";
@@ -21,7 +24,7 @@ const command: MergeCommand = {
   },
 };
 
-function receipt(overrides = {}) {
+function receipt(overrides: Partial<MergeCommandResultReceiptInput> = {}) {
   return compileMergeCommandResultReceipt({
     command,
     live_head_sha: head,
