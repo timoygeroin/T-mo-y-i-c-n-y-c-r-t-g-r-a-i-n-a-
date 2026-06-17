@@ -109,7 +109,7 @@ function release(
 ): TerminalReleaseInstruction {
   return {
     ...base(input),
-    ok: blockers.length === 0,
+    ok: action === "release_exact_blocker" || blockers.length === 0,
     action,
     target,
     decisive_evidence: evidence,
