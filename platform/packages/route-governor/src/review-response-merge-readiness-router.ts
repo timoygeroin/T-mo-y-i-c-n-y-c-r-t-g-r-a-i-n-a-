@@ -7,6 +7,7 @@ export type ReviewResponseMergeReadinessAction =
   | "wait_for_checks"
   | "repair_status_failure"
   | "continue_external_embodiment"
+  | "block_release"
   | "route_to_review_repair"
   | "wait_for_review_response"
   | "emit_exact_external_blocker"
