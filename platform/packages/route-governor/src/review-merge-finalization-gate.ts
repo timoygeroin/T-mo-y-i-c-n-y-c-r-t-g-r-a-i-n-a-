@@ -1,3 +1,4 @@
+import type { ContinuationStatusReceiptSurface } from "./index.js";
 import {
   compileLiveStatusAuthority,
   type LiveStatusAuthorityAction,
@@ -60,7 +61,9 @@ export interface ReviewMergeFinalizationGateVerdict {
   next_route: string;
 }
 
-function statusSurfaceFromAuthority(authority: ReturnType<typeof compileLiveStatusAuthority>) {
+function statusSurfaceFromAuthority(
+  authority: ReturnType<typeof compileLiveStatusAuthority>,
+): ContinuationStatusReceiptSurface {
   if (authority.ok) {
     return {
       verdict: authority.warnings.length > 0 ? "passing_with_warnings" : "passing",
@@ -69,7 +72,7 @@ function statusSurfaceFromAuthority(authority: ReturnType<typeof compileLiveStat
       blocking_failures: [],
       pending_surfaces: [],
       non_blocking_warnings: authority.warnings,
-    } as const;
+    };
   }
 
   const isPending = authority.action === "hold_for_live_status";
@@ -80,7 +83,7 @@ function statusSurfaceFromAuthority(authority: ReturnType<typeof compileLiveStat
     blocking_failures: isPending ? [] : authority.blockers,
     pending_surfaces: isPending ? authority.blockers : [],
     non_blocking_warnings: authority.warnings,
-  } as const;
+  };
 }
 
 function block(
