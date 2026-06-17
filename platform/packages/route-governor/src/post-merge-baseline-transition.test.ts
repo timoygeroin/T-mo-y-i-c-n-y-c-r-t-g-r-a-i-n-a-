@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import test from "node:test";
 
 import { admitPostMergeBaselineTransition } from "./post-merge-baseline-transition.js";
 import type { MergeResultReceipt } from "./merge-result-receipt.js";
