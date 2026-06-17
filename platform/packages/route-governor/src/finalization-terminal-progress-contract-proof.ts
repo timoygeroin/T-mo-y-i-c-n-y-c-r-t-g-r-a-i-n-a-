@@ -10,6 +10,7 @@ import {
 const branch = "monday-platform-genesis-01";
 const liveHead = "fd17ea45e26f79fff2a677ad1b196e2ce6e3f9ac";
 const repairedHead = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
+const proofArtifact = "platform/packages/route-governor/src/finalization-terminal-progress-contract-proof.ts";
 
 const prohibited = [
   "pr_metadata_reread",
@@ -35,6 +36,7 @@ function input(overrides: Partial<FinalizationTerminalProgressInput> = {}): Fina
       changed_files: ["platform/packages/route-governor/src/finalization-terminal-progress-contract.ts"],
       executable_artifacts: ["enforceFinalizationTerminalProgress"],
       routing_artifacts: ["terminal progress admits only embodiment, fresh readback, or exact blocker"],
+      proof_artifacts: [proofArtifact],
       new_check_runs: [],
     },
     ...overrides,
@@ -45,6 +47,25 @@ const embodiment = enforceFinalizationTerminalProgress(input());
 assert.equal(embodiment.ok, true);
 assert.equal(embodiment.action, "admit_external_embodiment");
 assert.equal(embodiment.quarantined_heads.includes(repairedHead), true);
+assert.ok(embodiment.decisive_evidence.includes(proofArtifact));
+
+const missingProofEmbodiment = enforceFinalizationTerminalProgress(
+  input({
+    candidate: {
+      progress_class: "external_platform_embodiment",
+      branch,
+      base_head_sha: liveHead,
+      changed_files: ["platform/packages/route-governor/src/finalization-terminal-progress-contract.ts"],
+      executable_artifacts: ["enforceFinalizationTerminalProgress"],
+      routing_artifacts: ["terminal progress admits only embodiment, fresh readback, or exact blocker"],
+      proof_artifacts: [],
+      new_check_runs: [],
+    },
+  }),
+);
+assert.equal(missingProofEmbodiment.ok, false);
+assert.equal(missingProofEmbodiment.action, "block_incomplete_embodiment");
+assert.ok(missingProofEmbodiment.blockers.includes("terminal embodiment has no proof artifact evidence"));
 
 const metadataReread = enforceFinalizationTerminalProgress(
   input({
@@ -140,6 +161,7 @@ const incompleteEmbodiment = enforceFinalizationTerminalProgress(
       changed_files: ["platform/docs/finalization.md"],
       executable_artifacts: [],
       routing_artifacts: [],
+      proof_artifacts: [],
       new_check_runs: [],
     },
   }),
