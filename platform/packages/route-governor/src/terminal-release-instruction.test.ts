@@ -105,6 +105,21 @@ test("requires exact blocker text for blocker releases", () => {
   assert.deepEqual(verdict.blockers, ["block target has no exact blocker text"]);
 });
 
+test("releases exact blocker text as a terminal instruction", () => {
+  const verdict = compileTerminalReleaseInstruction(
+    input({
+      requested_target: "block",
+      exact_blocker: "GitHub merge endpoint returned 405 for the live PR head",
+      status_surface: undefined,
+    }),
+  );
+
+  assert.equal(verdict.ok, true);
+  assert.equal(verdict.action, "release_exact_blocker");
+  assert.equal(verdict.target, "block");
+  assert.deepEqual(verdict.blockers, ["GitHub merge endpoint returned 405 for the live PR head"]);
+});
+
 test("releases review instruction without duplicating status or labels", () => {
   const verdict = compileTerminalReleaseInstruction(input({ requested_target: "request_review" }));
 
