@@ -554,3 +554,4 @@ export * from "./tri-surface-convergence.js";
 export * from "./merge-finalization-command.js";
 export * from "./review-request-result-receipt.js";
 export * from "./post-repair-merge-handoff.js";
+export * from "./review-ready-embodiment-handoff.js";
