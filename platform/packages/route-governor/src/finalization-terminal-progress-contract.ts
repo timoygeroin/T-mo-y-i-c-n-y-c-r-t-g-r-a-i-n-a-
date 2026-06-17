@@ -33,6 +33,7 @@ export interface TerminalProgressCandidate {
   changed_files: string[];
   executable_artifacts: string[];
   routing_artifacts: string[];
+  proof_artifacts?: string[];
   new_check_runs: TerminalCheckRunEvidence[];
   blocker?: string;
 }
@@ -115,6 +116,9 @@ function incompleteEmbodiment(candidate: TerminalProgressCandidate): string[] {
   if (candidate.routing_artifacts.length === 0) {
     blockers.push("terminal embodiment has no future-routing artifact evidence");
   }
+  if ((candidate.proof_artifacts ?? []).length === 0) {
+    blockers.push("terminal embodiment has no proof artifact evidence");
+  }
 
   return blockers;
 }
@@ -159,7 +163,7 @@ export function enforceFinalizationTerminalProgress(
         input,
         "block_incomplete_embodiment",
         blockers,
-        "supply executable file, executable artifact, and routing artifact evidence for the terminal embodiment",
+        "supply executable file, executable artifact, routing artifact, and proof artifact evidence for the terminal embodiment",
       );
     }
 
@@ -172,6 +176,7 @@ export function enforceFinalizationTerminalProgress(
         ...candidate.changed_files.filter(executablePlatformPath),
         ...candidate.executable_artifacts,
         ...candidate.routing_artifacts,
+        ...(candidate.proof_artifacts ?? []),
       ],
       blockers: [],
       next_route: "commit the external embodiment, then read status only for the moved live head",
