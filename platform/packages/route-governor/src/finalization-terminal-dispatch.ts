@@ -134,7 +134,8 @@ export function compileFinalizationTerminalDispatch(
     );
   }
 
-  if (!input.merge_gate.ok || input.merge_gate.action !== "admit_fresh_merge_gate" || !input.merge_gate.gate_id) {
+  const admittedGateId = input.merge_gate.gate_id;
+  if (!input.merge_gate.ok || input.merge_gate.action !== "admit_fresh_merge_gate" || !admittedGateId) {
     return block(
       input,
       "block_unadmitted_merge_gate",
@@ -148,9 +149,9 @@ export function compileFinalizationTerminalDispatch(
     return block(
       input,
       "block_weaker_terminal_dispatch",
-      [`fresh merge gate ${input.merge_gate.gate_id} admits merge; ${input.requested_action} would repeat a weaker route class`],
+      [`fresh merge gate ${admittedGateId} admits merge; ${input.requested_action} would repeat a weaker route class`],
       "dispatch the guarded merge command or emit a new exact external blocker; do not fall back to comments, rereads, or extra embodiment",
-      [dispatchId, input.merge_gate.gate_id],
+      [dispatchId, admittedGateId],
     );
   }
 
@@ -161,7 +162,7 @@ export function compileFinalizationTerminalDispatch(
     pr_number: input.merge_gate.pr_number,
     branch: input.merge_gate.branch,
     expected_head_sha: input.live_head_sha,
-    source_gate_id: input.merge_gate.gate_id,
+    source_gate_id: admittedGateId,
     forbidden_fallbacks: [
       "duplicate_comment",
       "metadata_reread",
@@ -180,7 +181,7 @@ export function compileFinalizationTerminalDispatch(
     decisive_evidence: [
       ...evidence(input),
       dispatchId,
-      input.merge_gate.gate_id,
+      admittedGateId,
       ...input.merge_gate.decisive_evidence,
     ],
     blockers: [],
