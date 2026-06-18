@@ -93,10 +93,13 @@ const registeredProofModules = [
   "status-readback-authority-lease",
   "embodiment-sequence-compiler",
   "review-request-command",
+  "review-response-intake",
   "scheduled-surface-reconciliation",
   "post-repair-embodiment-admission",
+  "merge-finalization-command",
   "merge-result-receipt",
   "proof-chain",
+  "finalization-surface-promotion",
 ];
 
 function sourcePath(moduleName: string): string {
@@ -138,8 +141,16 @@ export function runProofChainProof(): void {
   expect(ready.ok, `proof chain should be ready: ${ready.blockers.join("; ")}`);
   expect(ready.action === "proof_chain_ready", `expected proof_chain_ready, got ${ready.action}`);
   expect(
+    ready.decisive_evidence.some((evidence) => evidence.includes("merge-finalization-command")),
+    "merge finalization command must be part of decisive proof-chain evidence",
+  );
+  expect(
     ready.decisive_evidence.some((evidence) => evidence.includes("merge-result-receipt")),
     "merge result receipt must be part of decisive proof-chain evidence",
+  );
+  expect(
+    ready.decisive_evidence.some((evidence) => evidence.includes("finalization-surface-promotion")),
+    "finalization surface promotion must be part of decisive proof-chain evidence",
   );
   expect(
     ready.decisive_evidence.some((evidence) => evidence.includes("post-repair-embodiment-admission")),
