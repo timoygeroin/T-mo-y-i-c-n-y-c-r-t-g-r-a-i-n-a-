@@ -1,6 +1,6 @@
-export type PostMoveStatusVerdict = "passing" | "passing_with_warnings" | "pending" | "failing" | "missing";
+export type PostMoveStatusVerdict = "passing" | "passing_with_warnings" | "pending" | "failing" | "missing" | "no_status_surface";
 
-export type PostMoveReviewVerdict = "approved" | "changes_requested" | "pending" | "not_requested";
+export type PostMoveReviewVerdict = "approved" | "changes_requested" | "pending" | "not_requested" | "missing";
 
 export type PostMoveTerminalAction =
   | "read_fresh_status"
@@ -8,6 +8,8 @@ export type PostMoveTerminalAction =
   | "request_or_wait_for_review"
   | "compile_merge_execution"
   | "emit_exact_external_blocker"
+  | "block_stale_surface"
+  | "block_unready_pr"
   | "block_non_progress_surface";
 
 export interface PostMoveStatusSurface {
@@ -56,10 +58,23 @@ export interface PostMoveTerminalActionVerdict {
   decisive_evidence: string[];
   blockers: string[];
   warnings: string[];
+  retired_heads: string[];
   next_route: string;
 }
 
 const REQUIRED_MERGE_SURFACES = ["merge-finalization-command-public-surface", "merge-result-receipt-public-surface"];
+
+function unique(values: string[]): string[] {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
+}
+
+function retiredHeads(input: PostMoveTerminalActionInput): string[] {
+  return unique(
+    [input.prompt_head_sha ?? "", input.last_status_readback_head_sha ?? "", ...input.resolved_historical_heads].filter(
+      (head) => head !== input.live_head_sha,
+    ),
+  );
+}
 
 function liveStatus(input: PostMoveTerminalActionInput): PostMoveStatusSurface | null {
   return input.status_surface?.head_sha === input.live_head_sha ? input.status_surface : null;
@@ -82,8 +97,11 @@ function missingMergeSurfaces(input: PostMoveTerminalActionInput): string[] {
   return REQUIRED_MERGE_SURFACES.filter((surface) => !input.promoted_surface_ids.includes(surface));
 }
 
-function base(input: PostMoveTerminalActionInput): Pick<PostMoveTerminalActionVerdict, "branch" | "head_sha"> {
-  return { branch: input.active_branch, head_sha: input.live_head_sha };
+function base(input: PostMoveTerminalActionInput): Pick<
+  PostMoveTerminalActionVerdict,
+  "branch" | "head_sha" | "retired_heads"
+> {
+  return { branch: input.active_branch, head_sha: input.live_head_sha, retired_heads: retiredHeads(input) };
 }
 
 function block(
@@ -108,11 +126,20 @@ function block(
 
 function historyEvidence(input: PostMoveTerminalActionInput): string[] {
   return [
-    ...input.resolved_historical_heads
-      .filter((head) => head !== input.live_head_sha)
-      .map((head) => `historical head ${head}`),
+    ...retiredHeads(input).map((head) => `retired head ${head}`),
     ...(input.prompt_head_sha && input.prompt_head_sha !== input.live_head_sha
       ? [`prompt head ${input.prompt_head_sha} is not live head ${input.live_head_sha}`]
+      : []),
+  ];
+}
+
+function staleSurfaceBlockers(input: PostMoveTerminalActionInput): string[] {
+  return [
+    ...(input.status_surface && input.status_surface.head_sha !== input.live_head_sha
+      ? [`status surface ${input.status_surface.surface_id} belongs to ${input.status_surface.head_sha}`]
+      : []),
+    ...(input.review_surface && input.review_surface.head_sha !== input.live_head_sha
+      ? [`review surface ${input.review_surface.surface_id} belongs to ${input.review_surface.head_sha}`]
       : []),
   ];
 }
@@ -138,6 +165,31 @@ export function compilePostMoveTerminalAction(
       [`post-move terminal action already spent: ${actionId}`],
       "select an unspent terminal action id before claiming progress",
       [actionId, ...historyEvidence(input)],
+    );
+  }
+
+  const exactBlocker = input.exact_external_blocker?.trim();
+  if (exactBlocker) {
+    return {
+      ...base(input),
+      ok: true,
+      action: "emit_exact_external_blocker",
+      action_id: actionId,
+      decisive_evidence: [actionId, exactBlocker, `live head ${input.live_head_sha}`],
+      blockers: [exactBlocker],
+      warnings: [],
+      next_route: "remove the named external blocker before attempting post-move terminal routing again",
+    };
+  }
+
+  const staleBlockers = staleSurfaceBlockers(input);
+  if (staleBlockers.length > 0) {
+    return block(
+      input,
+      "block_stale_surface",
+      staleBlockers,
+      "discard stale status or review surfaces and re-read them against the live PR head",
+      [actionId, `live head ${input.live_head_sha}`, ...historyEvidence(input)],
     );
   }
 
@@ -253,7 +305,7 @@ export function compilePostMoveTerminalAction(
   if (input.draft || !input.mergeable || missingSurfaces.length > 0) {
     return block(
       input,
-      "emit_exact_external_blocker",
+      "block_unready_pr",
       [
         ...(input.draft ? ["PR is still draft"] : []),
         ...(!input.mergeable ? ["GitHub mergeability is not confirmed"] : []),
