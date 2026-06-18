@@ -231,6 +231,14 @@
       "types": "./dist/post-repair-embodiment-admission.d.ts",
       "default": "./dist/post-repair-embodiment-admission.js"
     },
+    "./merge-finalization-command": {
+      "types": "./dist/merge-finalization-command.d.ts",
+      "default": "./dist/merge-finalization-command.js"
+    },
+    "./merge-result-receipt": {
+      "types": "./dist/merge-result-receipt.d.ts",
+      "default": "./dist/merge-result-receipt.js"
+    },
     "./finalization-surface-promotion": {
       "types": "./dist/finalization-surface-promotion.d.ts",
       "default": "./dist/finalization-surface-promotion.js"
