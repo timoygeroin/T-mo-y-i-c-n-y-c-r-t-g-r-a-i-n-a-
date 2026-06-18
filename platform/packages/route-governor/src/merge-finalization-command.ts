@@ -48,6 +48,54 @@ export interface MergeFinalizationCommandVerdict {
   next_route: string;
 }
 
+export type MergeFinalizationExecutionAction =
+  | "admit_merge_execution"
+  | "block_stale_merge_head"
+  | "block_external_boundary"
+  | "block_repeated_command"
+  | "block_unready_pr"
+  | "block_status_not_passing"
+  | "block_missing_review_approval"
+  | "block_missing_finalization_surface";
+
+export type MergeFinalizationStatusVerdict = "passing" | "passing_with_warnings" | "pending" | "failing" | "no_status_surface";
+
+export interface MergeFinalizationStatusSurface {
+  surface_id: string;
+  head_sha: string;
+  verdict: MergeFinalizationStatusVerdict;
+  decisive_successes: string[];
+  blocking_failures: string[];
+  pending_surfaces: string[];
+  non_blocking_warnings: string[];
+}
+
+export interface MergeFinalizationExecutionInput {
+  command: MergeFinalizationCommand;
+  active_branch: string;
+  live_head_sha: string;
+  draft: boolean;
+  mergeable: boolean;
+  required_approval_count: number;
+  approval_count: number;
+  external_boundary: MergeFinalizationBoundary;
+  status_surface: MergeFinalizationStatusSurface;
+  promoted_surface_ids: string[];
+  spent_command_ids: string[];
+}
+
+export interface MergeFinalizationExecutionVerdict {
+  ok: boolean;
+  action: MergeFinalizationExecutionAction;
+  command: MergeFinalizationCommand | null;
+  decisive_evidence: string[];
+  blockers: string[];
+  warnings: string[];
+  next_route: string;
+}
+
+const REQUIRED_EXECUTION_SURFACES = ["merge-finalization-command-public-surface", "merge-result-receipt-public-surface"];
+
 function block(
   action: Exclude<MergeFinalizationAction, "compile_merge_command">,
   decisiveEvidence: string[],
@@ -62,6 +110,38 @@ function block(
     blockers,
     next_route: nextRoute,
   };
+}
+
+function executionBlock(
+  input: MergeFinalizationExecutionInput,
+  action: Exclude<MergeFinalizationExecutionAction, "admit_merge_execution">,
+  blockers: string[],
+  nextRoute: string,
+  evidence: string[] = [],
+): MergeFinalizationExecutionVerdict {
+  return {
+    ok: false,
+    action,
+    command: null,
+    decisive_evidence: [
+      `command ${input.command.command_id}`,
+      `command head ${input.command.head_sha}`,
+      `live head ${input.live_head_sha}`,
+      ...evidence,
+    ],
+    blockers,
+    warnings: input.status_surface.non_blocking_warnings,
+    next_route: nextRoute,
+  };
+}
+
+function statusPassing(surface: MergeFinalizationStatusSurface): boolean {
+  return (
+    (surface.verdict === "passing" || surface.verdict === "passing_with_warnings") &&
+    surface.decisive_successes.length > 0 &&
+    surface.blocking_failures.length === 0 &&
+    surface.pending_surfaces.length === 0
+  );
 }
 
 export function compileMergeFinalizationCommand(
@@ -157,5 +237,116 @@ export function compileMergeFinalizationCommand(
     ],
     blockers: [],
     next_route: "execute the compiled GitHub merge command only if the PR head still matches the command guard",
+  };
+}
+
+export function admitMergeFinalizationExecution(
+  input: MergeFinalizationExecutionInput,
+): MergeFinalizationExecutionVerdict {
+  if (input.command.branch !== input.active_branch) {
+    return executionBlock(
+      input,
+      "block_stale_merge_head",
+      [`command branch ${input.command.branch} does not match active branch ${input.active_branch}`],
+      "recompile the merge command from the active PR branch before execution",
+    );
+  }
+
+  if (input.command.head_sha !== input.live_head_sha || input.status_surface.head_sha !== input.live_head_sha) {
+    return executionBlock(
+      input,
+      "block_stale_merge_head",
+      [
+        ...(input.command.head_sha !== input.live_head_sha
+          ? [`command head ${input.command.head_sha} is not live head ${input.live_head_sha}`]
+          : []),
+        ...(input.status_surface.head_sha !== input.live_head_sha
+          ? [`status surface ${input.status_surface.surface_id} belongs to ${input.status_surface.head_sha}`]
+          : []),
+      ],
+      "refresh status and recompile the merge command against the current live head",
+      [input.status_surface.surface_id],
+    );
+  }
+
+  if (input.external_boundary !== "github_pull_request_merge") {
+    return executionBlock(
+      input,
+      "block_external_boundary",
+      [`merge execution cannot be admitted through ${input.external_boundary}`],
+      "execute only through the GitHub pull-request merge boundary, or emit the exact external blocker",
+    );
+  }
+
+  if (input.spent_command_ids.includes(input.command.command_id)) {
+    return executionBlock(
+      input,
+      "block_repeated_command",
+      [`merge finalization command already spent: ${input.command.command_id}`],
+      "compile a new live-head merge command before attempting execution again",
+    );
+  }
+
+  if (input.draft || !input.mergeable) {
+    return executionBlock(
+      input,
+      "block_unready_pr",
+      [...(input.draft ? ["PR is still draft"] : []), ...(!input.mergeable ? ["GitHub mergeability is not confirmed"] : [])],
+      "make the PR non-draft and mergeable before admitting merge execution",
+    );
+  }
+
+  if (!statusPassing(input.status_surface)) {
+    return executionBlock(
+      input,
+      "block_status_not_passing",
+      [
+        ...input.status_surface.blocking_failures,
+        ...input.status_surface.pending_surfaces,
+        ...(input.status_surface.decisive_successes.length === 0
+          ? ["live-head status surface has no decisive success evidence"]
+          : []),
+        `status verdict ${input.status_surface.verdict}`,
+      ],
+      "wait for or repair the live-head status surface before merge execution",
+      [input.status_surface.surface_id],
+    );
+  }
+
+  const requiredApprovals = Math.max(1, input.required_approval_count);
+  if (input.approval_count < requiredApprovals) {
+    return executionBlock(
+      input,
+      "block_missing_review_approval",
+      [`merge execution requires ${requiredApprovals} approval(s); got ${input.approval_count}`],
+      "wait for the required live-head review approval before executing the merge command",
+    );
+  }
+
+  const missingSurfaces = REQUIRED_EXECUTION_SURFACES.filter((surface) => !input.promoted_surface_ids.includes(surface));
+  if (missingSurfaces.length > 0) {
+    return executionBlock(
+      input,
+      "block_missing_finalization_surface",
+      missingSurfaces.map((surface) => `missing promoted finalization surface ${surface}`),
+      "promote merge command and merge receipt surfaces before admitting merge execution",
+    );
+  }
+
+  return {
+    ok: true,
+    action: "admit_merge_execution",
+    command: input.command,
+    decisive_evidence: [
+      `live head ${input.live_head_sha}`,
+      `status surface ${input.status_surface.surface_id}`,
+      ...input.status_surface.decisive_successes,
+      `approvals ${input.approval_count}`,
+      ...REQUIRED_EXECUTION_SURFACES.map((surface) => `promoted surface ${surface}`),
+      `merge method ${input.command.merge_method}`,
+    ],
+    blockers: [],
+    warnings: input.status_surface.non_blocking_warnings,
+    next_route: "execute GitHub merge only while the PR head still matches this admitted command, then compile the merge result receipt",
   };
 }
