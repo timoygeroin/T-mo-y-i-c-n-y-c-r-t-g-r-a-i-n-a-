@@ -1,3 +1,4 @@
+import { runCurrentTurnManifestationGateProof } from "./current-turn-manifestation-gate-proof.js";
 import { openPostWriteStatusEscrow, type PostWriteStatusEscrowInput } from "./post-write-status-escrow.js";
 
 const baseHead = "d70bdc1134e9a326507f15426c9b91abca408de2";
@@ -130,4 +131,5 @@ export function runPostWriteStatusEscrowProof(): void {
   }
 }
 
+runCurrentTurnManifestationGateProof();
 runPostWriteStatusEscrowProof();
