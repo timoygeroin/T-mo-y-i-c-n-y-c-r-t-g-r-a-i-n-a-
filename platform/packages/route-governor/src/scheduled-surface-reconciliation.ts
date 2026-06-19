@@ -2,6 +2,7 @@ export type ScheduledSurfaceKind =
   | "live_pr_metadata"
   | "direct_status_surface"
   | "scheduled_prompt"
+  | "user_instruction"
   | "pr_body_summary"
   | "memory_receipt"
   | "issue_state";
@@ -72,7 +73,7 @@ export interface ScheduledSurfaceReconciliationVerdict {
   next_route: string;
 }
 
-const SUMMARY_KINDS = new Set<ScheduledSurfaceKind>(["scheduled_prompt", "pr_body_summary", "memory_receipt"]);
+const SUMMARY_KINDS = new Set<ScheduledSurfaceKind>(["scheduled_prompt", "user_instruction", "pr_body_summary", "memory_receipt"]);
 const DIRECT_STATUS_KINDS = new Set<ScheduledSurfaceKind>(["direct_status_surface"]);
 
 function executablePlatformPath(path: string): boolean {
@@ -209,7 +210,7 @@ export function reconcileScheduledSurface(
       input,
       "block_missing_live_metadata",
       [`no live PR metadata surface is bound to ${input.active_branch}@${input.live_head_sha}`],
-      "read live PR metadata before trusting scheduled prompt, PR-body, or memory head claims",
+      "read live PR metadata before trusting scheduled prompt, user instruction, PR-body, or memory head claims",
     );
   }
 
@@ -218,7 +219,7 @@ export function reconcileScheduledSurface(
       input,
       "block_stale_candidate_base",
       [`candidate base ${candidate.base_head_sha} is not live PR head ${input.live_head_sha}`],
-      "rebase the scheduled continuation to the live PR head; preserve stale scheduled heads only as historical context",
+      "rebase the scheduled continuation to the live PR head; preserve stale scheduled and instruction heads only as historical context",
       metadata.flatMap((surface) => surface.evidence),
     );
   }
@@ -274,7 +275,7 @@ export function reconcileScheduledSurface(
         input,
         "block_stale_status_readback",
         ["scheduled status readback requires a moved live head or direct live-head status evidence"],
-        "do not replay scheduled or PR-body status summaries as fresh readback",
+        "do not replay scheduled, user-instruction, or PR-body status summaries as fresh readback",
       );
     }
 
