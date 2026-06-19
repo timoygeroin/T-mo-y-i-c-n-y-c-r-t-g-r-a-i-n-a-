@@ -19,6 +19,8 @@ export type PostWriteStatusEscrowAction =
   | "block_unmoved_head"
   | "block_historical_result_head"
   | "block_stale_status_authority"
+  | "block_failing_status_authority"
+  | "block_pending_status_authority"
   | "block_premature_next_action";
 
 export interface PostWriteStatusClaim {
@@ -84,6 +86,14 @@ function behaviorPath(path: string): boolean {
 
 function successLikeStatus(claim: PostWriteStatusClaim): boolean {
   return claim.conclusion === "success" || claim.conclusion === "warning_only";
+}
+
+function pendingLikeStatus(claim: PostWriteStatusClaim): boolean {
+  return claim.conclusion === "pending" || claim.conclusion === "no_status";
+}
+
+function claimEvidence(claim: PostWriteStatusClaim): string[] {
+  return [claim.source_id, `status head ${claim.head_sha}`, `status conclusion ${claim.conclusion}`, ...claim.evidence];
 }
 
 function base(input: PostWriteStatusEscrowInput): Pick<
@@ -214,6 +224,28 @@ export function openPostWriteStatusEscrow(input: PostWriteStatusEscrowInput): Po
       blockers: [],
       next_route: "consume only this moved-head status surface for later review, merge, or embodiment routing",
     };
+  }
+
+  if (resultingStatus?.conclusion === "failure") {
+    return block(
+      input,
+      "block_failing_status_authority",
+      resultingStatus.evidence.length > 0 ? resultingStatus.evidence : [`post-write status failed on ${resultingStatus.source_id}`],
+      "repair only the moved-head failure before review, merge, warning maintenance, or another embodiment consumes the branch",
+      claimEvidence(resultingStatus),
+    );
+  }
+
+  if (resultingStatus && pendingLikeStatus(resultingStatus)) {
+    return block(
+      input,
+      "block_pending_status_authority",
+      resultingStatus.evidence.length > 0
+        ? resultingStatus.evidence
+        : [`post-write status is ${resultingStatus.conclusion} on ${resultingStatus.source_id}`],
+      "wait for the moved-head status surface or emit the exact external status blocker",
+      claimEvidence(resultingStatus),
+    );
   }
 
   if (PREMATURE_ACTIONS.has(input.requested_next_action)) {
