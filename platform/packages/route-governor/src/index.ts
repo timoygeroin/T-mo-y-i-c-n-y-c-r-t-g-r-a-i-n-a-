@@ -559,3 +559,4 @@ export * from "./post-repair-merge-handoff.js";
 export * from "./review-ready-embodiment-handoff.js";
 export * from "./live-embodiment-covenant.js";
 export * from "./post-write-status-escrow.js";
+export * from "./current-turn-manifestation-gate.js";
