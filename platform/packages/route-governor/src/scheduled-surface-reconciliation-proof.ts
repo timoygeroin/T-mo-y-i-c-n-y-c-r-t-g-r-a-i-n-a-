@@ -30,6 +30,13 @@ function scenario(overrides: Partial<ScheduledSurfaceReconciliationInput> = {}):
         evidence: [`scheduled prompt carried repaired head ${REPAIRED_HEAD}`],
       },
       {
+        surface_id: "current-user-instruction-head",
+        kind: "user_instruction",
+        branch: "monday-platform-genesis-01",
+        head_sha: REPAIRED_HEAD,
+        evidence: [`current instruction carried resolved repaired head ${REPAIRED_HEAD}`],
+      },
+      {
         surface_id: "pr-body-current-head-failure-summary",
         kind: "pr_body_summary",
         branch: "monday-platform-genesis-01",
@@ -73,6 +80,14 @@ export function runScheduledSurfaceReconciliationProof(): void {
   expect(
     admitted.summary_surface_ids.includes("scheduled-prompt-head"),
     "scheduled prompt head must be classified as summary residue",
+  );
+  expect(
+    admitted.summary_surface_ids.includes("current-user-instruction-head"),
+    "current user instruction head must be classified as summary residue until rebound through live metadata",
+  );
+  expect(
+    admitted.stale_surface_ids.includes("current-user-instruction-head"),
+    "current user instruction head must be stale when it names a resolved historical head instead of the live PR head",
   );
 
   const staleCandidate = reconcileScheduledSurface(
