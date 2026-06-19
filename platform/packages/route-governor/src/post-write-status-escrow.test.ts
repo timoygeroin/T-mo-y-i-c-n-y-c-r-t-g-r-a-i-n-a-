@@ -58,6 +58,48 @@ describe("openPostWriteStatusEscrow", () => {
     assert.match(verdict.blockers.join("; "), /not post-write-status-escrow-head/);
   });
 
+  it("blocks failing moved-head status before consumers can use the branch", () => {
+    const verdict = openPostWriteStatusEscrow(
+      baseInput({
+        status_claims: [
+          {
+            source_id: "moved-head-route-governor-proof",
+            branch: "monday-platform-genesis-01",
+            head_sha: movedHead,
+            conclusion: "failure",
+            evidence: ["Route governor proof examples failed"],
+          },
+        ],
+        requested_next_action: "fresh_status_readback",
+      }),
+    );
+
+    assert.equal(verdict.ok, false);
+    assert.equal(verdict.action, "block_failing_status_authority");
+    assert.match(verdict.next_route, /repair only the moved-head failure/);
+  });
+
+  it("blocks pending moved-head status instead of reopening escrow as progress", () => {
+    const verdict = openPostWriteStatusEscrow(
+      baseInput({
+        status_claims: [
+          {
+            source_id: "moved-head-checks-pending",
+            branch: "monday-platform-genesis-01",
+            head_sha: movedHead,
+            conclusion: "pending",
+            evidence: ["Route Governor Proof queued"],
+          },
+        ],
+        requested_next_action: "fresh_status_readback",
+      }),
+    );
+
+    assert.equal(verdict.ok, false);
+    assert.equal(verdict.action, "block_pending_status_authority");
+    assert.match(verdict.next_route, /wait for the moved-head status surface/);
+  });
+
   it("blocks merge or review consumers before moved-head status is satisfied", () => {
     const verdict = openPostWriteStatusEscrow(baseInput({ requested_next_action: "merge_command" }));
 
