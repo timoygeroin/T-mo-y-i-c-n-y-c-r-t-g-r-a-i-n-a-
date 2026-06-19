@@ -60,6 +60,42 @@ export function runPostWriteStatusEscrowProof(): void {
   );
   expectBlock("stale status authority", staleStatus.ok, staleStatus.blockers, "not post-write-status-escrow-head");
 
+  const failingStatus = openPostWriteStatusEscrow(
+    baseInput({
+      status_claims: [
+        {
+          source_id: "moved-head-route-governor-proof",
+          branch: "monday-platform-genesis-01",
+          head_sha: movedHead,
+          conclusion: "failure",
+          evidence: ["Route governor proof examples failed"],
+        },
+      ],
+    }),
+  );
+  expectBlock("moved-head failure status", failingStatus.ok, failingStatus.blockers, "Route governor proof examples failed");
+  if (failingStatus.action !== "block_failing_status_authority") {
+    throw new Error(`unexpected failing status action: ${failingStatus.action}`);
+  }
+
+  const pendingStatus = openPostWriteStatusEscrow(
+    baseInput({
+      status_claims: [
+        {
+          source_id: "moved-head-checks-pending",
+          branch: "monday-platform-genesis-01",
+          head_sha: movedHead,
+          conclusion: "pending",
+          evidence: ["Route Governor Proof queued"],
+        },
+      ],
+    }),
+  );
+  expectBlock("moved-head pending status", pendingStatus.ok, pendingStatus.blockers, "Route Governor Proof queued");
+  if (pendingStatus.action !== "block_pending_status_authority") {
+    throw new Error(`unexpected pending status action: ${pendingStatus.action}`);
+  }
+
   const prematureMerge = openPostWriteStatusEscrow(baseInput({ requested_next_action: "merge_command" }));
   expectBlock("premature merge", prematureMerge.ok, prematureMerge.blockers, "cannot consume the branch");
 
