@@ -558,3 +558,4 @@ export * from "./review-request-result-receipt.js";
 export * from "./post-repair-merge-handoff.js";
 export * from "./review-ready-embodiment-handoff.js";
 export * from "./live-embodiment-covenant.js";
+export * from "./post-write-status-escrow.js";
