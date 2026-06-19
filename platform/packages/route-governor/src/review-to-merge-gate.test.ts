@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { test } from "node:test";
 
 import { compileReviewToMergeGate, type ReviewToMergeGateInput } from "./review-to-merge-gate.js";
 
