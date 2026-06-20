@@ -76,6 +76,21 @@ test("blocks PR metadata reread as non-progress even when metadata is live", () 
   assert.match(verdict.blockers.join("; "), /pr_metadata_reread/);
 });
 
+test("blocks branch mismatch with an exact branch action before metadata checks", () => {
+  const verdict = gateCurrentTurnManifestation(
+    input({
+      candidate: {
+        ...input().candidate,
+        branch: "main",
+      },
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.equal(verdict.action, "block_branch_mismatch");
+  assert.match(verdict.blockers.join("; "), /main/);
+});
+
 test("blocks candidates based on the prompt repaired head instead of the live head", () => {
   const verdict = gateCurrentTurnManifestation(
     input({
