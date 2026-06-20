@@ -21,6 +21,12 @@ export type ScheduledExternalProgressGateAction =
   | "block_incomplete_status_readback"
   | "block_missing_exact_blocker";
 
+export interface ScheduledExternalStatusEvidence {
+  surface_id: string;
+  head_sha: string;
+  evidence: string[];
+}
+
 export interface ScheduledExternalProgressCandidate {
   intent: ScheduledExternalProgressIntent;
   base_head_sha: string;
@@ -29,6 +35,7 @@ export interface ScheduledExternalProgressCandidate {
   routing_artifacts: string[];
   status_surface_ids: string[];
   new_check_run_ids: string[];
+  status_evidence?: ScheduledExternalStatusEvidence[];
   blocker?: string;
 }
 
@@ -112,8 +119,21 @@ function repairedHeadIsBeingReused(input: ScheduledExternalProgressGateInput): b
     input.repaired_head_blocker_resolved &&
     (input.candidate.intent === "repaired_head_blocker" ||
       input.candidate.blocker?.includes(input.resolved_repaired_head_sha) === true ||
-      input.candidate.status_surface_ids.some((surface) => surface.includes(input.resolved_repaired_head_sha)))
+      input.candidate.status_surface_ids.some((surface) => surface.includes(input.resolved_repaired_head_sha)) ||
+      (input.candidate.status_evidence ?? []).some((surface) => surface.head_sha === input.resolved_repaired_head_sha))
   );
+}
+
+function currentHeadStatusEvidence(input: ScheduledExternalProgressGateInput): ScheduledExternalStatusEvidence[] {
+  return (input.candidate.status_evidence ?? []).filter((surface) => surface.head_sha === input.live_head_sha);
+}
+
+function staleStatusEvidence(input: ScheduledExternalProgressGateInput): ScheduledExternalStatusEvidence[] {
+  return (input.candidate.status_evidence ?? []).filter((surface) => surface.head_sha !== input.live_head_sha);
+}
+
+function flattenStatusEvidence(evidence: ScheduledExternalStatusEvidence[]): string[] {
+  return evidence.flatMap((surface) => [surface.surface_id, `status head ${surface.head_sha}`, ...surface.evidence]);
 }
 
 export function gateScheduledExternalProgress(
@@ -197,9 +217,31 @@ export function gateScheduledExternalProgress(
   }
 
   if (input.candidate.intent === "fresh_status_readback") {
+    const staleEvidence = staleStatusEvidence(input);
+    if (staleEvidence.length > 0) {
+      return block(
+        input,
+        "block_incomplete_status_readback",
+        staleEvidence.map((surface) => `status surface ${surface.surface_id} is bound to ${surface.head_sha}, not ${input.live_head_sha}`),
+        "discard stale status evidence and attach only live-head-bound status evidence",
+        flattenStatusEvidence(staleEvidence),
+      );
+    }
+
+    const liveEvidence = currentHeadStatusEvidence(input);
     const headMovedSinceStatus = input.previous_status_head_sha !== input.live_head_sha;
-    const hasCurrentHeadStatusSurface = input.candidate.status_surface_ids.length > 0;
+    const hasCurrentHeadStatusSurface = liveEvidence.length > 0;
     const hasNewCheckRuns = input.candidate.new_check_run_ids.length > 0;
+
+    if (input.candidate.status_surface_ids.length > 0 && !hasCurrentHeadStatusSurface) {
+      return block(
+        input,
+        "block_incomplete_status_readback",
+        ["fresh status readback supplied opaque status ids without live-head evidence"],
+        "replace opaque status ids with status_evidence entries bound to the live PR head",
+        input.candidate.status_surface_ids,
+      );
+    }
 
     if (!headMovedSinceStatus && !hasNewCheckRuns) {
       return block(
@@ -227,7 +269,7 @@ export function gateScheduledExternalProgress(
       decisive_evidence: [
         `live head ${input.live_head_sha}`,
         ...(input.previous_status_head_sha ? [`previous status head ${input.previous_status_head_sha}`] : []),
-        ...input.candidate.status_surface_ids,
+        ...flattenStatusEvidence(liveEvidence),
         ...input.candidate.new_check_run_ids.map((id) => `new check run ${id}`),
       ],
       blockers: [],
