@@ -26,6 +26,7 @@ export type CurrentTurnManifestationAction =
   | "admit_external_embodiment"
   | "admit_fresh_status_readback"
   | "emit_exact_external_blocker"
+  | "block_branch_mismatch"
   | "block_non_progress_move"
   | "block_stale_prompt_head"
   | "block_missing_live_metadata"
@@ -198,7 +199,7 @@ export function gateCurrentTurnManifestation(
   if (candidate.branch !== input.active_branch) {
     return block(
       input,
-      "block_missing_live_metadata",
+      "block_branch_mismatch",
       [`candidate branch ${candidate.branch} does not match active branch ${input.active_branch}`],
       "bind the current turn candidate to the active manifestation branch",
     );
