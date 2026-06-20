@@ -561,3 +561,4 @@ export * from "./live-embodiment-covenant.js";
 export * from "./post-write-status-escrow.js";
 export * from "./current-turn-manifestation-gate.js";
 export * from "./review-feedback-delta-router.js";
+export * from "./release-candidate-bundle.js";
