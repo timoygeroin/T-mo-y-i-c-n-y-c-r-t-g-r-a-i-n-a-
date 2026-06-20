@@ -233,7 +233,7 @@ export function gateScheduledExternalProgress(
     const hasCurrentHeadStatusSurface = liveEvidence.length > 0;
     const hasNewCheckRuns = input.candidate.new_check_run_ids.length > 0;
 
-    if (input.candidate.status_surface_ids.length > 0 && !hasCurrentHeadStatusSurface) {
+    if (input.candidate.status_surface_ids.length > 0) {
       return block(
         input,
         "block_incomplete_status_readback",
