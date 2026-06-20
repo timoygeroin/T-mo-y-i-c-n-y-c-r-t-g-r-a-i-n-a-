@@ -88,7 +88,7 @@ describe("gateScheduledExternalProgress", () => {
     assert.equal(verdict.action, "block_incomplete_status_readback");
   });
 
-  it("admits a fresh status readback only when bound to moved live-head evidence", () => {
+  it("blocks opaque status ids that are not bound to live-head evidence", () => {
     const verdict = gateScheduledExternalProgress(
       input({
         candidate: {
@@ -103,9 +103,64 @@ describe("gateScheduledExternalProgress", () => {
       }),
     );
 
+    assert.equal(verdict.ok, false);
+    assert.equal(verdict.action, "block_incomplete_status_readback");
+    assert.equal(verdict.blockers.includes("fresh status readback supplied opaque status ids without live-head evidence"), true);
+  });
+
+  it("blocks stale scheduled status evidence even when a current prompt head moved", () => {
+    const verdict = gateScheduledExternalProgress(
+      input({
+        candidate: {
+          intent: "fresh_status_readback",
+          base_head_sha: liveHead,
+          changed_files: [],
+          executable_artifacts: [],
+          routing_artifacts: [],
+          status_surface_ids: [],
+          new_check_run_ids: [],
+          status_evidence: [
+            {
+              surface_id: "checks:repaired-head:route-governor-proof",
+              head_sha: repairedHead,
+              evidence: ["Route Governor Proof succeeded on repaired head only"],
+            },
+          ],
+        },
+      }),
+    );
+
+    assert.equal(verdict.ok, false);
+    assert.equal(verdict.action, "block_stale_repaired_head_reuse");
+    assert.equal(verdict.decisive_evidence.includes(`resolved repaired head ${repairedHead}`), true);
+  });
+
+  it("admits a fresh status readback only when bound to moved live-head evidence", () => {
+    const verdict = gateScheduledExternalProgress(
+      input({
+        candidate: {
+          intent: "fresh_status_readback",
+          base_head_sha: liveHead,
+          changed_files: [],
+          executable_artifacts: [],
+          routing_artifacts: [],
+          status_surface_ids: [],
+          new_check_run_ids: [],
+          status_evidence: [
+            {
+              surface_id: "checks:live-head:route-governor-proof",
+              head_sha: liveHead,
+              evidence: ["Route Governor Proof succeeded on live head"],
+            },
+          ],
+        },
+      }),
+    );
+
     assert.equal(verdict.ok, true);
     assert.equal(verdict.action, "admit_fresh_status_readback");
     assert.equal(verdict.admitted_progress_class, "fresh_status_readback");
+    assert.equal(verdict.decisive_evidence.includes(`status head ${liveHead}`), true);
   });
 
   it("admits one exact live-head blocker without pretending it is embodiment", () => {
