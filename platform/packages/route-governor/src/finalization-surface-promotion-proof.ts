@@ -41,6 +41,8 @@ function baseInput(overrides: Partial<FinalizationSurfacePromotionInput> = {}): 
       "platform/packages/route-governor/package.json",
       "platform/packages/route-governor/src/index.ts",
       "platform/packages/route-governor/src/finalization-surface-promotion-proof.ts",
+      "platform/packages/route-governor/src/merge-finalization-command-proof.ts",
+      "platform/packages/route-governor/src/merge-result-receipt-proof.ts",
     ],
     package_exports: packageExports(),
     index_exports: indexExports(),
