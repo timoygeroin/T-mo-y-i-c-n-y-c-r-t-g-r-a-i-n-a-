@@ -90,8 +90,7 @@ export interface ContinuationEvidenceClassification {
 export interface ReadyContinuationEvidenceClassification extends ContinuationEvidenceClassification {
   evidence_class: ReadyContinuationEvidenceClass;
   release_instruction: ReadyContinuationReleaseInstruction;
-}
-
+}\n
 export interface ContinuationMoveCandidate {
   candidate_id: string;
   input: ContinuationMoveInput;
@@ -563,3 +562,4 @@ export * from "./current-turn-manifestation-gate.js";
 export * from "./review-feedback-delta-router.js";
 export * from "./release-candidate-bundle.js";
 export * from "./final-review-handoff-snapshot.js";
+export * from "./final-review-execution-window.js";
