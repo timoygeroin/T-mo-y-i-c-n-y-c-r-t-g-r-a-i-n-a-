@@ -86,6 +86,7 @@ const registeredProofModules = [
   "pr-body-head-drift-boundary",
   "scheduled-finalization-head-rebase",
   "scheduled-finalization-decision-router",
+  "scheduled-route-exhaustion-filter",
   "current-instruction-head-boundary",
   "capability-escalation-policy",
   "current-surface-intake",
@@ -100,6 +101,10 @@ const registeredProofModules = [
   "merge-result-receipt",
   "proof-chain",
   "finalization-surface-promotion",
+  "mergeability-lease",
+  "live-embodiment-covenant",
+  "post-write-status-escrow",
+  "review-feedback-delta-router",
 ];
 
 function sourcePath(moduleName: string): string {
