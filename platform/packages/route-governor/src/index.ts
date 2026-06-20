@@ -562,3 +562,4 @@ export * from "./post-write-status-escrow.js";
 export * from "./current-turn-manifestation-gate.js";
 export * from "./review-feedback-delta-router.js";
 export * from "./release-candidate-bundle.js";
+export * from "./final-review-handoff-snapshot.js";
