@@ -565,3 +565,4 @@ export * from "./release-candidate-bundle.js";
 export * from "./final-review-handoff-snapshot.js";
 export * from "./final-review-execution-window.js";
 export * from "./admitted-candidate-write-receipt.js";
+export * from "./final-review-authority-bundle.js";
