@@ -19,8 +19,7 @@ export type WriteReceiptStatusLeaseHandoffAction =
   | "block_reused_handoff"
   | "block_missing_status_lease"
   | "block_stale_status_lease"
-  | "block_non_progress_action"
-  | "block_premature_consumption";
+  | "block_non_progress_action";
 
 export interface WriteReceiptStatusLeaseHandoffInput {
   active_branch: string;
@@ -48,12 +47,6 @@ export interface WriteReceiptStatusLeaseHandoffVerdict {
 const NON_PROGRESS_ACTIONS = new Set<WriteReceiptStatusLeaseNextAction>([
   "metadata_reread",
   "duplicate_status_summary",
-]);
-
-const PREMATURE_ACTIONS = new Set<WriteReceiptStatusLeaseNextAction>([
-  "external_platform_embodiment",
-  "review_request",
-  "merge_command",
 ]);
 
 function base(input: WriteReceiptStatusLeaseHandoffInput): Pick<
@@ -212,16 +205,6 @@ export function compileWriteReceiptStatusLeaseHandoff(
       "block_missing_status_lease",
       lease.blockers.length > 0 ? lease.blockers : [`status lease action is not admissible: ${lease.action}`],
       "obtain a passing current-head status lease before consuming write receipt authority",
-      [...receiptEvidence(receipt), ...leaseEvidence(lease)],
-    );
-  }
-
-  if (PREMATURE_ACTIONS.has(input.requested_next_action) && lease.action !== "admit_current_status_lease") {
-    return block(
-      input,
-      "block_premature_consumption",
-      [`${input.requested_next_action} requires an admitted current-head status lease`],
-      "admit the status lease for the write result before consuming review, merge, or embodiment authority",
       [...receiptEvidence(receipt), ...leaseEvidence(lease)],
     );
   }
