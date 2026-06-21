@@ -156,16 +156,6 @@ export function enforceCurrentTurnProgressInvariant(
     );
   }
 
-  if (candidate.terminal_operations.length !== 1 || candidate.terminal_operations[0] !== candidate.progress_class) {
-    return block(
-      input,
-      "block_non_terminal_bundle",
-      ["current turn must release exactly one terminal progress class"],
-      "split bundled comments, labels, status summaries, and embodiment writes into one admitted terminal operation",
-      [...evidence, ...candidate.terminal_operations],
-    );
-  }
-
   if (NON_PROGRESS_CLASSES.has(candidate.progress_class) || input.prohibited_progress_classes.includes(candidate.progress_class)) {
     return block(
       input,
@@ -173,6 +163,16 @@ export function enforceCurrentTurnProgressInvariant(
       [`${candidate.progress_class} cannot count as current-turn progress`],
       "choose a new executable embodiment, a justified fresh status readback, or one exact external blocker",
       evidence,
+    );
+  }
+
+  if (candidate.terminal_operations.length !== 1 || candidate.terminal_operations[0] !== candidate.progress_class) {
+    return block(
+      input,
+      "block_non_terminal_bundle",
+      ["current turn must release exactly one terminal progress class"],
+      "split bundled comments, labels, status summaries, and embodiment writes into one admitted terminal operation",
+      [...evidence, ...candidate.terminal_operations],
     );
   }
 
