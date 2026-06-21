@@ -5,7 +5,7 @@ import { routeReviewToMergeContinuation, type ReviewToMergeContinuationInput } f
 import type { ReviewResponseIntakeVerdict } from "./review-response-intake.js";
 
 const branch = "monday-platform-genesis-01";
-const head = "ab59032944108258abf5c0fcd78f738b496cbb4d";
+const head = "live-head-under-test";
 
 function reviewIntake(overrides: Partial<ReviewResponseIntakeVerdict> = {}): ReviewResponseIntakeVerdict {
   return {
@@ -35,7 +35,7 @@ function input(overrides: Partial<ReviewToMergeContinuationInput> = {}): ReviewT
     required_approval_count: 1,
     promoted_surface_ids: ["merge-finalization-command-public-surface", "merge-result-receipt-public-surface"],
     status_surface: {
-      surface_id: "current-head-status-readback-ab590329",
+      surface_id: "current-head-status-readback-fixture",
       head_sha: head,
       verdict: "passing_with_warnings",
       decisive_successes: ["Route Governor Proof / proof examples: success"],
