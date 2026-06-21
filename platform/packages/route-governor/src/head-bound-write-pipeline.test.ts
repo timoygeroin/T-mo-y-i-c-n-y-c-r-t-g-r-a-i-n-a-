@@ -10,7 +10,13 @@ const HEAD = "a927e56b2369874b1c060c205957ad0fc896711c";
 const NEXT_HEAD = "aa1e6be9e1818b41fb41780b869b65eed49623e2";
 const REPAIRED_HEAD = "b38ea247602ae8ebba80c4120ad03b41b26bd841";
 
-function input(overrides: Partial<HeadBoundWritePipelineInput> = {}): HeadBoundWritePipelineInput {
+type PipelineOverrides = Omit<Partial<HeadBoundWritePipelineInput>, "candidate" | "write" | "escrow"> & {
+  candidate?: Partial<HeadBoundWritePipelineInput["candidate"]>;
+  write?: Partial<HeadBoundWritePipelineInput["write"]>;
+  escrow?: Partial<HeadBoundWritePipelineInput["escrow"]>;
+};
+
+function input(overrides: PipelineOverrides = {}): HeadBoundWritePipelineInput {
   const base: HeadBoundWritePipelineInput = {
     active_branch: "monday-platform-genesis-01",
     live_head_sha: HEAD,
