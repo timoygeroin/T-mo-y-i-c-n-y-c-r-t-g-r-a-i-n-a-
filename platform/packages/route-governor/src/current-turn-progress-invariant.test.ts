@@ -81,7 +81,7 @@ test("blocks explicitly prohibited non-progress classes", () => {
   );
 
   assert.equal(verdict.ok, false);
-  assert.equal(verdict.action, "block_non_terminal_bundle");
+  assert.equal(verdict.action, "block_non_progress_class");
 });
 
 test("admits fresh status readback only when the live head moved since last status", () => {
