@@ -167,3 +167,5 @@ export function runProcessorFabricProof(): void {
 }
 
 runProcessorFabricProof();
+
+export * from "./processor-quorum.js";
