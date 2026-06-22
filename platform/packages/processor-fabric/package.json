@@ -7,12 +7,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./processor-quorum": { "types": "./dist/processor-quorum.d.ts", "default": "./dist/processor-quorum.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/index.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-quorum-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
