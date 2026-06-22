@@ -85,8 +85,7 @@ export interface ContinuationEvidenceClassification {
   release_instruction: "commit_external_embodiment" | "read_fresh_status" | "emit_exact_blocker" | "block_release";
   decisive_evidence: string[];
   blocked_reasons: string[];
-}
-
+}\n
 export interface ReadyContinuationEvidenceClassification extends ContinuationEvidenceClassification {
   evidence_class: ReadyContinuationEvidenceClass;
   release_instruction: ReadyContinuationReleaseInstruction;
@@ -567,3 +566,4 @@ export * from "./final-review-execution-window.js";
 export * from "./admitted-candidate-write-receipt.js";
 export * from "./final-review-authority-bundle.js";
 export * from "./final-review-authority-consumption.js";
+export * from "./post-resolution-platform-module-selector.js";
