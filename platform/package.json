@@ -6,14 +6,17 @@
   "description": "External platform scaffold for MondayiD runtime manifestation.",
   "workspaces": [
     "packages/route-governor",
-    "packages/processor-fabric"
+    "packages/processor-fabric",
+    "packages/proof-evaluation"
   ],
   "scripts": {
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
+    "proof:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run proof:examples",
     "test:route-governor": "npm --workspace @mondayid/route-governor test",
     "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck",
-    "typecheck:processor-fabric": "npm --workspace @mondayid/processor-fabric run typecheck"
+    "typecheck:processor-fabric": "npm --workspace @mondayid/processor-fabric run typecheck",
+    "typecheck:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run typecheck"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
