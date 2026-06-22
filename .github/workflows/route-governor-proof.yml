@@ -8,12 +8,14 @@ on:
       - "platform/package.json"
       - "platform/package-lock.json"
       - "platform/packages/route-governor/**"
+      - "platform/packages/processor-fabric/**"
       - ".github/workflows/route-governor-proof.yml"
   pull_request:
     paths:
       - "platform/package.json"
       - "platform/package-lock.json"
       - "platform/packages/route-governor/**"
+      - "platform/packages/processor-fabric/**"
       - ".github/workflows/route-governor-proof.yml"
   workflow_dispatch:
 
@@ -39,14 +41,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run route governor proof
+      - name: Run platform proof
         id: proof_examples
         run: |
           set +e
-          npm run proof:route-governor 2>&1 | tee route-governor-proof-output.log
+          {
+            npm run proof:route-governor
+            npm run proof:processor-fabric
+          } 2>&1 | tee route-governor-proof-output.log
           status=${PIPESTATUS[0]}
           {
-            echo "## Route governor proof output"
+            echo "## Platform proof output"
             echo
             echo "Head: \`${GITHUB_SHA}\`"
             echo "Exit code: \`${status}\`"
