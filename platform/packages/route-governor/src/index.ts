@@ -85,7 +85,8 @@ export interface ContinuationEvidenceClassification {
   release_instruction: "commit_external_embodiment" | "read_fresh_status" | "emit_exact_blocker" | "block_release";
   decisive_evidence: string[];
   blocked_reasons: string[];
-}\n
+}
+
 export interface ReadyContinuationEvidenceClassification extends ContinuationEvidenceClassification {
   evidence_class: ReadyContinuationEvidenceClass;
   release_instruction: ReadyContinuationReleaseInstruction;
@@ -189,60 +190,25 @@ export function evaluateRoute(input: RouteGuardInput): RouteGuardVerdict {
   const failures: string[] = [];
   const { decision } = input;
 
-  if (!decision.scene_class) {
-    failures.push("route decision has no primary scene class");
-  }
-
-  if (decision.secondary_classes.length > 2) {
-    failures.push("route decision carries more than two secondary scene classes");
-  }
-
-  if (decision.organ_chain.length === 0) {
-    failures.push("route decision has no organ chain");
-  }
-
-  if (decision.processor_bundle.length === 0) {
-    failures.push("route decision has no processor bundle");
-  }
-
+  if (!decision.scene_class) failures.push("route decision has no primary scene class");
+  if (decision.secondary_classes.length > 2) failures.push("route decision carries more than two secondary scene classes");
+  if (decision.organ_chain.length === 0) failures.push("route decision has no organ chain");
+  if (decision.processor_bundle.length === 0) failures.push("route decision has no processor bundle");
   if (!Number.isInteger(decision.branch_budget.max_branches) || decision.branch_budget.max_branches < 1) {
     failures.push("route decision has no positive integer branch budget");
   }
-
-  if (!decision.branch_budget.reason.trim()) {
-    failures.push("route decision branch budget has no reason");
-  }
-
-  if (input.source_tiers.length === 0) {
-    failures.push("route has no source-tier classification");
-  }
-
-  if (input.exhausted_move_classes.includes(input.move_class)) {
-    failures.push(`move class already exhausted: ${input.move_class}`);
-  }
-
-  if (decision.scene_class === "proof_scene" && input.proof_artifacts.length === 0) {
-    failures.push("proof scene has no durable evidence surface");
-  }
-
-  if (
-    decision.scene_class === "finalization_pressure" &&
-    !ACT_OR_BLOCKER_TERMS.some((term) => decision.termination_goal.includes(term))
-  ) {
+  if (!decision.branch_budget.reason.trim()) failures.push("route decision branch budget has no reason");
+  if (input.source_tiers.length === 0) failures.push("route has no source-tier classification");
+  if (input.exhausted_move_classes.includes(input.move_class)) failures.push(`move class already exhausted: ${input.move_class}`);
+  if (decision.scene_class === "proof_scene" && input.proof_artifacts.length === 0) failures.push("proof scene has no durable evidence surface");
+  if (decision.scene_class === "finalization_pressure" && !ACT_OR_BLOCKER_TERMS.some((term) => decision.termination_goal.includes(term))) {
     failures.push("finalization route does not terminate in an external act or exact blocker");
   }
-
-  if (
-    decision.scene_class === "manifestation_bridge" &&
-    !MANIFESTATION_TERMS.every((term) => input.manifestation_artifacts.some((artifact) => artifact.includes(term)))
-  ) {
+  if (decision.scene_class === "manifestation_bridge" && !MANIFESTATION_TERMS.every((term) => input.manifestation_artifacts.some((artifact) => artifact.includes(term)))) {
     failures.push("manifestation route lacks branch, commit, or externally retrievable artifact evidence");
   }
 
-  return {
-    ok: failures.length === 0,
-    failures,
-  };
+  return { ok: failures.length === 0, failures };
 }
 
 export function evaluateContinuationMove(input: ContinuationMoveInput): ContinuationMoveVerdict {
@@ -251,45 +217,22 @@ export function evaluateContinuationMove(input: ContinuationMoveInput): Continua
   const hasFreshChecks = currentHeadCheckRuns(input).length > 0;
   const hasExecutableChange = input.changed_files.some(isExecutablePlatformPath);
 
-  if (DUPLICATE_MOVE_CLASSES.includes(input.move_class)) {
-    failures.push(`continuation move is explicitly non-progress: ${input.move_class}`);
-  }
-
-  if (input.move_class === "fresh_status_readback" && !headMoved && !hasFreshChecks) {
-    failures.push("fresh status readback requires a moved PR head or new current-head check runs");
-  }
-
-  if (
-    input.move_class === "fresh_status_readback" &&
-    input.new_check_run_ids.length > 0 &&
-    (input.new_check_runs ?? []).length === 0
-  ) {
+  if (DUPLICATE_MOVE_CLASSES.includes(input.move_class)) failures.push(`continuation move is explicitly non-progress: ${input.move_class}`);
+  if (input.move_class === "fresh_status_readback" && !headMoved && !hasFreshChecks) failures.push("fresh status readback requires a moved PR head or new current-head check runs");
+  if (input.move_class === "fresh_status_readback" && input.new_check_run_ids.length > 0 && (input.new_check_runs ?? []).length === 0) {
     failures.push("fresh status readback check ids must be tied to a PR head sha");
   }
 
   if (input.move_class === "external_platform_embodiment") {
-    if (!hasExecutableChange) {
-      failures.push("external embodiment must change executable platform files");
-    }
-    if (input.executable_artifacts.length === 0) {
-      failures.push("external embodiment has no executable artifact");
-    }
-    if (input.routing_artifacts.length === 0) {
-      failures.push("external embodiment has no future-routing artifact");
-    }
+    if (!hasExecutableChange) failures.push("external embodiment must change executable platform files");
+    if (input.executable_artifacts.length === 0) failures.push("external embodiment has no executable artifact");
+    if (input.routing_artifacts.length === 0) failures.push("external embodiment has no future-routing artifact");
   }
 
-  if (input.move_class === "exact_external_blocker" && !input.blocker?.trim()) {
-    failures.push("exact blocker move must name the blocker");
-  }
+  if (input.move_class === "exact_external_blocker" && !input.blocker?.trim()) failures.push("exact blocker move must name the blocker");
 
   if (failures.length > 0) {
-    return {
-      ok: false,
-      next_allowed_move: "blocked",
-      reason: failures.join("; "),
-      failures,
-    };
+    return { ok: false, next_allowed_move: "blocked", reason: failures.join("; "), failures };
   }
 
   if (input.move_class === "external_platform_embodiment") {
@@ -310,24 +253,14 @@ export function evaluateContinuationMove(input: ContinuationMoveInput): Continua
     };
   }
 
-  return {
-    ok: true,
-    next_allowed_move: "emit_exact_blocker",
-    reason: input.blocker ?? "exact external blocker supplied",
-    failures,
-  };
+  return { ok: true, next_allowed_move: "emit_exact_blocker", reason: input.blocker ?? "exact external blocker supplied", failures };
 }
 
 export function classifyContinuationEvidence(input: ContinuationMoveInput): ContinuationEvidenceClassification {
   const verdict = evaluateContinuationMove(input);
 
   if (!verdict.ok) {
-    return {
-      evidence_class: "blocked_duplicate_or_incomplete",
-      release_instruction: "block_release",
-      decisive_evidence: [],
-      blocked_reasons: verdict.failures,
-    };
+    return { evidence_class: "blocked_duplicate_or_incomplete", release_instruction: "block_release", decisive_evidence: [], blocked_reasons: verdict.failures };
   }
 
   if (verdict.next_allowed_move === "commit_external_embodiment") {
@@ -352,12 +285,7 @@ export function classifyContinuationEvidence(input: ContinuationMoveInput): Cont
     };
   }
 
-  return {
-    evidence_class: "exact_blocker_ready",
-    release_instruction: "emit_exact_blocker",
-    decisive_evidence: [input.blocker ?? verdict.reason],
-    blocked_reasons: [],
-  };
+  return { evidence_class: "exact_blocker_ready", release_instruction: "emit_exact_blocker", decisive_evidence: [input.blocker ?? verdict.reason], blocked_reasons: [] };
 }
 
 export function selectNextContinuationMove(candidates: ContinuationMoveCandidate[]): ContinuationPreflightVerdict {
@@ -366,12 +294,10 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
 
   for (const candidate of candidates) {
     const classification = classifyContinuationEvidence(candidate.input);
-
     if (!isReadyClassification(classification)) {
       rejected.push({ candidate_id: candidate.candidate_id, reasons: classification.blocked_reasons });
       continue;
     }
-
     selectable.push({
       candidate_id: candidate.candidate_id,
       evidence_class: classification.evidence_class,
@@ -382,22 +308,8 @@ export function selectNextContinuationMove(candidates: ContinuationMoveCandidate
 
   selectable.sort((left, right) => continuationPriority(right) - continuationPriority(left));
   const selected = selectable[0] ?? null;
-
-  if (!selected) {
-    return {
-      ok: false,
-      selected: null,
-      rejected,
-      failures: ["no continuation candidate survives the external-act preflight"],
-    };
-  }
-
-  return {
-    ok: true,
-    selected,
-    rejected,
-    failures: [],
-  };
+  if (!selected) return { ok: false, selected: null, rejected, failures: ["no continuation candidate survives the external-act preflight"] };
+  return { ok: true, selected, rejected, failures: [] };
 }
 
 export function compileContinuationReleaseReceipt(input: ContinuationReleaseReceiptInput): ContinuationReleaseReceipt {
@@ -432,7 +344,6 @@ export function compileContinuationReleaseReceipt(input: ContinuationReleaseRece
         next_route: "obtain a current-head status surface before making a pass/fail status claim",
       };
     }
-
     return {
       ok: input.status_surface.ok,
       branch,
@@ -477,9 +388,7 @@ export function compileContinuationReleaseReceipt(input: ContinuationReleaseRece
 
 export function assertRoute(input: RouteGuardInput): RouteDecision {
   const verdict = evaluateRoute(input);
-  if (!verdict.ok) {
-    throw new Error(verdict.failures.join("; "));
-  }
+  if (!verdict.ok) throw new Error(verdict.failures.join("; "));
   return input.decision;
 }
 
