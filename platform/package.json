@@ -5,12 +5,15 @@
   "type": "module",
   "description": "External platform scaffold for MondayiD runtime manifestation.",
   "workspaces": [
-    "packages/route-governor"
+    "packages/route-governor",
+    "packages/processor-fabric"
   ],
   "scripts": {
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
+    "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
     "test:route-governor": "npm --workspace @mondayid/route-governor test",
-    "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck"
+    "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck",
+    "typecheck:processor-fabric": "npm --workspace @mondayid/processor-fabric run typecheck"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
