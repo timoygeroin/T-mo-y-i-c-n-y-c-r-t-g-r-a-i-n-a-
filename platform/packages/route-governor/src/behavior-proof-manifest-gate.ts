@@ -40,11 +40,22 @@ function executableBehaviorPath(path: string): boolean {
   );
 }
 
-function commandMentions(command: string, path: string): boolean {
-  const distPath = path
+function distPathForCommand(path: string): string {
+  return path
     .replace("platform/packages/route-governor/src/", "dist/")
     .replace(/\.ts$/, ".js");
-  return command.includes(path) || command.includes(distPath);
+}
+
+function commandMentions(command: string, path: string): boolean {
+  const distPath = distPathForCommand(path);
+  if (command.includes(path) || command.includes(distPath)) return true;
+
+  const distFileName = distPath.slice("dist/".length);
+  if (distFileName.endsWith(".test.js") && command.includes("dist/*.test.js")) return true;
+  if (distFileName.endsWith("-proof.js") && command.includes("dist/*-proof.js")) return true;
+  if (command.includes("dist/*.js")) return true;
+
+  return false;
 }
 
 function moduleEvidence(module: ProofManifestModule): string[] {
