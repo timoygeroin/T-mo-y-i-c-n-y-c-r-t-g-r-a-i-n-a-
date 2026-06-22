@@ -167,7 +167,7 @@ export function admitPostReviewEmbodimentCandidate(
     );
   }
 
-  if (input.review_delta.branch !== input.active_branch || input.candidate?.branch !== input.active_branch) {
+  if (input.review_delta.branch !== input.active_branch || (input.candidate && input.candidate.branch !== input.active_branch)) {
     return block(
       input,
       "block_branch_mismatch",
@@ -184,7 +184,7 @@ export function admitPostReviewEmbodimentCandidate(
     );
   }
 
-  if (input.review_delta.head_sha !== input.live_head_sha || input.candidate?.base_head_sha !== input.live_head_sha) {
+  if (input.review_delta.head_sha !== input.live_head_sha || (input.candidate && input.candidate.base_head_sha !== input.live_head_sha)) {
     return block(
       input,
       "block_head_mismatch",
