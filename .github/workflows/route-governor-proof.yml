@@ -45,11 +45,18 @@ jobs:
         id: proof_examples
         run: |
           set +e
-          {
-            npm run proof:route-governor
-            npm run proof:processor-fabric
-          } 2>&1 | tee route-governor-proof-output.log
-          status=${PIPESTATUS[0]}
+          : > route-governor-proof-output.log
+          npm run proof:route-governor 2>&1 | tee -a route-governor-proof-output.log
+          route_status=${PIPESTATUS[0]}
+          npm run proof:processor-fabric 2>&1 | tee -a route-governor-proof-output.log
+          processor_status=${PIPESTATUS[0]}
+          if [ "$route_status" -ne 0 ]; then
+            status="$route_status"
+          elif [ "$processor_status" -ne 0 ]; then
+            status="$processor_status"
+          else
+            status=0
+          fi
           {
             echo "## Platform proof output"
             echo
