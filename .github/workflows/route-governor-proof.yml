@@ -9,6 +9,7 @@ on:
       - "platform/package-lock.json"
       - "platform/packages/route-governor/**"
       - "platform/packages/processor-fabric/**"
+      - "platform/packages/proof-evaluation/**"
       - ".github/workflows/route-governor-proof.yml"
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - "platform/package-lock.json"
       - "platform/packages/route-governor/**"
       - "platform/packages/processor-fabric/**"
+      - "platform/packages/proof-evaluation/**"
       - ".github/workflows/route-governor-proof.yml"
   workflow_dispatch:
 
@@ -50,10 +52,14 @@ jobs:
           route_status=${PIPESTATUS[0]}
           npm run proof:processor-fabric 2>&1 | tee -a route-governor-proof-output.log
           processor_status=${PIPESTATUS[0]}
+          npm run proof:proof-evaluation 2>&1 | tee -a route-governor-proof-output.log
+          evaluation_status=${PIPESTATUS[0]}
           if [ "$route_status" -ne 0 ]; then
             status="$route_status"
           elif [ "$processor_status" -ne 0 ]; then
             status="$processor_status"
+          elif [ "$evaluation_status" -ne 0 ]; then
+            status="$evaluation_status"
           else
             status=0
           fi
