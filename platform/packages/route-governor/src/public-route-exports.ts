@@ -113,3 +113,13 @@ export function compilePublicRouteExports(input: PublicRouteExportInput): Public
     next_route: "commit the public route export boundary, then require future public route surfaces to prove their exports before release",
   };
 }
+
+export {
+  consumeDownstreamAuthority,
+  type DownstreamAuthorityConsumptionAction,
+  type DownstreamAuthorityConsumptionInput,
+  type DownstreamAuthorityConsumptionVerdict,
+  type DownstreamAuthorityKind,
+  type DownstreamStatusAuthorityLease,
+  type DownstreamStatusVerdict,
+} from "./downstream-authority-consumption-lease.js";
