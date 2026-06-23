@@ -2,6 +2,8 @@ import {
   admitRootExportSurface,
   type RootExportSurfaceAdmissionInput,
 } from "./root-export-surface-admission.js";
+import { consumeDownstreamAuthority } from "./index.js";
+import "./downstream-authority-consumption-lease-proof.js";
 
 function input(overrides: Partial<RootExportSurfaceAdmissionInput> = {}): RootExportSurfaceAdmissionInput {
   return {
@@ -32,6 +34,22 @@ export function runRootExportSurfaceAdmissionProof(): void {
   );
   if (!proofOnly.ok) {
     throw new Error(`proof runner is still executable source and should be addressable: ${proofOnly.blockers.join("; ")}`);
+  }
+
+  const downstreamAuthority = admitRootExportSurface(
+    input({
+      candidate_id: "downstream-authority-consumption-lease-root-surface",
+      behavior_exports: ["consumeDownstreamAuthority"],
+      root_exports: ["consumeDownstreamAuthority"],
+      changed_files: ["platform/packages/route-governor/src/downstream-authority-consumption-lease.ts"],
+      routing_effects: ["downstream review and merge authority must consume a live-head status lease before release"],
+    }),
+  );
+  if (!downstreamAuthority.ok) {
+    throw new Error(`downstream authority lease should be root-consumable: ${downstreamAuthority.blockers.join("; ")}`);
+  }
+  if (typeof consumeDownstreamAuthority !== "function") {
+    throw new Error("consumeDownstreamAuthority is not exported from the route-governor root surface");
   }
 
   const noRouting = admitRootExportSurface(input({ routing_effects: [] }));
