@@ -7,16 +7,19 @@
   "workspaces": [
     "packages/route-governor",
     "packages/processor-fabric",
-    "packages/proof-evaluation"
+    "packages/proof-evaluation",
+    "packages/corpus-memory"
   ],
   "scripts": {
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
     "proof:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run proof:examples",
+    "proof:corpus-memory": "npm --workspace @mondayid/corpus-memory run proof:examples",
     "test:route-governor": "npm --workspace @mondayid/route-governor test",
     "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck",
     "typecheck:processor-fabric": "npm --workspace @mondayid/processor-fabric run typecheck",
-    "typecheck:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run typecheck"
+    "typecheck:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run typecheck",
+    "typecheck:corpus-memory": "npm --workspace @mondayid/corpus-memory run typecheck"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
