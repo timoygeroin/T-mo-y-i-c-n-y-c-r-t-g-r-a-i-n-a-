@@ -8,12 +8,13 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./processor-quorum": { "types": "./dist/processor-quorum.d.ts", "default": "./dist/processor-quorum.js" }
+    "./processor-quorum": { "types": "./dist/processor-quorum.d.ts", "default": "./dist/processor-quorum.js" },
+    "./processor-settlement": { "types": "./dist/processor-settlement.d.ts", "default": "./dist/processor-settlement.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-quorum-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
