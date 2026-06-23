@@ -169,3 +169,4 @@ export function runProcessorFabricProof(): void {
 runProcessorFabricProof();
 
 export * from "./processor-quorum.js";
+export * from "./processor-settlement.js";
