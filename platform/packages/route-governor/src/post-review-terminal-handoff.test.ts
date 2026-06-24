@@ -62,6 +62,15 @@ test("opens review feedback wait from a live-head review request outcome", () =>
   assert.match(verdict.next_route, /do not add comments, labels, or metadata rereads/);
 });
 
+test("blocks review feedback wait when downstream authority has not been consumed", () => {
+  const verdict = routePostReviewTerminalHandoff(input({ downstream_authority: undefined }));
+
+  assert.equal(verdict.ok, false);
+  assert.equal(verdict.action, "block_downstream_authority");
+  assert.equal(verdict.consumed_authority_id, null);
+  assert.deepEqual(verdict.blockers, ["await_review_feedback requires consumed downstream authority for live head live-head"]);
+});
+
 test("seals merge completion from a live-head merge outcome", () => {
   const verdict = routePostReviewTerminalHandoff(
     input({
@@ -78,6 +87,24 @@ test("seals merge completion from a live-head merge outcome", () => {
   assert.equal(verdict.ok, true);
   assert.equal(verdict.action, "seal_terminal_merge_receipt");
   assert.match(verdict.next_route, /stop adding embodiment increments/);
+});
+
+test("blocks merge completion when downstream authority has not been consumed", () => {
+  const verdict = routePostReviewTerminalHandoff(
+    input({
+      downstream_authority: undefined,
+      outcome: outcome({
+        action: "seal_merge_completion",
+        outcome_id: "merge-result-1",
+        command: "merge_finalization",
+        decisive_evidence: ["merge result receipt 99"],
+      }),
+    }),
+  );
+
+  assert.equal(verdict.ok, false);
+  assert.equal(verdict.action, "block_downstream_authority");
+  assert.deepEqual(verdict.blockers, ["seal_merge_completion requires consumed downstream authority for live head live-head"]);
 });
 
 test("routes moved-head outcomes to fresh status", () => {
