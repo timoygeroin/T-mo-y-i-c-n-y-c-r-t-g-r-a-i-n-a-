@@ -5,7 +5,7 @@ import {
   type ProcessorPostWriteStatusCursorInput,
 } from "./processor-post-write-status-cursor.js";
 
-const preWriteHead = "965216dab154a88f03687df42c7aa457cb7aa457";
+const preWriteHead = "965216dab154a88f03687df42c7aa457cb7f5148";
 const postWriteHead = "post-write-head";
 
 function base(overrides: Partial<ProcessorPostWriteStatusCursorInput> = {}): ProcessorPostWriteStatusCursorInput {
