@@ -177,3 +177,4 @@ export * from "./source-authorized-convergence.js";
 export * from "./processor-output-integrity.js";
 export * from "./processor-continuation-handoff.js";
 export * from "./processor-workload-frontier.js";
+export * from "./processor-embodiment-boundary.js";
