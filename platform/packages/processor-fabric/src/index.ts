@@ -174,3 +174,4 @@ export * from "./processor-settlement.js";
 export * from "./processor-result-receipt.js";
 export * from "./processor-source-authority.js";
 export * from "./source-authorized-convergence.js";
+export * from "./processor-output-integrity.js";
