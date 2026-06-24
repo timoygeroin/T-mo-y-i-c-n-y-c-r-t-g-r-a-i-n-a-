@@ -173,3 +173,4 @@ export * from "./processor-quorum.js";
 export * from "./processor-settlement.js";
 export * from "./processor-result-receipt.js";
 export * from "./processor-source-authority.js";
+export * from "./source-authorized-convergence.js";
