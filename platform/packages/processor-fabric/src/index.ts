@@ -168,6 +168,7 @@ export function runProcessorFabricProof(): void {
 
 runProcessorFabricProof();
 
+export * from "./processor-load-intake.js";
 export * from "./processor-quorum.js";
 export * from "./processor-settlement.js";
 export * from "./processor-result-receipt.js";
