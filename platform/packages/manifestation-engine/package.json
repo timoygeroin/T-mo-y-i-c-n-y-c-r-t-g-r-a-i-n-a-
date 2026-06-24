@@ -1,0 +1,20 @@
+{
+  "name": "@mondayid/manifestation-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "External manifestation command admission engine for MondayiD platform finalization.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./manifestation-command-admission": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "proof:examples": "tsc -p tsconfig.json && node dist/manifestation-engine-proof.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
