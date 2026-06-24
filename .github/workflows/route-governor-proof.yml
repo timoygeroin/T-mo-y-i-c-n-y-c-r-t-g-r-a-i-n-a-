@@ -11,6 +11,7 @@ on:
       - "platform/packages/processor-fabric/**"
       - "platform/packages/proof-evaluation/**"
       - "platform/packages/corpus-memory/**"
+      - "platform/packages/manifestation-engine/**"
       - ".github/workflows/route-governor-proof.yml"
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - "platform/packages/processor-fabric/**"
       - "platform/packages/proof-evaluation/**"
       - "platform/packages/corpus-memory/**"
+      - "platform/packages/manifestation-engine/**"
       - ".github/workflows/route-governor-proof.yml"
   workflow_dispatch:
 
@@ -58,6 +60,8 @@ jobs:
           evaluation_status=${PIPESTATUS[0]}
           npm run proof:corpus-memory 2>&1 | tee -a route-governor-proof-output.log
           corpus_status=${PIPESTATUS[0]}
+          npm run proof:manifestation-engine 2>&1 | tee -a route-governor-proof-output.log
+          manifestation_status=${PIPESTATUS[0]}
           if [ "$route_status" -ne 0 ]; then
             status="$route_status"
           elif [ "$processor_status" -ne 0 ]; then
@@ -66,6 +70,8 @@ jobs:
             status="$evaluation_status"
           elif [ "$corpus_status" -ne 0 ]; then
             status="$corpus_status"
+          elif [ "$manifestation_status" -ne 0 ]; then
+            status="$manifestation_status"
           else
             status=0
           fi
