@@ -41,6 +41,11 @@ const NON_PROGRESS_OUTCOME_ACTIONS = new Set<FinalReviewOutcomeRouterVerdict["ac
   "block_missing_result_evidence",
 ]);
 
+const AUTHORITY_REQUIRED_OUTCOME_ACTIONS = new Set<FinalReviewOutcomeRouterVerdict["action"]>([
+  "await_review_feedback",
+  "seal_merge_completion",
+]);
+
 function base(input: PostReviewTerminalHandoffInput): Pick<
   PostReviewTerminalHandoffVerdict,
   "handoff_id" | "branch" | "head_sha" | "warnings"
@@ -139,6 +144,16 @@ export function routePostReviewTerminalHandoff(
       "block_non_progress_handoff",
       input.outcome.blockers.length > 0 ? input.outcome.blockers : [`outcome action ${input.outcome.action} cannot open terminal handoff`],
       "produce a fresh downstream result, moved-head surface, merge receipt, or exact external blocker",
+      routeEvidence,
+    );
+  }
+
+  if (AUTHORITY_REQUIRED_OUTCOME_ACTIONS.has(input.outcome.action) && !input.downstream_authority) {
+    return block(
+      input,
+      "block_downstream_authority",
+      [`${input.outcome.action} requires consumed downstream authority for live head ${input.live_head_sha}`],
+      "consume live-head downstream authority before opening review feedback wait or sealing merge completion",
       routeEvidence,
     );
   }
