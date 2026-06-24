@@ -115,6 +115,10 @@ function unique(values: string[]): string[] {
   return [...new Set(values.map(normalized).filter(Boolean))];
 }
 
+function uniqueLoadClasses(values: ProcessorWorkloadFrontierLoadClass[]): ProcessorWorkloadFrontierLoadClass[] {
+  return [...new Set(values)];
+}
+
 function base(input: ProcessorWorkloadFrontierInput): Pick<
   ProcessorWorkloadFrontierVerdict,
   "frontier_id" | "branch" | "head_sha" | "quarantined_head_shas"
@@ -215,7 +219,7 @@ function selectableWorkloads(
   const selected: ProcessorWorkloadCandidate[] = [];
   let budget = input.max_processors;
 
-  for (const required of unique(input.required_load_classes)) {
+  for (const required of uniqueLoadClasses(input.required_load_classes)) {
     const candidate = selectable.find(
       (item) => item.load_class === required && !selected.includes(item) && item.estimated_processors <= budget,
     );
@@ -254,7 +258,7 @@ export function compileProcessorWorkloadFrontier(
 
   const { selected, rejected } = selectableWorkloads(input);
   const selectedLoadClasses = new Set(selected.map((candidate) => candidate.load_class));
-  const missingRequired = unique(input.required_load_classes).filter((loadClass) => !selectedLoadClasses.has(loadClass));
+  const missingRequired = uniqueLoadClasses(input.required_load_classes).filter((loadClass) => !selectedLoadClasses.has(loadClass));
   const blockerCandidate = input.candidates.find(
     (candidate) => candidate.load_class === "exact_external_blocker" && candidateRejections(input, candidate).length === 0,
   );
