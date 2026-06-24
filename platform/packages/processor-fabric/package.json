@@ -11,12 +11,13 @@
     "./processor-load-intake": { "types": "./dist/processor-load-intake.d.ts", "default": "./dist/processor-load-intake.js" },
     "./processor-quorum": { "types": "./dist/processor-quorum.d.ts", "default": "./dist/processor-quorum.js" },
     "./processor-settlement": { "types": "./dist/processor-settlement.d.ts", "default": "./dist/processor-settlement.js" },
-    "./processor-result-receipt": { "types": "./dist/processor-result-receipt.d.ts", "default": "./dist/processor-result-receipt.js" }
+    "./processor-result-receipt": { "types": "./dist/processor-result-receipt.d.ts", "default": "./dist/processor-result-receipt.js" },
+    "./processor-source-authority": { "types": "./dist/processor-source-authority.d.ts", "default": "./dist/processor-source-authority.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-load-intake-proof.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js && node dist/processor-result-receipt-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-load-intake-proof.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js && node dist/processor-result-receipt-proof.js && node dist/processor-source-authority-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
