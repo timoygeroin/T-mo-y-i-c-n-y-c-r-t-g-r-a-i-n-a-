@@ -170,3 +170,4 @@ runProcessorFabricProof();
 
 export * from "./processor-quorum.js";
 export * from "./processor-settlement.js";
+export * from "./processor-result-receipt.js";
