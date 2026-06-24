@@ -8,12 +8,13 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./manifestation-command-admission": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    "./manifestation-command-admission": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./manifestation-result-receipt": { "types": "./dist/manifestation-result-receipt.d.ts", "default": "./dist/manifestation-result-receipt.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/manifestation-engine-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/manifestation-engine-proof.js && node dist/manifestation-result-receipt-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
