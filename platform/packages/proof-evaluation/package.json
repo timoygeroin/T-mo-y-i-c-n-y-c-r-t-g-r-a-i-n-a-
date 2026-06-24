@@ -1,0 +1,20 @@
+{
+  "name": "@mondayid/proof-evaluation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Proof-scene evaluation engine for MondayiD platform finalization.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./proof-scene-evaluator": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-evaluation-proof.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,45 @@
+name: Monday Platform Route Governor
+
+on:
+  push:
+    branches:
+      - monday-platform-genesis-01
+    paths:
+      - "platform/**"
+      - ".github/workflows/monday-platform-route-governor.yml"
+  pull_request:
+    paths:
+      - "platform/**"
+      - ".github/workflows/monday-platform-route-governor.yml"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  route-governor-proof:
+    name: Route governor proof examples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install platform dependencies
+        working-directory: platform
+        run: npm install
+
+      - name: Typecheck route governor
+        working-directory: platform
+        run: npm run typecheck:route-governor
+
+      - name: Run route governor proof examples
+        working-directory: platform
+        run: npm run proof:route-governor
+
+      - name: Run route governor tests
+        working-directory: platform
+        run: npm run test:route-governor

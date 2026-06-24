@@ -1,0 +1,98 @@
+name: Route Governor Proof
+
+on:
+  push:
+    branches:
+      - monday-platform-genesis-01
+    paths:
+      - "platform/package.json"
+      - "platform/package-lock.json"
+      - "platform/packages/route-governor/**"
+      - "platform/packages/processor-fabric/**"
+      - "platform/packages/proof-evaluation/**"
+      - "platform/packages/corpus-memory/**"
+      - "platform/packages/manifestation-engine/**"
+      - ".github/workflows/route-governor-proof.yml"
+  pull_request:
+    paths:
+      - "platform/package.json"
+      - "platform/package-lock.json"
+      - "platform/packages/route-governor/**"
+      - "platform/packages/processor-fabric/**"
+      - "platform/packages/proof-evaluation/**"
+      - "platform/packages/corpus-memory/**"
+      - "platform/packages/manifestation-engine/**"
+      - ".github/workflows/route-governor-proof.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  proof:
+    name: Route governor proof examples
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run platform proof
+        id: proof_examples
+        run: |
+          set +e
+          : > route-governor-proof-output.log
+          npm run proof:route-governor 2>&1 | tee -a route-governor-proof-output.log
+          route_status=${PIPESTATUS[0]}
+          npm run proof:processor-fabric 2>&1 | tee -a route-governor-proof-output.log
+          processor_status=${PIPESTATUS[0]}
+          npm run proof:proof-evaluation 2>&1 | tee -a route-governor-proof-output.log
+          evaluation_status=${PIPESTATUS[0]}
+          npm run proof:corpus-memory 2>&1 | tee -a route-governor-proof-output.log
+          corpus_status=${PIPESTATUS[0]}
+          npm run proof:manifestation-engine 2>&1 | tee -a route-governor-proof-output.log
+          manifestation_status=${PIPESTATUS[0]}
+          if [ "$route_status" -ne 0 ]; then
+            status="$route_status"
+          elif [ "$processor_status" -ne 0 ]; then
+            status="$processor_status"
+          elif [ "$evaluation_status" -ne 0 ]; then
+            status="$evaluation_status"
+          elif [ "$corpus_status" -ne 0 ]; then
+            status="$corpus_status"
+          elif [ "$manifestation_status" -ne 0 ]; then
+            status="$manifestation_status"
+          else
+            status=0
+          fi
+          {
+            echo "## Platform proof output"
+            echo
+            echo "Head: \`${GITHUB_SHA}\`"
+            echo "Exit code: \`${status}\`"
+            echo
+            echo "Last 120 output lines:"
+            echo
+            echo '```text'
+            tail -n 120 route-governor-proof-output.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Upload route governor proof output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-governor-proof-output-${{ github.run_id }}-${{ github.run_attempt }}
+          path: platform/route-governor-proof-output.log
+          if-no-files-found: warn

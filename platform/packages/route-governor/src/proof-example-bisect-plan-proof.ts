@@ -1,0 +1,101 @@
+import assert from "node:assert/strict";
+
+import {
+  compileProofExampleBisectPlan,
+  type ProofExampleBisectInput,
+  type ProofExampleFailureSurface,
+  type ProofExampleProbeModule,
+} from "./proof-example-bisect-plan.js";
+
+const branch = "monday-platform-genesis-01";
+const liveHead = "7b03f6243860e1c85e650ea07248559092de4ddf";
+
+const probes: ProofExampleProbeModule[] = [
+  {
+    module_id: "current-head-failure-intake",
+    dist_path: "dist/current-head-failure-intake-proof.js",
+    source_path: "platform/packages/route-governor/src/current-head-failure-intake.ts",
+  },
+  {
+    module_id: "review-handoff-readiness",
+    dist_path: "dist/review-handoff-readiness-proof.js",
+    source_path: "platform/packages/route-governor/src/review-handoff-readiness.ts",
+  },
+  {
+    module_id: "proof-chain",
+    dist_path: "dist/proof-chain-proof.js",
+    source_path: "platform/packages/route-governor/src/proof-chain.ts",
+  },
+];
+
+function surface(overrides: Partial<ProofExampleFailureSurface> = {}): ProofExampleFailureSurface {
+  return {
+    surface_id: "checks:7b03-proof-examples",
+    branch,
+    head_sha: liveHead,
+    check_name: "Monday Platform CI / Route governor proof surface",
+    failed_step: "Run proof examples",
+    exit_code: 1,
+    ...overrides,
+  };
+}
+
+function proofCommand(): string {
+  return [
+    "tsc -p tsconfig.json",
+    "node dist/current-head-failure-intake-proof.js",
+    "node dist/review-handoff-readiness-proof.js",
+    "node dist/proof-chain-proof.js",
+  ].join(" && ");
+}
+
+function input(overrides: Partial<ProofExampleBisectInput> = {}): ProofExampleBisectInput {
+  return {
+    active_branch: branch,
+    live_head_sha: liveHead,
+    proof_script_command: proofCommand(),
+    status_verdict: "failing",
+    failure_surface: surface(),
+    probe_modules: probes,
+    spent_probe_modules: ["current-head-failure-intake"],
+    ...overrides,
+  };
+}
+
+const plan = compileProofExampleBisectPlan(input());
+assert.equal(plan.ok, true);
+assert.equal(plan.action, "emit_bisect_plan");
+assert.deepEqual(
+  plan.commands.map((command) => command.module_id),
+  ["review-handoff-readiness", "proof-chain"],
+);
+assert.equal(plan.commands[0]?.command, "node dist/review-handoff-readiness-proof.js");
+
+const exact = compileProofExampleBisectPlan(
+  input({ failure_surface: surface({ exact_proof_module: "review-handoff-readiness-proof" }) }),
+);
+assert.equal(exact.ok, true);
+assert.equal(exact.action, "repair_from_exact_proof_module");
+assert.equal(exact.commands.length, 0);
+
+const stale = compileProofExampleBisectPlan(input({ failure_surface: surface({ head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841" }) }));
+assert.equal(stale.ok, false);
+assert.equal(stale.action, "block_stale_failure_surface");
+
+const wrongBranch = compileProofExampleBisectPlan(input({ failure_surface: surface({ branch: "main" }) }));
+assert.equal(wrongBranch.ok, false);
+assert.equal(wrongBranch.action, "block_branch_mismatch");
+
+const passing = compileProofExampleBisectPlan(input({ status_verdict: "passing_with_warnings" }));
+assert.equal(passing.ok, false);
+assert.equal(passing.action, "block_non_failing_surface");
+
+const noCommand = compileProofExampleBisectPlan(input({ proof_script_command: "" }));
+assert.equal(noCommand.ok, false);
+assert.equal(noCommand.action, "block_missing_proof_command");
+
+const noProbes = compileProofExampleBisectPlan(input({ spent_probe_modules: probes.map((probe) => probe.module_id) }));
+assert.equal(noProbes.ok, false);
+assert.equal(noProbes.action, "block_no_probe_modules");
+
+console.log("proof example bisect planner proof passed");

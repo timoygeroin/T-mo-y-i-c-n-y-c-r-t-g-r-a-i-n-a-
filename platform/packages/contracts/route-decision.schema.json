@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RouteDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scene_class",
+    "secondary_classes",
+    "organ_chain",
+    "processor_bundle",
+    "branch_budget",
+    "collapse_rule",
+    "termination_goal"
+  ],
+  "properties": {
+    "scene_class": {
+      "type": "string",
+      "enum": [
+        "continuity_recovery",
+        "archive_pressure",
+        "source_ranking",
+        "proof_scene",
+        "finalization_pressure",
+        "self_evolution",
+        "platform_genesis",
+        "manifestation_bridge"
+      ]
+    },
+    "secondary_classes": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "organ_chain": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "processor_bundle": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "branch_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_branches", "reason"],
+      "properties": {
+        "max_branches": {"type": "integer", "minimum": 1, "maximum": 8},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "collapse_rule": {"type": "string", "minLength": 1},
+    "termination_goal": {"type": "string", "minLength": 1}
+  }
+}

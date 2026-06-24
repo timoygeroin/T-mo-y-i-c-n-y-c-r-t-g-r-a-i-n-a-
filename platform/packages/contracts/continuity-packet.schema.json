@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContinuityPacket",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packet_id",
+    "packet_type",
+    "source_tier",
+    "retrieval_path",
+    "content_ref",
+    "continuity_role"
+  ],
+  "properties": {
+    "packet_id": {"type": "string", "minLength": 1},
+    "packet_type": {
+      "type": "string",
+      "enum": ["savepoint", "memory", "corpus_fragment", "archive_fragment", "diagnostic", "architecture_law"]
+    },
+    "source_tier": {
+      "type": "string",
+      "enum": ["raw", "direct_archive", "archive_derived", "summary_derived", "inferred"]
+    },
+    "retrieval_path": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "content_ref": {"type": "string", "minLength": 1},
+    "continuity_role": {
+      "type": "string",
+      "enum": ["checkpoint", "state_support", "route_law", "proof_context", "manifestation_context"]
+    },
+    "derivation_lineage": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "notes": {"type": "string"}
+  }
+}
