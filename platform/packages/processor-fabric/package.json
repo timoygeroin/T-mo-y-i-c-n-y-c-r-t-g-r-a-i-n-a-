@@ -20,12 +20,13 @@
     "./processor-embodiment-boundary": { "types": "./dist/processor-embodiment-boundary.d.ts", "default": "./dist/processor-embodiment-boundary.js" },
     "./live-head-reentry-plan": { "types": "./dist/live-head-reentry-plan.d.ts", "default": "./dist/live-head-reentry-plan.js" },
     "./processor-post-write-status-cursor": { "types": "./dist/processor-post-write-status-cursor.d.ts", "default": "./dist/processor-post-write-status-cursor.js" },
-    "./processor-live-embodiment-work-order": { "types": "./dist/processor-live-embodiment-work-order.d.ts", "default": "./dist/processor-live-embodiment-work-order.js" }
+    "./processor-live-embodiment-work-order": { "types": "./dist/processor-live-embodiment-work-order.d.ts", "default": "./dist/processor-live-embodiment-work-order.js" },
+    "./processor-release-packet": { "types": "./dist/processor-release-packet.d.ts", "default": "./dist/processor-release-packet.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-load-intake-proof.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js && node dist/processor-result-receipt-proof.js && node dist/processor-source-authority-proof.js && node dist/source-authorized-convergence-proof.js && node dist/processor-output-integrity-proof.js && node dist/processor-continuation-handoff-proof.js && node dist/processor-workload-frontier-proof.js && node dist/processor-embodiment-boundary-proof.js && node dist/live-head-reentry-plan-proof.js && node dist/processor-post-write-status-cursor-proof.js && node dist/processor-live-embodiment-work-order-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-load-intake-proof.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js && node dist/processor-result-receipt-proof.js && node dist/processor-source-authority-proof.js && node dist/source-authorized-convergence-proof.js && node dist/processor-output-integrity-proof.js && node dist/processor-continuation-handoff-proof.js && node dist/processor-workload-frontier-proof.js && node dist/processor-embodiment-boundary-proof.js && node dist/live-head-reentry-plan-proof.js && node dist/processor-post-write-status-cursor-proof.js && node dist/processor-live-embodiment-work-order-proof.js && node dist/processor-release-packet-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
