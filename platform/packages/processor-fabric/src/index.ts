@@ -180,3 +180,4 @@ export * from "./processor-workload-frontier.js";
 export * from "./processor-embodiment-boundary.js";
 export * from "./live-head-reentry-plan.js";
 export * from "./processor-post-write-status-cursor.js";
+export * from "./processor-live-embodiment-work-order.js";
