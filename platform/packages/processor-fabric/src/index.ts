@@ -175,3 +175,5 @@ export * from "./processor-result-receipt.js";
 export * from "./processor-source-authority.js";
 export * from "./source-authorized-convergence.js";
 export * from "./processor-output-integrity.js";
+export * from "./processor-continuation-handoff.js";
+export * from "./processor-workload-frontier.js";
