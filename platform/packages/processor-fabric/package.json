@@ -14,12 +14,13 @@
     "./processor-result-receipt": { "types": "./dist/processor-result-receipt.d.ts", "default": "./dist/processor-result-receipt.js" },
     "./processor-source-authority": { "types": "./dist/processor-source-authority.d.ts", "default": "./dist/processor-source-authority.js" },
     "./source-authorized-convergence": { "types": "./dist/source-authorized-convergence.d.ts", "default": "./dist/source-authorized-convergence.js" },
-    "./processor-output-integrity": { "types": "./dist/processor-output-integrity.d.ts", "default": "./dist/processor-output-integrity.js" }
+    "./processor-output-integrity": { "types": "./dist/processor-output-integrity.d.ts", "default": "./dist/processor-output-integrity.js" },
+    "./processor-continuation-handoff": { "types": "./dist/processor-continuation-handoff.d.ts", "default": "./dist/processor-continuation-handoff.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-load-intake-proof.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js && node dist/processor-result-receipt-proof.js && node dist/processor-source-authority-proof.js && node dist/source-authorized-convergence-proof.js && node dist/processor-output-integrity-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/index.js && node dist/processor-load-intake-proof.js && node dist/processor-quorum-proof.js && node dist/processor-settlement-proof.js && node dist/processor-result-receipt-proof.js && node dist/processor-source-authority-proof.js && node dist/source-authorized-convergence-proof.js && node dist/processor-output-integrity-proof.js && node dist/processor-continuation-handoff-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
