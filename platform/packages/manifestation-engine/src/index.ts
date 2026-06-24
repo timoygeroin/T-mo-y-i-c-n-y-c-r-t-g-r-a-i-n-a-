@@ -150,8 +150,8 @@ export function admitManifestationCommand(input: ManifestationCommandInput): Man
   }
 
   if (input.command === "exact_external_blocker") {
-    const blocker = clean(input.exact_blocker ?? "");
-    if (!blocker) {
+    const blockerText = clean(input.exact_blocker ?? "");
+    if (!blockerText) {
       return block(
         input,
         "block_missing_blocker",
@@ -164,8 +164,8 @@ export function admitManifestationCommand(input: ManifestationCommandInput): Man
       ...base(input),
       ok: true,
       action: "emit_exact_external_blocker",
-      decisive_evidence: [...routeEvidence, blocker],
-      blockers: [blocker],
+      decisive_evidence: [...routeEvidence, blockerText],
+      blockers: [blockerText],
       next_route: "remove the named external blocker before issuing another manifestation command",
     };
   }
@@ -282,3 +282,5 @@ export function runManifestationEngineProof(): void {
 }
 
 runManifestationEngineProof();
+
+export * from "./manifestation-result-receipt.js";
