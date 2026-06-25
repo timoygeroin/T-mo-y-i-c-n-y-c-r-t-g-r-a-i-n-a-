@@ -1,3 +1,5 @@
+import { admitPostResolutionProcessorWorkload } from "./post-resolution-workload-gate.js";
+
 export type ProcessorLoadClass =
   | "corpus_reentry"
   | "archive_ingress"
@@ -164,6 +166,33 @@ export function runProcessorFabricProof(): void {
   if (!verdict.ok || verdict.action !== "dispatch_processor_fabric" || verdict.dispatches.length !== 4) {
     throw new Error(`processor fabric proof failed: ${verdict.action} ${verdict.blockers.join("; ")}`);
   }
+
+  const postResolution = admitPostResolutionProcessorWorkload({
+    active_branch: "monday-platform-genesis-01",
+    live_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    repaired_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+    resolved_boundary_ids: ["issue-1-ci-status-readback", "repaired-head-checks-green"],
+    spent_workload_ids: [],
+    prohibited_workload_classes: ["duplicate_ci_summary", "duplicate_comment", "local_memory_guard", "warning_maintenance"],
+    candidates: [
+      {
+        workload_id: "post-resolution-workload-gate",
+        workload_class: "external_platform_embodiment",
+        branch: "monday-platform-genesis-01",
+        base_head_sha: "b38ea247602ae8ebba80c4120ad03b41b26bd841",
+        changed_files: ["platform/packages/processor-fabric/src/post-resolution-workload-gate.ts"],
+        processor_loads: ["move-class-synthesis", "external-act-forcing"],
+        required_outputs: ["one executable platform behavior increment"],
+        executable_artifacts: ["admitPostResolutionProcessorWorkload"],
+        routing_artifacts: ["post-resolution workload gate"],
+        proof_artifacts: ["platform/packages/processor-fabric/src/post-resolution-workload-gate-proof.ts"],
+      },
+    ],
+  });
+
+  if (!postResolution.ok || postResolution.action !== "admit_post_resolution_processor_workload") {
+    throw new Error(`post-resolution workload proof failed: ${postResolution.action} ${postResolution.blockers.join("; ")}`);
+  }
 }
 
 runProcessorFabricProof();
@@ -181,6 +210,7 @@ export * from "./processor-embodiment-boundary.js";
 export * from "./live-head-reentry-plan.js";
 export * from "./processor-post-write-status-cursor.js";
 export * from "./processor-live-embodiment-work-order.js";
+export * from "./post-resolution-workload-gate.js";
 export { compileProcessorReleasePacket } from "./processor-release-packet.js";
 export type {
   ProcessorReleaseConvergenceReceipt,
