@@ -8,12 +8,13 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./proof-scene-evaluator": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    "./proof-scene-evaluator": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./post-resolution-external-proof": { "types": "./dist/post-resolution-external-proof.d.ts", "default": "./dist/post-resolution-external-proof.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/proof-evaluation-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-evaluation-proof.js && node dist/post-resolution-external-proof-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
