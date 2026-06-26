@@ -16,6 +16,7 @@ function base(overrides: Partial<MergedPrContinuationBoundaryInput> = {}): Merge
     branch_continuation_admitted: false,
     requested_surface: "pr_or_branch",
     merge_commit_sha: "744387e081b4126ddba74d03ee11588e76ed3789",
+    branch_executable_delta_files: [],
     evidence: ["connector PR readback reports closed/merged"],
     ...overrides,
   };
@@ -32,8 +33,18 @@ export function runMergedPrContinuationBoundaryProof(): void {
   expectAction("merged PR seals PR surface", base(), "seal_merged_pr_surface", true);
 
   expectAction(
-    "branch-only continuation is explicit",
+    "branch-only continuation requires executable delta",
     base({ branch_continuation_admitted: true }),
+    "block_missing_branch_executable_delta",
+    false,
+  );
+
+  expectAction(
+    "branch-only continuation is explicit and executable",
+    base({
+      branch_continuation_admitted: true,
+      branch_executable_delta_files: ["platform/packages/route-governor/src/merged-pr-continuation-boundary.ts"],
+    }),
     "route_branch_only_continuation",
     true,
   );
