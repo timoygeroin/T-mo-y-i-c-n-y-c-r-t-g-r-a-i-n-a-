@@ -284,3 +284,4 @@ export function runManifestationEngineProof(): void {
 runManifestationEngineProof();
 
 export * from "./manifestation-result-receipt.js";
+export * from "./processor-packet-manifestation-admission.js";
