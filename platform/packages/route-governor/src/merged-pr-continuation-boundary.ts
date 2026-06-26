@@ -6,6 +6,7 @@ export type MergedPrContinuationAction =
   | "seal_merged_pr_surface"
   | "emit_exact_external_blocker"
   | "block_missing_merge_receipt"
+  | "block_missing_branch_executable_delta"
   | "block_unreadable_branch_surface";
 
 export interface MergedPrContinuationBoundaryInput {
@@ -20,6 +21,7 @@ export interface MergedPrContinuationBoundaryInput {
   branch_continuation_admitted: boolean;
   requested_surface: MergedPrContinuationRequestedSurface;
   merge_commit_sha?: string | null;
+  branch_executable_delta_files?: string[];
   evidence: string[];
 }
 
@@ -45,6 +47,7 @@ function evidence(input: MergedPrContinuationBoundaryInput): string[] {
     `live head ${input.live_head_sha}`,
     `pr state ${input.pr_state}`,
     `merged ${input.merged}`,
+    ...executableDeltaFiles(input).map((path) => `branch executable delta ${path}`),
     ...input.evidence,
   ];
 }
@@ -61,6 +64,13 @@ function base(input: MergedPrContinuationBoundaryInput): Omit<
     live_head_sha: input.live_head_sha,
     decisive_evidence: evidence(input),
   };
+}
+
+function executableDeltaFiles(input: MergedPrContinuationBoundaryInput): string[] {
+  return [...new Set(input.branch_executable_delta_files ?? [])]
+    .map((path) => path.trim())
+    .filter((path) => path.startsWith("platform/packages/") && /\.(ts|js|mjs|json)$/.test(path))
+    .sort((left, right) => left.localeCompare(right));
 }
 
 export function routeMergedPrContinuationBoundary(
@@ -102,6 +112,18 @@ export function routeMergedPrContinuationBoundary(
     }
 
     if (input.requested_surface !== "pr_only" && input.branch_continuation_admitted) {
+      const executableDeltas = executableDeltaFiles(input);
+      if (executableDeltas.length === 0) {
+        return {
+          ...base(input),
+          ok: false,
+          action: "block_missing_branch_executable_delta",
+          blockers: ["branch-only continuation after a merged PR requires executable platform delta evidence"],
+          warnings: [`PR #${input.pr_number} is merged at ${mergeCommit}`],
+          next_route: "attach executable platform file changes before treating branch-only continuation as progress",
+        };
+      }
+
       return {
         ...base(input),
         ok: true,
@@ -111,7 +133,7 @@ export function routeMergedPrContinuationBoundary(
           `PR #${input.pr_number} is merged at ${mergeCommit}; branch commits no longer update that PR review surface`,
           ...(input.prompt_head_sha === input.live_head_sha ? [] : [`prompt head ${input.prompt_head_sha} differs from live head ${input.live_head_sha}`]),
         ],
-        next_route: "treat the branch as a branch-only embodiment surface; do not describe future branch commits as PR #2 progress",
+        next_route: "treat the branch as a branch-only embodiment surface backed by executable deltas; do not describe future branch commits as PR #2 review progress",
       };
     }
 
@@ -121,7 +143,7 @@ export function routeMergedPrContinuationBoundary(
       action: "seal_merged_pr_surface",
       blockers: [],
       warnings: [`PR #${input.pr_number} is already merged at ${mergeCommit}`],
-      next_route: "stop adding PR-branch embodiment increments; choose a new external sink or explicitly admit branch-only continuation",
+      next_route: "stop adding PR-branch embodiment increments; choose a new external sink or explicitly admit branch-only continuation with executable delta evidence",
     };
   }
 
