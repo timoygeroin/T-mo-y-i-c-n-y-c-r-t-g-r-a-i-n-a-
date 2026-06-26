@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 
-import { admitProcessorPacketManifestation } from "./processor-packet-manifestation-admission.js";
+import {
+  admitProcessorPacketManifestation,
+  type ProcessorPacketManifestationPacket,
+} from "./processor-packet-manifestation-admission.js";
 
 const branch = "monday-platform-genesis-01";
 const liveHead = "7e7c1f8c4a5d42bc8f14ec9b4a10d8a31b9d1240";
 
-const packet = {
+const packet: ProcessorPacketManifestationPacket = {
   packet_id: "processor-packet-manifestation-admission",
   branch,
   base_head_sha: liveHead,
@@ -20,7 +23,7 @@ const packet = {
   proof_artifacts: ["platform/packages/manifestation-engine/src/processor-packet-manifestation-admission-proof.ts"],
   guard: {
     require_live_head_sha: liveHead,
-    forbidden_targets: ["fresh_status_readback", "metadata_reread", "duplicate_comment", "local_memory_guard", "proof_only_change"] as const,
+    forbidden_targets: ["fresh_status_readback", "metadata_reread", "duplicate_comment", "local_memory_guard", "proof_only_change"],
   },
 };
 
