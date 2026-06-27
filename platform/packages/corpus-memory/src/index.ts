@@ -145,3 +145,5 @@ export function compileCorpusMemoryIngressLedger(input: CorpusMemoryIngressInput
     next_route: "consume this ledger as local source authority, without upgrading it into a broad raw-corpus claim",
   };
 }
+
+export * from "./source-proof-authority-bridge.js";
