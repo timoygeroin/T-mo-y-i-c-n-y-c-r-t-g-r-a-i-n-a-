@@ -285,3 +285,4 @@ runManifestationEngineProof();
 
 export * from "./manifestation-result-receipt.js";
 export * from "./processor-packet-manifestation-admission.js";
+export * from "./branch-embodiment-result-receipt.js";
