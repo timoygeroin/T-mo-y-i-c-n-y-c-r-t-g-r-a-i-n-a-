@@ -214,3 +214,5 @@ export function selectPostMergeSuccessorSink(
             : "remove the exact external blocker before selecting another post-merge sink",
   };
 }
+
+export * from "./post-merge-sink-closure.js";
