@@ -1,8 +1,29 @@
+import { closeMergedPrSink, type PostMergeSinkClosureInput } from "./post-merge-sink-closure.js";
 import {
   selectPostMergeSuccessorSink,
   type PostMergeSuccessorCandidate,
   type PostMergeSuccessorSinkSelectorInput,
 } from "./post-merge-successor-sink-selector.js";
+
+function closureInput(overrides: Partial<PostMergeSinkClosureInput> = {}): PostMergeSinkClosureInput {
+  return {
+    closure_id: "post-merge-pr-2-closure-001",
+    spent_closure_ids: [],
+    active_pr_number: 2,
+    active_branch: "monday-platform-genesis-01",
+    previous_active_head_sha: "4fbd48ca4539986c874f85394188c405b8d25600",
+    observed_pr: {
+      pr_number: 2,
+      state: "closed",
+      merged: true,
+      draft: false,
+      head_branch: "monday-platform-genesis-01",
+      head_sha: "4fbd48ca4539986c874f85394188c405b8d25600",
+      merge_commit_sha: "744387e081b4126ddba74d03ee11588e76ed3789",
+    },
+    ...overrides,
+  };
+}
 
 function candidate(overrides: Partial<PostMergeSuccessorCandidate> = {}): PostMergeSuccessorCandidate {
   return {
@@ -38,7 +59,61 @@ function expectAction(name: string, inputValue: PostMergeSuccessorSinkSelectorIn
   }
 }
 
+function expectClosureAction(name: string, inputValue: PostMergeSinkClosureInput, action: string, ok: boolean): void {
+  const verdict = closeMergedPrSink(inputValue);
+  if (verdict.action !== action || verdict.ok !== ok) {
+    throw new Error(`${name} expected ${action}/${ok}, got ${verdict.action}/${verdict.ok}: ${verdict.blockers.join("; ")}`);
+  }
+}
+
 export function runPostMergeSuccessorSinkSelectorProof(): void {
+  expectClosureAction("merged closed PR sink is sealed", closureInput(), "seal_merged_pr_sink", true);
+
+  expectClosureAction(
+    "moved post-merge head requires readback first",
+    closureInput({
+      observed_pr: {
+        ...closureInput().observed_pr,
+        head_sha: "next-head",
+      },
+    }),
+    "route_to_moved_head_readback",
+    false,
+  );
+
+  expectClosureAction(
+    "open PR cannot be sealed as merged",
+    closureInput({
+      observed_pr: {
+        ...closureInput().observed_pr,
+        state: "open",
+        merged: false,
+        merge_commit_sha: null,
+      },
+    }),
+    "block_unmerged_sink",
+    false,
+  );
+
+  expectClosureAction(
+    "missing merge commit is external blocker",
+    closureInput({
+      observed_pr: {
+        ...closureInput().observed_pr,
+        merge_commit_sha: null,
+      },
+    }),
+    "block_missing_merge_commit",
+    false,
+  );
+
+  expectClosureAction(
+    "closure ids cannot be reused",
+    closureInput({ spent_closure_ids: ["post-merge-pr-2-closure-001"] }),
+    "block_reused_closure",
+    false,
+  );
+
   expectAction("open successor PR wins", input(), "select_new_pull_request_sink", true);
 
   expectAction(
