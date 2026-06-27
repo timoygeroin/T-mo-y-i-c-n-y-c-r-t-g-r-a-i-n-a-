@@ -476,3 +476,4 @@ export * from "./admitted-candidate-write-receipt.js";
 export * from "./final-review-authority-bundle.js";
 export * from "./final-review-authority-consumption.js";
 export * from "./post-resolution-platform-module-selector.js";
+export * from "./post-merge-successor-sink-selector.js";
