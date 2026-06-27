@@ -8,12 +8,13 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./ingress-ledger": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    "./ingress-ledger": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./source-proof-authority-bridge": { "types": "./dist/source-proof-authority-bridge.d.ts", "default": "./dist/source-proof-authority-bridge.js" }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/corpus-memory-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/corpus-memory-proof.js && node dist/source-proof-authority-bridge-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
