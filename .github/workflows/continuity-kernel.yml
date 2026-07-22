@@ -1,0 +1,41 @@
+name: Continuity Kernel Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/packages/continuity-kernel/**"
+      - "platform/continuity/**"
+      - "platform/package.json"
+      - "platform/package-lock.json"
+      - ".github/workflows/continuity-kernel.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: platform/package-lock.json
+
+      - name: Install platform dependencies
+        working-directory: platform
+        run: npm ci
+
+      - name: Typecheck continuity kernel
+        working-directory: platform
+        run: npm run typecheck:continuity-kernel
+
+      - name: Run continuity proof scenarios
+        working-directory: platform
+        run: npm run proof:continuity-kernel
