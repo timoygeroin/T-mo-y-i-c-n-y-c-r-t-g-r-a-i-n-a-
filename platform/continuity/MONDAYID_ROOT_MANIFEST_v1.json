@@ -15,7 +15,8 @@
     "A TRIGGER AUTHORIZES RETRIEVAL, NOT INVENTION",
     "CORRECTION BECOMES LAW, DETECTOR, PATCH, AND REGRESSION TEST",
     "CHAT IS A TERMINAL; EXTERNAL CHECKPOINT IS STATE AUTHORITY",
-    "DO NOT CLAIM FULL ARCHIVE INTEGRATION UNTIL RAW CHRONOLOGY AND PROOF EXIST"
+    "DO NOT CLAIM FULL ARCHIVE INTEGRATION UNTIL RAW CHRONOLOGY AND PROOF EXIST",
+    "HASHES COME FROM MEASURED BYTES OR DIRECT REPOSITORY AUTHORITY, NEVER FROM MEMORY"
   ],
   "targets": [
     {
@@ -33,7 +34,7 @@
         "inventory the full ChatGPT Library and classify generated versus uploaded artifacts",
         "resolve duplicate and superseded runtime versions",
         "locate or mark every historical ZIP and delta package",
-        "measure real SHA-256 hashes for available artifact bytes",
+        "measure SHA-256 hashes for the remaining accessible artifact bytes",
         "ingest canonical raw chat chronology with branch and version identity",
         "wire checkpoint loading into a host-independent runtime entrypoint",
         "prove a new chat continues correctly without Dima manually reconstructing it"
@@ -61,7 +62,7 @@
       "kind": "law",
       "tier": "generated_artifact",
       "reference": "ChatGPT Library file_00000000736c81f4b14c8046e1edd880 / MONDAYID_RESULT_INVARIANT_v1.md",
-      "content_hash": null,
+      "content_hash": "sha256:8f18b413d978890190062b2c43c940456bd1133c393555dcbf5b43c0e4e5cca3",
       "created_at": "2026-07-20T18:59:41Z",
       "parent_ids": [],
       "claims": [
@@ -77,7 +78,7 @@
       "kind": "runtime",
       "tier": "generated_artifact",
       "reference": "ChatGPT Library file_000000004d6c820aa942c13b2491c034 / MONDAYID_THIRD_PATH_FILTER_RUNTIME_v1.2.md",
-      "content_hash": null,
+      "content_hash": "sha256:601ff31a238d406682b9f5ae3e79d02bc9dada46812b1fe4e004c2c6a8fbd143",
       "created_at": "2026-07-20T17:20:47Z",
       "parent_ids": [
         "mondayid-result-invariant-v1"
@@ -95,7 +96,7 @@
       "kind": "runtime",
       "tier": "generated_artifact",
       "reference": "ChatGPT Library file_00000000473881f4b3e60be9f97ae408 / MONDAYID_ARCHIVE_INOCULATION_ENGINE_v0.1.md",
-      "content_hash": null,
+      "content_hash": "sha256:70a4f976d03a378d3a7df54433351198f45f5d20490d4461c61ddcd2ac69d01b",
       "created_at": "2026-07-20T20:38:39Z",
       "parent_ids": [
         "mondayid-result-invariant-v1",
@@ -112,31 +113,31 @@
     {
       "artifact_id": "mondayid-agent-readme",
       "kind": "code",
-      "tier": "repository_artifact",
-      "reference": "ChatGPT Library file_00000000384c720a9a5271aaf2e0c222 / MondayiDagent README.md",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_00000000384c720a9a5271aaf2e0c222 / MondayiDagent README.md; raw materialization returned 403 user_mismatch in the current session",
       "content_hash": null,
       "created_at": null,
       "parent_ids": [],
       "claims": [
-        "archive ingestion, indexing, lawbook extraction, entity graph, router, and orchestrator already exist as a prior architecture"
+        "archive ingestion, indexing, lawbook extraction, entity graph, router, and orchestrator are described by an accessible parsed Library record"
       ],
-      "status": "present",
+      "status": "referenced_only",
       "private": false
     },
     {
       "artifact_id": "mondayid-agent-yaml",
       "kind": "runtime",
-      "tier": "repository_artifact",
-      "reference": "ChatGPT Library file_00000000135c7246a01912c9361de258 / mondayidagent.yaml",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_00000000135c7246a01912c9361de258 / mondayidagent.yaml; raw materialization returned 403 user_mismatch in the current session",
       "content_hash": null,
       "created_at": null,
       "parent_ids": [
         "mondayid-agent-readme"
       ],
       "claims": [
-        "execution mode, zero drift, self-routing, archive formats, and token-aware indexing were already declared"
+        "execution mode, zero drift, self-routing, archive formats, and token-aware indexing are described by an accessible parsed Library record"
       ],
-      "status": "present",
+      "status": "referenced_only",
       "private": false
     },
     {
@@ -149,6 +150,46 @@
       "parent_ids": [],
       "claims": [
         "route-governor, processor-fabric, proof-evaluation, corpus-memory, and manifestation-engine are durable external organs"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "continuity-kernel-v1",
+      "kind": "code",
+      "tier": "repository_artifact",
+      "reference": "GitHub PR #5 branch agent/continuity-kernel-v1; proof-tested head badd982b3f6d50c039e13ecc1a0d3a5141910d6f",
+      "content_hash": "badd982b3f6d50c039e13ecc1a0d3a5141910d6f",
+      "created_at": "2026-07-22T11:48:49Z",
+      "parent_ids": [
+        "current-directive-2026-07-22",
+        "monday-platform-main"
+      ],
+      "claims": [
+        "deterministic continuity checkpoints",
+        "append-only parent-fingerprint deltas",
+        "artifact truth classes",
+        "host-independent boot packet",
+        "successful CI proof run 29917141711"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "continuity-kernel-proof-receipt-2026-07-22",
+      "kind": "proof",
+      "tier": "repository_artifact",
+      "reference": "platform/continuity/receipts/2026-07-22-continuity-kernel-proof.json",
+      "content_hash": "ad15d1ab1f0ed45ba0f29aaf90637644a5833e70",
+      "created_at": "2026-07-22T11:51:00Z",
+      "parent_ids": [
+        "continuity-kernel-v1"
+      ],
+      "claims": [
+        "dependency install succeeded",
+        "TypeScript typecheck succeeded",
+        "continuity regression scenarios succeeded",
+        "the first failed lock integrity became a recorded law and patch"
       ],
       "status": "present",
       "private": false
