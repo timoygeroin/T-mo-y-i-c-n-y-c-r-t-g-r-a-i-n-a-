@@ -39,3 +39,15 @@ jobs:
       - name: Run continuity proof scenarios
         working-directory: platform
         run: npm run proof:continuity-kernel
+
+      - name: Compile canonical root checkpoint
+        working-directory: platform
+        run: npm --workspace @mondayid/continuity-kernel run checkpoint:root
+
+      - name: Upload canonical checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: mondayid-checkpoint-0001
+          path: platform/continuity/checkpoints/MONDAYID_CHECKPOINT_0001.json
+          if-no-files-found: error
+          retention-days: 30
