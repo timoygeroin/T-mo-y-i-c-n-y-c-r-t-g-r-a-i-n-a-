@@ -12,7 +12,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/continuity-kernel-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/continuity-kernel-proof.js",
+    "checkpoint:root": "tsc -p tsconfig.json && node dist/compile-root-checkpoint.js ../../continuity/MONDAYID_ROOT_MANIFEST_v1.json ../../continuity/checkpoints/MONDAYID_CHECKPOINT_0001.json"
   },
   "dependencies": {},
   "devDependencies": {}
