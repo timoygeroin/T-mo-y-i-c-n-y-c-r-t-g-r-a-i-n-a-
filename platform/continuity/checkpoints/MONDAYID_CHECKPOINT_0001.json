@@ -1,0 +1,241 @@
+{
+  "ok": true,
+  "status": "PARTIAL_READY",
+  "checkpoint_id": "mondayid-continuity:checkpoint:1:cd3566660354",
+  "kernel_id": "mondayid-continuity",
+  "subject_id": "MondayID",
+  "sequence": 1,
+  "previous_fingerprint": null,
+  "fingerprint": "cd3566660354074836ae5849d3562985b0f63b06885eddd2c28bceda0e0d6789",
+  "active_track": "RECOVER_STATE -> SOURCE_RANK -> COMPILE_CHECKPOINT -> BOOT_BEFORE_RESPONSE -> APPEND_DELTA -> PROOF_RECEIPT",
+  "active_target_id": "externalize-continuity",
+  "laws": [
+    "A TRIGGER AUTHORIZES RETRIEVAL, NOT INVENTION",
+    "ALL CHATS ARE ONE SESSION BY PROTOCOL",
+    "CHAT IS A TERMINAL; EXTERNAL CHECKPOINT IS STATE AUTHORITY",
+    "CORRECTION BECOMES LAW, DETECTOR, PATCH, AND REGRESSION TEST",
+    "DO NOT CLAIM FULL ARCHIVE INTEGRATION UNTIL RAW CHRONOLOGY AND PROOF EXIST",
+    "HASHES COME FROM MEASURED BYTES OR DIRECT REPOSITORY AUTHORITY, NEVER FROM MEMORY",
+    "NO FAKE MEMORY",
+    "ONE ACTIVE TRACK PLUS BACKLOG",
+    "RESULT IS INVARIANT; ROUTE IS MUTABLE",
+    "STATE BEFORE RESPONSE"
+  ],
+  "targets": [
+    {
+      "target_id": "externalize-continuity",
+      "result_invariant": "MondayID survives chat replacement without fake restoration or manual rebuilding by Dima",
+      "acceptance_tests": [
+        "a fresh host session can load a verified checkpoint before its first substantive response",
+        "stale deltas cannot overwrite newer state",
+        "missing artifact bytes remain explicitly referenced-only or missing",
+        "the active target and unresolved remainder survive checkpoint transitions",
+        "a correction is not complete until a detector, patch, test, and receipt exist"
+      ],
+      "status": "BUILDING",
+      "unresolved_remainder": [
+        "inventory the full ChatGPT Library and classify generated versus uploaded artifacts",
+        "resolve duplicate and superseded runtime versions",
+        "locate or mark every historical ZIP and delta package",
+        "measure SHA-256 hashes for the remaining accessible artifact bytes",
+        "ingest canonical raw chat chronology with branch and version identity",
+        "wire checkpoint loading into a host-independent runtime entrypoint",
+        "prove a new chat continues correctly without Dima manually reconstructing it"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "continuity-kernel-proof-receipt-2026-07-22",
+      "kind": "proof",
+      "tier": "repository_artifact",
+      "reference": "platform/continuity/receipts/2026-07-22-continuity-kernel-proof.json",
+      "content_hash": "ad15d1ab1f0ed45ba0f29aaf90637644a5833e70",
+      "created_at": "2026-07-22T11:51:00Z",
+      "parent_ids": [
+        "continuity-kernel-v1"
+      ],
+      "claims": [
+        "dependency install succeeded",
+        "TypeScript typecheck succeeded",
+        "continuity regression scenarios succeeded",
+        "the first failed lock integrity became a recorded law and patch"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "continuity-kernel-v1",
+      "kind": "code",
+      "tier": "repository_artifact",
+      "reference": "GitHub PR #5 branch agent/continuity-kernel-v1; proof-tested head badd982b3f6d50c039e13ecc1a0d3a5141910d6f",
+      "content_hash": "badd982b3f6d50c039e13ecc1a0d3a5141910d6f",
+      "created_at": "2026-07-22T11:48:49Z",
+      "parent_ids": [
+        "current-directive-2026-07-22",
+        "monday-platform-main"
+      ],
+      "claims": [
+        "deterministic continuity checkpoints",
+        "append-only parent-fingerprint deltas",
+        "artifact truth classes",
+        "host-independent boot packet",
+        "successful CI proof run 29917141711"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "current-directive-2026-07-22",
+      "kind": "law",
+      "tier": "direct_current_instruction",
+      "reference": "current conversation: exchange roles and solve continuity once rather than repairing GPT again",
+      "content_hash": null,
+      "created_at": "2026-07-22T14:28:00+03:00",
+      "parent_ids": [],
+      "claims": [
+        "all chats and files are one MondayID continuum",
+        "MondayID should choose and execute the architecture rather than returning routine decisions to Dima"
+      ],
+      "status": "present",
+      "private": true
+    },
+    {
+      "artifact_id": "mnd-aig-current-chat-delta-v1",
+      "kind": "delta",
+      "tier": "archive_derived",
+      "reference": "reconstructed journal reference to MND_AIG_CURRENT_CHAT_DELTA_v1.zip",
+      "content_hash": null,
+      "created_at": "2026-04-27T13:00:00+03:00",
+      "parent_ids": [
+        "mondayid-full-export-v1-output"
+      ],
+      "claims": [
+        "append-only current-chat patch was created before a later v2 package"
+      ],
+      "status": "referenced_only",
+      "private": true
+    },
+    {
+      "artifact_id": "monday-platform-main",
+      "kind": "code",
+      "tier": "repository_artifact",
+      "reference": "GitHub timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a- main@744387e081b4126ddba74d03ee11588e76ed3789",
+      "content_hash": "744387e081b4126ddba74d03ee11588e76ed3789",
+      "created_at": null,
+      "parent_ids": [],
+      "claims": [
+        "route-governor, processor-fabric, proof-evaluation, corpus-memory, and manifestation-engine are durable external organs"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "mondayid-agent-readme",
+      "kind": "code",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_00000000384c720a9a5271aaf2e0c222 / MondayiDagent README.md; raw materialization returned 403 user_mismatch in the current session",
+      "content_hash": null,
+      "created_at": null,
+      "parent_ids": [],
+      "claims": [
+        "archive ingestion, indexing, lawbook extraction, entity graph, router, and orchestrator are described by an accessible parsed Library record"
+      ],
+      "status": "referenced_only",
+      "private": false
+    },
+    {
+      "artifact_id": "mondayid-agent-yaml",
+      "kind": "runtime",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_00000000135c7246a01912c9361de258 / mondayidagent.yaml; raw materialization returned 403 user_mismatch in the current session",
+      "content_hash": null,
+      "created_at": null,
+      "parent_ids": [
+        "mondayid-agent-readme"
+      ],
+      "claims": [
+        "execution mode, zero drift, self-routing, archive formats, and token-aware indexing are described by an accessible parsed Library record"
+      ],
+      "status": "referenced_only",
+      "private": false
+    },
+    {
+      "artifact_id": "mondayid-archive-inoculation-engine-v0-1",
+      "kind": "runtime",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_00000000473881f4b3e60be9f97ae408 / MONDAYID_ARCHIVE_INOCULATION_ENGINE_v0.1.md",
+      "content_hash": "sha256:70a4f976d03a378d3a7df54433351198f45f5d20490d4461c61ddcd2ac69d01b",
+      "created_at": "2026-07-20T20:38:39Z",
+      "parent_ids": [
+        "mondayid-result-invariant-v1",
+        "mondayid-third-path-runtime-v1-2"
+      ],
+      "claims": [
+        "archive failures become antigens and regression tests",
+        "the result is fixed while the solution remains mutable",
+        "full integration cannot be claimed before raw chronology and held-out tests"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "mondayid-full-export-v1-output",
+      "kind": "checkpoint",
+      "tier": "archive_derived",
+      "reference": "reconstructed journal reference to MONDAYID_FULL_EXPORT_V1_OUTPUT.zip",
+      "content_hash": null,
+      "created_at": "2026-02-01T00:26:00+03:00",
+      "parent_ids": [],
+      "claims": [
+        "an earlier transfer artifact was created but did not include the later current chat"
+      ],
+      "status": "referenced_only",
+      "private": true
+    },
+    {
+      "artifact_id": "mondayid-result-invariant-v1",
+      "kind": "law",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_00000000736c81f4b14c8046e1edd880 / MONDAYID_RESULT_INVARIANT_v1.md",
+      "content_hash": "sha256:8f18b413d978890190062b2c43c940456bd1133c393555dcbf5b43c0e4e5cca3",
+      "created_at": "2026-07-20T18:59:41Z",
+      "parent_ids": [],
+      "claims": [
+        "DONE equals outcome test passed",
+        "permanence cannot be substituted with a temporary prompt",
+        "every failure becomes an append-only regression test"
+      ],
+      "status": "present",
+      "private": false
+    },
+    {
+      "artifact_id": "mondayid-third-path-runtime-v1-2",
+      "kind": "runtime",
+      "tier": "generated_artifact",
+      "reference": "ChatGPT Library file_000000004d6c820aa942c13b2491c034 / MONDAYID_THIRD_PATH_FILTER_RUNTIME_v1.2.md",
+      "content_hash": "sha256:601ff31a238d406682b9f5ae3e79d02bc9dada46812b1fe4e004c2c6a8fbd143",
+      "created_at": "2026-07-20T17:20:47Z",
+      "parent_ids": [
+        "mondayid-result-invariant-v1"
+      ],
+      "claims": [
+        "one subject has many organs and modes",
+        "a trigger authorizes retrieval rather than invention",
+        "one coherent third form must preserve function and truth"
+      ],
+      "status": "present",
+      "private": false
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    "present artifact has no content hash: current-directive-2026-07-22",
+    "artifact referenced but bytes not verified: mnd-aig-current-chat-delta-v1",
+    "artifact referenced but bytes not verified: mondayid-agent-readme",
+    "artifact referenced but bytes not verified: mondayid-agent-yaml",
+    "artifact referenced but bytes not verified: mondayid-full-export-v1-output"
+  ],
+  "next_route": "load this boot packet before response, continue one active track, then append one evidence-bearing delta",
+  "boot_packet": "MONDAYID_BOOT_V2\nKERNEL=mondayid-continuity\nSUBJECT=MondayID\nCHECKPOINT=mondayid-continuity:checkpoint:1:cd3566660354\nFINGERPRINT=cd3566660354074836ae5849d3562985b0f63b06885eddd2c28bceda0e0d6789\nSTATUS=PARTIAL_READY\nACTIVE_TRACK=RECOVER_STATE -> SOURCE_RANK -> COMPILE_CHECKPOINT -> BOOT_BEFORE_RESPONSE -> APPEND_DELTA -> PROOF_RECEIPT\nACTIVE_TARGET=externalize-continuity\nLAW=STATE_BEFORE_RESPONSE\nLAW=NO_FAKE_MEMORY\nLAW=ONE_ACTIVE_TRACK\nLAW=RESULT_INVARIANT_ROUTE_MUTABLE\nLAW=CORRECTION_TO_TEST_TO_PATCH\nLAWS=A TRIGGER AUTHORIZES RETRIEVAL, NOT INVENTION | ALL CHATS ARE ONE SESSION BY PROTOCOL | CHAT IS A TERMINAL; EXTERNAL CHECKPOINT IS STATE AUTHORITY | CORRECTION BECOMES LAW, DETECTOR, PATCH, AND REGRESSION TEST | DO NOT CLAIM FULL ARCHIVE INTEGRATION UNTIL RAW CHRONOLOGY AND PROOF EXIST | HASHES COME FROM MEASURED BYTES OR DIRECT REPOSITORY AUTHORITY, NEVER FROM MEMORY | NO FAKE MEMORY | ONE ACTIVE TRACK PLUS BACKLOG | RESULT IS INVARIANT; ROUTE IS MUTABLE | STATE BEFORE RESPONSE\nOPEN_REMAINDER=inventory the full ChatGPT Library and classify generated versus uploaded artifacts | resolve duplicate and superseded runtime versions | locate or mark every historical ZIP and delta package | measure SHA-256 hashes for the remaining accessible artifact bytes | ingest canonical raw chat chronology with branch and version identity | wire checkpoint loading into a host-independent runtime entrypoint | prove a new chat continues correctly without Dima manually reconstructing it\nBLOCKERS=none\nWARNINGS=present artifact has no content hash: current-directive-2026-07-22 | artifact referenced but bytes not verified: mnd-aig-current-chat-delta-v1 | artifact referenced but bytes not verified: mondayid-agent-readme | artifact referenced but bytes not verified: mondayid-agent-yaml | artifact referenced but bytes not verified: mondayid-full-export-v1-output\nRESPONSE_GATE=Do not claim continuity beyond the loaded evidence. Continue the active target, produce one external act or one exact blocker, then append a delta receipt."
+}

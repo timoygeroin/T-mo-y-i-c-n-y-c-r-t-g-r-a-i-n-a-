@@ -1,0 +1,46 @@
+{
+  "receipt_schema": "mondayid.continuity.proof-receipt.v1",
+  "receipt_id": "continuity-kernel-proof-2026-07-22-run-2",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "pull_request": 5,
+  "tested_head_sha": "badd982b3f6d50c039e13ecc1a0d3a5141910d6f",
+  "workflow": {
+    "name": "Continuity Kernel Proof",
+    "run_id": 29917141711,
+    "run_number": 2,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "steps": [
+    {
+      "name": "Install platform dependencies",
+      "conclusion": "success"
+    },
+    {
+      "name": "Typecheck continuity kernel",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run continuity proof scenarios",
+      "conclusion": "success"
+    }
+  ],
+  "proven_behaviors": [
+    "a referenced-only historical artifact remains a warning rather than being promoted to present bytes",
+    "model-summary-only continuity authority is blocked",
+    "a stale parent fingerprint cannot overwrite a live checkpoint",
+    "a valid append-only delta advances the checkpoint fingerprint and preserves lineage"
+  ],
+  "observed_failure_and_patch": {
+    "failure": "the first workflow run failed during npm ci because the manually copied undici-types integrity did not match the canonical main-branch lockfile",
+    "patch": "restored the exact canonical integrity value and reran the workflow",
+    "law": "dependency and artifact hashes must be copied from direct source authority, never reconstructed from memory"
+  },
+  "scope_boundary": [
+    "this receipt proves the continuity-kernel package and its regression scenarios",
+    "it does not prove complete raw-chat ingestion",
+    "it does not prove that every historical ZIP byte has been recovered",
+    "the fresh-host continuation acceptance test remains open"
+  ],
+  "next_route": "compile and persist the first real checkpoint from measured Library artifact hashes, then run a fresh-host boot test"
+}

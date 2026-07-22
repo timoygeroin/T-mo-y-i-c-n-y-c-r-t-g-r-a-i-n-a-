@@ -9,7 +9,8 @@
     "packages/processor-fabric",
     "packages/proof-evaluation",
     "packages/corpus-memory",
-    "packages/manifestation-engine"
+    "packages/manifestation-engine",
+    "packages/continuity-kernel"
   ],
   "scripts": {
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
@@ -17,12 +18,14 @@
     "proof:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run proof:examples",
     "proof:corpus-memory": "npm --workspace @mondayid/corpus-memory run proof:examples",
     "proof:manifestation-engine": "npm --workspace @mondayid/manifestation-engine run proof:examples",
+    "proof:continuity-kernel": "npm --workspace @mondayid/continuity-kernel run proof:examples",
     "test:route-governor": "npm --workspace @mondayid/route-governor test",
     "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck",
     "typecheck:processor-fabric": "npm --workspace @mondayid/processor-fabric run typecheck",
     "typecheck:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run typecheck",
     "typecheck:corpus-memory": "npm --workspace @mondayid/corpus-memory run typecheck",
-    "typecheck:manifestation-engine": "npm --workspace @mondayid/manifestation-engine run typecheck"
+    "typecheck:manifestation-engine": "npm --workspace @mondayid/manifestation-engine run typecheck",
+    "typecheck:continuity-kernel": "npm --workspace @mondayid/continuity-kernel run typecheck"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",
