@@ -1,0 +1,99 @@
+name: MondayID Corporation Genesis Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/corporation/**"
+      - ".github/workflows/mondayid-corporation-genesis.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-corporate-os:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate corporate operating system
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'platform/corporation/MONDAYID_CORPORATE_OS_v1.json';
+          const os = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+          const requiredLaws = [
+            'STATE_BEFORE_RESPONSE',
+            'NO_FAKE_MEMORY',
+            'ONE_ACTIVE_TRACK_PLUS_BACKLOG',
+            'RESULT_INVARIANT_ROUTE_MUTABLE',
+            'PRIVATE_CORPUS_STAYS_PRIVATE',
+            'NO_FICTIONAL_CREDENTIALS_CLIENTS_REVENUE_OR_EMPLOYEES'
+          ];
+          const requiredOrgans = [
+            'cortex',
+            'memory',
+            'psycore',
+            'route_governor',
+            'revenue_engine',
+            'delivery_fabric',
+            'proof_immune_system',
+            'manifestation_engine',
+            'human_gate'
+          ];
+          const requiredGates = [
+            'national_identity_authentication',
+            'statutory_filing',
+            'legally_binding_signature',
+            'final_contract_acceptance',
+            'bank_payment_credit_or_tax_account_control',
+            'send_or_withdraw_money'
+          ];
+
+          function requireCondition(condition, message) {
+            if (!condition) throw new Error(message);
+          }
+
+          requireCondition(os.corporation.status === 'AI_GOVERNED_COMPANY_UNDER_CONSTRUCTION', 'public status must remain evidence-bounded');
+          requireCondition(os.subject.ai_legal_status === 'delegated_software_system_not_legal_person', 'AI legal-status boundary missing');
+          requireCondition(os.treasury.autonomous_spend_limit === 0, 'autonomous spending must remain zero before signed treasury policy');
+          requireCondition(os.proof_threshold_for_fully_ai_managed_claim.current_status === 'NOT_YET_PROVEN', 'fully-managed claim must not be asserted before proof');
+          requireCondition(os.exact_human_gate.id === 'LEGAL_GATE_001', 'incorporation human gate missing');
+
+          for (const law of requiredLaws) requireCondition(os.prime_laws.includes(law), `missing prime law: ${law}`);
+          for (const organ of requiredOrgans) requireCondition(Boolean(os.organs[organ]), `missing corporate organ: ${organ}`);
+          for (const gate of requiredGates) requireCondition(os.human_authority_gates.includes(gate), `missing human gate: ${gate}`);
+
+          const productIds = new Set(os.products.map((product) => product.id));
+          for (const product of ['memory_forge', 'human_os', 'continuity_kernel', 'executive_os', 'ai_workflow_pilot']) {
+            requireCondition(productIds.has(product), `missing product: ${product}`);
+          }
+
+          console.log(JSON.stringify({
+            status: 'PASS',
+            corporation: os.corporation.proposed_legal_name,
+            public_claim: os.corporation.public_claim,
+            organs: requiredOrgans.length,
+            products: os.products.length,
+            human_gates: os.human_authority_gates.length,
+            active_track: os.current_active_track
+          }, null, 2));
+          NODE
+
+      - name: Verify incorporation packet and delegation resolution
+        shell: bash
+        run: |
+          test -s platform/corporation/legal/ISRAEL_INCORPORATION_PACKET_v1.md
+          test -s platform/corporation/legal/DIRECTOR_RESOLUTION_001_AI_DELEGATION.md
+          grep -q "LEGAL_GATE_001" platform/corporation/legal/ISRAEL_INCORPORATION_PACKET_v1.md
+          grep -q "does not remove or reduce the director's statutory duties" platform/corporation/legal/DIRECTOR_RESOLUTION_001_AI_DELEGATION.md
+
+      - name: Verify private-corpus boundary
+        shell: bash
+        run: |
+          grep -q "Private chat archives and family data are excluded" platform/corporation/legal/ISRAEL_INCORPORATION_PACKET_v1.md
+          grep -q "Private corpus stays private" platform/corporation/MONDAYID_CORPORATE_CONSTITUTION_v1.md
