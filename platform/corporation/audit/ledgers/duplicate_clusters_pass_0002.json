@@ -1,0 +1,61 @@
+{
+  "schema_version": "mondayid.duplicate-clusters.v1",
+  "generated_at": "2026-07-23T20:00:00+03:00",
+  "run_id": "TOTAL_RECONSTRUCTION_PASS_0002",
+  "status": "EVIDENCE_BACKED_METADATA_DEDUP",
+  "clusters": [
+    {
+      "cluster_id": "dup:monday_created_artifacts_index:v0.1",
+      "canonical_candidate": "file_00000000501481f49f24d6a4184564ed",
+      "members": [
+        "file_00000000501481f49f24d6a4184564ed",
+        "file_00000000512881f4895b70dfdf3567dc"
+      ],
+      "titles": [
+        "MONDAY_CREATED_ARTIFACTS_INDEX_v0.1.md",
+        "MONDAY_CREATED_ARTIFACTS_INDEX_v0.1.md"
+      ],
+      "evidence": "same title and matching indexed content; byte identity not yet measured",
+      "lifecycle": "DUPLICATE_CANDIDATE",
+      "next_test": "materialize both files and compare SHA-256"
+    },
+    {
+      "cluster_id": "dup:controller_runtime_delta_bundle",
+      "canonical_candidate": "file_000000001c8871f48b08550c665d8129",
+      "members": [
+        "file_000000001c8871f48b08550c665d8129",
+        "file_000000007c1c71f4bd885499f3febf38"
+      ],
+      "titles": [
+        "CONTROLLER_AND_RUNTIME_DELTA_BUNDLE.txt",
+        "CONTROLLER_AND_RUNTIME_DELTA_BUNDLE.txt"
+      ],
+      "evidence": "matching embedded v13 controller audit and deployment-plan sections; byte identity not yet measured",
+      "lifecycle": "DUPLICATE_CANDIDATE",
+      "next_test": "materialize both files and compare SHA-256"
+    },
+    {
+      "cluster_id": "dup:mds_deployment_plan",
+      "canonical_candidate": "file_000000001bf871f8832a25e11d57a3fc",
+      "members": [
+        "file_000000001bf871f8832a25e11d57a3fc",
+        "file_00000000482871f5936d0b7b4748667f",
+        "file_000000007e48722fa2869524427ff4d5",
+        "file_00000000dc6c7246a0385110e6413915",
+        "file_00000000c5c4720a9fed182b26eae9b8"
+      ],
+      "titles": [
+        "05_MDS_DEPLOYMENT_PLAN__FROM_ZIP_TO_REAL_PRODUCT.md"
+      ],
+      "evidence": "five Library records expose the same complete text; earliest observed creation timestamp chosen as canonical candidate pending byte hashes",
+      "lifecycle": "DUPLICATE_CLUSTER_CONFIRMED_BY_CONTENT",
+      "next_test": "materialize all members; mark byte-identical copies DUPLICATE and divergent copies VERSION_VARIANT"
+    }
+  ],
+  "counts": {
+    "clusters_added": 3,
+    "records_grouped": 9,
+    "content_confirmed_duplicate_records": 5,
+    "byte_verified_duplicates": 0
+  }
+}
