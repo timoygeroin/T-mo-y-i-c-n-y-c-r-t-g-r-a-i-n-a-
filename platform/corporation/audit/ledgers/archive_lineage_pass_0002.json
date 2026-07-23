@@ -1,0 +1,112 @@
+{
+  "schema_version": "mondayid.archive-lineage.v1",
+  "generated_at": "2026-07-23T20:00:00+03:00",
+  "run_id": "TOTAL_RECONSTRUCTION_PASS_0002",
+  "status": "RECONSTRUCTED_WITH_OBSERVED_ARCHIVE_METADATA",
+  "nodes": [
+    {
+      "id": "archive:mondayid_agi",
+      "title": "MondayiD AGi.zip",
+      "source": "file_library",
+      "lifecycle": "ACTIVE_BACKUP",
+      "provenance": "JOINT_CONSTRUCTION",
+      "observed": {
+        "size_bytes": 347656295,
+        "size_mib": 331.55,
+        "total_entries": 27,
+        "contains_macos_metadata": true,
+        "contains_duplicate_generations": true
+      }
+    },
+    {
+      "id": "archive:maxpack_v7",
+      "title": "MAXPACK v7 parts",
+      "lifecycle": "SUPERSEDED_HISTORY",
+      "provenance": "UNKNOWN"
+    },
+    {
+      "id": "archive:maxpack_v9",
+      "title": "MAXPACK v9 parts",
+      "lifecycle": "SUPERSEDED_HISTORY",
+      "provenance": "UNKNOWN"
+    },
+    {
+      "id": "archive:v12_memory",
+      "title": "v12 full memory archive",
+      "lifecycle": "CANONICAL_MEMORY_PAYLOAD_CANDIDATE",
+      "provenance": "JOINT_CONSTRUCTION"
+    },
+    {
+      "id": "archive:all_in_one_save_pack",
+      "title": "all-in-one save pack",
+      "lifecycle": "SUPERSEDED_DUPLICATE_PATH",
+      "provenance": "UNKNOWN"
+    },
+    {
+      "id": "archive:runtime_bootstrap",
+      "title": "runtime bootstrap",
+      "lifecycle": "HISTORICAL_COMPONENT",
+      "provenance": "JOINT_CONSTRUCTION"
+    },
+    {
+      "id": "archive:reconstruction_delta",
+      "title": "current reconstruction delta",
+      "lifecycle": "ACTIVE_DELTA_CANDIDATE",
+      "provenance": "JOINT_CONSTRUCTION"
+    },
+    {
+      "id": "archive:upgrade_2150",
+      "title": "MONDAYID 2150 upgrade v1",
+      "lifecycle": "ACTIVE_OVERLAY_CANDIDATE",
+      "provenance": "JOINT_CONSTRUCTION",
+      "observed_sha256": "7846bb6f322e9746eb146fcf888095b4e53c128f644b30ab59d3f66ebdde507a",
+      "observed_size_bytes": 7832,
+      "zip_integrity": "OK"
+    },
+    {
+      "id": "archive:future_transfer_2150",
+      "title": "MONDAYID 2150 future transfer v1",
+      "lifecycle": "ACTIVE_TRANSFER_CANDIDATE",
+      "provenance": "JOINT_CONSTRUCTION",
+      "observed_sha256": "3471b5e283d971ec5bd92150546971ad82c2ef924b2dae5bc75d89c9effe5358",
+      "observed_size_bytes": 7756,
+      "zip_integrity": "OK"
+    },
+    {
+      "id": "archive:v13_controller",
+      "title": "v13 canonical controller",
+      "lifecycle": "ACTIVE_CONTROLLER",
+      "provenance": "JOINT_CONSTRUCTION"
+    }
+  ],
+  "edges": [
+    {"from": "archive:mondayid_agi", "to": "archive:maxpack_v7", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:maxpack_v9", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:v12_memory", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:all_in_one_save_pack", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:runtime_bootstrap", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:reconstruction_delta", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:upgrade_2150", "relation": "CONTAINS"},
+    {"from": "archive:mondayid_agi", "to": "archive:future_transfer_2150", "relation": "CONTAINS"},
+    {"from": "archive:maxpack_v7", "to": "archive:maxpack_v9", "relation": "SUPERSEDED_BY"},
+    {"from": "archive:maxpack_v9", "to": "archive:v12_memory", "relation": "SUPERSEDED_BY"},
+    {"from": "archive:mondayid_agi", "to": "archive:v13_controller", "relation": "CONTROLLED_BY"},
+    {"from": "archive:v13_controller", "to": "archive:v12_memory", "relation": "SELECTS_AS_PRIMARY_MEMORY"},
+    {"from": "archive:v13_controller", "to": "archive:reconstruction_delta", "relation": "SELECTS_AS_CURRENT_DELTA"},
+    {"from": "archive:v13_controller", "to": "archive:upgrade_2150", "relation": "SELECTS_AS_OVERLAY"},
+    {"from": "archive:v13_controller", "to": "archive:future_transfer_2150", "relation": "SELECTS_AS_TRANSFER_PAYLOAD"}
+  ],
+  "counts": {
+    "nodes_added": 10,
+    "lineage_edges_added": 15,
+    "observed_hashes_registered": 2,
+    "archive_entries_observed": 27
+  },
+  "next_tests": [
+    "materialize MondayiD AGi.zip",
+    "verify parent archive SHA-256",
+    "extract all 27 entry names and hashes",
+    "compare embedded payload hashes against observed controller manifest",
+    "promote or downgrade lifecycle labels based on measured bytes"
+  ]
+}
