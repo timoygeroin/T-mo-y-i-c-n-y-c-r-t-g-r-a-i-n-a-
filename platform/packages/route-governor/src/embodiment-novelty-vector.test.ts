@@ -96,7 +96,7 @@ test("blocks thin novelty when fewer than the required axes change", () => {
       artifact_class: "head_surface_arbitration",
       execution_phase: "surface_intake",
       behavior_surfaces: ["live PR metadata arbitration"],
-      routing_effects: ["quarantines prompt-carried and PR-body head claims"],
+      routing_effects: ["quarantines prompt-carried and PR-body head claims with a current-source lease"],
       source_paths: ["live PR metadata"],
       failure_reductions: ["stale head arbitration"],
     }),
@@ -106,4 +106,5 @@ test("blocks thin novelty when fewer than the required axes change", () => {
 
   assert.equal(verdict.ok, false);
   assert.equal(verdict.action, "block_insufficient_novelty");
+  assert.deepEqual(verdict.novel_axes, ["routing_effect"]);
 });
