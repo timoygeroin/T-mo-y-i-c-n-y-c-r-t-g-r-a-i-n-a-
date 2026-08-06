@@ -18,6 +18,7 @@ function candidate(overrides: Partial<CurrentInstructionEmbodimentCandidate> = {
     changed_files: ["platform/packages/route-governor/src/current-instruction-head-boundary.ts"],
     executable_artifacts: ["arbitrateCurrentInstructionHeadBoundary"],
     routing_artifacts: ["current instruction authority is preserved while live head fact wins"],
+    proof_artifacts: ["dist/current-instruction-head-boundary-proof.js"],
     ...overrides,
   };
 }
@@ -77,6 +78,7 @@ test("routes fresh readback to the live head when the instruction head is stale"
         changed_files: [],
         executable_artifacts: [],
         routing_artifacts: [],
+        proof_artifacts: [],
       }),
     }),
   );
@@ -101,6 +103,7 @@ test("blocks incomplete live-head embodiment candidates", () => {
         changed_files: ["docs/current-instruction-head-boundary.md"],
         executable_artifacts: [],
         routing_artifacts: [],
+        proof_artifacts: [],
       }),
     }),
   );
