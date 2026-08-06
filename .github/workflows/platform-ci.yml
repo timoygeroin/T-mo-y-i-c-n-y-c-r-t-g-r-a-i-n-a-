@@ -47,7 +47,24 @@ jobs:
         run: npm run typecheck:proof-evaluation
 
       - name: Test route governor
-        run: npm run test:route-governor
+        id: route_tests
+        run: |
+          set +e
+          npm run test:route-governor 2>&1 | tee route-governor-test-output.log
+          status=${PIPESTATUS[0]}
+          {
+            echo "## Route governor unit test output"
+            echo
+            echo "Head: \`${GITHUB_SHA}\`"
+            echo "Exit code: \`${status}\`"
+            echo
+            echo "Last 160 output lines:"
+            echo
+            echo '```text'
+            tail -n 160 route-governor-test-output.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
 
       - name: Run proof examples
         id: proof_examples
@@ -83,10 +100,12 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
 
-      - name: Upload route governor proof output
+      - name: Upload route governor evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: route-governor-proof-output-${{ github.run_id }}-${{ github.run_attempt }}
-          path: platform/route-governor-proof-output.log
+          name: route-governor-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            platform/route-governor-test-output.log
+            platform/route-governor-proof-output.log
           if-no-files-found: warn
