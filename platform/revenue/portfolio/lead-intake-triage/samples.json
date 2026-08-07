@@ -1,0 +1,8 @@
+[
+  {"id":"L001","subject":"Need a quote for AI intake automation","message":"We want pricing and a short demo for routing inbound customer requests."},
+  {"id":"L002","subject":"Workflow error","message":"Our current automation failed and is not working after a CRM field change."},
+  {"id":"L003","subject":"Invoice question","message":"We were charged twice on the latest invoice and need billing help."},
+  {"id":"L004","subject":"Possible unauthorized access","message":"We suspect an unauthorized login and need a security review urgently."},
+  {"id":"L005","subject":"Partnership idea","message":"Interested in a collaboration around AI workflow services."},
+  {"id":"L006","subject":"General question","message":"Can you explain what kinds of internal tools you build?"}
+]
