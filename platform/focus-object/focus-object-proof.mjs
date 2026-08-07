@@ -72,7 +72,9 @@ const adversarial = {
   uncertainty: ['B1'],
 };
 const adversarialFabric = evaluateExpertiseFabric(adversarial);
-assert.equal(adversarialFabric.accepted, true);
+// Zero verified evidence must hard-fail instead of merely dimming the confidence phenotype.
+assert.equal(adversarialFabric.accepted, false);
+assert.ok(adversarialFabric.hardFails.includes('ILLUSION_DETECTOR_CONFIDENCE_EXCEEDS_EVIDENCE'));
 assert.ok(adversarialFabric.phenotype.confidenceStrength < 0.95);
 
 console.log(JSON.stringify({
@@ -86,5 +88,6 @@ console.log(JSON.stringify({
   visibleUncertainty: interaction.focusObject.modelContext.visibleUncertainty,
   crossHostCanonicalFingerprintStable: true,
   crashRecoveryCanonicalFingerprintStable: true,
+  adversarialZeroEvidenceHardFail: adversarialFabric.hardFails,
   counterEffectsRecorded: fabric.counterEffects.length > 0,
 }, null, 2));
