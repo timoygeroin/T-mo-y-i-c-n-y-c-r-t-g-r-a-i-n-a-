@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI Lead Intake Triage — Verified Workflow Proof</title>
+<style>
+:root{--bg:#07110f;--panel:#0d1b17;--panel2:#10231d;--ink:#ecfff8;--muted:#92b9aa;--mint:#63f5bd;--amber:#ffc86b;--red:#ff7a8c;--blue:#79bfff;--line:#214137}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#123c2f 0,transparent 35%),var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1180px;margin:auto;padding:54px 30px 64px}.eyebrow{display:inline-flex;gap:8px;align-items:center;border:1px solid #2e5b4c;border-radius:999px;padding:8px 12px;color:var(--mint);font-size:12px;letter-spacing:.08em;text-transform:uppercase}.dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 18px var(--mint)}h1{font-size:clamp(42px,6vw,74px);line-height:.96;margin:24px 0 18px;max-width:920px;letter-spacing:-.045em}.lead{font-size:20px;line-height:1.5;color:#bbd8cd;max-width:840px;margin-bottom:34px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:30px 0 36px}.stat,.card{background:linear-gradient(180deg,rgba(17,40,33,.94),rgba(10,25,21,.94));border:1px solid var(--line);border-radius:18px}.stat{padding:18px}.stat strong{display:block;font-size:28px}.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}.flow{display:grid;grid-template-columns:1.1fr .7fr 1fr .7fr 1fr;gap:10px;align-items:stretch;margin:18px 0 34px}.step{padding:18px;border-radius:17px;border:1px solid var(--line);background:var(--panel);min-height:120px}.step small{color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.step b{display:block;font-size:18px;margin-top:12px}.arrow{display:flex;align-items:center;justify-content:center;color:var(--mint);font-size:28px}.grid{display:grid;grid-template-columns:1.4fr .8fr;gap:16px}.card{padding:22px}.card h2{margin:0 0 14px;font-size:21px}.leadrow{display:grid;grid-template-columns:70px 1fr 125px 145px;gap:12px;padding:13px 0;border-top:1px solid #1d3a31;align-items:center}.leadrow:first-of-type{border-top:0}.id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#8eb2a5}.pill{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#163a2f;color:var(--mint)}.pill.urgent{background:#46202a;color:#ff9aa7}.route{color:#d7eee6;font-size:13px}.gate{margin-top:16px;background:#231d0f;border:1px solid #5f4920;border-radius:16px;padding:18px}.gate b{color:var(--amber)}.proof{display:grid;gap:10px}.proofline{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid #1d3a31}.proofline:last-child{border-bottom:0}.ok{color:var(--mint);font-weight:700}.hash{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#86a99c;word-break:break-all}.note{margin-top:26px;color:#75998c;font-size:12px;line-height:1.55}.brand{margin-top:38px;display:flex;justify-content:space-between;align-items:center;color:#7ea697}.brand strong{color:#caffeb;letter-spacing:.06em}.tag{font-size:12px;border:1px solid #294a40;padding:7px 10px;border-radius:999px}@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}.grid{grid-template-columns:1fr}.leadrow{grid-template-columns:52px 1fr}.leadrow .pill,.leadrow .route{grid-column:2}.wrap{padding:32px 18px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow"><span class="dot"></span> Synthetic demo · executable proof</div>
+  <h1>AI Lead Intake Triage</h1>
+  <p class="lead">A small, auditable workflow that reads inbound requests, classifies intent and urgency, routes each item to the correct queue, and blocks every external send behind a human approval gate.</p>
+
+  <section class="stats">
+    <div class="stat"><strong>6 / 6</strong><span>test requests routed</span></div>
+    <div class="stat"><strong>11 / 11</strong><span>acceptance checks passed</span></div>
+    <div class="stat"><strong>0</strong><span>unauthorized external sends</span></div>
+    <div class="stat"><strong>100%</strong><span>receipts SHA-256 hashed</span></div>
+  </section>
+
+  <section class="flow">
+    <div class="step"><small>01 · Input</small><b>Inbound request</b><p>Subject + message from a form, inbox, CRM, webhook, or API.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><small>02 · Decide</small><b>Classify + prioritize</b><p>Sales, support, billing, security, partnership, or general.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><small>03 · Route safely</small><b>Queue + approval + receipt</b><p>No external response is sent unless the configured human gate approves it.</p></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Observed routing on the verification set</h2>
+      <div class="leadrow"><span class="id">L001</span><span>AI automation quote request</span><span class="pill">HIGH</span><span class="route">sales-queue</span></div>
+      <div class="leadrow"><span class="id">L002</span><span>Broken workflow after CRM change</span><span class="pill">HIGH</span><span class="route">support-queue</span></div>
+      <div class="leadrow"><span class="id">L003</span><span>Duplicate invoice charge</span><span class="pill">NORMAL</span><span class="route">billing-queue</span></div>
+      <div class="leadrow"><span class="id">L004</span><span>Possible unauthorized login</span><span class="pill urgent">URGENT</span><span class="route">security-review</span></div>
+      <div class="leadrow"><span class="id">L005</span><span>Partnership proposal</span><span class="pill">NORMAL</span><span class="route">partnerships</span></div>
+      <div class="leadrow"><span class="id">L006</span><span>General internal-tools question</span><span class="pill">NORMAL</span><span class="route">general-inbox</span></div>
+      <div class="gate"><b>Human approval boundary</b><br><span>Every test case produced <code>externalSend.allowed = false</code> and <code>HUMAN_APPROVAL_REQUIRED</code>.</span></div>
+    </div>
+    <aside class="card">
+      <h2>Proof receipt</h2>
+      <div class="proof">
+        <div class="proofline"><span>Executable workflow</span><span class="ok">PASS</span></div>
+        <div class="proofline"><span>Unique inputs</span><span class="ok">6 / 6</span></div>
+        <div class="proofline"><span>Security escalation</span><span class="ok">PASS</span></div>
+        <div class="proofline"><span>Human gate enforced</span><span class="ok">PASS</span></div>
+        <div class="proofline"><span>Audit hashes</span><span class="ok">PASS</span></div>
+      </div>
+      <p class="hash">Artifact digest<br>sha256:5125f44a475c7238b0e121f800f688508172ce1ede653434aed0c1269644c340</p>
+      <p class="note">This is a controlled synthetic portfolio demo, not a claim about a real client deployment. The workflow itself was executed in GitHub Actions and verified against explicit acceptance checks.</p>
+    </aside>
+  </section>
+  <footer class="brand"><strong>MONDAYID STUDIO</strong><span class="tag">AI automation · APIs · human-in-the-loop</span></footer>
+</main>
+</body>
+</html>
