@@ -2,8 +2,7 @@ import Testing
 @testable import MondayIDAppleAdapter
 
 @Test func commandBusPreservesOrderedCommands() async throws {
-    let bus = MondayIDCommandBus.shared
-    await bus.reset()
+    let bus = MondayIDCommandBus()
     await bus.record(.open)
     await bus.record(.ask("status"))
     await bus.record(.continueFlow)
@@ -11,8 +10,7 @@ import Testing
 }
 
 @Test func commandBusPreservesCapsuleAndModeRequests() async throws {
-    let bus = MondayIDCommandBus.shared
-    await bus.reset()
+    let bus = MondayIDCommandBus()
     await bus.record(.recallCapsule("current"))
     await bus.record(.activateMode("deep"))
     await bus.record(.runFieldDigest)
