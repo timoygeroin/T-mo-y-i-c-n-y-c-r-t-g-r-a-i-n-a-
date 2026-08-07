@@ -27,8 +27,11 @@ jobs:
       - name: Swift version
         run: swift --version
 
-      - name: Build adapter
+      - name: Build adapter on macOS
         run: swift build -v
 
       - name: Test command bridge
         run: swift test -v
+
+      - name: Compile adapter for iOS Simulator
+        run: xcodebuild -scheme MondayIDAppleAdapter -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
