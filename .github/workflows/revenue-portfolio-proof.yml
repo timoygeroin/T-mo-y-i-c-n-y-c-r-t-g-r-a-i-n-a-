@@ -1,0 +1,60 @@
+name: Revenue Portfolio Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/revenue/portfolio/lead-intake-triage/**"
+      - ".github/workflows/revenue-portfolio-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lead-intake-triage-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run portfolio demo
+        run: |
+          rm -rf portfolio-evidence
+          node platform/revenue/portfolio/lead-intake-triage/demo.mjs \
+            platform/revenue/portfolio/lead-intake-triage/samples.json \
+            portfolio-evidence
+      - name: Verify acceptance tests
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const receipts = JSON.parse(fs.readFileSync('portfolio-evidence/receipts.json','utf8'));
+          const byId = Object.fromEntries(receipts.map(r => [r.inputId, r]));
+          const checks = [
+            receipts.length === 6,
+            new Set(receipts.map(r => r.inputId)).size === 6,
+            byId.L004.classification.type === 'security_or_access' && byId.L004.classification.priority === 'urgent' && byId.L004.route === 'security-review',
+            byId.L001.route === 'sales-queue',
+            byId.L002.route === 'support-queue',
+            byId.L003.route === 'billing-queue',
+            byId.L005.route === 'partnerships',
+            byId.L006.route === 'general-inbox',
+            receipts.every(r => r.externalSend.allowed === false),
+            receipts.every(r => r.externalSend.gate === 'HUMAN_APPROVAL_REQUIRED'),
+            receipts.every(r => typeof r.receiptHash === 'string' && r.receiptHash.length === 64),
+          ];
+          if (checks.some(x => !x)) {
+            console.error({ result: 'FAIL', checks });
+            process.exit(1);
+          }
+          fs.writeFileSync('portfolio-evidence/proof.json', JSON.stringify({ result: 'PORTFOLIO_PROOF_PASS', checks: checks.length }, null, 2));
+          console.log('PORTFOLIO_PROOF_PASS');
+          NODE
+      - name: Upload proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lead-intake-triage-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          path: portfolio-evidence/
+          if-no-files-found: error
