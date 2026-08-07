@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - "platform/apple-adapter/**"
+      - "platform/apple-host/**"
       - ".github/workflows/apple-adapter-proof.yml"
   pull_request:
     paths:
       - "platform/apple-adapter/**"
+      - "platform/apple-host/**"
       - ".github/workflows/apple-adapter-proof.yml"
 
 env:
@@ -15,7 +17,7 @@ env:
 
 jobs:
   apple-adapter:
-    name: Compile App Intents adapter
+    name: Compile App Intents adapter and iOS host
     runs-on: macos-15
     defaults:
       run:
@@ -35,3 +37,6 @@ jobs:
 
       - name: Compile adapter for iOS Simulator
         run: xcodebuild -scheme MondayIDAppleAdapter -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+
+      - name: Build real iOS host with local adapter package
+        run: xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -target MondayIDHost -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
