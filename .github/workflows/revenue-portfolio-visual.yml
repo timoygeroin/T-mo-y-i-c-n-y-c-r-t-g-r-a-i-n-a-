@@ -34,12 +34,13 @@ jobs:
           agent-browser wait --load networkidle
           agent-browser get title > portfolio-visual-evidence/title.txt
           agent-browser get url > portfolio-visual-evidence/url.txt
-          agent-browser snapshot -i > portfolio-visual-evidence/snapshot.txt
+          agent-browser snapshot > portfolio-visual-evidence/snapshot.txt
+          agent-browser get text body > portfolio-visual-evidence/body.txt
           agent-browser screenshot --full portfolio-visual-evidence/lead-intake-triage.png
-          grep -q "AI Lead Intake Triage" portfolio-visual-evidence/snapshot.txt
-          grep -q "Synthetic demo" portfolio-visual-evidence/snapshot.txt
-          grep -q "11 / 11" portfolio-visual-evidence/snapshot.txt
-          grep -q "Human approval" portfolio-visual-evidence/snapshot.txt
+          grep -q "AI Lead Intake Triage" portfolio-visual-evidence/body.txt
+          grep -q "Synthetic demo" portfolio-visual-evidence/body.txt
+          grep -q "11 / 11" portfolio-visual-evidence/body.txt
+          grep -q "Human approval" portfolio-visual-evidence/body.txt
           printf '{"result":"PORTFOLIO_VISUAL_PASS","claims":"synthetic_demo_only","acceptance_checks":4}\n' > portfolio-visual-evidence/receipt.json
           agent-browser close
       - name: Upload portfolio visual evidence
