@@ -32,14 +32,28 @@ jobs:
       - name: Build adapter on macOS
         run: swift build -v
 
-      - name: Test command bridge
+      - name: Test command bridge and App Intent invocation
         run: swift test -v
 
       - name: Compile adapter for iOS Simulator
         run: xcodebuild -scheme MondayIDAppleAdapter -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
       - name: Build real iOS host with local adapter package
-        run: xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ../apple-host/DerivedData CODE_SIGNING_ALLOWED=NO build
+        run: |
+          set -o pipefail
+          xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ../apple-host/DerivedData CODE_SIGNING_ALLOWED=NO build 2>&1 | tee ../apple-host/host-build.log
+
+      - name: Verify App Shortcut discoverability metadata
+        run: |
+          set -euo pipefail
+          LOG="../apple-host/host-build.log"
+          test -s "$LOG"
+          if grep -Fq "No AppShortcuts found - Skipping." "$LOG"; then
+            echo "MONDAYID_APP_SHORTCUT_DISCOVERY_FAIL"
+            exit 1
+          fi
+          grep -Fq "Metadata.appintents" "$LOG"
+          echo "MONDAYID_APP_SHORTCUT_DISCOVERY_PASS"
 
       - name: Install and launch MondayIDHost in an ephemeral iPhone Simulator
         timeout-minutes: 5
@@ -106,8 +120,6 @@ jobs:
           print(f"Using simulator: {device_name} ({device_udid})", flush=True)
           simctl("boot", device_udid, timeout=20, check=False)
 
-          # Do not block forever on CoreSimulator migration. Readiness is proven by
-          # a successful bounded install, which is the capability the next gate needs.
           install_deadline = time.monotonic() + 150
           install_attempt = 0
           while True:
