@@ -41,7 +41,8 @@ jobs:
       - name: Build real iOS host with local adapter package
         run: xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ../apple-host/DerivedData CODE_SIGNING_ALLOWED=NO build
 
-      - name: Install and launch MondayIDHost in a clean iPhone Simulator
+      - name: Install and launch MondayIDHost in an ephemeral iPhone Simulator
+        timeout-minutes: 2
         run: |
           set -euo pipefail
           DEVICE_UDID="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ && $0 !~ /unavailable/ {print $2; exit}')"
@@ -52,9 +53,7 @@ jobs:
             test -n "$DEVICE_TYPE_ID"
             DEVICE_UDID="$(xcrun simctl create MondayID-CI "$DEVICE_TYPE_ID" "$RUNTIME_ID")"
           fi
-          xcrun simctl shutdown "$DEVICE_UDID" >/dev/null 2>&1 || true
-          xcrun simctl erase "$DEVICE_UDID" >/dev/null 2>&1 || true
-          xcrun simctl boot "$DEVICE_UDID"
+          xcrun simctl boot "$DEVICE_UDID" >/dev/null 2>&1 || true
           xcrun simctl bootstatus "$DEVICE_UDID" -b
           APP_PATH="../apple-host/DerivedData/Build/Products/Debug-iphonesimulator/MondayIDHost.app"
           test -d "$APP_PATH"
