@@ -15,6 +15,8 @@ public actor MondayIDCommandBus {
 
     private var history: [MondayIDCommand] = []
 
+    public init() {}
+
     public func record(_ command: MondayIDCommand) {
         history.append(command)
     }
