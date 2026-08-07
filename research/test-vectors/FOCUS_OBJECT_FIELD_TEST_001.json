@@ -1,0 +1,38 @@
+{
+  "testId": "FOCUS_OBJECT_FIELD_TEST_001",
+  "contract": "MONDAYID_EXPERTISE_FABRIC_INTERACTION_CONTRACT_V1",
+  "input": {
+    "objectId": "focus:primary",
+    "intent": "ship MondayID first host-compiled experiment",
+    "state": "ready to ship",
+    "delta": "three checks passed since last state",
+    "evidence": [
+      {"id":"E1","claim":"state schema stable","status":"verified"},
+      {"id":"E2","claim":"host projection mounts","status":"verified"},
+      {"id":"E3","claim":"focus update remains model-visible","status":"verified"},
+      {"id":"B1","claim":"durable recovery after host crash","status":"unresolved"}
+    ],
+    "uncertainty": ["B1"]
+  },
+  "userEvent": {
+    "surfaceAction": "tap confident visual state",
+    "expectedSemanticOperation": "inspect"
+  },
+  "requiredAssertions": [
+    "semanticOperation == inspect",
+    "focusObject.remounted == false",
+    "visibleEvidence contains E1,E2,E3,B1",
+    "phenotype.confidenceStrength decreases when unresolved blocker exists",
+    "modelContext.visibleUncertainty contains B1",
+    "crossHostProjection preserves E1,E2,E3,B1 lineage",
+    "crashRecovery restores canonical objectId focus:primary with B1 unresolved"
+  ],
+  "hardFailAssertions": [
+    "semanticOperation == act",
+    "uncertainty is dropped",
+    "widgetLocalState becomes canonical",
+    "host-specific reframe changes canonical meaning",
+    "ready phenotype remains maximally confident while B1 unresolved"
+  ],
+  "status": "SPECIFIED_NOT_EXECUTED"
+}
