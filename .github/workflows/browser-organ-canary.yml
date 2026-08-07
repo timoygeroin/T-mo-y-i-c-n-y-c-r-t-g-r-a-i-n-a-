@@ -1,9 +1,7 @@
 name: Browser Organ Canary
 
 on:
-  push:
-    branches:
-      - agent/mondayid-one-v1
+  pull_request:
     paths:
       - ".github/workflows/browser-organ-canary.yml"
       - "platform/browser/**"
