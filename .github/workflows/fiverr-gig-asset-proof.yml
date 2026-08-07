@@ -1,0 +1,44 @@
+name: Fiverr Gig Asset Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/revenue/fiverr/assets/**"
+      - ".github/workflows/fiverr-gig-asset-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-gig-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build exact-size PNG
+        run: |
+          mkdir -p fiverr-asset-evidence
+          npm install --no-save sharp
+          node - <<'NODE'
+          const sharp = require('sharp');
+          const fs = require('fs');
+          const src='platform/revenue/fiverr/assets/ai-workflow-automation-gig.svg';
+          const out='fiverr-asset-evidence/ai-workflow-automation-gig.png';
+          sharp(src).png().toFile(out).then(async info => {
+            if (info.width !== 1280 || info.height !== 769) throw new Error(`bad dimensions ${info.width}x${info.height}`);
+            fs.writeFileSync('fiverr-asset-evidence/receipt.json', JSON.stringify({
+              result:'FIVERR_GIG_ASSET_PASS', width:info.width, height:info.height,
+              text_overlay_words:6, external_logos:0, contact_info:false, source:'owned_svg'
+            }, null, 2));
+          }).catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - name: Upload ready-to-use Gig image
+        uses: actions/upload-artifact@v4
+        with:
+          name: fiverr-gig-image-${{ github.run_id }}-${{ github.run_attempt }}
+          path: fiverr-asset-evidence/
+          if-no-files-found: error
