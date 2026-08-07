@@ -1,0 +1,49 @@
+name: Browser Organ Canary
+
+on:
+  push:
+    branches:
+      - agent/mondayid-one-v1
+    paths:
+      - ".github/workflows/browser-organ-canary.yml"
+      - "platform/browser/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install browser organ runtime
+        run: |
+          npm install -g agent-browser
+          npx agent-browser install
+
+      - name: Exercise real public site
+        run: |
+          mkdir -p browser-evidence
+          agent-browser open https://avodamarchok.com/
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/title.txt
+          agent-browser get url > browser-evidence/url.txt
+          agent-browser snapshot -i > browser-evidence/snapshot.txt
+          agent-browser screenshot browser-evidence/home.png
+          printf '{"result":"BROWSER_ORGAN_CANARY_PASS","target":"https://avodamarchok.com/"}\n' > browser-evidence/receipt.json
+          agent-browser close
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-organ-canary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: browser-evidence/
+          if-no-files-found: error
