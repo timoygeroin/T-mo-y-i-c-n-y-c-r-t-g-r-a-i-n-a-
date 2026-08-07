@@ -81,6 +81,8 @@ jobs:
           one_status=${PIPESTATUS[0]}
           npm run proof:work 2>&1 | tee -a route-governor-proof-output.log
           work_status=${PIPESTATUS[0]}
+          npm run proof:focus-object 2>&1 | tee -a route-governor-proof-output.log
+          focus_status=${PIPESTATUS[0]}
           if [ "$route_status" -ne 0 ]; then
             status="$route_status"
           elif [ "$processor_status" -ne 0 ]; then
@@ -91,6 +93,8 @@ jobs:
             status="$one_status"
           elif [ "$work_status" -ne 0 ]; then
             status="$work_status"
+          elif [ "$focus_status" -ne 0 ]; then
+            status="$focus_status"
           else
             status=0
           fi
