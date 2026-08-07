@@ -14,6 +14,7 @@
   ],
   "scripts": {
     "proof:one": "node one/mondayid-one-proof.mjs",
+    "proof:work": "node work/mondayid-work-proof.mjs",
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
     "proof:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run proof:examples",
