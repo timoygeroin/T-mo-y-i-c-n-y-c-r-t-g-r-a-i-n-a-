@@ -55,6 +55,13 @@ jobs:
           grep -Fq "Metadata.appintents" "$LOG"
           echo "MONDAYID_APP_SHORTCUT_DISCOVERY_PASS"
 
+      - name: Compile real host for iPhoneOS device SDK
+        run: |
+          set -euo pipefail
+          xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath ../apple-host/DerivedDataDevice CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+          test -d ../apple-host/DerivedDataDevice/Build/Products/Debug-iphoneos/MondayIDHost.app
+          echo "MONDAYID_IPHONEOS_COMPILE_PASS"
+
       - name: Install and launch MondayIDHost in an ephemeral iPhone Simulator
         timeout-minutes: 5
         run: |
@@ -62,7 +69,6 @@ jobs:
           import json
           import os
           import subprocess
-          import sys
           import time
 
           APP_PATH = os.path.abspath("../apple-host/DerivedData/Build/Products/Debug-iphonesimulator/MondayIDHost.app")
