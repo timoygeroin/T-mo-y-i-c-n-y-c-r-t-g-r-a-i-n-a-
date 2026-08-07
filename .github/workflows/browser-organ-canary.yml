@@ -28,14 +28,33 @@ jobs:
 
       - name: Exercise real public site
         run: |
+          set -euo pipefail
           mkdir -p browser-evidence
+
           agent-browser open https://avodamarchok.com/
           agent-browser wait --load networkidle
-          agent-browser get title > browser-evidence/title.txt
-          agent-browser get url > browser-evidence/url.txt
-          agent-browser snapshot -i > browser-evidence/snapshot.txt
+          agent-browser get title > browser-evidence/home-title.txt
+          agent-browser get url > browser-evidence/home-url.txt
+          agent-browser snapshot -i > browser-evidence/home-snapshot.txt
           agent-browser screenshot browser-evidence/home.png
-          printf '{"result":"BROWSER_ORGAN_CANARY_PASS","target":"https://avodamarchok.com/"}\n' > browser-evidence/receipt.json
+
+          agent-browser find text "עיינו במשימות" click
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/tasks-title.txt
+          agent-browser get url > browser-evidence/tasks-url.txt
+          agent-browser snapshot -i > browser-evidence/tasks-snapshot.txt
+          agent-browser screenshot browser-evidence/tasks.png
+
+          agent-browser open https://avodamarchok.com/
+          agent-browser wait --load networkidle
+          agent-browser find text "הגישו בקשה עכשיו" click
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/apply-title.txt
+          agent-browser get url > browser-evidence/apply-url.txt
+          agent-browser snapshot -i > browser-evidence/apply-snapshot.txt
+          agent-browser screenshot browser-evidence/apply.png
+
+          printf '{"result":"BROWSER_ORGAN_NAVIGATION_PASS","target":"https://avodamarchok.com/","flows":["home","tasks","apply"]}\n' > browser-evidence/receipt.json
           agent-browser close
 
       - name: Upload browser evidence
