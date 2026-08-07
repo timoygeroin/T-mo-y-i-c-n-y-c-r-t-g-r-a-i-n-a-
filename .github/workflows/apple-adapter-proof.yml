@@ -39,4 +39,4 @@ jobs:
         run: xcodebuild -scheme MondayIDAppleAdapter -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 
       - name: Build real iOS host with local adapter package
-        run: xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -target MondayIDHost -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
+        run: xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
