@@ -37,6 +37,7 @@ jobs:
           agent-browser get url > browser-evidence/home-url.txt
           agent-browser snapshot -i > browser-evidence/home-snapshot.txt
           agent-browser screenshot browser-evidence/home.png
+          agent-browser eval 'JSON.stringify(Array.from(document.querySelectorAll("a")).map(a => ({text:(a.innerText||"").trim(), href:a.href})))' > browser-evidence/home-links.json
 
           agent-browser find text "עיינו במשימות" click
           agent-browser wait --load networkidle
@@ -47,14 +48,16 @@ jobs:
 
           agent-browser open https://avodamarchok.com/
           agent-browser wait --load networkidle
-          agent-browser find text "הגישו בקשה עכשיו" click
+          APPLY_URL=$(node -e 'const fs=require("fs"); const raw=fs.readFileSync("browser-evidence/home-links.json","utf8"); const data=JSON.parse(raw); const links=JSON.parse(data.data?.result ?? data.data ?? data); const hit=links.find(x=>x.text.includes("הגישו בקשה")); if(!hit?.href) process.exit(2); process.stdout.write(hit.href);')
+          printf '%s\n' "$APPLY_URL" > browser-evidence/apply-target.txt
+          agent-browser open "$APPLY_URL"
           agent-browser wait --load networkidle
           agent-browser get title > browser-evidence/apply-title.txt
           agent-browser get url > browser-evidence/apply-url.txt
           agent-browser snapshot -i > browser-evidence/apply-snapshot.txt
           agent-browser screenshot browser-evidence/apply.png
 
-          printf '{"result":"BROWSER_ORGAN_NAVIGATION_PASS","target":"https://avodamarchok.com/","flows":["home","tasks","apply"]}\n' > browser-evidence/receipt.json
+          printf '{"result":"BROWSER_ORGAN_NAVIGATION_PASS","target":"https://avodamarchok.com/","flows":["home","tasks","apply"],"locatorLaw":"semantic->dom_href->snapshot_ref"}\n' > browser-evidence/receipt.json
           agent-browser close
 
       - name: Upload browser evidence
