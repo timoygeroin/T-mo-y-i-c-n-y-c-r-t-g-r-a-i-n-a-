@@ -66,10 +66,14 @@ jobs:
           const payload = typeof candidate === 'string' ? JSON.parse(candidate) : candidate;
           if (payload.operation !== 'inspect') throw new Error(`expected inspect, got ${payload.operation}`);
           if (!payload.canonicalFingerprint || payload.resultingFingerprint !== payload.canonicalFingerprint) throw new Error('fingerprint drift across live interaction');
-          const receipt = typeof payload.receipt === 'string' ? JSON.parse(payload.receipt) : payload.receipt;
-          if (receipt.semanticOperation !== 'inspect') throw new Error('receipt lost semantic operation');
+          const envelope = typeof payload.receipt === 'string' ? JSON.parse(payload.receipt) : payload.receipt;
+          if (envelope.semanticOperation !== 'inspect') throw new Error('interaction envelope lost semantic operation');
+          if (envelope.canonicalMeaningPreserved !== true) throw new Error('canonical meaning not preserved');
+          const receipt = envelope.receipt;
+          if (!receipt || receipt.previousFingerprint !== receipt.resultingFingerprint) throw new Error('receipt fingerprint drift');
           if (!Array.isArray(receipt.uncertainty) || !receipt.uncertainty.includes('B1')) throw new Error('receipt lost blocker B1');
-          console.log(JSON.stringify({testId:'FOCUS_OBJECT_LIVE_HOST_TEST_001',result:'PASS',click:'confidence',semanticOperation:payload.operation,fingerprintPreserved:true,blockerPreserved:'B1'}, null, 2));
+          if (!Array.isArray(receipt.evidenceReferences) || !receipt.evidenceReferences.includes('B1')) throw new Error('receipt lost evidence reference B1');
+          console.log(JSON.stringify({testId:'FOCUS_OBJECT_LIVE_HOST_TEST_001',result:'PASS',click:'confidence',semanticOperation:payload.operation,fingerprintPreserved:true,canonicalMeaningPreserved:true,blockerPreserved:'B1'}, null, 2));
           NODE
 
           agent-browser close
