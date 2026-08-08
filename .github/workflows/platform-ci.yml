@@ -52,3 +52,4 @@ jobs:
           npm run proof:work
           npm run proof:focus-object
           npm run proof:focus-object-surface
+          npm run proof:focus-object-expertise-release
