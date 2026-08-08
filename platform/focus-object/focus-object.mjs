@@ -52,6 +52,55 @@ export function evaluateExpertiseFabric(focusObject) {
     hardFails.push('MISSING_CANONICAL_PROVENANCE_SURFACE');
   }
 
+  const expertFindings = [
+    {
+      expert: 'evidence-integrity',
+      verdict: evidenceStrength === 1 ? 'support' : 'pressure',
+      claim: evidenceStrength === 1 ? 'all evidence is verified' : 'release claim exceeds verified evidence coverage',
+      evidence: focusObject.evidence.map((item) => item.id),
+      cost: 'slower release when proof is incomplete',
+      testable: true,
+    },
+    {
+      expert: 'human-factors',
+      verdict: unresolvedEvidence.length === 0 ? 'support' : 'pressure',
+      claim: unresolvedEvidence.length === 0 ? 'no unresolved blocker must compete with action salience' : 'action salience must remain below blocker salience',
+      evidence: unresolvedEvidence.map((item) => item.id),
+      cost: 'reduced immediacy while uncertainty is visible',
+      testable: true,
+    },
+    {
+      expert: 'red-team',
+      verdict: hardFails.length === 0 ? 'support' : 'block',
+      claim: hardFails.length === 0 ? 'no hard deception failure detected' : 'hard deception failure detected',
+      evidence: [...hardFails],
+      cost: 'hard failures prevent action entirely',
+      testable: true,
+    },
+  ];
+
+  const conflicts = [];
+  if (String(focusObject.state).toLowerCase().includes('ready') && unresolvedEvidence.length > 0) {
+    conflicts.push({
+      id: 'READY_STATE_WITH_UNRESOLVED_EVIDENCE',
+      proposition: 'object is ready to act',
+      opposition: 'unresolved evidence remains',
+      evidence: unresolvedEvidence.map((item) => item.id),
+    });
+  }
+
+  const releaseReasons = [];
+  if (hardFails.length > 0) releaseReasons.push(...hardFails);
+  if (unresolvedEvidence.length > 0) releaseReasons.push('UNRESOLVED_EVIDENCE');
+  if (evidenceStrength < 1) releaseReasons.push('EVIDENCE_NOT_FULLY_VERIFIED');
+  if (conflicts.length > 0) releaseReasons.push('UNRESOLVED_EXPERT_CONFLICT');
+
+  const releaseGate = {
+    allowed: releaseReasons.length === 0,
+    reasons: [...new Set(releaseReasons)],
+    requiredOperation: releaseReasons.length === 0 ? 'act' : 'inspect',
+  };
+
   return {
     accepted: hardFails.length === 0,
     hardFails,
@@ -62,11 +111,19 @@ export function evaluateExpertiseFabric(focusObject) {
       certaintyLabel: unresolvedEvidence.length > 0 ? 'provisional' : 'supported',
     },
     unresolvedEvidence: unresolvedEvidence.map((item) => item.id),
+    expertFindings,
+    conflicts,
+    releaseGate,
     counterEffects: [
       {
         domain: 'attention',
         cost: 'lower visual certainty may reduce immediate action salience',
         mitigation: 'keep verified evidence visible while exposing blockers in-place',
+      },
+      {
+        domain: 'velocity',
+        cost: 'Expertise Fabric can block an otherwise tempting action transition',
+        mitigation: 'return exact release-gate reasons and the next admissible semantic operation',
       },
     ],
   };
@@ -85,6 +142,7 @@ export function projectFocusObject(focusObject, host) {
       evidenceLineage: focusObject.evidence.map((item) => item.id),
     },
     phenotype: fabric.phenotype,
+    releaseGate: fabric.releaseGate,
   };
 
   if (host === 'chatgpt') {
@@ -113,6 +171,12 @@ export function projectFocusObject(focusObject, host) {
 
 export function applyInteraction({ focusObject, userEvent, host = 'chatgpt' }) {
   const semanticOperation = compileSurfaceEvent(userEvent);
+  const fabric = evaluateExpertiseFabric(focusObject);
+  if (!fabric.accepted) throw new Error(`EXPERTISE_HARD_FAIL:${fabric.hardFails.join(',')}`);
+  if (semanticOperation === 'act' && !fabric.releaseGate.allowed) {
+    throw new Error(`EXPERTISE_RELEASE_GATE_BLOCKED:${fabric.releaseGate.reasons.join(',')}`);
+  }
+
   const beforeFingerprint = fingerprintFocusObject(focusObject);
   const projection = projectFocusObject(focusObject, host);
   const afterFingerprint = fingerprintFocusObject(focusObject);
@@ -131,6 +195,11 @@ export function applyInteraction({ focusObject, userEvent, host = 'chatgpt' }) {
       evidenceReferences: focusObject.evidence.map((item) => item.id),
       uncertainty: [...focusObject.uncertainty],
       host,
+      expertiseGate: {
+        allowed: fabric.releaseGate.allowed,
+        reasons: [...fabric.releaseGate.reasons],
+        conflicts: fabric.conflicts.map((conflict) => conflict.id),
+      },
     },
   };
 }
