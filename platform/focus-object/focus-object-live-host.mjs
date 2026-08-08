@@ -48,7 +48,7 @@ export function loadFocusObject({ stateFile, seed = canonicalFocusObject } = {})
 }
 
 export function createFocusObjectLiveHost({ focusObject, stateFile } = {}) {
-  const activeFocusObject = focusObject ?? loadFocusObject({ stateFile });
+  let activeFocusObject = focusObject ?? loadFocusObject({ stateFile });
   return http.createServer(async (req, res) => {
     if (req.method === 'GET' && req.url === '/') {
       res.writeHead(200, {'content-type':'text/html; charset=utf-8'});
@@ -58,15 +58,20 @@ export function createFocusObjectLiveHost({ focusObject, stateFile } = {}) {
     if (req.method === 'GET' && req.url === '/health') {
       const mounted = mountFocusObjectSurface(activeFocusObject);
       res.writeHead(200, {'content-type':'application/json'});
-      res.end(JSON.stringify({status:'ok', fingerprint:mounted.fingerprint, uncertainty:[...activeFocusObject.uncertainty], durable:Boolean(stateFile)}));
+      res.end(JSON.stringify({status:'ok', fingerprint:mounted.fingerprint, uncertainty:[...activeFocusObject.uncertainty], durable:Boolean(stateFile), releaseAllowed:mounted.releaseGate.allowed}));
       return;
     }
     if (req.method === 'POST' && req.url === '/interact') {
       let raw = '';
       for await (const chunk of req) raw += chunk;
-      const { action } = JSON.parse(raw || '{}');
+      const { action, evidenceResolution } = JSON.parse(raw || '{}');
       try {
-        const result = interactWithFocusObjectSurface({ focusObject:activeFocusObject, surfaceAction:action });
+        const result = interactWithFocusObjectSurface({
+          focusObject: activeFocusObject,
+          surfaceAction: action,
+          evidenceResolution,
+        });
+        activeFocusObject = result.canonicalFocusObject;
         if (stateFile) persistDurableFocusObject(stateFile, activeFocusObject);
         res.writeHead(200, {'content-type':'application/json'});
         res.end(JSON.stringify(result));
