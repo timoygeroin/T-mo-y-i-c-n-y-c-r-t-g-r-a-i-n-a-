@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - monday-platform-genesis-01
+      - agent/mondayid-one-v1
     paths:
       - "platform/**"
       - ".github/workflows/platform-ci.yml"
@@ -26,98 +27,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: platform/package-lock.json
-
       - name: Install locked dependencies
         run: npm ci
-
       - name: Typecheck route governor
         run: npm run typecheck:route-governor
-
       - name: Typecheck processor fabric
         run: npm run typecheck:processor-fabric
-
       - name: Typecheck proof evaluation
         run: npm run typecheck:proof-evaluation
-
       - name: Test route governor
-        id: route_tests
-        run: |
-          set +e
-          npm run test:route-governor 2>&1 | tee route-governor-test-output.log
-          status=${PIPESTATUS[0]}
-          {
-            echo "## Route governor unit test output"
-            echo
-            echo "Head: \`${GITHUB_SHA}\`"
-            echo "Exit code: \`${status}\`"
-            echo
-            echo "Last 160 output lines:"
-            echo
-            echo '```text'
-            tail -n 160 route-governor-test-output.log
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
-
+        run: npm run test:route-governor
       - name: Run proof examples
-        id: proof_examples
         run: |
-          set +e
-          : > route-governor-proof-output.log
-          npm run proof:route-governor 2>&1 | tee -a route-governor-proof-output.log
-          route_status=${PIPESTATUS[0]}
-          npm run proof:processor-fabric 2>&1 | tee -a route-governor-proof-output.log
-          processor_status=${PIPESTATUS[0]}
-          npm run proof:proof-evaluation 2>&1 | tee -a route-governor-proof-output.log
-          evaluation_status=${PIPESTATUS[0]}
-          npm run proof:one 2>&1 | tee -a route-governor-proof-output.log
-          one_status=${PIPESTATUS[0]}
-          npm run proof:work 2>&1 | tee -a route-governor-proof-output.log
-          work_status=${PIPESTATUS[0]}
-          npm run proof:focus-object 2>&1 | tee -a route-governor-proof-output.log
-          focus_status=${PIPESTATUS[0]}
-          if [ "$route_status" -ne 0 ]; then
-            status="$route_status"
-          elif [ "$processor_status" -ne 0 ]; then
-            status="$processor_status"
-          elif [ "$evaluation_status" -ne 0 ]; then
-            status="$evaluation_status"
-          elif [ "$one_status" -ne 0 ]; then
-            status="$one_status"
-          elif [ "$work_status" -ne 0 ]; then
-            status="$work_status"
-          elif [ "$focus_status" -ne 0 ]; then
-            status="$focus_status"
-          else
-            status=0
-          fi
-          {
-            echo "## Platform proof output"
-            echo
-            echo "Head: \`${GITHUB_SHA}\`"
-            echo "Exit code: \`${status}\`"
-            echo
-            echo "Last 160 output lines:"
-            echo
-            echo '```text'
-            tail -n 160 route-governor-proof-output.log
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
-
-      - name: Upload route governor evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: route-governor-evidence-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            platform/route-governor-test-output.log
-            platform/route-governor-proof-output.log
-          if-no-files-found: warn
+          npm run proof:route-governor
+          npm run proof:processor-fabric
+          npm run proof:proof-evaluation
+          npm run proof:one
+          npm run proof:work
+          npm run proof:focus-object
+          npm run proof:focus-object-surface
