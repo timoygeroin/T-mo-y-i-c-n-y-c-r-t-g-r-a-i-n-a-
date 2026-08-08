@@ -1,4 +1,5 @@
-import { applyInteraction, evaluateExpertiseFabric, fingerprintFocusObject } from './focus-object.mjs';
+import { evaluateExpertiseFabric, fingerprintFocusObject } from './focus-object.mjs';
+import { applyFocusObjectInteraction } from './focus-object-evidence-transition.mjs';
 
 const esc = (value) => String(value).replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
@@ -27,15 +28,19 @@ export function mountFocusObjectSurface(focusObject) {
   };
 }
 
-export function interactWithFocusObjectSurface({ focusObject, surfaceAction }) {
+export function interactWithFocusObjectSurface({ focusObject, surfaceAction, evidenceResolution }) {
   const event = surfaceAction === 'confidence'
     ? { surfaceAction: 'tap confident visual state' }
     : { semanticOperation: surfaceAction };
-  const result = applyInteraction({ focusObject, userEvent: event, host: 'standalone' });
+  if (evidenceResolution) event.evidenceResolution = evidenceResolution;
+
+  const result = applyFocusObjectInteraction({ focusObject, userEvent: event, host: 'standalone' });
   return {
     semanticOperation: result.semanticOperation,
     canonicalMeaningPreserved: result.canonicalMeaningPreserved,
+    canonicalStateAdvanced: result.canonicalStateAdvanced,
+    canonicalFocusObject: result.canonicalFocusObject,
     receipt: result.receipt,
-    surface: mountFocusObjectSurface(focusObject),
+    surface: mountFocusObjectSurface(result.canonicalFocusObject),
   };
 }
