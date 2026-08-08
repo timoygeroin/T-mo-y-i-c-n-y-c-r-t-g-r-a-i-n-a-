@@ -1,5 +1,7 @@
 import http from 'node:http';
+import fs from 'node:fs';
 import { mountFocusObjectSurface, interactWithFocusObjectSurface } from './focus-object-surface.mjs';
+import { persistDurableFocusObject, recoverDurableFocusObject } from './focus-object.mjs';
 
 export const canonicalFocusObject = {
   objectId: 'focus:first-product',
@@ -38,16 +40,25 @@ for (const button of document.querySelectorAll('[data-operation]')) button.addEv
 </script></body></html>`;
 };
 
-export function createFocusObjectLiveHost({ focusObject = canonicalFocusObject } = {}) {
+export function loadFocusObject({ stateFile, seed = canonicalFocusObject } = {}) {
+  if (!stateFile) return seed;
+  if (fs.existsSync(stateFile)) return recoverDurableFocusObject(stateFile);
+  persistDurableFocusObject(stateFile, seed);
+  return recoverDurableFocusObject(stateFile);
+}
+
+export function createFocusObjectLiveHost({ focusObject, stateFile } = {}) {
+  const activeFocusObject = focusObject ?? loadFocusObject({ stateFile });
   return http.createServer(async (req, res) => {
     if (req.method === 'GET' && req.url === '/') {
       res.writeHead(200, {'content-type':'text/html; charset=utf-8'});
-      res.end(page(focusObject));
+      res.end(page(activeFocusObject));
       return;
     }
     if (req.method === 'GET' && req.url === '/health') {
+      const mounted = mountFocusObjectSurface(activeFocusObject);
       res.writeHead(200, {'content-type':'application/json'});
-      res.end(JSON.stringify({status:'ok', fingerprint:mountFocusObjectSurface(focusObject).fingerprint}));
+      res.end(JSON.stringify({status:'ok', fingerprint:mounted.fingerprint, uncertainty:[...activeFocusObject.uncertainty], durable:Boolean(stateFile)}));
       return;
     }
     if (req.method === 'POST' && req.url === '/interact') {
@@ -55,7 +66,8 @@ export function createFocusObjectLiveHost({ focusObject = canonicalFocusObject }
       for await (const chunk of req) raw += chunk;
       const { action } = JSON.parse(raw || '{}');
       try {
-        const result = interactWithFocusObjectSurface({ focusObject, surfaceAction: action });
+        const result = interactWithFocusObjectSurface({ focusObject:activeFocusObject, surfaceAction:action });
+        if (stateFile) persistDurableFocusObject(stateFile, activeFocusObject);
         res.writeHead(200, {'content-type':'application/json'});
         res.end(JSON.stringify(result));
       } catch (error) {
@@ -70,5 +82,6 @@ export function createFocusObjectLiveHost({ focusObject = canonicalFocusObject }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const port = Number(process.env.PORT || 4173);
-  createFocusObjectLiveHost().listen(port, '127.0.0.1', () => console.log(`MONDAYID_FOCUS_LIVE_HOST http://127.0.0.1:${port}`));
+  const stateFile = process.env.FOCUS_OBJECT_STATE_FILE || undefined;
+  createFocusObjectLiveHost({ stateFile }).listen(port, '127.0.0.1', () => console.log(`MONDAYID_FOCUS_LIVE_HOST http://127.0.0.1:${port}`));
 }
