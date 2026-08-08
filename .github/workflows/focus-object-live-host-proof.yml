@@ -1,0 +1,80 @@
+name: Focus Object Live Host Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/focus-object/**"
+      - ".github/workflows/focus-object-live-host-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install browser runtime
+        run: |
+          npm install -g agent-browser
+          npx agent-browser install
+
+      - name: Start canonical Focus Object host
+        run: |
+          node focus-object/focus-object-live-host.mjs > /tmp/focus-object-live-host.log 2>&1 &
+          echo $! > /tmp/focus-object-live-host.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/health > /tmp/focus-health.json; then break; fi
+            sleep 1
+          done
+          cat /tmp/focus-health.json
+          grep -F '"status":"ok"' /tmp/focus-health.json
+
+      - name: Prove real click to canonical receipt
+        run: |
+          set -euo pipefail
+          mkdir -p focus-object/evidence/live-host
+          agent-browser open http://127.0.0.1:4173/
+          agent-browser wait --load networkidle
+          agent-browser snapshot -i > focus-object/evidence/live-host/before.txt
+          agent-browser screenshot focus-object/evidence/live-host/before.png
+
+          # First interactive element is the confidence control emitted by the canonical surface.
+          agent-browser click @e1
+          agent-browser wait 800
+          agent-browser snapshot -i > focus-object/evidence/live-host/after-confidence.txt
+          agent-browser screenshot focus-object/evidence/live-host/after-confidence.png
+          agent-browser eval 'JSON.stringify({operation:document.querySelector(".focus-object").dataset.lastOperation,resultingFingerprint:document.querySelector(".focus-object").dataset.resultingFingerprint,canonicalFingerprint:document.querySelector(".focus-object").dataset.fingerprint,receipt:document.querySelector("#interaction-receipt").textContent})' > focus-object/evidence/live-host/readback.json
+
+          node - <<'NODE'
+          const fs = require('fs');
+          const raw = fs.readFileSync('focus-object/evidence/live-host/readback.json','utf8');
+          const outer = JSON.parse(raw);
+          const payload = JSON.parse(outer.data?.result ?? outer.data ?? outer);
+          if (payload.operation !== 'inspect') throw new Error(`expected inspect, got ${payload.operation}`);
+          if (!payload.canonicalFingerprint || payload.resultingFingerprint !== payload.canonicalFingerprint) throw new Error('fingerprint drift across live interaction');
+          const receipt = JSON.parse(payload.receipt);
+          if (receipt.semanticOperation !== 'inspect') throw new Error('receipt lost semantic operation');
+          if (!Array.isArray(receipt.uncertainty) || !receipt.uncertainty.includes('B1')) throw new Error('receipt lost blocker B1');
+          console.log(JSON.stringify({testId:'FOCUS_OBJECT_LIVE_HOST_TEST_001',result:'PASS',click:'confidence',semanticOperation:payload.operation,fingerprintPreserved:true,blockerPreserved:'B1'}, null, 2));
+          NODE
+
+          agent-browser close
+
+      - name: Upload live interaction evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-object-live-host-${{ github.run_id }}-${{ github.run_attempt }}
+          path: platform/focus-object/evidence/live-host/
+          if-no-files-found: error
