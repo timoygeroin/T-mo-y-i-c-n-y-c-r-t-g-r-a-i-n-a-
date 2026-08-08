@@ -49,8 +49,10 @@ jobs:
           agent-browser snapshot -i > focus-object/evidence/live-host/before.txt
           agent-browser screenshot focus-object/evidence/live-host/before.png
 
-          # First interactive element is the confidence control emitted by the canonical surface.
-          agent-browser click @e1
+          CONFIDENCE_REF=$(grep -F 'button "Inspect confidence"' focus-object/evidence/live-host/before.txt | sed -E 's/.*\[ref=(e[0-9]+)\].*/@\1/' | head -n1)
+          test -n "$CONFIDENCE_REF"
+          printf '%s\n' "$CONFIDENCE_REF" > focus-object/evidence/live-host/confidence-ref.txt
+          agent-browser click "$CONFIDENCE_REF"
           agent-browser wait 800
           agent-browser snapshot -i > focus-object/evidence/live-host/after-confidence.txt
           agent-browser screenshot focus-object/evidence/live-host/after-confidence.png
@@ -60,10 +62,11 @@ jobs:
           const fs = require('fs');
           const raw = fs.readFileSync('focus-object/evidence/live-host/readback.json','utf8');
           const outer = JSON.parse(raw);
-          const payload = JSON.parse(outer.data?.result ?? outer.data ?? outer);
+          const candidate = outer?.data?.result ?? outer?.data ?? outer;
+          const payload = typeof candidate === 'string' ? JSON.parse(candidate) : candidate;
           if (payload.operation !== 'inspect') throw new Error(`expected inspect, got ${payload.operation}`);
           if (!payload.canonicalFingerprint || payload.resultingFingerprint !== payload.canonicalFingerprint) throw new Error('fingerprint drift across live interaction');
-          const receipt = JSON.parse(payload.receipt);
+          const receipt = typeof payload.receipt === 'string' ? JSON.parse(payload.receipt) : payload.receipt;
           if (receipt.semanticOperation !== 'inspect') throw new Error('receipt lost semantic operation');
           if (!Array.isArray(receipt.uncertainty) || !receipt.uncertainty.includes('B1')) throw new Error('receipt lost blocker B1');
           console.log(JSON.stringify({testId:'FOCUS_OBJECT_LIVE_HOST_TEST_001',result:'PASS',click:'confidence',semanticOperation:payload.operation,fingerprintPreserved:true,blockerPreserved:'B1'}, null, 2));
