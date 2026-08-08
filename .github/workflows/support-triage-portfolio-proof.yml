@@ -5,6 +5,10 @@ on:
     paths:
       - 'platform/revenue/portfolio/support-triage/**'
       - '.github/workflows/support-triage-portfolio-proof.yml'
+  pull_request:
+    paths:
+      - 'platform/revenue/portfolio/support-triage/**'
+      - '.github/workflows/support-triage-portfolio-proof.yml'
   workflow_dispatch:
 permissions:
   contents: read
