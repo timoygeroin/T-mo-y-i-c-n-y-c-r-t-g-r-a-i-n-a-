@@ -1,0 +1,37 @@
+name: Support Triage Portfolio Proof
+on:
+  push:
+    branches: [agent/mondayid-one-v1]
+    paths:
+      - 'platform/revenue/portfolio/support-triage/**'
+      - '.github/workflows/support-triage-portfolio-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute deterministic support triage
+        run: python platform/revenue/portfolio/support-triage/triage.py
+      - name: Validate evidence disclosure and PASS
+        run: |
+          python - <<'PY'
+          import json
+          p='platform/revenue/portfolio/support-triage/evidence.json'
+          d=json.load(open(p))
+          assert d['pass'] is True
+          assert 'synthetic' in d['disclosure'].lower()
+          assert 'not a client' in d['disclosure'].lower()
+          assert all(not r['external_send'] for r in d['results'])
+          print('SUPPORT_TRIAGE_EVIDENCE_PASS')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: support-triage-evidence
+          path: platform/revenue/portfolio/support-triage/evidence.json
+          if-no-files-found: error
