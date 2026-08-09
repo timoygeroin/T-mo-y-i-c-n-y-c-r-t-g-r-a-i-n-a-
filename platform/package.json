@@ -21,6 +21,7 @@
     "proof:focus-object-evidence-transition": "node focus-object/focus-object-evidence-transition-proof.mjs",
     "proof:mondayvision": "node mondayvision/mondayvision-proof.mjs",
     "proof:mondayvision-constraint-gradient": "node mondayvision/constraint-gradient-proof.mjs",
+    "proof:mondayvision-university": "node mondayvision/university/university-proof.mjs",
     "proof:cloud-smoke": "node cloud/cloud-smoke.mjs",
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
