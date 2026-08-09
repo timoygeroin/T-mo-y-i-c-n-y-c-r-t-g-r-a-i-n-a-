@@ -30,3 +30,6 @@ jobs:
       - name: Run constraint-gradient proof
         working-directory: platform
         run: npm run proof:mondayvision-constraint-gradient
+      - name: Run Monday University proof
+        working-directory: platform
+        run: npm run proof:mondayvision-university
