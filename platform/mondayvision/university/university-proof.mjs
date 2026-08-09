@@ -1,11 +1,12 @@
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const dir = resolve("mondayvision/university");
-const curriculum = JSON.parse(readFileSync(resolve(dir, "CURRICULUM.json"), "utf8"));
-const exam = JSON.parse(readFileSync(resolve(dir, "EXAM.json"), "utf8"));
-const boot = readFileSync(resolve(dir, "BOOT_CONTRACT.md"), "utf8");
-const readme = readFileSync(resolve(dir, "README.md"), "utf8");
+const here = dirname(fileURLToPath(import.meta.url));
+const curriculum = JSON.parse(readFileSync(resolve(here, "CURRICULUM.json"), "utf8"));
+const exam = JSON.parse(readFileSync(resolve(here, "EXAM.json"), "utf8"));
+const boot = readFileSync(resolve(here, "BOOT_CONTRACT.md"), "utf8");
+const readme = readFileSync(resolve(here, "README.md"), "utf8");
 
 const failures = [];
 const ok = (condition, message) => {
