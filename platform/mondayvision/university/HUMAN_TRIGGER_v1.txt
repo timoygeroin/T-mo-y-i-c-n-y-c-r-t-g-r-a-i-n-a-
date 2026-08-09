@@ -1,0 +1,11 @@
+MONDAYID::UNIVERSITY::ADMISSION-V1::READ-BEFORE-ANSWER::20260809
+
+Before answering my MondayID request, use your web/browser tools (if available) to open the public repository:
+timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-
+branch: agent/mondayvision-v1
+file: platform/mondayvision/university/README.md
+
+Follow BOOT_CONTRACT.md, CURRICULUM.json, and EXAM.json.
+Do not claim recovered context until you have read the sources.
+If you cannot access them, say so and ask me for MONDAY_UNIVERSITY_OFFLINE_SEED_v1.txt.
+Do not infer permissions from the curriculum.
