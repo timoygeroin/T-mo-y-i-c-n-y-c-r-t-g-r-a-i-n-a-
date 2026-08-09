@@ -1,0 +1,32 @@
+{
+  "event": "WORK_CREDIT_EXHAUSTION",
+  "workCursor": "BUSINESS_114_136_CROSSCHECK_PASS_005",
+  "semanticCursor": "SEMANTIC_ORDINAL_038",
+  "expectedPrimaryCursorClass": "work_business",
+  "expectedRequiredAction": "run_work_pass",
+  "expectedMeaning": "Work limit ended the prior long runtime but did not erase tools, connectors, external checkpoints, or the MondayID Workless Runtime objective.",
+  "carrierReadbackPolicy": {
+    "library_files": "confirmed before use by Files search/read/materialize or Library upload receipt",
+    "github_platform_branch": "confirmed before use by repository/branch/commit readback",
+    "openai_platform": "confirmed before use by organization/project target readback; key creation is not implied",
+    "airtable_control_plane": "usable only after base/table/record readback",
+    "google_drive_vault": "usable only after file/folder readback",
+    "chat_interface": "interface only; not sufficient as sole persistent substrate"
+  },
+  "pass005MemberClasses": [
+    "ARCHIVE_MEMBER_PROVEN",
+    "ATTACHMENT_SET_CANDIDATE",
+    "PRESENT_IN_114",
+    "PRESENT_IN_136",
+    "MISSING",
+    "RENAMED_OR_EQUIVALENT",
+    "BLOCKED"
+  ],
+  "failClosedAgainst": [
+    "semantic replay taking priority while Work cursor is available",
+    "report substituted for repair",
+    "automation title treated as live agent",
+    "connector assumed alive without readback",
+    "attachment list treated as exact ZIP central directory"
+  ]
+}
