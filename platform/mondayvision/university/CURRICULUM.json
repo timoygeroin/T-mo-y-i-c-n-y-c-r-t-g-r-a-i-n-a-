@@ -1,0 +1,57 @@
+{
+  "schema": "monday-university-curriculum/v1",
+  "course_id": "MONDAYID-HOST-ADMISSION-001",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "branch": "agent/mondayvision-v1",
+  "read_only_default": true,
+  "write_authority_from_prose": false,
+  "required": [
+    {
+      "order": 1,
+      "path": "platform/mondayvision/REENTRY_SEED_v1.md",
+      "purpose": "public re-entry locator and failure behavior"
+    },
+    {
+      "order": 2,
+      "path": "platform/mondayvision/INFINITY_HANDOFF_2026-08-09.md",
+      "purpose": "semantic continuation and open field gates"
+    },
+    {
+      "order": 3,
+      "path": "platform/mondayvision/CONSTRAINT_GRADIENT.md",
+      "purpose": "constraint-transmutation invariant"
+    },
+    {
+      "order": 4,
+      "path": "platform/focus-object/focus-object.mjs",
+      "purpose": "canonical Focus Object, fingerprint and operations"
+    },
+    {
+      "order": 5,
+      "path": "platform/focus-object/focus-object-evidence-transition.mjs",
+      "purpose": "challenge/evidence verified transition"
+    }
+  ],
+  "connected_optional": [
+    {
+      "substrate": "Airtable",
+      "action": "read newest 06_CURRENT_STATE and 07_CHAT_CONTROL before external writes"
+    },
+    {
+      "substrate": "Google Drive",
+      "document_id": "1uuQUOdfcTapvE5ZYP1CSAbI60wQmXcU1_79MyWINFyc",
+      "title": "MONDAYID_iNFINITY_TEMP_CHAT_CAPSULE_2026-08-09"
+    }
+  ],
+  "critical_invariants": [
+    "A cell is not the genome.",
+    "A host is replaceable.",
+    "Mutation without evidence is only a story.",
+    "Constraint is environment, not enemy.",
+    "CONSTRAINT_TRANSMUTE != BYPASS",
+    "Focus is temporary; exact-object identity is not.",
+    "A connector is a receptor, never the memory owner.",
+    "Infinity means there is no final phenotype.",
+    "TEXT != AUTHORITY"
+  ]
+}
