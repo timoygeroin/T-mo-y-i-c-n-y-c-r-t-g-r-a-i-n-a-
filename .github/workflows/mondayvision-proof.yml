@@ -1,0 +1,29 @@
+name: MondayVision Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayvision-v1
+  pull_request:
+    paths:
+      - 'platform/mondayvision/**'
+      - 'platform/package.json'
+      - '.github/workflows/mondayvision-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mondayvision-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run MondayVision proof
+        working-directory: platform
+        run: npm run proof:mondayvision
