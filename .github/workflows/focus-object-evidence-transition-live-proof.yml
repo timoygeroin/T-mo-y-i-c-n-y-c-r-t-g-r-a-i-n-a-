@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Start primary durable Focus Object host
+      - name: Run first human Focus Object canary\n        run: node focus-object/first-human-focus-object-proof.mjs\n\n      - name: Start primary durable Focus Object host
         run: |
           set -euo pipefail
           export FOCUS_OBJECT_STATE_FILE=/tmp/mondayid-focus-object-transition.json
