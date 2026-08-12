@@ -19,6 +19,7 @@
     "proof:focus-object-surface": "node focus-object/focus-object-surface-proof.mjs",
     "proof:focus-object-expertise-release": "node focus-object/focus-object-expertise-release-proof.mjs",
     "proof:focus-object-evidence-transition": "node focus-object/focus-object-evidence-transition-proof.mjs",
+    "proof:first-human-focus-object": "node focus-object/first-human-focus-object-proof.mjs",
     "proof:cloud-smoke": "node cloud/cloud-smoke.mjs",
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
