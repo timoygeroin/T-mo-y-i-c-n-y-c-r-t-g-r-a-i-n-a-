@@ -54,3 +54,4 @@ jobs:
           npm run proof:focus-object-surface
           npm run proof:focus-object-expertise-release
           npm run proof:focus-object-evidence-transition
+          npm run proof:first-human-focus-object
