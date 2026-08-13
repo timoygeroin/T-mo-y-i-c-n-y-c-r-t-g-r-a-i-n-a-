@@ -12,6 +12,7 @@ function argValue(name, fallback) {
 const repo = argValue("repo", process.env.GITHUB_REPOSITORY || DEFAULT_REPO);
 const prNumber = argValue("pr", process.env.PR_NUMBER || DEFAULT_PR);
 const expectedHead = argValue("expected-head", process.env.EXPECTED_HEAD || "");
+const currentRunId = argValue("current-run-id", process.env.GITHUB_RUN_ID || "");
 const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 
 if (!token) {
@@ -47,7 +48,9 @@ async function github(path) {
 }
 
 function summarizeCheckRuns(checkRuns) {
-  return (checkRuns.check_runs || []).map((run) => ({
+  return (checkRuns.check_runs || [])
+    .filter((run) => !currentRunId || !run.html_url?.includes(`/actions/runs/${currentRunId}/`))
+    .map((run) => ({
     id: run.id,
     name: run.name,
     status: run.status,
@@ -59,7 +62,10 @@ function summarizeCheckRuns(checkRuns) {
 }
 
 function summarizeWorkflowRuns(workflowRuns) {
-  return (workflowRuns.workflow_runs || []).map((run) => ({
+  return (workflowRuns.workflow_runs || [])
+    .filter((run) => run.event === "pull_request")
+    .filter((run) => !currentRunId || String(run.id) !== String(currentRunId))
+    .map((run) => ({
     id: run.id,
     name: run.name,
     event: run.event,
@@ -82,7 +88,7 @@ function classify({ combinedStatus, checkRuns, workflowRuns }) {
     return "failing";
   }
 
-  if (pendingCheck || pendingWorkflow || combinedStatus.state === "pending") {
+  if (pendingCheck || pendingWorkflow || (combinedStatus.statuses.length > 0 && combinedStatus.state === "pending")) {
     return "pending";
   }
 

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="769" viewBox="0 0 1280 769">
+  <defs>
+    <radialGradient id="bg" cx="85%" cy="5%" r="95%">
+      <stop offset="0" stop-color="#183f32"/><stop offset="0.42" stop-color="#0a1a16"/><stop offset="1" stop-color="#06100e"/>
+    </radialGradient>
+    <linearGradient id="mint" x1="0" x2="1"><stop stop-color="#6dffbf"/><stop offset="1" stop-color="#77c7ff"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1280" height="769" rx="28" fill="url(#bg)"/>
+  <g opacity=".22" stroke="#5af0b4" fill="none"><path d="M0 620 C240 500 360 720 600 570 S980 470 1280 560"/><path d="M0 670 C240 550 390 750 650 610 S1010 520 1280 610"/></g>
+  <g transform="translate(82 92)">
+    <text x="0" y="0" dominant-baseline="hanging" fill="#80f7c0" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" letter-spacing="4">MONDAYID STUDIO</text>
+    <text x="0" y="88" fill="#f2fff9" font-family="Arial,Helvetica,sans-serif" font-size="78" font-weight="800" letter-spacing="-3">AI WORKFLOW</text>
+    <text x="0" y="168" fill="#f2fff9" font-family="Arial,Helvetica,sans-serif" font-size="78" font-weight="800" letter-spacing="-3">AUTOMATION</text>
+    <text x="2" y="220" fill="#91b8aa" font-family="Arial,Helvetica,sans-serif" font-size="24">Built · Tested · Human-Gated</text>
+  </g>
+  <g transform="translate(720 110)">
+    <rect x="0" y="0" width="420" height="500" rx="30" fill="#0d201a" stroke="#25483b" stroke-width="2"/>
+    <circle cx="58" cy="68" r="14" fill="#65f4b9" filter="url(#glow)"/>
+    <text x="88" y="77" fill="#dffff2" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700">REQUEST IN</text>
+    <path d="M58 100 V145" stroke="url(#mint)" stroke-width="5" stroke-linecap="round"/>
+    <rect x="34" y="148" width="352" height="82" rx="18" fill="#122c24" stroke="#2b5b49"/>
+    <text x="58" y="181" fill="#8cb4a5" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="2">AI DECISION</text>
+    <text x="58" y="207" fill="#effff9" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700">Classify + Route</text>
+    <path d="M210 232 V277" stroke="url(#mint)" stroke-width="5" stroke-linecap="round"/>
+    <rect x="34" y="280" width="352" height="82" rx="18" fill="#122c24" stroke="#2b5b49"/>
+    <text x="58" y="313" fill="#8cb4a5" font-family="Arial,Helvetica,sans-serif" font-size="15" letter-spacing="2">SAFETY GATE</text>
+    <text x="58" y="339" fill="#ffc86b" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700">Human Approval</text>
+    <path d="M210 364 V408" stroke="url(#mint)" stroke-width="5" stroke-linecap="round"/>
+    <rect x="34" y="411" width="352" height="56" rx="18" fill="#143329" stroke="#34715a"/>
+    <text x="58" y="446" fill="#74f3bd" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700">✓ AUDIT RECEIPT</text>
+  </g>
+  <g transform="translate(82 592)">
+    <rect width="520" height="84" rx="22" fill="#0d211b" stroke="#24473a"/>
+    <text x="28" y="33" fill="#7fa596" font-family="Arial,Helvetica,sans-serif" font-size="14" letter-spacing="2">ONE REPETITIVE PROCESS</text>
+    <text x="28" y="61" fill="#e6fff5" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700">→ one reliable automation system</text>
+  </g>
+</svg>

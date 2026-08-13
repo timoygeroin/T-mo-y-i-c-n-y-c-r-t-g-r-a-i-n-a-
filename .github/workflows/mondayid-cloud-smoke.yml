@@ -1,0 +1,54 @@
+name: MondayID Cloud Smoke
+
+on:
+  push:
+    paths:
+      - "platform/cloud/**"
+      - "platform/one/**"
+      - "platform/work/**"
+      - "platform/focus-object/**"
+      - "platform/package.json"
+      - ".github/workflows/mondayid-cloud-smoke.yml"
+  pull_request:
+    paths:
+      - "platform/cloud/**"
+      - "platform/one/**"
+      - "platform/work/**"
+      - "platform/focus-object/**"
+      - "platform/package.json"
+      - ".github/workflows/mondayid-cloud-smoke.yml"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  cloud-smoke:
+    name: Cloud-native acceptance smoke
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: platform/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run MondayID cloud smoke
+        run: npm run proof:cloud-smoke | tee cloud-smoke-receipt.json
+
+      - name: Upload cloud receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mondayid-cloud-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: platform/cloud-smoke-receipt.json
+          if-no-files-found: error

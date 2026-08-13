@@ -1,0 +1,11 @@
+[
+  {"id":"ST-001","subject":"Cannot sign in","body":"My password is rejected and reset did not help."},
+  {"id":"ST-002","subject":"Invoice question","body":"Can you explain the extra line on this month's invoice?"},
+  {"id":"ST-003","subject":"Refund request","body":"I was charged for the wrong plan and want a refund."},
+  {"id":"ST-004","subject":"Possible account takeover","body":"I see logins I do not recognize and my email was changed."},
+  {"id":"ST-005","subject":"Export button broken","body":"Clicking Export returns an error after the latest update."},
+  {"id":"ST-006","subject":"Feature idea","body":"Please add scheduled weekly PDF reports."},
+  {"id":"ST-007","subject":"Cancel subscription","body":"Please cancel my subscription before the next renewal."},
+  {"id":"ST-008","subject":"How do I invite a teammate?","body":"Where can I add another user to my workspace?"},
+  {"id":"ST-009","subject":"Something is wrong","body":"It changed yesterday and I am not sure what happened."}
+]

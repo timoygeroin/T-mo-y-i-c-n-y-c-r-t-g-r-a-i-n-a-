@@ -1,0 +1,75 @@
+name: Browser Organ Canary
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/browser-organ-canary.yml"
+      - "platform/browser/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install browser organ runtime
+        run: |
+          npm install -g agent-browser
+          npx agent-browser install
+
+      - name: Exercise real public site
+        run: |
+          set -euo pipefail
+          mkdir -p browser-evidence
+
+          agent-browser open https://avodamarchok.com/
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/home-title.txt
+          agent-browser get url > browser-evidence/home-url.txt
+          agent-browser snapshot -i > browser-evidence/home-snapshot.txt
+          agent-browser screenshot browser-evidence/home.png
+          agent-browser eval 'JSON.stringify(Array.from(document.querySelectorAll("a")).map(a => ({text:(a.innerText||"").trim(), href:a.href})))' > browser-evidence/home-links.json
+
+          agent-browser open https://avodamarchok.com/tasks
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/tasks-title.txt
+          agent-browser get url > browser-evidence/tasks-url.txt
+          agent-browser snapshot -i > browser-evidence/tasks-snapshot.txt
+          agent-browser screenshot browser-evidence/tasks.png
+
+          agent-browser open https://avodamarchok.com/contact
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/apply-title.txt
+          agent-browser get url > browser-evidence/apply-url.txt
+          agent-browser snapshot -i > browser-evidence/apply-snapshot.txt
+          agent-browser screenshot browser-evidence/apply.png
+          agent-browser eval 'JSON.stringify(Array.from(document.querySelectorAll("iframe")).map(f => ({title:f.title,src:f.src,name:f.name})))' > browser-evidence/apply-iframes.json
+
+          FORM_URL=$(node -e 'const fs=require("fs"); const raw=fs.readFileSync("browser-evidence/apply-iframes.json","utf8"); const data=JSON.parse(raw); const frames=JSON.parse(data.data?.result ?? data.data ?? data); const hit=frames.find(x=>x.src); if(!hit?.src) process.exit(2); process.stdout.write(hit.src);')
+          printf '%s\n' "$FORM_URL" > browser-evidence/form-target.txt
+          agent-browser open "$FORM_URL"
+          agent-browser wait --load networkidle
+          agent-browser get title > browser-evidence/form-title.txt
+          agent-browser get url > browser-evidence/form-url.txt
+          agent-browser snapshot -i > browser-evidence/form-snapshot.txt
+          agent-browser screenshot browser-evidence/form.png
+
+          printf '{"result":"BROWSER_ORGAN_GATE_PROBE_PASS","target":"https://avodamarchok.com/","flows":["home","tasks-direct","contact","application-form"],"locatorLaw":"semantic->dom_href->direct_url->snapshot_ref"}\n' > browser-evidence/receipt.json
+          agent-browser close
+
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-organ-canary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: browser-evidence/
+          if-no-files-found: error

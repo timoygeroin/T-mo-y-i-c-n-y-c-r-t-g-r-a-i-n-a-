@@ -1,0 +1,31 @@
+name: MondayID Portable Runtime Proof
+
+on:
+  push:
+    paths:
+      - "platform/runtime/**"
+      - "platform/package.json"
+      - ".github/workflows/portable-runtime-proof.yml"
+  pull_request:
+    paths:
+      - "platform/runtime/**"
+      - "platform/package.json"
+      - ".github/workflows/portable-runtime-proof.yml"
+
+jobs:
+  portable-runtime:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prove cross-model continuation
+        run: npm run proof:portable-runtime
+      - name: Prove complete agent vertical
+        run: npm run proof:mondayid-agent
+      - name: Prove independent HTTP runtime
+        run: npm run proof:http-runtime

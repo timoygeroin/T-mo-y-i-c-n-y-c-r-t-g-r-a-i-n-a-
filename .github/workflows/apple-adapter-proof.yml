@@ -1,0 +1,189 @@
+name: MondayID Apple Adapter Proof
+
+on:
+  push:
+    paths:
+      - "platform/apple-adapter/**"
+      - "platform/apple-host/**"
+      - ".github/workflows/apple-adapter-proof.yml"
+  pull_request:
+    paths:
+      - "platform/apple-adapter/**"
+      - "platform/apple-host/**"
+      - ".github/workflows/apple-adapter-proof.yml"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  apple-adapter:
+    name: Compile and launch MondayID iOS host
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: platform/apple-adapter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build adapter on macOS
+        run: swift build -v
+
+      - name: Test command bridge and App Intent invocation
+        run: swift test -v
+
+      - name: Compile adapter for iOS Simulator
+        run: xcodebuild -scheme MondayIDAppleAdapter -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+
+      - name: Build real iOS host with local adapter package
+        run: |
+          set -o pipefail
+          xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ../apple-host/DerivedData CODE_SIGNING_ALLOWED=NO build 2>&1 | tee ../apple-host/host-build.log
+
+      - name: Verify App Shortcut discoverability metadata
+        run: |
+          set -euo pipefail
+          LOG="../apple-host/host-build.log"
+          test -s "$LOG"
+          if grep -Fq "No AppShortcuts found - Skipping." "$LOG"; then
+            echo "MONDAYID_APP_SHORTCUT_DISCOVERY_FAIL"
+            exit 1
+          fi
+          grep -Fq "Metadata.appintents" "$LOG"
+          echo "MONDAYID_APP_SHORTCUT_DISCOVERY_PASS"
+
+      - name: Compile real host for iPhoneOS device SDK
+        run: |
+          set -euo pipefail
+          xcodebuild -project ../apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath ../apple-host/DerivedDataDevice CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+          test -d ../apple-host/DerivedDataDevice/Build/Products/Debug-iphoneos/MondayIDHost.app
+          echo "MONDAYID_IPHONEOS_COMPILE_PASS"
+
+      - name: Install and launch MondayIDHost in an ephemeral iPhone Simulator
+        timeout-minutes: 5
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          import time
+
+          APP_PATH = os.path.abspath("../apple-host/DerivedData/Build/Products/Debug-iphonesimulator/MondayIDHost.app")
+          BUNDLE_ID = "com.mondayid.host"
+
+          def run(args, timeout=30, check=True):
+              print("+", " ".join(args), flush=True)
+              try:
+                  result = subprocess.run(args, text=True, capture_output=True, timeout=timeout)
+              except subprocess.TimeoutExpired as exc:
+                  print(f"TIMEOUT after {timeout}s: {' '.join(args)}", flush=True)
+                  if exc.stdout:
+                      print(exc.stdout, flush=True)
+                  if exc.stderr:
+                      print(exc.stderr, flush=True)
+                  raise
+              if result.stdout:
+                  print(result.stdout.rstrip(), flush=True)
+              if result.stderr:
+                  print(result.stderr.rstrip(), flush=True)
+              if check and result.returncode != 0:
+                  raise subprocess.CalledProcessError(result.returncode, args, result.stdout, result.stderr)
+              return result
+
+          def simctl(*args, timeout=30, check=True):
+              return run(["xcrun", "simctl", *args], timeout=timeout, check=check)
+
+          if not os.path.isdir(APP_PATH):
+              raise SystemExit(f"Missing app bundle: {APP_PATH}")
+
+          devices_payload = json.loads(simctl("list", "devices", "available", "-j", timeout=20).stdout)
+          device_udid = None
+          device_name = None
+          for runtime_devices in devices_payload.get("devices", {}).values():
+              for device in runtime_devices:
+                  if device.get("isAvailable", True) and device.get("name", "").startswith("iPhone"):
+                      device_udid = device.get("udid")
+                      device_name = device.get("name")
+                      break
+              if device_udid:
+                  break
+
+          if not device_udid:
+              runtimes = json.loads(simctl("list", "runtimes", "-j", timeout=20).stdout).get("runtimes", [])
+              ios_runtimes = [r for r in runtimes if r.get("isAvailable") and r.get("platform") == "iOS"]
+              device_types = json.loads(simctl("list", "devicetypes", "-j", timeout=20).stdout).get("devicetypes", [])
+              iphone_types = [d for d in device_types if d.get("name", "").startswith("iPhone")]
+              if not ios_runtimes or not iphone_types:
+                  raise SystemExit("No available iOS runtime or iPhone device type")
+              runtime_id = ios_runtimes[-1]["identifier"]
+              device_type_id = iphone_types[0]["identifier"]
+              device_name = "MondayID-CI"
+              device_udid = simctl("create", device_name, device_type_id, runtime_id, timeout=30).stdout.strip()
+
+          print(f"Using simulator: {device_name} ({device_udid})", flush=True)
+          simctl("boot", device_udid, timeout=20, check=False)
+
+          install_deadline = time.monotonic() + 150
+          install_attempt = 0
+          while True:
+              install_attempt += 1
+              try:
+                  simctl("install", device_udid, APP_PATH, timeout=25)
+                  print(f"INSTALL_PASS attempt={install_attempt}", flush=True)
+                  break
+              except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as exc:
+                  if time.monotonic() >= install_deadline:
+                      print("INSTALL_FAIL: simulator never became install-ready", flush=True)
+                      simctl("list", "devices", "-j", timeout=20, check=False)
+                      raise
+                  print(f"Install attempt {install_attempt} not ready yet: {type(exc).__name__}", flush=True)
+                  time.sleep(5)
+
+          launch_error = None
+          launch_result = None
+          for attempt in range(1, 4):
+              try:
+                  launch_result = simctl("launch", device_udid, BUNDLE_ID, timeout=20)
+                  print(f"LAUNCH_PASS attempt={attempt}", flush=True)
+                  launch_error = None
+                  break
+              except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as exc:
+                  launch_error = exc
+                  print(f"Launch attempt {attempt} failed: {type(exc).__name__}", flush=True)
+                  time.sleep(3)
+
+          if launch_error is not None or launch_result is None:
+              print("LAUNCH_FAIL after bounded retries", flush=True)
+              simctl("get_app_container", device_udid, BUNDLE_ID, "app", timeout=10, check=False)
+              raise launch_error
+
+          app_container = None
+          container_error = None
+          for attempt in range(1, 4):
+              try:
+                  candidate = simctl("get_app_container", device_udid, BUNDLE_ID, "app", timeout=20).stdout.strip()
+                  if candidate and os.path.isdir(candidate):
+                      app_container = candidate
+                      container_error = None
+                      print(f"APP_CONTAINER_READBACK_PASS attempt={attempt}", flush=True)
+                      break
+                  container_error = RuntimeError(f"App container path not ready: {candidate!r}")
+              except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as exc:
+                  container_error = exc
+              print(f"App container readback attempt {attempt} not ready: {type(container_error).__name__}", flush=True)
+              time.sleep(3)
+
+          if app_container is None:
+              print("APP_CONTAINER_READBACK_FAIL after bounded retries", flush=True)
+              raise container_error
+
+          launch_text = (launch_result.stdout or "").strip()
+          if BUNDLE_ID not in launch_text:
+              raise SystemExit(f"Unexpected launch readback: {launch_text!r}")
+
+          print(f"APP_CONTAINER_PASS {app_container}", flush=True)
+          print("MONDAYID_IOS_HOST_LAUNCH_PASS", flush=True)
+          PY

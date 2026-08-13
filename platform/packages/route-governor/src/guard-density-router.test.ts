@@ -29,8 +29,8 @@ function input(overrides: Partial<GuardDensityRouterInput> = {}): GuardDensityRo
     recent_artifact_classes: [
       "scheduled-surface-reconciliation-router",
       "current-instruction-head-boundary",
-      "finalization-terminal-progress-contract",
-      "status-readback-authority-lease",
+      "finalization-terminal-progress-gate",
+      "status-readback-authority-policy",
     ],
     max_guard_like_artifacts: 3,
     live_failure_signatures: [],

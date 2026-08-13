@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - monday-platform-genesis-01
+      - agent/mondayid-one-v1
     paths:
       - "platform/**"
       - ".github/workflows/platform-ci.yml"
@@ -26,67 +27,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: platform/package-lock.json
-
       - name: Install locked dependencies
         run: npm ci
-
       - name: Typecheck route governor
         run: npm run typecheck:route-governor
-
       - name: Typecheck processor fabric
         run: npm run typecheck:processor-fabric
-
       - name: Typecheck proof evaluation
         run: npm run typecheck:proof-evaluation
-
       - name: Test route governor
         run: npm run test:route-governor
-
       - name: Run proof examples
-        id: proof_examples
         run: |
-          set +e
-          : > route-governor-proof-output.log
-          npm run proof:route-governor 2>&1 | tee -a route-governor-proof-output.log
-          route_status=${PIPESTATUS[0]}
-          npm run proof:processor-fabric 2>&1 | tee -a route-governor-proof-output.log
-          processor_status=${PIPESTATUS[0]}
-          npm run proof:proof-evaluation 2>&1 | tee -a route-governor-proof-output.log
-          evaluation_status=${PIPESTATUS[0]}
-          if [ "$route_status" -ne 0 ]; then
-            status="$route_status"
-          elif [ "$processor_status" -ne 0 ]; then
-            status="$processor_status"
-          elif [ "$evaluation_status" -ne 0 ]; then
-            status="$evaluation_status"
-          else
-            status=0
-          fi
-          {
-            echo "## Platform proof output"
-            echo
-            echo "Head: \`${GITHUB_SHA}\`"
-            echo "Exit code: \`${status}\`"
-            echo
-            echo "Last 120 output lines:"
-            echo
-            echo '```text'
-            tail -n 120 route-governor-proof-output.log
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit "$status"
-
-      - name: Upload route governor proof output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: route-governor-proof-output-${{ github.run_id }}-${{ github.run_attempt }}
-          path: platform/route-governor-proof-output.log
-          if-no-files-found: warn
+          npm run proof:route-governor
+          npm run proof:processor-fabric
+          npm run proof:proof-evaluation
+          npm run proof:one
+          npm run proof:work
+          npm run proof:focus-object
+          npm run proof:focus-object-surface
+          npm run proof:focus-object-expertise-release
+          npm run proof:focus-object-evidence-transition
+          npm run proof:first-human-focus-object

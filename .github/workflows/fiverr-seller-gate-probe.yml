@@ -1,0 +1,61 @@
+name: Fiverr Seller Gate Probe
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/fiverr-seller-gate-probe.yml"
+      - "platform/revenue/FIVERR_AI_INTEGRATION_GIG_V1.md"
+      - "platform/revenue/portfolio/lead-intake-triage/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe-fiverr-seller-entry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser runtime
+        run: |
+          npm install -g agent-browser
+          npx agent-browser install
+      - name: Probe public Fiverr seller path
+        run: |
+          mkdir -p fiverr-gate-evidence
+          agent-browser open https://www.fiverr.com/sellers/freelance-jobs
+          agent-browser wait --load networkidle || true
+          agent-browser get title > fiverr-gate-evidence/landing-title.txt || true
+          agent-browser get url > fiverr-gate-evidence/landing-url.txt || true
+          agent-browser snapshot -i > fiverr-gate-evidence/landing-snapshot.txt || true
+          agent-browser screenshot --full fiverr-gate-evidence/landing.png || true
+
+          # Follow the public freelancer CTA semantically when available.
+          agent-browser find text "Become a Fiverr Freelancer" click || \
+          agent-browser find text "Become a Seller" click || \
+          agent-browser open https://www.fiverr.com/start_selling
+          agent-browser wait --load networkidle || true
+          agent-browser get title > fiverr-gate-evidence/after-cta-title.txt || true
+          agent-browser get url > fiverr-gate-evidence/after-cta-url.txt || true
+          agent-browser snapshot -i > fiverr-gate-evidence/after-cta-snapshot.txt || true
+          agent-browser screenshot --full fiverr-gate-evidence/after-cta.png || true
+
+          # Direct known seller onboarding entry, read-only probe only.
+          agent-browser open https://www.fiverr.com/start_selling
+          agent-browser wait --load networkidle || true
+          agent-browser get url > fiverr-gate-evidence/direct-start-selling-url.txt || true
+          agent-browser snapshot -i > fiverr-gate-evidence/direct-start-selling-snapshot.txt || true
+
+          printf '{"result":"FIVERR_PUBLIC_GATE_PROBE_COMPLETE","external_writes":0,"credentials_used":false}\n' > fiverr-gate-evidence/receipt.json
+          agent-browser close || true
+      - name: Upload Fiverr gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fiverr-seller-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: fiverr-gate-evidence/
+          if-no-files-found: error

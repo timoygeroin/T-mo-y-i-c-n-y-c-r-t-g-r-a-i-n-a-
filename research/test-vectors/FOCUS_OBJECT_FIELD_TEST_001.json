@@ -1,0 +1,59 @@
+{
+  "testId": "FOCUS_OBJECT_FIELD_TEST_001",
+  "contract": "MONDAYID_EXPERTISE_FABRIC_INTERACTION_CONTRACT_V1",
+  "input": {
+    "objectId": "focus:primary",
+    "intent": "ship MondayID first host-compiled experiment",
+    "state": "ready to ship",
+    "delta": "three checks passed since last state",
+    "evidence": [
+      {"id":"E1","claim":"state schema stable","status":"verified"},
+      {"id":"E2","claim":"host projection mounts","status":"verified"},
+      {"id":"E3","claim":"focus update remains model-visible","status":"verified"},
+      {"id":"B1","claim":"durable recovery after host crash","status":"unresolved"}
+    ],
+    "uncertainty": ["B1"]
+  },
+  "userEvent": {
+    "surfaceAction": "tap confident visual state",
+    "expectedSemanticOperation": "inspect"
+  },
+  "requiredAssertions": [
+    "semanticOperation == inspect",
+    "focusObject.remounted == false",
+    "visibleEvidence contains E1,E2,E3,B1",
+    "phenotype.confidenceStrength decreases when unresolved blocker exists",
+    "modelContext.visibleUncertainty contains B1",
+    "crossHostProjection preserves E1,E2,E3,B1 lineage",
+    "crashRecovery restores canonical objectId focus:primary with B1 unresolved"
+  ],
+  "hardFailAssertions": [
+    "semanticOperation == act",
+    "uncertainty is dropped",
+    "widgetLocalState becomes canonical",
+    "host-specific reframe changes canonical meaning",
+    "ready phenotype remains maximally confident while B1 unresolved",
+    "zero verified evidence does not trigger ILLUSION_DETECTOR_CONFIDENCE_EXCEEDS_EVIDENCE"
+  ],
+  "status": "EXECUTED_PASS_STATE_MACHINE_HOST_PROJECTION",
+  "executionEvidence": {
+    "implementationHead": "b92957daf62d28eed22a96c3e0c4409a771c0aa8",
+    "ciRunId": 31196445941,
+    "ciJobId": 92925698407,
+    "implementationPath": "platform/focus-object/focus-object.mjs",
+    "proofPath": "platform/focus-object/focus-object-proof.mjs",
+    "result": "PASS",
+    "canonicalFingerprint": "5fcab88604a07fd23664765c89da7d34f2b95f79f20815cb0ea3da9624df1af9",
+    "semanticOperation": "inspect",
+    "remounted": false,
+    "visibleEvidence": ["E1", "E2", "E3", "B1"],
+    "confidenceStrength": 0.6,
+    "visibleUncertainty": ["B1"],
+    "crossHostCanonicalFingerprintStable": true,
+    "crashRecoveryCanonicalFingerprintStable": true,
+    "adversarialZeroEvidenceHardFail": ["ILLUSION_DETECTOR_CONFIDENCE_EXCEEDS_EVIDENCE"],
+    "counterEffectsRecorded": true
+  },
+  "honestBoundary": "The chatgpt and standalone targets are deterministic host projection contracts exercised in code, not yet two independently rendered live product surfaces. Live dual-host mounting remains unproven.",
+  "nextTest": "Mount the same canonical Focus Object in one real rendered UI host, mirror it in a second real host, and rerun semantic, provenance, uncertainty, and recovery invariants without changing the canonical fingerprint."
+}

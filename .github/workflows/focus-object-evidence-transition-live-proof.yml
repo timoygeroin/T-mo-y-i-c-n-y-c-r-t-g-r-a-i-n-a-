@@ -1,0 +1,145 @@
+name: Focus Object Evidence Transition Live Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/focus-object/**"
+      - ".github/workflows/focus-object-evidence-transition-live-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-transition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run first human Focus Object canary\n        run: node focus-object/first-human-focus-object-proof.mjs\n\n      - name: Start primary durable Focus Object host
+        run: |
+          set -euo pipefail
+          export FOCUS_OBJECT_STATE_FILE=/tmp/mondayid-focus-object-transition.json
+          node focus-object/focus-object-live-host.mjs > /tmp/focus-object-transition-primary.log 2>&1 &
+          echo $! > /tmp/focus-object-transition-primary.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/health > /tmp/before-health.json; then break; fi
+            sleep 1
+          done
+          node - <<'NODE'
+          const fs=require('fs');
+          const health=JSON.parse(fs.readFileSync('/tmp/before-health.json','utf8'));
+          if(health.status!=='ok'||health.durable!==true) throw new Error('primary durable host not healthy');
+          if(health.releaseAllowed!==false) throw new Error('seed release gate unexpectedly open');
+          if(!Array.isArray(health.uncertainty)||!health.uncertainty.includes('B1')) throw new Error('seed blocker B1 missing');
+          fs.writeFileSync('/tmp/before-fingerprint',health.fingerprint);
+          NODE
+
+      - name: Resolve blocker through live interaction and advance canon
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST http://127.0.0.1:4173/interact \
+            -H 'content-type: application/json' \
+            --data '{"action":"challenge","evidenceResolution":{"evidenceId":"B1","verdict":"verified","rationale":"live host and secondary renderer were independently observed by prior machine proof","evidenceReferences":["FOCUS_OBJECT_LIVE_HOST_TEST_001","FOCUS_OBJECT_SECOND_HOST_TEST_001"],"delta":"live expert evidence resolution advanced canonical Focus Object state"}}' \
+            > /tmp/resolution.json
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync('/tmp/resolution.json','utf8'));
+          const before=fs.readFileSync('/tmp/before-fingerprint','utf8').trim();
+          if(result.semanticOperation!=='challenge') throw new Error('resolution did not travel through challenge');
+          if(result.canonicalMeaningPreserved!==true) throw new Error('focus identity not preserved');
+          if(result.canonicalStateAdvanced!==true) throw new Error('canonical state did not advance');
+          if(result.receipt?.previousFingerprint!==before) throw new Error('resolution previous fingerprint mismatch');
+          if(!result.receipt?.resultingFingerprint||result.receipt.resultingFingerprint===before) throw new Error('resolution fingerprint did not change');
+          if(result.receipt?.evidenceTransition?.evidenceId!=='B1'||result.receipt?.evidenceTransition?.to!=='verified') throw new Error('B1 transition missing');
+          if(!Array.isArray(result.receipt?.uncertainty)||result.receipt.uncertainty.length!==0) throw new Error('uncertainty not cleared');
+          if(result.receipt?.expertiseGateBefore?.allowed!==false||result.receipt?.expertiseGate?.allowed!==true) throw new Error('expertise release gate did not open');
+          const b1=result.canonicalFocusObject?.evidence?.find(x=>x.id==='B1');
+          if(!b1||b1.status!=='verified'||!Array.isArray(b1.resolution?.evidenceReferences)||b1.resolution.evidenceReferences.length<2) throw new Error('canonical B1 resolution provenance missing');
+          fs.writeFileSync('/tmp/resolved-fingerprint',result.receipt.resultingFingerprint);
+          console.log(JSON.stringify({testId:'FOCUS_OBJECT_LIVE_EVIDENCE_TRANSITION_001',result:'PASS',previousFingerprint:before,resultingFingerprint:result.receipt.resultingFingerprint,releaseOpened:true,uncertaintyCleared:true},null,2));
+          NODE
+
+          curl -fsS http://127.0.0.1:4173/health > /tmp/after-resolution-health.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const expected=fs.readFileSync('/tmp/resolved-fingerprint','utf8').trim();
+          const health=JSON.parse(fs.readFileSync('/tmp/after-resolution-health.json','utf8'));
+          if(health.fingerprint!==expected) throw new Error('live host did not adopt resolved canon');
+          if(health.releaseAllowed!==true) throw new Error('live host release gate still blocked');
+          if(!Array.isArray(health.uncertainty)||health.uncertainty.length!==0) throw new Error('live host uncertainty returned after resolution');
+          NODE
+
+      - name: Kill primary host and recover resolved canon
+        run: |
+          set -euo pipefail
+          kill "$(cat /tmp/focus-object-transition-primary.pid)"
+          for i in {1..20}; do
+            if ! kill -0 "$(cat /tmp/focus-object-transition-primary.pid)" 2>/dev/null; then break; fi
+            sleep 0.2
+          done
+          export FOCUS_OBJECT_STATE_FILE=/tmp/mondayid-focus-object-transition.json
+          node focus-object/focus-object-live-host.mjs >> /tmp/focus-object-transition-primary.log 2>&1 &
+          echo $! > /tmp/focus-object-transition-primary.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/health > /tmp/recovered-health.json; then break; fi
+            sleep 1
+          done
+          node - <<'NODE'
+          const fs=require('fs');
+          const expected=fs.readFileSync('/tmp/resolved-fingerprint','utf8').trim();
+          const health=JSON.parse(fs.readFileSync('/tmp/recovered-health.json','utf8'));
+          if(health.fingerprint!==expected) throw new Error('resolved fingerprint lost across process restart');
+          if(health.releaseAllowed!==true||health.uncertainty.length!==0) throw new Error('resolved release state lost across process restart');
+          console.log(JSON.stringify({testId:'FOCUS_OBJECT_RESOLVED_RESTART_001',result:'PASS',resolvedCanonRecovered:true,fingerprint:expected},null,2));
+          NODE
+
+          curl -fsS -X POST http://127.0.0.1:4173/interact \
+            -H 'content-type: application/json' \
+            --data '{"action":"act"}' > /tmp/post-restart-act.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync('/tmp/post-restart-act.json','utf8'));
+          if(result.semanticOperation!=='act'||result.receipt?.expertiseGate?.allowed!==true) throw new Error('act remained blocked after resolved restart');
+          NODE
+
+      - name: Load same resolved canon in independent secondary host
+        run: |
+          set -euo pipefail
+          export PORT=4174
+          export FOCUS_OBJECT_STATE_FILE=/tmp/mondayid-focus-object-transition.json
+          node focus-object/focus-object-secondary-host.mjs > /tmp/focus-object-transition-secondary.log 2>&1 &
+          echo $! > /tmp/focus-object-transition-secondary.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4174/health > /tmp/secondary-health.json; then break; fi
+            sleep 1
+          done
+          node - <<'NODE'
+          const fs=require('fs');
+          const expected=fs.readFileSync('/tmp/resolved-fingerprint','utf8').trim();
+          const health=JSON.parse(fs.readFileSync('/tmp/secondary-health.json','utf8'));
+          if(health.status!=='ok'||health.host!=='secondary'||health.durable!==true) throw new Error('secondary host not healthy/durable');
+          if(health.fingerprint!==expected) throw new Error('secondary host forked resolved canon');
+          if(!Array.isArray(health.uncertainty)||health.uncertainty.length!==0) throw new Error('secondary host resurrected resolved blocker');
+          NODE
+
+          curl -fsS -X POST http://127.0.0.1:4174/interact \
+            -H 'content-type: application/json' \
+            --data '{"action":"act"}' > /tmp/secondary-act.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const expected=fs.readFileSync('/tmp/resolved-fingerprint','utf8').trim();
+          const result=JSON.parse(fs.readFileSync('/tmp/secondary-act.json','utf8'));
+          if(result.semanticOperation!=='act'||result.receipt?.expertiseGate?.allowed!==true) throw new Error('secondary host cannot act on resolved canon');
+          if(result.receipt?.previousFingerprint!==expected||result.receipt?.resultingFingerprint!==expected) throw new Error('secondary act drifted resolved canonical fingerprint');
+          console.log(JSON.stringify({testId:'FOCUS_OBJECT_RESOLVED_SECOND_HOST_001',result:'PASS',sameCanonicalFingerprint:true,actAllowed:true,blockerResurrected:false},null,2));
+          NODE
