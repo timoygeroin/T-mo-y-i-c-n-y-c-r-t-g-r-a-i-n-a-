@@ -13,6 +13,9 @@
     "packages/continuity-kernel"
   ],
   "scripts": {
+    "proof:portable-runtime": "node runtime/portable-runtime-proof.mjs",
+    "proof:mondayid-agent": "node runtime/mondayid-agent-proof.mjs",
+    "proof:http-runtime": "node runtime/http-runtime-proof.mjs",
     "proof:one": "node one/mondayid-one-proof.mjs",
     "proof:work": "node work/mondayid-work-proof.mjs",
     "proof:focus-object": "node focus-object/focus-object-proof.mjs",

@@ -1,0 +1,80 @@
+name: MondayID Agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      signal:
+        description: "What MondayID should do"
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request == null && github.event.comment.user.login == github.repository_owner && startsWith(github.event.comment.body, '/monday '))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: mondayid-canonical-runtime
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mondayid-state
+          fetch-depth: 0
+        continue-on-error: true
+      - name: Recover runtime code when state branch is not initialized
+        run: |
+          git fetch origin "${GITHUB_SHA}"
+          git checkout "${GITHUB_SHA}" -- platform/runtime platform/package.json
+      - name: Extract signal
+        id: signal
+        env:
+          DISPATCH_SIGNAL: ${{ inputs.signal }}
+          COMMENT_SIGNAL: ${{ github.event.comment.body }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            printf '%s' "$DISPATCH_SIGNAL" > /tmp/mondayid-signal.txt
+          else
+            printf '%s' "${COMMENT_SIGNAL#/monday }" > /tmp/mondayid-signal.txt
+          fi
+      - name: Execute MondayID
+        id: monday
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MONDAYID_STATE_KEY: ${{ secrets.MONDAYID_STATE_KEY }}
+          MONDAYID_PRIMARY_BASE_URL: ${{ secrets.MONDAYID_PRIMARY_BASE_URL }}
+          MONDAYID_PRIMARY_API_KEY: ${{ secrets.MONDAYID_PRIMARY_API_KEY }}
+          MONDAYID_PRIMARY_MODEL: ${{ secrets.MONDAYID_PRIMARY_MODEL }}
+          MONDAYID_FALLBACK_BASE_URL: ${{ secrets.MONDAYID_FALLBACK_BASE_URL }}
+          MONDAYID_FALLBACK_API_KEY: ${{ secrets.MONDAYID_FALLBACK_API_KEY }}
+          MONDAYID_FALLBACK_MODEL: ${{ secrets.MONDAYID_FALLBACK_MODEL }}
+          MONDAYID_SIGNAL_FILE: /tmp/mondayid-signal.txt
+          MONDAYID_STATE_PATH: .mondayid-state.enc
+        run: node platform/runtime/actions-entrypoint.mjs
+      - name: Persist encrypted canonical state
+        run: |
+          git config user.name mondayid-runtime
+          git config user.email mondayid-runtime@users.noreply.github.com
+          git checkout -B mondayid-state
+          git add .mondayid-state.enc
+          git commit -m "Advance encrypted MondayID state" || true
+          git push origin mondayid-state
+      - name: Return result to the command issue
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v7
+        env:
+          MONDAYID_RECEIPT: ${{ steps.monday.outputs.receipt }}
+        with:
+          script: |
+            const receipt = JSON.parse(process.env.MONDAYID_RECEIPT)
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `${receipt.result}\n\n\`\`\`json\n${JSON.stringify({receiptId: receipt.receiptId, providerId: receipt.providerId, stateRevision: receipt.stateRevision, failedProviders: receipt.failedProviders}, null, 2)}\n\`\`\``
+            })
