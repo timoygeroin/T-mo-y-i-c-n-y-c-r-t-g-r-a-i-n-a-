@@ -51,18 +51,59 @@ struct MondayIDHostApp: App {
 
     var body: some Scene {
         WindowGroup {
-            VStack(spacing: 16) {
-                Image(systemName: "circle.hexagongrid.fill")
-                    .font(.system(size: 44))
-                Text("MondayID")
-                    .font(.title.bold())
-                Text("Apple adapter host is active")
-                    .foregroundStyle(.secondary)
-                Text("Open · Ask · Continue · Recall · Mode · Digest")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            .padding()
+            MondayIDRuntimeView()
         }
+    }
+}
+
+private struct MondayIDRuntimeView: View {
+    @State private var endpoint = ""
+    @State private var token = ""
+    @State private var signal = ""
+    @State private var result = "Connect the runtime, then speak or type one real task."
+    @State private var working = false
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("MondayID") {
+                    Label("Canonical runtime", systemImage: "circle.hexagongrid.fill")
+                    Text(result).textSelection(.enabled)
+                }
+                Section("Connect once") {
+                    TextField("https://runtime.example", text: $endpoint)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    SecureField("Control token", text: $token)
+                    Button("Save connection") { saveConnection() }
+                        .disabled(URL(string: endpoint) == nil || token.isEmpty)
+                }
+                Section("Live signal") {
+                    TextField("Monday, now do this…", text: $signal, axis: .vertical)
+                    Button(working ? "Working…" : "Send to MondayID") { Task { await submit() } }
+                        .disabled(working || signal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+            .navigationTitle("MondayID")
+        }
+    }
+
+    private func saveConnection() {
+        guard let url = URL(string: endpoint) else { return }
+        do {
+            try MondayIDRuntimeSettings.save(endpoint: url, controlToken: token)
+            token = ""
+            result = "Runtime connection saved securely on this iPhone."
+        } catch { result = "Connection could not be saved: \(error.localizedDescription)" }
+    }
+
+    @MainActor private func submit() async {
+        working = true
+        defer { working = false }
+        do {
+            let receipt = try await sendToMondayID(signal)
+            result = receipt.result ?? "State advanced to revision \(receipt.stateRevision)."
+            signal = ""
+        } catch { result = "Runtime unavailable: \(error.localizedDescription)" }
     }
 }

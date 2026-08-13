@@ -59,7 +59,12 @@ public struct AskMondayIntent: AppIntent {
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         await MondayIDCommandBus.shared.record(.ask(question))
-        return .result(dialog: "Question handed to MondayID")
+        do {
+            let receipt = try await sendToMondayID(question)
+            return .result(dialog: IntentDialog(stringLiteral: receipt.result ?? "MondayID continued at state \(receipt.stateRevision)"))
+        } catch MondayIDRuntimeError.notConfigured {
+            return .result(dialog: "Open MondayID once to connect its runtime")
+        }
     }
 }
 
@@ -72,7 +77,12 @@ public struct ContinueMondayIntent: AppIntent {
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         await MondayIDCommandBus.shared.record(.continueFlow)
-        return .result(dialog: "Continuing the active track")
+        do {
+            let receipt = try await sendToMondayID("Continue the current active objective from canonical state")
+            return .result(dialog: IntentDialog(stringLiteral: receipt.result ?? "Continued at state \(receipt.stateRevision)"))
+        } catch MondayIDRuntimeError.notConfigured {
+            return .result(dialog: "Open MondayID once to connect its runtime")
+        }
     }
 }
 
