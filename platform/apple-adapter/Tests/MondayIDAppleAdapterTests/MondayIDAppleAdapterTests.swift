@@ -17,6 +17,22 @@ private final class RuntimeURLProtocol: URLProtocol, @unchecked Sendable {
     override func stopLoading() {}
 }
 
+private func requestBody(_ request: URLRequest) throws -> Data {
+    if let body = request.httpBody { return body }
+    let stream = try #require(request.httpBodyStream)
+    stream.open()
+    defer { stream.close() }
+    var data = Data()
+    var buffer = [UInt8](repeating: 0, count: 4096)
+    while stream.hasBytesAvailable {
+        let count = stream.read(&buffer, maxLength: buffer.count)
+        if count < 0 { throw stream.streamError ?? URLError(.cannotDecodeRawData) }
+        if count == 0 { break }
+        data.append(buffer, count: count)
+    }
+    return data
+}
+
 @Test func commandBusPreservesOrderedCommands() async throws {
     let bus = MondayIDCommandBus()
     await bus.record(.open)
@@ -63,7 +79,7 @@ private final class RuntimeURLProtocol: URLProtocol, @unchecked Sendable {
     RuntimeURLProtocol.handler = { request in
         #expect(request.url?.path == "/v1/tasks")
         #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer control")
-        let body = try #require(request.httpBody)
+        let body = try requestBody(request)
         #expect(try JSONDecoder().decode([String: String].self, from: body)["signal"] == "continue")
         let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
         let receipt = MondayIDRuntimeReceipt(status: "verified", result: "continued", receiptId: "r-1", providerId: "openai-mondayid", stateRevision: 7)
