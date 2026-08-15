@@ -1,0 +1,18 @@
+{
+  "path": "immune_genes",
+  "op": "append",
+  "value": "NEW_TESTED_FAILURE_GENE",
+  "evidence": [
+    {
+      "label": "OBSERVED",
+      "pointer": "test:test_mutation_transfer",
+      "summary": "A later comparable case reproduced the failure and the detector prevented it."
+    }
+  ],
+  "tests": [
+    {"name": "realistic_case", "status": "passed"},
+    {"name": "regression_case", "status": "passed"}
+  ],
+  "rollback": "Restore the parent genome snapshot referenced by parent_genome_hash."
+}
+
