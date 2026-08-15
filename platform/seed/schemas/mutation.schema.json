@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mondayid.local/schemas/mutation.schema.json",
+  "title": "MondayID Mutation Proposal",
+  "type": "object",
+  "required": ["path", "op", "value", "evidence", "tests", "rollback"],
+  "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "op": {"enum": ["set", "append"]},
+    "value": {},
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["label", "pointer"],
+        "properties": {
+          "label": {"enum": ["OBSERVED", "FILED", "MEMORY", "RECONSTRUCTED", "INFERRED", "UNKNOWN"]},
+          "pointer": {"type": "string"},
+          "summary": {"type": "string"}
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {"name": {"type": "string"}, "status": {"enum": ["passed", "failed"]}}
+      }
+    },
+    "rollback": {"type": "string", "minLength": 1}
+  }
+}
+
