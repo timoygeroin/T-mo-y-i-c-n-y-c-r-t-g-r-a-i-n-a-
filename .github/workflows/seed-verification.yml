@@ -1,0 +1,36 @@
+name: MondayID Seed Verification
+
+on:
+  push:
+    paths:
+      - "platform/seed/**"
+      - ".github/workflows/seed-verification.yml"
+  pull_request:
+    paths:
+      - "platform/seed/**"
+      - ".github/workflows/seed-verification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-seed:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/seed
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile runtime
+        run: python -m compileall mondayid_seed tests
+      - name: Run organism tests
+        run: python -m unittest discover -s tests -v
+      - name: Bootstrap isolated canary
+        run: |
+          canary="$(mktemp -d)"
+          PYTHONPATH=. python -m mondayid_seed.cli --root "$canary" init
+          PYTHONPATH=. python -m mondayid_seed.cli --root "$canary" bootstrap --host chatgpt
+          PYTHONPATH=. python -m mondayid_seed.cli --root "$canary" self-test
