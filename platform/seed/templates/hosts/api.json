@@ -1,0 +1,15 @@
+{
+  "host": "api",
+  "model": "replaceable",
+  "account": "operator-owned",
+  "capabilities": {
+    "project_instructions": true,
+    "files": false,
+    "memory": false,
+    "skills": false,
+    "mcp": true,
+    "tools": true,
+    "local_storage": true
+  }
+}
+
