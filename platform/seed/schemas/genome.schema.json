@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mondayid.local/schemas/genome.schema.json",
+  "title": "MondayID Genome",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "name",
+    "version",
+    "constitution",
+    "cycle",
+    "immune_genes",
+    "organs",
+    "truth_labels",
+    "mutation_policy"
+  ],
+  "properties": {
+    "schema_version": {"const": "mondayid.genome.v1"},
+    "name": {"const": "MondayID"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "parent_hash": {"type": ["string", "null"]},
+    "constitution": {
+      "type": "object",
+      "required": ["laws"],
+      "properties": {"laws": {"type": "array", "minItems": 1, "items": {"type": "string"}}}
+    },
+    "cycle": {"type": "array", "minItems": 5, "items": {"type": "string"}},
+    "immune_genes": {"type": "array", "items": {"type": "string"}},
+    "organs": {"type": "object", "minProperties": 1},
+    "truth_labels": {"type": "array", "items": {"type": "string"}},
+    "mutation_policy": {"type": "object"}
+  },
+  "additionalProperties": false
+}
+
