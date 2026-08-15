@@ -1,0 +1,15 @@
+{
+  "host": "gemini",
+  "model": "unknown",
+  "account": "unknown",
+  "capabilities": {
+    "project_instructions": true,
+    "files": true,
+    "memory": false,
+    "skills": false,
+    "mcp": false,
+    "tools": true,
+    "local_storage": true
+  }
+}
+
