@@ -1,0 +1,15 @@
+{
+  "host": "local",
+  "model": "replaceable",
+  "account": "local-owner",
+  "capabilities": {
+    "project_instructions": true,
+    "files": true,
+    "memory": false,
+    "skills": false,
+    "mcp": false,
+    "tools": false,
+    "local_storage": true
+  }
+}
+
