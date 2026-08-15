@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mondayid.local/schemas/host.schema.json",
+  "title": "MondayID Host Descriptor",
+  "type": "object",
+  "required": ["host", "capabilities"],
+  "properties": {
+    "host": {"enum": ["chatgpt", "claude", "gemini", "api", "local"]},
+    "model": {"type": "string"},
+    "account": {"type": "string"},
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "project_instructions": {"type": "boolean"},
+        "files": {"type": "boolean"},
+        "memory": {"type": "boolean"},
+        "skills": {"type": "boolean"},
+        "mcp": {"type": "boolean"},
+        "tools": {"type": "boolean"},
+        "local_storage": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+
