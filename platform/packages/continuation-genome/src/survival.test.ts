@@ -1,4 +1,6 @@
-import { delegateOnlyLastMile, recoverAfterHostLoss, reproduceIntoHost } from "./survival";
+import assert from "node:assert/strict";
+import test from "node:test";
+import { delegateOnlyLastMile, recoverAfterHostLoss, reproduceIntoHost } from "./survival.js";
 
 const genome = {
   id: "mondayid-genome",
@@ -15,17 +17,17 @@ test("survives deletion of one chat host when independent replicas remain", () =
     { id: "drive", kind: "drive", available: true, writable: false, canonicalAuthority: false, genomeDigest: "G1", evidenceIds: ["e3"] },
   ], ["chatgpt"]);
 
-  expect(result.viable).toBe(true);
-  expect(result.degraded).toBe(true);
-  expect(result.reasons).toContain("HOST_LOSS_SURVIVED");
+  assert.equal(result.viable, true);
+  assert.equal(result.degraded, true);
+  assert.ok(result.reasons.includes("HOST_LOSS_SURVIVED"));
 });
 
 test("blocks false survival when only one substrate remains", () => {
   const result = recoverAfterHostLoss(genome, [
     { id: "github", kind: "github", available: true, writable: true, canonicalAuthority: true, genomeDigest: "G1", evidenceIds: ["e2"] },
   ]);
-  expect(result.viable).toBe(false);
-  expect(result.reasons.some((r) => r.startsWith("REPLICA_DIVERSITY_BELOW_MIN"))).toBe(true);
+  assert.equal(result.viable, false);
+  assert.ok(result.reasons.some((reason) => reason.startsWith("REPLICA_DIVERSITY_BELOW_MIN")));
 });
 
 test("reproduction requires provenance and host capability", () => {
@@ -36,15 +38,15 @@ test("reproduction requires provenance and host capability", () => {
     requiredInvariants: ["identity"],
     transferableEvidenceIds: [],
   }, ["read", "verify"]);
-  expect(blocked.status).toBe("BLOCKED");
+  assert.equal(blocked.status, "BLOCKED");
 });
 
 test("delegate publication only after artifact is ready", () => {
-  expect(delegateOnlyLastMile({
+  assert.deepEqual(delegateOnlyLastMile({
     taskId: "app-release",
     artifactReady: true,
     delegatedOperation: "build-package-test-metadata",
     humanOrExternalStep: "publish-signed-build",
     prerequisitesSatisfied: true,
-  })).toEqual(["DELEGATE_ONLY:publish-signed-build", "KEEP_INTERNAL:build-package-test-metadata"]);
+  }), ["DELEGATE_ONLY:publish-signed-build", "KEEP_INTERNAL:build-package-test-metadata"]);
 });
