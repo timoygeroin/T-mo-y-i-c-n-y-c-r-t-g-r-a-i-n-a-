@@ -84,6 +84,8 @@ export interface PromotionResult {
 }
 
 const uniq = <T>(values: T[]): T[] => [...new Set(values)];
+const isGroundedEvidenceClass = (value: EvidenceClass): boolean =>
+  value === "observed" || value === "filed" || value === "receipt";
 
 export function evaluateVisualContinuity(
   state: VisualContinuityState | undefined,
@@ -118,12 +120,14 @@ export function evaluateVisualContinuity(
 export function evaluateContinuityProof(
   proof: ContinuityProof | undefined,
   requiredInvariantIds: string[],
+  evidence: Evidence[] = [],
 ): string[] {
   if (requiredInvariantIds.length === 0) return [];
   if (!proof) return ["CONTINUITY_PROOF_REQUIRED"];
 
   const failures: string[] = [];
   const byId = new Map(proof.transfers.map((transfer) => [transfer.id, transfer]));
+  const evidenceById = new Map(evidence.map((item) => [item.id, item]));
 
   for (const invariantId of uniq(requiredInvariantIds)) {
     const transfer = byId.get(invariantId);
@@ -132,7 +136,23 @@ export function evaluateContinuityProof(
       continue;
     }
     if (!transfer.preserved) failures.push(`INVARIANT_BROKEN:${invariantId}`);
-    if (transfer.evidenceIds.length === 0) failures.push(`INVARIANT_EVIDENCE_MISSING:${invariantId}`);
+    if (transfer.evidenceIds.length === 0) {
+      failures.push(`INVARIANT_EVIDENCE_MISSING:${invariantId}`);
+      continue;
+    }
+
+    const hasGroundedSupportingEvidence = transfer.evidenceIds.some((evidenceId) => {
+      const item = evidenceById.get(evidenceId);
+      return Boolean(
+        item &&
+        isGroundedEvidenceClass(item.class) &&
+        item.supports.includes(invariantId),
+      );
+    });
+
+    if (!hasGroundedSupportingEvidence) {
+      failures.push(`INVARIANT_EVIDENCE_UNVERIFIED:${invariantId}`);
+    }
   }
 
   return failures;
@@ -141,8 +161,9 @@ export function evaluateContinuityProof(
 export function promoteCandidateState(
   proof: ContinuityProof,
   requiredInvariantIds: string[],
+  evidence: Evidence[] = [],
 ): PromotionResult {
-  const reasons = evaluateContinuityProof(proof, requiredInvariantIds);
+  const reasons = evaluateContinuityProof(proof, requiredInvariantIds, evidence);
   if (reasons.length > 0) {
     return {
       promoted: false,
@@ -166,7 +187,11 @@ export function compileRuntime(input: CompileInput): CompileResult {
   const missing: string[] = [];
   const reasons: string[] = [];
 
-  const continuityFailures = evaluateContinuityProof(input.continuityProof, input.invariants);
+  const continuityFailures = evaluateContinuityProof(
+    input.continuityProof,
+    input.invariants,
+    input.evidence,
+  );
   if (continuityFailures.length > 0) reasons.push(...continuityFailures);
 
   const visualRequested = required.some((capability) =>
@@ -208,9 +233,7 @@ export function compileRuntime(input: CompileInput): CompileResult {
     );
   }
 
-  const hasGrounding = input.evidence.some((item) =>
-    item.class === "observed" || item.class === "filed" || item.class === "receipt",
-  );
+  const hasGrounding = input.evidence.some((item) => isGroundedEvidenceClass(item.class));
 
   if (!hasGrounding) reasons.push("NO_GROUNDED_EVIDENCE");
 
@@ -218,7 +241,8 @@ export function compileRuntime(input: CompileInput): CompileResult {
     reason === "CONTINUITY_PROOF_REQUIRED" ||
     reason.startsWith("INVARIANT_TRANSFER_MISSING:") ||
     reason.startsWith("INVARIANT_BROKEN:") ||
-    reason.startsWith("INVARIANT_EVIDENCE_MISSING:"),
+    reason.startsWith("INVARIANT_EVIDENCE_MISSING:") ||
+    reason.startsWith("INVARIANT_EVIDENCE_UNVERIFIED:"),
   );
   const visualBlocked = reasons.some((reason) => reason.startsWith("VISUAL_"));
   const blocked = missing.length > 0 || continuityBlocked || visualBlocked;
@@ -249,7 +273,7 @@ export interface VerificationResult {
 export function verifyEffects(input: VerificationInput): VerificationResult {
   const grounded = new Set(
     input.evidence
-      .filter((item) => item.class !== "inferred" && item.class !== "unknown")
+      .filter((item) => isGroundedEvidenceClass(item.class))
       .flatMap((item) => item.supports),
   );
   const unsupportedEffects = input.claimedEffects.filter((effect) => !grounded.has(effect));
