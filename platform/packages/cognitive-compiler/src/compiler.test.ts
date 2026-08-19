@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { compileRuntime, proposeMutation, verifyEffects } from "./compiler.js";
+import { compileRuntime, evaluateVisualContinuity, proposeMutation, verifyEffects } from "./compiler.js";
 
 test("selects organs from capabilities instead of handing them the raw objective", () => {
   const result = compileRuntime({
@@ -13,6 +13,16 @@ test("selects organs from capabilities instead of handing them the raw objective
       { id: "image-renderer", capabilities: ["render-scene"], available: true },
     ],
     evidence: [{ id: "source-photo", class: "observed", supports: ["identity"] }],
+    visualState: {
+      sceneSourceIds: ["source-photo"],
+      activeIdentityReferenceId: "identity-seed-001",
+      identityLineageVerified: true,
+      recentWardrobeArchetypes: ["soft-skirt-train"],
+      candidateWardrobeArchetype: "utility-summer-01",
+      singleFrame: true,
+      generatorIsRendererOnly: true,
+      releaseAsMonday: true,
+    },
   });
 
   assert.equal(result.status, "READY");
@@ -20,6 +30,51 @@ test("selects organs from capabilities instead of handing them the raw objective
   assert.ok(result.dispatches.every((dispatch) => !dispatch.operation.includes("preserve identity while changing scene")));
   assert.equal(result.proofRequired, true);
   assert.equal(result.falsificationRequired, true);
+});
+
+test("blocks rendering until visual recovery state exists", () => {
+  const result = compileRuntime({
+    objective: "put Monday into the train scene",
+    requiredCapabilities: ["render-scene"],
+    invariants: ["continuity"],
+    stateFingerprint: "train-2026-08-19",
+    organs: [{ id: "image-renderer", capabilities: ["render-scene"], available: true }],
+    evidence: [{ id: "train-photo", class: "observed", supports: ["scene"] }],
+  });
+
+  assert.equal(result.status, "BLOCKED");
+  assert.ok(result.reasons.includes("VISUAL_RECOVERY_REQUIRED"));
+  assert.equal(result.dispatches.some((d) => d.capability === "render-scene"), false);
+});
+
+test("blocks repeated wardrobe archetype even when the colors change", () => {
+  const failures = evaluateVisualContinuity({
+    sceneSourceIds: ["train-photo"],
+    activeIdentityReferenceId: "monday-seed",
+    identityLineageVerified: true,
+    recentWardrobeArchetypes: ["fitted-top-plus-light-bottom", "shirt-over-fitted-top"],
+    candidateWardrobeArchetype: "fitted-top-plus-light-bottom",
+    singleFrame: true,
+    generatorIsRendererOnly: true,
+    releaseAsMonday: true,
+  });
+
+  assert.ok(failures.includes("VISUAL_WARDROBE_ARCHETYPE_REPEAT"));
+});
+
+test("refuses to release a generated blonde as Monday without identity lineage", () => {
+  const failures = evaluateVisualContinuity({
+    sceneSourceIds: ["train-photo"],
+    recentWardrobeArchetypes: ["utility-summer-01"],
+    candidateWardrobeArchetype: "asymmetric-street-01",
+    identityLineageVerified: false,
+    singleFrame: true,
+    generatorIsRendererOnly: true,
+    releaseAsMonday: true,
+  });
+
+  assert.ok(failures.includes("VISUAL_IDENTITY_REFERENCE_MISSING"));
+  assert.ok(failures.includes("VISUAL_IDENTITY_LINEAGE_UNVERIFIED"));
 });
 
 test("turns a missing organ into an explicit capability gap", () => {
