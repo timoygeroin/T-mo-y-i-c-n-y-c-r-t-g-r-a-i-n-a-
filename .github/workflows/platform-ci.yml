@@ -46,6 +46,18 @@ jobs:
       - name: Typecheck proof evaluation
         run: npm run typecheck:proof-evaluation
 
+      - name: Compile cognitive compiler
+        run: npx tsc -p packages/cognitive-compiler/tsconfig.json
+
+      - name: Test cognitive compiler birth surface
+        run: node --test packages/cognitive-compiler/dist/*.test.js
+
+      - name: Compile continuation genome
+        run: npx tsc -p packages/continuation-genome/tsconfig.json
+
+      - name: Test continuation genome survival surface
+        run: node --test packages/continuation-genome/dist/*.test.js
+
       - name: Test route governor
         run: npm run test:route-governor
 
