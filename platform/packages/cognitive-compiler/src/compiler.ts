@@ -235,7 +235,10 @@ export function promoteCandidateState(
   return {
     promoted: true,
     activeStateId: proof.candidateStateId,
-    reasons: ["CONTINUITY_PROVEN", "REQUIRED_SURFACES_CONVERGED"],
+    reasons:
+      (proof.requiredSurfaceIds ?? []).length > 0
+        ? ["CONTINUITY_PROVEN", "REQUIRED_SURFACES_CONVERGED"]
+        : ["CONTINUITY_PROVEN"],
   };
 }
 
