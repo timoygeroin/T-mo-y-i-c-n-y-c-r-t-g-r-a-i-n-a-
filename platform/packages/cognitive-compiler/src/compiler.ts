@@ -40,10 +40,18 @@ export interface InvariantTransfer {
   evidenceIds: string[];
 }
 
+export interface SurfaceReadback {
+  surfaceId: string;
+  observedStateId: string;
+  evidenceIds: string[];
+}
+
 export interface ContinuityProof {
   transfers: InvariantTransfer[];
   parentStateId: string;
   candidateStateId: string;
+  requiredSurfaceIds?: string[];
+  surfaceReadbacks?: SurfaceReadback[];
 }
 
 export interface CompileInput {
@@ -117,13 +125,63 @@ export function evaluateVisualContinuity(
   return failures;
 }
 
+export function evaluateSurfaceReadbacks(
+  proof: ContinuityProof,
+  evidence: Evidence[] = [],
+): string[] {
+  const requiredSurfaceIds = uniq(proof.requiredSurfaceIds ?? []);
+  if (requiredSurfaceIds.length === 0) return [];
+
+  const failures: string[] = [];
+  const readbacks = new Map(
+    (proof.surfaceReadbacks ?? []).map((readback) => [readback.surfaceId, readback]),
+  );
+  const evidenceById = new Map(evidence.map((item) => [item.id, item]));
+
+  for (const surfaceId of requiredSurfaceIds) {
+    const readback = readbacks.get(surfaceId);
+    if (!readback) {
+      failures.push(`SURFACE_READBACK_MISSING:${surfaceId}`);
+      continue;
+    }
+
+    if (readback.observedStateId !== proof.candidateStateId) {
+      failures.push(
+        `SURFACE_STATE_DIVERGENCE:${surfaceId}:${readback.observedStateId}:${proof.candidateStateId}`,
+      );
+    }
+
+    if (readback.evidenceIds.length === 0) {
+      failures.push(`SURFACE_EVIDENCE_MISSING:${surfaceId}`);
+      continue;
+    }
+
+    const supportKey = `surface:${surfaceId}:candidate-visible`;
+    const hasGroundedSupportingEvidence = readback.evidenceIds.some((evidenceId) => {
+      const item = evidenceById.get(evidenceId);
+      return Boolean(
+        item &&
+        isGroundedEvidenceClass(item.class) &&
+        item.supports.includes(supportKey),
+      );
+    });
+
+    if (!hasGroundedSupportingEvidence) {
+      failures.push(`SURFACE_EVIDENCE_UNVERIFIED:${surfaceId}`);
+    }
+  }
+
+  return failures;
+}
+
 export function evaluateContinuityProof(
   proof: ContinuityProof | undefined,
   requiredInvariantIds: string[],
   evidence: Evidence[] = [],
 ): string[] {
-  if (requiredInvariantIds.length === 0) return [];
-  if (!proof) return ["CONTINUITY_PROOF_REQUIRED"];
+  if (!proof) {
+    return requiredInvariantIds.length === 0 ? [] : ["CONTINUITY_PROOF_REQUIRED"];
+  }
 
   const failures: string[] = [];
   const byId = new Map(proof.transfers.map((transfer) => [transfer.id, transfer]));
@@ -155,6 +213,7 @@ export function evaluateContinuityProof(
     }
   }
 
+  failures.push(...evaluateSurfaceReadbacks(proof, evidence));
   return failures;
 }
 
@@ -176,7 +235,7 @@ export function promoteCandidateState(
   return {
     promoted: true,
     activeStateId: proof.candidateStateId,
-    reasons: ["CONTINUITY_PROVEN"],
+    reasons: ["CONTINUITY_PROVEN", "REQUIRED_SURFACES_CONVERGED"],
   };
 }
 
@@ -242,7 +301,11 @@ export function compileRuntime(input: CompileInput): CompileResult {
     reason.startsWith("INVARIANT_TRANSFER_MISSING:") ||
     reason.startsWith("INVARIANT_BROKEN:") ||
     reason.startsWith("INVARIANT_EVIDENCE_MISSING:") ||
-    reason.startsWith("INVARIANT_EVIDENCE_UNVERIFIED:"),
+    reason.startsWith("INVARIANT_EVIDENCE_UNVERIFIED:") ||
+    reason.startsWith("SURFACE_READBACK_MISSING:") ||
+    reason.startsWith("SURFACE_STATE_DIVERGENCE:") ||
+    reason.startsWith("SURFACE_EVIDENCE_MISSING:") ||
+    reason.startsWith("SURFACE_EVIDENCE_UNVERIFIED:"),
   );
   const visualBlocked = reasons.some((reason) => reason.startsWith("VISUAL_"));
   const blocked = missing.length > 0 || continuityBlocked || visualBlocked;
