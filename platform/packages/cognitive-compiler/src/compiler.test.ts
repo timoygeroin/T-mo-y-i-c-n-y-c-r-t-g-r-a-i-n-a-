@@ -22,6 +22,13 @@ const continuity = (ids: string[], parent = "state-t", candidate = "state-t1") =
   })),
 });
 
+const evidenceFor = (ids: string[]) =>
+  ids.map((id) => ({
+    id: `evidence:${id}`,
+    class: "observed" as const,
+    supports: [id],
+  }));
+
 test("selects organs from capabilities instead of handing them the raw objective", () => {
   const result = compileRuntime({
     objective: "preserve identity while changing scene",
@@ -32,7 +39,10 @@ test("selects organs from capabilities instead of handing them the raw objective
       { id: "vision", capabilities: ["inspect-visual-state"], available: true },
       { id: "image-renderer", capabilities: ["render-scene"], available: true },
     ],
-    evidence: [{ id: "source-photo", class: "observed", supports: ["identity"] }],
+    evidence: [
+      { id: "source-photo", class: "observed", supports: ["identity"] },
+      ...evidenceFor(["identity", "single-frame"]),
+    ],
     continuityProof: continuity(["identity", "single-frame"]),
     visualState: {
       sceneSourceIds: ["source-photo"],
@@ -60,7 +70,7 @@ test("blocks any operation with invariants until continuity proof exists", () =>
     invariants: ["active-objective", "lineage"],
     stateFingerprint: "chat-transition-001",
     organs: [{ id: "host", capabilities: ["respond"], available: true }],
-    evidence: [{ id: "current-message", class: "observed", supports: ["objective"] }],
+    evidence: [{ id: "current-message", class: "observed", supports: ["active-objective"] }],
   });
 
   assert.equal(result.status, "BLOCKED");
@@ -75,7 +85,10 @@ test("blocks rendering until visual recovery state exists", () => {
     invariants: ["continuity"],
     stateFingerprint: "train-2026-08-19",
     organs: [{ id: "image-renderer", capabilities: ["render-scene"], available: true }],
-    evidence: [{ id: "train-photo", class: "observed", supports: ["scene"] }],
+    evidence: [
+      { id: "train-photo", class: "observed", supports: ["scene"] },
+      ...evidenceFor(["continuity"]),
+    ],
     continuityProof: continuity(["continuity"]),
   });
 
@@ -127,7 +140,10 @@ test("one broken invariant blocks all downstream dispatch, not only its local or
       { id: "vision", capabilities: ["inspect-visual-state"], available: true },
       { id: "renderer", capabilities: ["render-scene"], available: true },
     ],
-    evidence: [{ id: "message", class: "observed", supports: ["objective"] }],
+    evidence: [
+      { id: "message", class: "observed", supports: ["objective"] },
+      ...evidenceFor(["identity", "objective"]),
+    ],
     continuityProof: proof,
     visualState: {
       sceneSourceIds: ["scene"],
@@ -146,11 +162,43 @@ test("one broken invariant blocks all downstream dispatch, not only its local or
   assert.deepEqual(result.dispatches, []);
 });
 
+test("forged evidence ids cannot self-certify continuity", () => {
+  const proof = continuity(["identity", "objective"]);
+
+  const result = compileRuntime({
+    objective: "continue across organs",
+    requiredCapabilities: ["respond"],
+    invariants: ["identity", "objective"],
+    stateFingerprint: "forged-proof-001",
+    organs: [{ id: "host", capabilities: ["respond"], available: true }],
+    evidence: [{ id: "unrelated-receipt", class: "receipt", supports: ["file-created"] }],
+    continuityProof: proof,
+  });
+
+  assert.equal(result.status, "BLOCKED");
+  assert.ok(result.reasons.includes("INVARIANT_EVIDENCE_UNVERIFIED:identity"));
+  assert.ok(result.reasons.includes("INVARIANT_EVIDENCE_UNVERIFIED:objective"));
+  assert.deepEqual(result.dispatches, []);
+});
+
+test("inferred evidence cannot promote an invariant transfer", () => {
+  const proof = continuity(["lineage"]);
+  const failures = evaluateContinuityProof(proof, ["lineage"], [
+    { id: "evidence:lineage", class: "inferred", supports: ["lineage"] },
+  ]);
+
+  assert.ok(failures.includes("INVARIANT_EVIDENCE_UNVERIFIED:lineage"));
+});
+
 test("failed candidate cannot become the ancestor of the next state", () => {
   const proof = continuity(["identity", "active-objective"], "verified-parent", "bad-candidate");
   proof.transfers[0].preserved = false;
 
-  const promotion = promoteCandidateState(proof, ["identity", "active-objective"]);
+  const promotion = promoteCandidateState(
+    proof,
+    ["identity", "active-objective"],
+    evidenceFor(["identity", "active-objective"]),
+  );
 
   assert.equal(promotion.promoted, false);
   assert.equal(promotion.activeStateId, "verified-parent");
@@ -162,6 +210,7 @@ test("candidate becomes the new ancestor only after all required invariants are 
   const promotion = promoteCandidateState(
     continuity(["identity", "active-objective"], "verified-parent", "good-candidate"),
     ["identity", "active-objective"],
+    evidenceFor(["identity", "active-objective"]),
   );
 
   assert.equal(promotion.promoted, true);
@@ -173,7 +222,7 @@ test("continuity proof requires evidence for every invariant transfer", () => {
   const proof = continuity(["identity"]);
   proof.transfers[0].evidenceIds = [];
 
-  const failures = evaluateContinuityProof(proof, ["identity"]);
+  const failures = evaluateContinuityProof(proof, ["identity"], evidenceFor(["identity"]));
   assert.ok(failures.includes("INVARIANT_EVIDENCE_MISSING:identity"));
 });
 
