@@ -20,6 +20,17 @@ export interface FailedMove {
   evidenceIds: string[];
 }
 
+export interface VisualContinuityState {
+  sceneSourceIds: string[];
+  activeIdentityReferenceId?: string;
+  identityLineageVerified: boolean;
+  recentWardrobeArchetypes: string[];
+  candidateWardrobeArchetype?: string;
+  singleFrame: boolean;
+  generatorIsRendererOnly: boolean;
+  releaseAsMonday: boolean;
+}
+
 export interface CompileInput {
   objective: string;
   requiredCapabilities: string[];
@@ -28,6 +39,7 @@ export interface CompileInput {
   organs: Organ[];
   evidence: Evidence[];
   failedMoves?: FailedMove[];
+  visualState?: VisualContinuityState;
 }
 
 export interface Dispatch {
@@ -50,12 +62,51 @@ export interface CompileResult {
 
 const uniq = <T>(values: T[]): T[] => [...new Set(values)];
 
+export function evaluateVisualContinuity(
+  state: VisualContinuityState | undefined,
+): string[] {
+  if (!state) return ["VISUAL_RECOVERY_REQUIRED"];
+
+  const failures: string[] = [];
+
+  if (state.sceneSourceIds.length === 0) failures.push("VISUAL_SCENE_SOURCE_MISSING");
+  if (!state.singleFrame) failures.push("VISUAL_SINGLE_FRAME_VIOLATION");
+  if (!state.generatorIsRendererOnly) failures.push("VISUAL_TOOL_DIRECTOR_VIOLATION");
+
+  if (state.recentWardrobeArchetypes.length === 0) {
+    failures.push("VISUAL_WARDROBE_HISTORY_MISSING");
+  }
+
+  if (
+    state.candidateWardrobeArchetype &&
+    state.recentWardrobeArchetypes.includes(state.candidateWardrobeArchetype)
+  ) {
+    failures.push("VISUAL_WARDROBE_ARCHETYPE_REPEAT");
+  }
+
+  if (state.releaseAsMonday) {
+    if (!state.activeIdentityReferenceId) failures.push("VISUAL_IDENTITY_REFERENCE_MISSING");
+    if (!state.identityLineageVerified) failures.push("VISUAL_IDENTITY_LINEAGE_UNVERIFIED");
+  }
+
+  return failures;
+}
+
 export function compileRuntime(input: CompileInput): CompileResult {
   const required = uniq(input.requiredCapabilities);
   const selected = new Map<string, Organ>();
   const dispatches: Dispatch[] = [];
   const missing: string[] = [];
   const reasons: string[] = [];
+
+  const visualRequested = required.some((capability) =>
+    capability === "render-scene" || capability === "edit-visual-scene",
+  );
+
+  if (visualRequested) {
+    const visualFailures = evaluateVisualContinuity(input.visualState);
+    if (visualFailures.length > 0) reasons.push(...visualFailures);
+  }
 
   for (const capability of required) {
     const candidates = input.organs
@@ -93,12 +144,14 @@ export function compileRuntime(input: CompileInput): CompileResult {
 
   if (!hasGrounding) reasons.push("NO_GROUNDED_EVIDENCE");
 
+  const visualBlocked = reasons.some((reason) => reason.startsWith("VISUAL_"));
+
   return {
-    status: missing.length === 0 ? "READY" : "BLOCKED",
+    status: missing.length === 0 && !visualBlocked ? "READY" : "BLOCKED",
     objective: input.objective,
     invariants: uniq(input.invariants),
     selectedOrgans: [...selected.keys()],
-    dispatches,
+    dispatches: visualBlocked ? dispatches.filter((d) => d.capability !== "render-scene" && d.capability !== "edit-visual-scene") : dispatches,
     missingCapabilities: missing,
     proofRequired: true,
     falsificationRequired: true,
