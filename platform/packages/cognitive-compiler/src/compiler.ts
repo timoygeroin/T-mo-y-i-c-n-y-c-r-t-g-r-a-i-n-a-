@@ -31,6 +31,21 @@ export interface VisualContinuityState {
   releaseAsMonday: boolean;
 }
 
+export interface InvariantTransfer {
+  id: string;
+  before: string;
+  after: string;
+  allowedChange: "none" | "bounded" | "free";
+  preserved: boolean;
+  evidenceIds: string[];
+}
+
+export interface ContinuityProof {
+  transfers: InvariantTransfer[];
+  parentStateId: string;
+  candidateStateId: string;
+}
+
 export interface CompileInput {
   objective: string;
   requiredCapabilities: string[];
@@ -40,6 +55,7 @@ export interface CompileInput {
   evidence: Evidence[];
   failedMoves?: FailedMove[];
   visualState?: VisualContinuityState;
+  continuityProof?: ContinuityProof;
 }
 
 export interface Dispatch {
@@ -57,6 +73,13 @@ export interface CompileResult {
   missingCapabilities: string[];
   proofRequired: boolean;
   falsificationRequired: boolean;
+  reasons: string[];
+}
+
+export interface PromotionResult {
+  promoted: boolean;
+  activeStateId: string;
+  rejectedCandidateStateId?: string;
   reasons: string[];
 }
 
@@ -92,12 +115,59 @@ export function evaluateVisualContinuity(
   return failures;
 }
 
+export function evaluateContinuityProof(
+  proof: ContinuityProof | undefined,
+  requiredInvariantIds: string[],
+): string[] {
+  if (requiredInvariantIds.length === 0) return [];
+  if (!proof) return ["CONTINUITY_PROOF_REQUIRED"];
+
+  const failures: string[] = [];
+  const byId = new Map(proof.transfers.map((transfer) => [transfer.id, transfer]));
+
+  for (const invariantId of uniq(requiredInvariantIds)) {
+    const transfer = byId.get(invariantId);
+    if (!transfer) {
+      failures.push(`INVARIANT_TRANSFER_MISSING:${invariantId}`);
+      continue;
+    }
+    if (!transfer.preserved) failures.push(`INVARIANT_BROKEN:${invariantId}`);
+    if (transfer.evidenceIds.length === 0) failures.push(`INVARIANT_EVIDENCE_MISSING:${invariantId}`);
+  }
+
+  return failures;
+}
+
+export function promoteCandidateState(
+  proof: ContinuityProof,
+  requiredInvariantIds: string[],
+): PromotionResult {
+  const reasons = evaluateContinuityProof(proof, requiredInvariantIds);
+  if (reasons.length > 0) {
+    return {
+      promoted: false,
+      activeStateId: proof.parentStateId,
+      rejectedCandidateStateId: proof.candidateStateId,
+      reasons: ["FAILED_STATE_DOES_NOT_BECOME_ANCESTOR", ...reasons],
+    };
+  }
+
+  return {
+    promoted: true,
+    activeStateId: proof.candidateStateId,
+    reasons: ["CONTINUITY_PROVEN"],
+  };
+}
+
 export function compileRuntime(input: CompileInput): CompileResult {
   const required = uniq(input.requiredCapabilities);
   const selected = new Map<string, Organ>();
   const dispatches: Dispatch[] = [];
   const missing: string[] = [];
   const reasons: string[] = [];
+
+  const continuityFailures = evaluateContinuityProof(input.continuityProof, input.invariants);
+  if (continuityFailures.length > 0) reasons.push(...continuityFailures);
 
   const visualRequested = required.some((capability) =>
     capability === "render-scene" || capability === "edit-visual-scene",
@@ -144,14 +214,21 @@ export function compileRuntime(input: CompileInput): CompileResult {
 
   if (!hasGrounding) reasons.push("NO_GROUNDED_EVIDENCE");
 
+  const continuityBlocked = reasons.some((reason) =>
+    reason === "CONTINUITY_PROOF_REQUIRED" ||
+    reason.startsWith("INVARIANT_TRANSFER_MISSING:") ||
+    reason.startsWith("INVARIANT_BROKEN:") ||
+    reason.startsWith("INVARIANT_EVIDENCE_MISSING:"),
+  );
   const visualBlocked = reasons.some((reason) => reason.startsWith("VISUAL_"));
+  const blocked = missing.length > 0 || continuityBlocked || visualBlocked;
 
   return {
-    status: missing.length === 0 && !visualBlocked ? "READY" : "BLOCKED",
+    status: blocked ? "BLOCKED" : "READY",
     objective: input.objective,
     invariants: uniq(input.invariants),
     selectedOrgans: [...selected.keys()],
-    dispatches: visualBlocked ? dispatches.filter((d) => d.capability !== "render-scene" && d.capability !== "edit-visual-scene") : dispatches,
+    dispatches: blocked ? [] : dispatches,
     missingCapabilities: missing,
     proofRequired: true,
     falsificationRequired: true,
