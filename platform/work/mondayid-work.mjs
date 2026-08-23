@@ -5,6 +5,7 @@ import {
   planIntent,
   summarizePlan,
 } from "../one/mondayid-one.mjs";
+import { collapsePhenotype } from "./origin-convergence.mjs";
 
 function hash(value) {
   return createHash("sha256")
@@ -20,6 +21,12 @@ function freeze(value) {
 function requiredFunction(object, name) {
   if (!object || typeof object[name] !== "function") {
     throw new TypeError(`MondayID Work requires ${name}()`);
+  }
+}
+
+function optionalFunction(object, name, label) {
+  if (object != null && typeof object[name] !== "function") {
+    throw new TypeError(`${label} requires ${name}()`);
   }
 }
 
@@ -71,10 +78,14 @@ export function createMondayIDWork({
   workers = [],
   stateStore = createMemoryStateStore(),
   policy = {},
+  originResolver = null,
+  authorityGate = null,
 }) {
   requiredFunction(mind, "interpret");
   requiredFunction(mind, "synthesize");
   requiredFunction(mind, "verify");
+  optionalFunction(originResolver, "resolve", "MondayID originResolver");
+  optionalFunction(authorityGate, "decide", "MondayID authorityGate");
 
   const registry = createCapabilityRegistry(capabilities);
   const normalizedWorkers = normalizeWorkers(workers);
@@ -90,7 +101,42 @@ export function createMondayIDWork({
     const state = await stateStore.read();
     const trace = [];
 
-    const interpreted = await mind.interpret({ task, state, passIndex });
+    const origin = originResolver
+      ? await originResolver.resolve({ task, state, passIndex })
+      : null;
+    if (origin) trace.push(freeze({ phase: "origin", output: origin }));
+
+    const authority = authorityGate
+      ? await authorityGate.decide({ task, state, origin, passIndex })
+      : null;
+    if (authority) trace.push(freeze({ phase: "authority", output: authority }));
+
+    if (authority && authority.decision !== "APPROVE") {
+      const phenotype = collapsePhenotype({
+        task,
+        origin,
+        authority,
+        intent: null,
+        synthesis: { move: "preserve unresolved Dima authority gate" },
+      });
+      return freeze({
+        workId: `work:${hash({ task, state: state.revision, passIndex, authority: authority.decision })}`,
+        status: "authority_hold",
+        passIndex,
+        stateRevision: state.revision,
+        task,
+        origin,
+        authority,
+        phenotype,
+        plan: null,
+        verification: null,
+        receipt: null,
+        trace,
+        durationMs: Date.now() - startedAt,
+      });
+    }
+
+    const interpreted = await mind.interpret({ task, state, passIndex, origin, authority });
     if (!interpreted?.goal || !Array.isArray(interpreted.needs) || interpreted.needs.length === 0) {
       throw new TypeError("mind.interpret() must return { goal, needs[] }");
     }
@@ -104,6 +150,8 @@ export function createMondayIDWork({
           state,
           intent: interpreted,
           passIndex,
+          origin,
+          authority,
         });
         return freeze({
           workerId: worker.id,
@@ -125,9 +173,19 @@ export function createMondayIDWork({
       intent: interpreted,
       swarm,
       passIndex,
+      origin,
+      authority,
     });
     const finalIntent = synthesis?.intent ?? interpreted;
     trace.push(freeze({ phase: "synthesize", output: synthesis }));
+
+    const phenotypeBeforeExecution = collapsePhenotype({
+      task,
+      origin,
+      authority,
+      intent: finalIntent,
+      synthesis,
+    });
 
     const plan = planIntent({
       intent: finalIntent,
@@ -143,6 +201,9 @@ export function createMondayIDWork({
         passIndex,
         stateRevision: state.revision,
         task,
+        origin,
+        authority,
+        phenotype: phenotypeBeforeExecution,
         plan: summarizePlan(plan),
         verification: null,
         receipt: null,
@@ -158,6 +219,8 @@ export function createMondayIDWork({
       intent: finalIntent,
       swarm,
       synthesis,
+      origin,
+      authority,
     });
     trace.push(freeze({ phase: "execute", output: execution }));
 
@@ -170,8 +233,19 @@ export function createMondayIDWork({
       plan,
       execution,
       passIndex,
+      origin,
+      authority,
     });
     trace.push(freeze({ phase: "verify", output: verification }));
+
+    const phenotype = collapsePhenotype({
+      task,
+      origin,
+      authority,
+      intent: finalIntent,
+      synthesis,
+      verification,
+    });
 
     if (!verification?.accepted) {
       return freeze({
@@ -180,6 +254,9 @@ export function createMondayIDWork({
         passIndex,
         stateRevision: state.revision,
         task,
+        origin,
+        authority,
+        phenotype,
         plan: summarizePlan(plan),
         execution,
         verification,
@@ -192,12 +269,16 @@ export function createMondayIDWork({
     const checkpoint = freeze({
       ...state,
       activeTask: task,
+      activeTarget: origin?.activeTarget ?? state.activeTarget ?? finalIntent.goal,
       lastGoal: finalIntent.goal,
       lastPlanId: plan.planId,
       lastToolId: execution.toolId,
       lastResult: execution.result,
       lastEvidence: verification.evidence ?? [],
       lastPassIndex: passIndex,
+      lastOrigin: origin?.origin ?? null,
+      lastAuthority: authority?.decision ?? null,
+      lastPhenotype: phenotype,
       continuation: verification.continuation ?? null,
     });
 
@@ -211,6 +292,8 @@ export function createMondayIDWork({
         toolId: execution.toolId,
         state: commit.state?.revision ?? state.revision,
         evidence: verification.evidence ?? [],
+        origin: origin?.origin ?? null,
+        authority: authority?.decision ?? null,
       })}`,
       status,
       priorRevision: state.revision,
@@ -219,6 +302,8 @@ export function createMondayIDWork({
       toolId: execution.toolId,
       platforms: execution.platforms,
       evidence: verification.evidence ?? [],
+      origin: origin?.origin ?? null,
+      authority: authority?.decision ?? null,
     });
 
     return freeze({
@@ -227,6 +312,9 @@ export function createMondayIDWork({
       passIndex,
       stateRevision: state.revision,
       task,
+      origin,
+      authority,
+      phenotype,
       plan: summarizePlan(plan),
       execution,
       verification,
@@ -267,6 +355,8 @@ export function createMondayIDWork({
         state,
         result,
         passIndex,
+        origin: result.origin,
+        authority: result.authority,
       });
 
       if (!next?.continue) {
@@ -287,14 +377,16 @@ export function createMondayIDWork({
   }
 
   return freeze({
-    mode: "MONDAYID_WORK_V1",
-    law: "state -> swarm -> synthesis -> execute -> proof -> checkpoint -> continuation",
+    mode: originResolver || authorityGate ? "MONDAYID_WORK_ORIGIN_CONVERGED_V1" : "MONDAYID_WORK_V1",
+    law: "origin -> Dima authority -> internal organs -> synthesis -> capability route -> execute -> proof -> checkpoint -> continuation",
     architecture: freeze({
-      decisionAuthority: "MondayID mind",
+      decisionAuthority: authorityGate ? "Dima authority -> MondayID mind" : "MondayID mind",
+      originAuthority: originResolver?.id ?? null,
+      authorityGate: authorityGate?.id ?? null,
       workers: normalizedWorkers.map((worker) => ({ id: worker.id, lane: worker.lane })),
       capabilityCount: registry.size,
       stateAuthority: "external checkpoint store",
-      delegationLaw: "workers advise; MondayID synthesizes; connectors execute",
+      delegationLaw: "organs advise one shared state; MondayID synthesizes one phenotype; connectors execute",
     }),
     runPass,
     runUntilBlocker,
