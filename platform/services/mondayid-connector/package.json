@@ -1,13 +1,13 @@
 {
   "name": "@mondayid/connector",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "MondayID cognitive middleware as a ChatGPT-compatible MCP connector.",
+  "description": "MondayID cognitive middleware with a DIMA Twin authority organ and ChatGPT-compatible MCP connector.",
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test test/kernel.test.js",
-    "check": "node --check src/kernel.js && node --check src/mcp.js && node --check src/server.js && node --check api/mcp.js && node --check api/health.js"
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/dima-twin.js && node --check src/kernel.js && node --check src/mcp.js && node --check src/server.js && node --check api/mcp.js && node --check api/health.js"
   },
   "engines": { "node": ">=22" },
   "dependencies": {
