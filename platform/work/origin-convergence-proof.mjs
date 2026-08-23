@@ -9,6 +9,11 @@ import {
   createOriginResolver,
   createUnifiedOrganWorkers,
 } from "./origin-convergence.mjs";
+import {
+  MCP_RECEPTOR_CONTRACT_V1,
+  compileMcpEgress,
+  compileMcpIngress,
+} from "./mcp-receptor-contract.mjs";
 
 const originResolver = createOriginResolver({
   ancestry: [
@@ -163,6 +168,38 @@ assert.equal(finalState.lastOrigin, "MONDAYID_UNIFIED_RUNTIME");
 assert.equal(finalState.lastAuthority, "APPROVE");
 assert.equal(finalState.lastPhenotype.phenotype, "MONDAY");
 
+assert.equal(MCP_RECEPTOR_CONTRACT_V1.root, "MONDAYID_UNIFIED_RUNTIME");
+assert.ok(MCP_RECEPTOR_CONTRACT_V1.laws.includes("CONNECTOR_IS_NOT_THE_COGNITIVE_ROOT"));
+assert.ok(MCP_RECEPTOR_CONTRACT_V1.laws.includes("INTERNAL_ORGANS_ARE_NOT_DEFAULT_USER_SURFACE"));
+
+const ingress = compileMcpIngress({
+  signal: "Dima signal",
+  objective: "Converge MondayID around the original invariant",
+  dimaEvidence: [{ id: "archive-origin", tier: "dima_authored_archive", stance: "prefer", statement: "one subject; one phenotype" }],
+  hostCapabilities: ["mcp", "github", "files"],
+  constraints: ["host-bound", "proof-required"],
+});
+assert.equal(ingress.receptor, "MCP");
+assert.equal(ingress.root, "MONDAYID_UNIFIED_RUNTIME");
+assert.equal(ingress.task, "Converge MondayID around the original invariant");
+
+const egress = compileMcpEgress(run.final);
+assert.equal(egress.status, "PROVEN");
+assert.equal(egress.root, "MONDAYID_UNIFIED_RUNTIME");
+assert.equal(egress.phenotype.phenotype, "MONDAY");
+assert.equal(egress.proof.promotable, true);
+assert.equal(Object.hasOwn(egress, "diagnostics"), false);
+
+const diagnosticEgress = compileMcpEgress(run.final, { includeDiagnostics: true });
+assert.ok(Array.isArray(diagnosticEgress.diagnostics.trace));
+assert.equal(diagnosticEgress.diagnostics.authority.decision, "APPROVE");
+assert.equal(diagnosticEgress.diagnostics.origin.externalPhenotype, "MONDAY");
+
+const heldEgress = compileMcpEgress(held);
+assert.equal(heldEgress.status, "HOLD");
+assert.equal(heldEgress.proof.promotable, false);
+assert.equal(Object.hasOwn(heldEgress, "diagnostics"), false);
+
 console.log(JSON.stringify({
   result: "MONDAYID_ORIGIN_CONVERGENCE_PROOF_PASS",
   dimaDecision: delegatedVerdict.decision,
@@ -170,6 +207,13 @@ console.log(JSON.stringify({
   workMode: work.mode,
   internalOrgans: work.architecture.workers.map((worker) => worker.id),
   externalPhenotype: run.final.phenotype.phenotype,
+  mcpContract: {
+    role: MCP_RECEPTOR_CONTRACT_V1.role,
+    root: ingress.root,
+    defaultEgress: Object.keys(egress),
+    diagnosticsOptIn: Object.hasOwn(diagnosticEgress, "diagnostics"),
+    heldStatus: heldEgress.status,
+  },
   receipt: run.final.receipt,
   stateRevision: finalState.revision,
 }, null, 2));
