@@ -6,6 +6,7 @@ on:
       - main
       - monday-platform-genesis-01
       - agent/mondayid-one-v1
+      - agent/mondayid-origin-convergence-v1
     paths:
       - "platform/**"
       - ".github/workflows/platform-ci.yml"
@@ -50,6 +51,7 @@ jobs:
           npm run proof:proof-evaluation
           npm run proof:one
           npm run proof:work
+          npm run proof:origin-convergence
           npm run proof:focus-object
           npm run proof:focus-object-surface
           npm run proof:focus-object-expertise-release
