@@ -23,6 +23,32 @@ const councilInputSchema = {
   constraints: z.array(z.string()).default([]),
   userAuthorizedIrreversible: z.boolean().default(false),
 };
+const voiceSchema = z.object({
+  id: z.string(),
+  mandate: z.string(),
+  score: z.number(),
+  intervention: z.string(),
+  concerns: z.array(z.string()),
+  requirements: z.array(z.string()),
+  decision: z.string().optional(),
+  steps: z.array(z.string()).optional(),
+  rollback: z.string().optional(),
+  status: z.string().optional(),
+});
+const councilOutputSchema = {
+  version: z.string(),
+  phase: z.enum(['preflight', 'postflight']),
+  objective: z.string(),
+  voices: z.array(voiceSchema),
+  decision: z.enum(['HOLD', 'ACT', 'VERIFY_REQUIRED', 'PROVEN']),
+  executableSteps: z.array(z.string()),
+  rollback: z.string(),
+  proof: z.object({
+    receiptPresent: z.boolean(),
+    readbackPresent: z.boolean(),
+    promotable: z.boolean(),
+  }),
+};
 const textResult = (payload, summary) => ({ structuredContent: payload, content: [{ type: 'text', text: summary }] });
 
 export function createMondayMcpServer() {
@@ -46,6 +72,7 @@ export function createMondayMcpServer() {
     title: 'Manifest MondayID council',
     description: 'Use this before a non-trivial action to let each inherited MondayID lineage independently inspect the objective, candidate route, constraints, and evidence before the host acts.',
     inputSchema: councilInputSchema,
+    outputSchema: councilOutputSchema,
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   }, async (args) => {
     const payload = manifestCouncil(args);
@@ -56,6 +83,7 @@ export function createMondayMcpServer() {
     title: 'Verify MondayID outcome',
     description: 'Use this after external execution. Supply the actual execution receipt and independent readback so AntiSystem can falsify false completion and Monday can decide whether the result is promotable.',
     inputSchema: { ...councilInputSchema, phase: z.literal('postflight').default('postflight') },
+    outputSchema: councilOutputSchema,
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   }, async (args) => {
     const payload = verifyOutcome(args);
