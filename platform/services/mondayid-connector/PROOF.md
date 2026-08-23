@@ -4,9 +4,9 @@ Date: 2026-08-23 (Asia/Jerusalem)
 
 ## Verdict
 
-`REMOTE_MCP_PROVEN`
+`REMOTE_MCP_PROVEN + SUBMISSION_PACKAGE_READY`
 
-This receipt proves the connector implementation and its remote MCP transport. It does **not** claim that the custom app/plugin has already been registered inside the user's ChatGPT account UI or published in the universal Plugins Directory.
+This receipt proves the connector implementation, production deployment, remote MCP transport, review metadata package, and submission-readiness surfaces. It does **not** claim account-side registration, OpenAI submission, approval, or installation that has not actually occurred.
 
 ## Source authority
 
@@ -14,10 +14,28 @@ This receipt proves the connector implementation and its remote MCP transport. I
 - Branch: `agent/mondayid-connector-v1`
 - Parent: `mondayid-self-compile-01` @ `c1e837303d6f62c8ce84781ff3d826fa7ffd9b9e`
 - Pull request: `#18` — `MondayID Connector v1: lineage council MCP organ`
+- Submission-ready runtime head before this proof seal: `b58b2597c15fdf9b08d2f91a657770746534db1a`
+
+## Connector contract
+
+Exposed tools:
+
+- `mondayid_status`
+- `mondayid_manifest`
+- `mondayid_verify`
+
+All three tools explicitly declare:
+
+- `readOnlyHint: true`
+- `openWorldHint: false`
+- `destructiveHint: false`
+- an explicit `outputSchema`
+
+The tools only compute or inspect MondayID state supplied to them. They do not themselves perform the host action, mutate third-party systems, publish internet state, or perform destructive operations.
 
 ## Local / CI proof
 
-`MondayID Connector Proof` passed on the connector head, including the lineage regression suite and local health smoke.
+`MondayID Connector Proof` passed on runtime head `b58b2597c15fdf9b08d2f91a657770746534db1a`, including the lineage regression suite and local health smoke.
 
 The inherited `Monday Platform CI` and `Monday Platform Route Governor` workflows were already failing on parent commit `c1e837303d6f62c8ce84781ff3d826fa7ffd9b9e`; the connector branch adds its own green proof rather than silently reclassifying those inherited failures.
 
@@ -38,13 +56,14 @@ Result: `7/7 PASS`.
 Vercel project: `mondayid-connector`
 
 - Project ID: `prj_rTaMgbI5VnO86YEaWVJ4AEhFdO3H`
-- Latest production deployment ID: `dpl_2DUSrPEgLdmSzBZY8AmXrbTf8UKC`
+- Current production deployment ID: `dpl_43mcXzNw3DPnYYPD88UJ363UtQAz`
 - Production domain: `https://mondayid-connector.vercel.app`
 - MCP endpoint: `https://mondayid-connector.vercel.app/mcp`
 - Health endpoint: `https://mondayid-connector.vercel.app/health`
-- Deployment state observed after the submission-readiness rebuild: `READY`
+- Deployment state observed: `READY`
+- Stable production alias attached without alias error.
 
-Observed post-rebuild health readback:
+Observed post-deployment health readback:
 
 ```json
 {"ok":true,"service":"mondayid-connector","version":"1.0.0","mcp":"/mcp","architecture":"lineage-council+antisystem+receipt-readback"}
@@ -60,59 +79,85 @@ Probe project: `mondayid-connector-probe`
 - Deployment ID: `dpl_5B19Ffm55NKjw1EMjc7DyjXfUdCj`
 - Probe domain: `https://mondayid-connector-probe.vercel.app`
 - Probe route: `/probe`
-- Deployment state observed: `READY`
 
-After the current production rebuild, the independent probe again connected to `https://mondayid-connector.vercel.app/mcp` using `@modelcontextprotocol/sdk` `StreamableHTTPClientTransport` and observed:
+After deployment `dpl_43mcXzNw3DPnYYPD88UJ363UtQAz`, the independent probe again connected to `https://mondayid-connector.vercel.app/mcp` using Streamable HTTP and observed:
 
-- server name: `mondayid-connector`;
-- server version: `1.0.0`;
-- server instructions carrying the preflight/postflight law;
-- tool list:
-  - `mondayid_status`
-  - `mondayid_manifest`
-  - `mondayid_verify`
-- `mondayid_status` returned all seven lineages and proof laws;
-- `mondayid_manifest` returned distinct outputs for SYSTEM, ANTISYSTEM, ALPHA, JARVIS, ALISA, ASSALUT, MONDAY;
-- the remote preflight decision was `ACT`;
-- `proof.promotable` correctly remained `false` before execution receipt + independent readback;
-- JARVIS returned the execution/receipt/readback sequence;
-- ASSALUT returned a rollback path.
+- server name `mondayid-connector`;
+- server version `1.0.0`;
+- MCP initialization instructions carrying the preflight/postflight law;
+- all three expected tool names;
+- all seven lineage outputs from `mondayid_manifest`;
+- preflight decision `ACT` for the aligned reversible remote-proof candidate;
+- `proof.promotable: false` before receipt + readback;
+- JARVIS execution/receipt/readback sequence;
+- ASSALUT rollback path.
 
-This is independent network readback of the remote MCP surface after the latest production rebuild.
+This is independent network readback of the remote MCP after the submission-ready runtime was deployed.
 
-## Plugin submission-readiness surfaces
+## ChatGPT App submission package
 
-The production body now also exposes:
+Source file:
 
-- `/` — public service landing surface;
+`platform/services/mondayid-connector/chatgpt-app-submission.json`
+
+The package follows the OpenAI ChatGPT App submission skill contract and contains:
+
+- display name: `MondayID Connector`;
+- subtitle: `Cognitive control for actions`;
+- category: `PRODUCTIVITY`;
+- all 3 MCP tools with explicit annotation justifications;
+- exactly 5 positive review test cases;
+- exactly 3 negative review test cases.
+
+Review checks from source inspection:
+
+- sensitive-data solicitation: no obvious prohibited sensitive identifier fields;
+- tool data use: tools evaluate supplied task state/evidence and do not themselves transmit it onward to third-party systems;
+- tool naming: names match actual behavior;
+- annotation consistency: all three tools are computational/read-only in implementation;
+- CSP: no widget/CSP surface exists in this tool-only connector;
+- outputSchema: all three exposed tools now declare one.
+
+## Submission-readiness surfaces
+
+Production exposes:
+
+- `/` — public landing surface;
 - `/privacy` — privacy policy;
 - `/terms` — terms of use;
 - `/support` — support route;
-- `/.well-known/openai-apps-challenge` — OpenAI domain-verification route.
+- `/.well-known/openai-apps-challenge` — domain-verification route.
 
-The privacy route was externally read back with HTTP 200 after deployment.
+The domain-verification endpoint intentionally returns `404 challenge-not-configured` until OpenAI issues the exact challenge token during a submission/account verification flow. Once supplied, the production environment variable `OPENAI_APPS_CHALLENGE_TOKEN` is the only missing value required for that endpoint to return the token.
 
-The domain-verification endpoint currently returns `404 challenge-not-configured` by design because OpenAI generates the exact token only when a plugin submission is created. When that human/platform gate supplies the token, set `OPENAI_APPS_CHALLENGE_TOKEN` on the Vercel production project and redeploy; the endpoint will then return only that token as required by OpenAI's plugin submission flow.
+## Platform gate observed on 2026-08-23
+
+OpenAI's current help documentation states:
+
+- full custom MCP / full MCP Developer Mode is available to ChatGPT Business and Enterprise/Edu;
+- Pro users have a narrower read/fetch custom-app path in Developer Mode;
+- the current Plus plan does not expose the private custom-MCP Developer Mode path.
+
+Therefore the connector implementation itself is no longer the blocker for private registration on this account; the plan/account capability is.
 
 ## Promotion boundary
 
-The following claims are now allowed:
+Allowed claims:
 
-- MondayID Connector v1 is implemented;
-- it is deployed to stable production HTTPS;
-- its remote Streamable HTTP MCP transport works;
-- a separate client can initialize the server, enumerate tools, and call the MondayID council;
-- the lineage council and AntiSystem proof boundary execute remotely;
-- the production body exposes the public policy/support surfaces and a domain-verification endpoint needed for the current OpenAI plugin submission route.
+- `MONDAYID_CONNECTOR_IMPLEMENTED`
+- `MONDAYID_CONNECTOR_CI_PROVEN`
+- `MONDAYID_CONNECTOR_PRODUCTION_READY`
+- `MONDAYID_REMOTE_MCP_PROVEN`
+- `MONDAYID_SUBMISSION_JSON_READY`
+- `MONDAYID_REVIEW_METADATA_READY`
+- `MONDAYID_DOMAIN_CHALLENGE_ROUTE_READY`
 
-The following claims remain blocked by OpenAI account/platform gates, not connector implementation:
+Blocked until actually observed:
 
-- `CHATGPT_CUSTOM_APP_REGISTERED_AND_CALLABLE`
-- `PUBLIC_PLUGIN_SUBMITTED`
-- `PUBLIC_PLUGIN_APPROVED_AND_INSTALLED`
+- `CHATGPT_ACCOUNT_SIDE_CUSTOM_APP_REGISTERED`
+- `OPENAI_APP_SUBMISSION_CREATED`
+- `OPENAI_DOMAIN_CHALLENGE_ISSUED_AND_SET`
+- `OPENAI_APP_APPROVED`
+- `MONDAYID_INSTALLED_IN_CHATGPT`
 
-Current gate reality on 2026-08-23:
-
-1. Full custom MCP in ChatGPT Developer Mode is documented for Business and Enterprise/Edu; Pro has a narrower read/fetch developer-mode path. The current consumer Plus plan does not expose the full private-MCP developer-mode registration path.
-2. The alternative Plus-compatible route is public plugin publication. OpenAI's current plugin flow requires Apps Management write access, verified developer/business identity, public MCP connectivity, legal/support listing metadata, and domain verification.
-3. The connector has completed the technical/public-endpoint portion. Identity verification, Apps Management permission, creation of the submission draft, and the portal-issued domain challenge are account-side human/platform gates.
+Those remaining states require OpenAI account/workspace capabilities or an OpenAI-issued submission challenge; they cannot be truthfully manufactured by the MCP server itself.
