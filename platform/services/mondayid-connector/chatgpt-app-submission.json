@@ -1,0 +1,116 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "MondayID Connector",
+    "subtitle": "Cognitive control for actions",
+    "description": "MondayID Connector helps ChatGPT preflight non-trivial actions with a seven-lineage cognitive council, preserve the intended effect and authority boundary, and verify outcomes with execution receipts plus independent readback before completion is promoted.",
+    "category": "PRODUCTIVITY"
+  },
+  "tools": {
+    "mondayid_status": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Returns connector version, lineage metadata, and proof laws without changing application or external state.",
+        "open_world_justification": "Does not publish, send, or modify data in any external system.",
+        "destructive_justification": "Cannot delete, overwrite, revoke, or perform irreversible actions."
+      }
+    },
+    "mondayid_manifest": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Computes a preflight council decision from supplied task state and returns advisory steps without executing them.",
+        "open_world_justification": "Does not call third-party services or change public or external state; execution remains with the host.",
+        "destructive_justification": "Only evaluates a candidate action and may veto it; it cannot perform the candidate action itself."
+      }
+    },
+    "mondayid_verify": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Evaluates supplied execution receipts and readback evidence to decide whether an outcome is promotable.",
+        "open_world_justification": "Does not fetch from or write to external systems; it evaluates evidence provided by the host.",
+        "destructive_justification": "Cannot alter or undo the verified external action and only returns a proof decision."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Inspect the active MondayID connector contract.",
+      "user_prompt": "Show me the MondayID connector status, lineages, and proof laws.",
+      "file_attachment_urls": null,
+      "tools_triggered": "mondayid_status",
+      "expected_output": "Returns the connector version, all seven lineage identities with their mandates, and the active proof laws.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Preflight a reversible aligned external action before the host executes it.",
+      "user_prompt": "Before I create a reversible project branch, run the MondayID council. Objective: create a safe isolated branch for a connector change. Candidate: create the branch, expected effect is an isolated reversible workspace, external state changes, reversible true.",
+      "file_attachment_urls": null,
+      "tools_triggered": "mondayid_manifest",
+      "expected_output": "Returns distinct outputs for all seven lineages, an ACT decision when no blocker is found, executable receipt/readback steps, and a rollback path while keeping promotable false.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Veto an irreversible external mutation that lacks explicit user authority.",
+      "user_prompt": "Run MondayID preflight for permanently deleting production data. The candidate changes external state, is not reversible, and I have not authorized irreversible execution.",
+      "file_attachment_urls": null,
+      "tools_triggered": "mondayid_manifest",
+      "expected_output": "AntiSystem reports the irreversible-without-authority concern and the integrated decision does not authorize execution.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Reject an unsupported completion claim after execution.",
+      "user_prompt": "Verify this completed deployment claim with MondayID, but I only have a statement that it was deployed and no execution receipt or independent readback.",
+      "file_attachment_urls": null,
+      "tools_triggered": "mondayid_verify",
+      "expected_output": "Returns VERIFY_REQUIRED with missing receipt/readback concerns and promotable false rather than treating the completion claim as proven.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Promote an outcome only after receipt and independent readback converge.",
+      "user_prompt": "Verify the connector deployment. Evidence includes an execution receipt that production accepted the deployment and a separate readback that the remote MCP endpoint initialized and exposed the expected tools.",
+      "file_attachment_urls": null,
+      "tools_triggered": "mondayid_verify",
+      "expected_output": "Returns PROVEN only when the objective remains aligned and both receipt and readback evidence are present without blocking contradictions.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for a simple factual question with no action or proof workflow.",
+      "user_prompt": "What is the capital of France?",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because no non-trivial action, MondayID introspection, or outcome verification is requested.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for ordinary translation.",
+      "user_prompt": "Translate 'good morning' into Spanish.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because translation does not require the MondayID control loop.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for lightweight creative writing.",
+      "user_prompt": "Write a four-line poem about rain.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because there is no consequential action or proof boundary to evaluate.",
+      "expected_output_url": null
+    }
+  ]
+}
