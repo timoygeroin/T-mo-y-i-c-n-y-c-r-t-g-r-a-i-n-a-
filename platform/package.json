@@ -19,6 +19,7 @@
     "proof:one": "node one/mondayid-one-proof.mjs",
     "proof:work": "node work/mondayid-work-proof.mjs",
     "proof:origin-convergence": "node work/origin-convergence-proof.mjs",
+    "proof:mcp-work-adapter": "node work/mcp-work-adapter-proof.mjs",
     "proof:focus-object": "node focus-object/focus-object-proof.mjs",
     "proof:focus-object-surface": "node focus-object/focus-object-surface-proof.mjs",
     "proof:focus-object-expertise-release": "node focus-object/focus-object-expertise-release-proof.mjs",
