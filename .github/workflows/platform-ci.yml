@@ -52,6 +52,7 @@ jobs:
           npm run proof:one
           npm run proof:work
           npm run proof:origin-convergence
+          npm run proof:mcp-work-adapter
           npm run proof:focus-object
           npm run proof:focus-object-surface
           npm run proof:focus-object-expertise-release
