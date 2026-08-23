@@ -1,0 +1,40 @@
+name: MondayID Connector Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-connector-v1
+  pull_request:
+    paths:
+      - 'platform/services/mondayid-connector/**'
+      - '.github/workflows/mondayid-connector-proof.yml'
+  workflow_dispatch:
+
+jobs:
+  connector-proof:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform/services/mondayid-connector
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Syntax contract
+        run: npm run check
+      - name: Lineage regression proof
+        run: npm test
+      - name: Health smoke
+        run: |
+          node src/server.js > /tmp/mondayid-connector.log 2>&1 &
+          pid=$!
+          trap 'kill $pid || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:8787/health > /tmp/health.json; then break; fi
+            sleep 0.5
+          done
+          cat /tmp/health.json
+          grep -q '"service":"mondayid-connector"' /tmp/health.json

@@ -1,0 +1,17 @@
+{
+  "name": "@mondayid/connector",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MondayID cognitive middleware as a ChatGPT-compatible MCP connector.",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/kernel.test.js",
+    "check": "node --check src/kernel.js && node --check src/mcp.js && node --check src/server.js && node --check api/mcp.js && node --check api/health.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "3.25.76"
+  }
+}

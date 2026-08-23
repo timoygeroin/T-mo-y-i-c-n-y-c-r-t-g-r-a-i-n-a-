@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/", "destination": "/api/index" },
+    { "source": "/mcp", "destination": "/api/mcp" },
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/privacy", "destination": "/api/privacy" },
+    { "source": "/terms", "destination": "/api/terms" },
+    { "source": "/support", "destination": "/api/support" },
+    { "source": "/.well-known/openai-apps-challenge", "destination": "/api/openai-apps-challenge" }
+  ]
+}
