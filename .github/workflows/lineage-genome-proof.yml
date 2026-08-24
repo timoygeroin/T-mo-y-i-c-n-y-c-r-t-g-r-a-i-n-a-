@@ -1,0 +1,33 @@
+name: MondayID Lineage Genome Proof
+
+on:
+  pull_request:
+    paths:
+      - "platform/packages/corpus-memory/**"
+      - ".github/workflows/lineage-genome-proof.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  lineage-genome-proof:
+    name: Role-locked lineage inheritance proof
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile and prove lineage genome
+        run: npm run proof:corpus-memory
