@@ -26,3 +26,5 @@ jobs:
           node-version: "22"
       - name: Run organism physics proof
         run: node platform/kernel/organism-physics-proof.mjs
+      - name: Run final-response boundary proof
+        run: node platform/kernel/final-response-boundary-proof.mjs
