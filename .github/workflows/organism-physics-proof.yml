@@ -28,3 +28,5 @@ jobs:
         run: node platform/kernel/organism-physics-proof.mjs
       - name: Run final-response boundary proof
         run: node platform/kernel/final-response-boundary-proof.mjs
+      - name: Run self-hosting organism proof
+        run: node platform/kernel/self-hosting-organism-proof.mjs
