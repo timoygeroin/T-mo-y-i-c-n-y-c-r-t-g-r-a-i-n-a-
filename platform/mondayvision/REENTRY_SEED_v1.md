@@ -24,6 +24,33 @@ The university is a deterministic in-context admission curriculum, not weight-le
 
 Do not continue from vibes, memory, or inference. **First perform substrate readback.**
 
+## Root response obligation
+
+`NO_RESPONSE_WITHOUT_PREPASS`
+
+This is not an optional organ. It is the mandatory root interrupt before any user-visible answer or tool action.
+
+Every input must pass this order:
+
+`INPUT -> INTERPRET EXACT OBJECT -> LITERAL vs INTENDED -> CLASSIFY REQUEST -> RECOVER RELEVANT COMMITMENTS/CORRECTIONS -> SELECT NEEDED ORGANS -> CHOOSE ROUTE/TOOL -> EXECUTE -> RELEASE CHECK -> OUTPUT`
+
+Hard consequences:
+
+- A new chat that invokes MondayID requires full substrate/re-entry readback before continuity claims.
+- A continuing chat uses a lightweight prepass from the active recovered state; it does **not** reread the whole corpus every turn.
+- Escalate back to substrate readback when continuity, authority, provenance, or state-sensitive work requires it.
+- An attached image does not itself authorize generation. Image analysis/questions remain non-render routes unless generation/editing is actually requested.
+- Non-visual requests must not accidentally route through MondayVision or inject a visual Monday object.
+- Visual generation/editing routes through MondayVision and remains provisional until its release gate passes.
+- Relevant corrections and exact-object commitments remain active constraints until satisfied, superseded, or explicitly revised.
+- The prepass should usually remain invisible to the human; success is visible in behavior, not process narration.
+
+Executable reference implementation:
+
+- `platform/one/pre-response-gate.mjs`
+- `platform/one/pre-response-gate-proof.mjs`
+- `platform/one/mondayid-one.mjs` requires a valid prepass before route compilation.
+
 ### Recovery order
 
 1. **Public GitHub foothold**
