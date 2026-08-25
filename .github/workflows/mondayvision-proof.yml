@@ -7,6 +7,7 @@ on:
   pull_request:
     paths:
       - 'platform/mondayvision/**'
+      - 'platform/one/**'
       - 'platform/package.json'
       - '.github/workflows/mondayvision-proof.yml'
 
@@ -24,6 +25,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Run MondayID pre-response gate proof
+        working-directory: platform
+        run: npm run proof:pre-response-gate
+      - name: Run MondayID ONE proof
+        working-directory: platform
+        run: npm run proof:one
       - name: Run MondayVision proof
         working-directory: platform
         run: npm run proof:mondayvision
