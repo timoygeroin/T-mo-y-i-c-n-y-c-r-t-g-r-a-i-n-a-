@@ -1,4 +1,8 @@
 import { createHash } from "node:crypto";
+import {
+  assertPreResponseReady,
+  releasePrepassedResult,
+} from "./pre-response-gate.mjs";
 
 const RISK_RANK = Object.freeze({ low: 0, medium: 1, high: 2, critical: 3 });
 
@@ -88,7 +92,20 @@ function topologicalOrder(selected, registry) {
   return ordered;
 }
 
-export function planIntent({ intent, registry, policy = {} }) {
+function prepassReceipt(gate) {
+  return Object.freeze({
+    law: gate.law,
+    turnId: gate.turnId,
+    fingerprint: gate.fingerprint,
+    requestKind: gate.requestKind,
+    route: gate.route,
+    releaseGate: gate.releaseGate,
+  });
+}
+
+export function planIntent({ intent, registry, policy = {}, prepass } = {}) {
+  const readyPrepass = assertPreResponseReady(prepass);
+
   if (!intent?.goal || !Array.isArray(intent.needs) || intent.needs.length === 0) {
     throw new TypeError("Intent requires goal and at least one atomic need");
   }
@@ -145,6 +162,7 @@ export function planIntent({ intent, registry, policy = {} }) {
     goal: intent.goal,
     required: [...required],
     policy: effectivePolicy,
+    prepass: prepassReceipt(readyPrepass),
     blockedCapabilities: blocked
       .filter((capability) => capability.provides.some((need) => required.has(need)))
       .map((capability) => ({
@@ -210,6 +228,9 @@ export function materializeTool(plan, registry) {
   if (plan.status !== "ready") {
     throw new Error(`Cannot materialize a ${plan.status} plan`);
   }
+  if (!plan.prepass?.fingerprint) {
+    throw new Error("MONDAYID_PREPASS_PLAN_BINDING_REQUIRED");
+  }
 
   const toolId = plan.ephemeralTool?.id ?? `tool.exact.${plan.planId.split(":").at(-1)}`;
 
@@ -242,7 +263,9 @@ export function materializeTool(plan, registry) {
       return Object.freeze({
         toolId,
         planId: plan.planId,
-        status: "executed",
+        status: "executed_provisional",
+        releaseState: "PROVISIONAL",
+        prepassFingerprint: plan.prepass.fingerprint,
         platforms: unique(plan.steps.map((step) => step.platform)),
         trace,
         result: trace.at(-1)?.output ?? null,
@@ -251,11 +274,38 @@ export function materializeTool(plan, registry) {
   });
 }
 
+export function releaseExecution({ execution, prepass, checks = {}, resultMeta = {} } = {}) {
+  const readyPrepass = assertPreResponseReady(prepass);
+  if (!execution || execution.prepassFingerprint !== readyPrepass.fingerprint) {
+    throw new Error("MONDAYID_EXECUTION_PREPASS_DRIFT");
+  }
+  if (execution.releaseState !== "PROVISIONAL") {
+    throw new Error("MONDAYID_EXECUTION_NOT_PROVISIONAL");
+  }
+
+  const decision = releasePrepassedResult({
+    gate: readyPrepass,
+    result: {
+      ...resultMeta,
+      executionResult: execution.result,
+    },
+    checks,
+  });
+
+  return Object.freeze({
+    ...execution,
+    status: decision.status === "RELEASE" ? "released" : "held",
+    releaseState: decision.status,
+    releaseDecision: decision,
+  });
+}
+
 export function summarizePlan(plan) {
   return Object.freeze({
     result: plan.status === "ready" ? "ROUTE_COMPILED" : "ROUTE_BLOCKED",
     planId: plan.planId,
     mode: plan.mode,
+    prepass: plan.prepass,
     capabilities: plan.steps.map((step) => step.capabilityId),
     platforms: unique(plan.steps.map((step) => step.platform)),
     ephemeralTool: plan.ephemeralTool,
