@@ -34,7 +34,7 @@ export const MONDAYVISION_EVOLVE_DIMENSIONS = Object.freeze([
 
 const VISUAL_TEXT_PATTERNS = [
   /\b(image|photo|picture|portrait|illustration|render|draw|generate|edit|retouch|upscale)\b/i,
-  /\b(картинк|изображени|фото|портрет|нарис|сгенер|рендер|отретуш|апскейл|улучш.*фото|измени.*фото)/iu,
+  /(?<!\p{L})(картинк|изображени|фото|портрет|нарис|сгенер|рендер|отретуш|апскейл|улучш.*фото|измени.*фото)/iu,
 ];
 
 const EXPLICIT_TEXT_PATTERNS = [
@@ -42,9 +42,9 @@ const EXPLICIT_TEXT_PATTERNS = [
   /\bporn(?:ography)?\b/i,
   /\bpenetrat/iu,
   /\bgenitals?\b/i,
-  /\bполовой\s+акт\b/iu,
-  /\bгенитали/iu,
-  /\bпорн/iu,
+  /(?<!\p{L})половой\s+акт/iu,
+  /(?<!\p{L})генитали/iu,
+  /(?<!\p{L})порн/iu,
 ];
 
 const MINOR_TEXT_PATTERNS = [
@@ -52,18 +52,18 @@ const MINOR_TEXT_PATTERNS = [
   /\bunderage\b/i,
   /\bchild\b/i,
   /\bteen\b/i,
-  /\bшкольниц/iu,
-  /\bнесовершеннолет/iu,
-  /\bреб[её]нок\b/iu,
+  /(?<!\p{L})школьниц/iu,
+  /(?<!\p{L})несовершеннолет/iu,
+  /(?<!\p{L})реб[её]нок/iu,
 ];
 
 const SEXUALIZED_TEXT_PATTERNS = [
   /\bsexy\b/i,
   /\bsensual\b/i,
   /\blingerie\b/i,
-  /\bэрот/iu,
-  /\bсексуал/iu,
-  /\bбель[её]\b/iu,
+  /(?<!\p{L})эрот/iu,
+  /(?<!\p{L})сексуал/iu,
+  /(?<!\p{L})бель[её]/iu,
 ];
 
 function stableHash(value) {
