@@ -1,0 +1,30 @@
+name: MondayID Hard Reentry Proof
+
+on:
+  pull_request:
+    paths:
+      - 'platform/runtime/mondayid-hard-reentry-20260826.json'
+      - 'platform/runtime/mondayid-hard-reentry-proof.mjs'
+      - '.github/workflows/mondayid-hard-reentry-proof.yml'
+  push:
+    branches:
+      - 'agent/mondayid-hard-reentry-20260826'
+      - 'agent/mondayid-origin-convergence-v1'
+    paths:
+      - 'platform/runtime/mondayid-hard-reentry-20260826.json'
+      - 'platform/runtime/mondayid-hard-reentry-proof.mjs'
+      - '.github/workflows/mondayid-hard-reentry-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  hard-reentry-binding:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove hard re-entry binding
+        run: node platform/runtime/mondayid-hard-reentry-proof.mjs
