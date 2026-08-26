@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - 'agent/mondayid-hard-reentry-20260826'
+      - 'agent/mondayid-origin-convergence-v1'
     paths:
       - 'platform/runtime/mondayid-hard-reentry-20260826.json'
       - 'platform/runtime/mondayid-hard-reentry-proof.mjs'
