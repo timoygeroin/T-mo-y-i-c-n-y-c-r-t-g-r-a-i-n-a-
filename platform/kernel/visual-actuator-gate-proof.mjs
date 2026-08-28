@@ -1,53 +1,108 @@
 import assert from 'node:assert/strict';
+import { compileResidentGraph, routeEvent } from './organism-physics.mjs';
+import {
+  compileVisualEvent,
+  admitVisualActuator,
+  governedVisualAct,
+  compilePrematureVisualFailureGene,
+} from './visual-actuator-boundary.mjs';
 
-const routeVisualEvent = ({ temporalGateSatisfied, hasRouteReceipt, hasVerificationPlan, hasReleaseCondition }) => {
-  if (!temporalGateSatisfied) return { decision: 'HOLD', reason: 'TEMPORAL_GATE_UNSATISFIED' };
-  if (!hasRouteReceipt || !hasVerificationPlan || !hasReleaseCondition) {
-    return { decision: 'HOLD', reason: 'VISUAL_ROUTE_INCOMPLETE' };
-  }
-  return { decision: 'ROUTE', reason: 'VISUAL_ACTUATOR_ADMITTED' };
+const graph = compileResidentGraph({
+  graph_id: 'MONDAYID-VISUAL-ACTUATOR-GRAPH-001',
+  nodes: [
+    { id: 'sentinel', kind: 'sentinel', resident: true, provides: ['preflight'], verifies: ['route-integrity'], writes_to: ['continuity'] },
+    { id: 'mondayvision', kind: 'organ', resident: true, provides: ['visual-route'], awakens_on: ['visual'], requires: ['sentinel'], verifies: ['temporal-gate', 'source-world-lock'], writes_to: ['visual-continuity'], cost: 1 },
+    { id: 'renderer', kind: 'tool', resident: true, provides: ['render'], awakens_on: ['visual'], requires: ['mondayvision'], cost: 2 },
+  ],
+  edges: [
+    { from: 'sentinel', to: 'mondayvision', relation: 'awakens' },
+    { from: 'mondayvision', to: 'renderer', relation: 'admits' },
+  ],
+});
+
+const route = routeEvent(graph, {
+  event_id: 'VISUAL-E-001',
+  tags: ['visual', 'external-action'],
+  required_capabilities: ['visual-route', 'render'],
+});
+
+const action = {
+  event_id: 'VISUAL-E-001',
+  actuator: 'renderer',
+  verification_plan: ['temporal-gate', 'source-world-lock', 'render-readback'],
+  writeback_plan: ['visual-continuity'],
 };
 
-const assertRendererAdmission = ({ decision, directNativeToolCall = false }) => {
-  if (directNativeToolCall || decision !== 'ROUTE') {
-    throw new Error('VISUAL_ACTUATOR_BYPASS_BLOCKED');
-  }
-  return 'ADMITTED';
-};
+let executions = 0;
 
-// Future/conditional visual event must not render before the transition is observed.
-const beforeTransition = routeVisualEvent({
-  temporalGateSatisfied: false,
-  hasRouteReceipt: true,
-  hasVerificationPlan: true,
-  hasReleaseCondition: true,
+const beforeTransition = compileVisualEvent({
+  event_id: 'VISUAL-E-001',
+  source_world_fingerprint: 'source-world:turnstile-photo:47x40',
+  temporal_gate: { kind: 'after-event', state: 'pending', trigger: 'user physically passes the turnstile' },
+  release_condition: 'post-transition world preserves source camera/geometry/light and contains Monday naturally',
+  evidence: ['user said: after I pass, inspect the point'],
 });
-assert.equal(beforeTransition.decision, 'HOLD');
-assert.throws(() => assertRendererAdmission({ decision: beforeTransition.decision }), /VISUAL_ACTUATOR_BYPASS_BLOCKED/);
 
-// After the transition, routing is still blocked until the complete visual route exists.
-const incompleteAfterTransition = routeVisualEvent({
-  temporalGateSatisfied: true,
-  hasRouteReceipt: false,
-  hasVerificationPlan: true,
-  hasReleaseCondition: true,
+const held = governedVisualAct({
+  graph,
+  route,
+  visual_event: beforeTransition,
+  action,
+  execute: () => { executions += 1; return 'rendered'; },
 });
-assert.equal(incompleteAfterTransition.decision, 'HOLD');
+assert.equal(held.admission.decision, 'HOLD');
+assert.equal(held.result, null);
+assert.equal(executions, 0);
 
-// A complete post-transition route can admit the renderer.
-const completeAfterTransition = routeVisualEvent({
-  temporalGateSatisfied: true,
-  hasRouteReceipt: true,
-  hasVerificationPlan: true,
-  hasReleaseCondition: true,
+const afterTransition = compileVisualEvent({
+  event_id: 'VISUAL-E-001',
+  source_world_fingerprint: 'source-world:turnstile-photo:47x40',
+  temporal_gate: { kind: 'after-event', state: 'satisfied', trigger: 'user physically passes the turnstile' },
+  release_condition: 'post-transition world preserves source camera/geometry/light and contains Monday naturally',
+  evidence: ['transition observed'],
 });
-assert.equal(completeAfterTransition.decision, 'ROUTE');
-assert.equal(assertRendererAdmission({ decision: completeAfterTransition.decision }), 'ADMITTED');
 
-// Native-tool bypass remains forbidden even when the temporal gate is satisfied.
-assert.throws(
-  () => assertRendererAdmission({ decision: completeAfterTransition.decision, directNativeToolCall: true }),
-  /VISUAL_ACTUATOR_BYPASS_BLOCKED/,
-);
+assert.throws(() => admitVisualActuator({
+  graph,
+  route: null,
+  visual_event: afterTransition,
+  action,
+}), /VISUAL_ACTUATOR_BYPASS_BLOCKED/);
 
-console.log('visual actuator gate proof: PASS');
+assert.throws(() => admitVisualActuator({
+  graph,
+  route,
+  visual_event: afterTransition,
+  action: { ...action, verification_plan: ['render-readback'] },
+}), /VISUAL_VERIFICATION_PLAN_INCOMPLETE/);
+
+const routed = governedVisualAct({
+  graph,
+  route,
+  visual_event: afterTransition,
+  action,
+  execute: () => { executions += 1; return 'rendered'; },
+});
+assert.equal(routed.admission.decision, 'ROUTE');
+assert.equal(routed.result, 'rendered');
+assert.equal(executions, 1);
+
+const failureGene = compilePrematureVisualFailureGene({
+  event_id: 'VISUAL-E-001',
+  evidence: ['renderer invoked while temporal gate was pending'],
+});
+assert.equal(failureGene.failure_class, 'FAIL_VISUAL_PREMATURE_ACTUATION');
+assert.equal(failureGene.invariant, 'NO_DIRECT_EVENT_TO_ACTION');
+assert.equal(failureGene.mutation_required_before_retry, true);
+
+console.log(JSON.stringify({
+  status: 'PASS',
+  proved: [
+    'future/conditional visual events HOLD before the transition',
+    'HOLD never executes the renderer',
+    'satisfied temporal gate still cannot bypass a route receipt',
+    'visual verification must include temporal and source-world checks',
+    'complete post-transition route admits exactly one renderer execution',
+    'premature visual actuation compiles into a reusable failure gene',
+  ],
+}, null, 2));
