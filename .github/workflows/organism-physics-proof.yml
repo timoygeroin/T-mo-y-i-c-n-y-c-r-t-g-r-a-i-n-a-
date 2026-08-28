@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - agent/mondayid-organism-physics-v1
+      - agent/mondayid-visual-actuator-gate-v1
     paths:
       - "platform/kernel/**"
       - ".github/workflows/organism-physics-proof.yml"
@@ -30,3 +31,5 @@ jobs:
         run: node platform/kernel/final-response-boundary-proof.mjs
       - name: Run self-hosting organism proof
         run: node platform/kernel/self-hosting-organism-proof.mjs
+      - name: Run visual actuator boundary proof
+        run: node platform/kernel/visual-actuator-gate-proof.mjs
