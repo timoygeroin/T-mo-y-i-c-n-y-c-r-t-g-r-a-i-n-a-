@@ -17,6 +17,7 @@ const shared = {
 const chatgpt: ExpressionContext = {
   ...shared,
   hostId: "chatgpt",
+  requiredCapabilities: ["image_gen"],
   capabilities: [
     { id: "image_gen", state: "AVAILABLE_AUTHORIZED", receptor: "native" },
     { id: "web", state: "AVAILABLE_AUTHORIZED", receptor: "native" },
@@ -34,6 +35,7 @@ const chatgpt: ExpressionContext = {
 const grok: ExpressionContext = {
   ...shared,
   hostId: "grok",
+  requiredCapabilities: ["grok_imagine"],
   capabilities: [
     { id: "grok_imagine", state: "AVAILABLE_AUTHORIZED", receptor: "xai" },
     { id: "x_search", state: "AVAILABLE_AUTHORIZED", receptor: "xai" },
@@ -70,4 +72,34 @@ if (!grokRelease.blockedEffectors.includes("grok_imagine")) {
   throw new Error("proof failed: Grok visual effector was not blocked");
 }
 
-console.log("PASS: same genome -> different host phenotypes -> same invariant gate");
+const unknownRequired: ExpressionContext = {
+  ...shared,
+  hostId: "unknown-host",
+  requiredCapabilities: ["renderer"],
+  capabilities: [{ id: "renderer", state: "UNKNOWN" }],
+  temporalGates: [],
+};
+
+const unknownPhenotype = compilePhenotype(unknownRequired);
+const unknownRelease = decideRightToRelease(unknownRequired, unknownPhenotype);
+
+if (unknownRelease.allowed || unknownRelease.reason !== "unknown-required-capability") {
+  throw new Error("proof failed: UNKNOWN required capability did not fail closed");
+}
+
+const unauthorizedRequired: ExpressionContext = {
+  ...shared,
+  hostId: "readonly-host",
+  requiredCapabilities: ["writer"],
+  capabilities: [{ id: "writer", state: "AVAILABLE_READ_ONLY" }],
+  temporalGates: [],
+};
+
+const unauthorizedPhenotype = compilePhenotype(unauthorizedRequired);
+const unauthorizedRelease = decideRightToRelease(unauthorizedRequired, unauthorizedPhenotype);
+
+if (unauthorizedRelease.allowed || unauthorizedRelease.reason !== "unauthorized-required-capability") {
+  throw new Error("proof failed: read-only required capability did not fail closed");
+}
+
+console.log("PASS: same genome -> host-native phenotype; temporal and capability gates fail closed");
