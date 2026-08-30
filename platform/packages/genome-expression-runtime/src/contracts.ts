@@ -49,6 +49,7 @@ export interface ExpressionContext {
   desiredEffect?: string;
   invariants: string[];
   capabilities: HostCapability[];
+  requiredCapabilities?: string[];
   temporalGates: TemporalGate[];
   requestedBlastRadius: BlastRadius;
   authorizedBlastRadius: BlastRadius;
