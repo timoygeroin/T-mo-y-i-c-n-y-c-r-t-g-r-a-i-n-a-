@@ -30,6 +30,7 @@ export function compilePhenotype(context: ExpressionContext): CompiledPhenotype 
     sourceTiers: context.provenance.length ? ["EVIDENCE_BACKED"] : ["UNRESOLVED"],
     proofCriteria: [
       ...context.invariants.map((invariant) => `preserve:${invariant}`),
+      "required-capabilities-resolved-and-authorized",
       "authorized-effector",
       "blast-radius-within-authority",
       "temporal-gates-satisfied-before-dependent-actuation",
@@ -37,6 +38,8 @@ export function compilePhenotype(context: ExpressionContext): CompiledPhenotype 
     ],
     stopConditions: [
       "unknown-required-capability",
+      "unavailable-required-capability",
+      "unauthorized-required-capability",
       "unsatisfied-dependent-temporal-gate",
       "blast-radius-exceeds-authority",
       "unresolved-strong-blocker",
@@ -57,23 +60,38 @@ export function decideRightToRelease(
     }
   }
 
-  const unknownRequiredCapability = context.capabilities.some(
-    (capability) =>
-      phenotype.effectors.includes(capability.id) && capability.state === "UNKNOWN",
-  );
+  const capabilityById = new Map(context.capabilities.map((capability) => [capability.id, capability]));
+  const requiredCapabilities = context.requiredCapabilities ?? [];
+
+  for (const requiredId of requiredCapabilities) {
+    const capability = capabilityById.get(requiredId);
+    if (!capability || capability.state === "UNKNOWN") {
+      return {
+        allowed: false,
+        reason: "unknown-required-capability",
+        blockedEffectors: [...new Set([requiredId, ...blockedEffectors])],
+      };
+    }
+    if (capability.state === "UNAVAILABLE") {
+      return {
+        allowed: false,
+        reason: "unavailable-required-capability",
+        blockedEffectors: [...new Set([requiredId, ...blockedEffectors])],
+      };
+    }
+    if (capability.state !== "AVAILABLE_AUTHORIZED") {
+      return {
+        allowed: false,
+        reason: "unauthorized-required-capability",
+        blockedEffectors: [...new Set([requiredId, ...blockedEffectors])],
+      };
+    }
+  }
 
   if (radiusRank[context.requestedBlastRadius] > radiusRank[context.authorizedBlastRadius]) {
     return {
       allowed: false,
       reason: "blast-radius-exceeds-authority",
-      blockedEffectors: [...new Set([...phenotype.effectors, ...blockedEffectors])],
-    };
-  }
-
-  if (unknownRequiredCapability) {
-    return {
-      allowed: false,
-      reason: "unknown-required-capability",
       blockedEffectors: [...new Set([...phenotype.effectors, ...blockedEffectors])],
     };
   }
