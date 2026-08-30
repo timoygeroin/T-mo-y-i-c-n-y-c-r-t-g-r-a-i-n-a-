@@ -1,0 +1,7 @@
+{
+  "previewPort": null,
+  "healthPath": null,
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "notes": "Library-only TypeScript monorepo (platform/). No web server or frontend exists, so nothing serves port 3000 and the preview cannot go live.",
+  "secrets": []
+}
