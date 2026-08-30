@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Universal MondayID genome-to-host phenotype compiler and release gate.",
+  "description": "Universal MondayID genome-to-host phenotype compiler, release gate, and host actuation boundary.",
   "main": "dist/runtime.js",
   "types": "dist/runtime.d.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/proof-fixture.js",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-fixture.js && node dist/host-adapter-proof.js",
     "proof": "npm run proof:examples"
   },
   "devDependencies": {
