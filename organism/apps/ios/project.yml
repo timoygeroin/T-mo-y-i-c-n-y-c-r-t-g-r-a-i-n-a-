@@ -1,0 +1,17 @@
+name: Monday
+options: { bundleIdPrefix: ai.mondayid }
+targets:
+  Monday:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Monday]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.mondayid.body
+        SWIFT_VERSION: 5.9
+  MondayTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [MondayTests]
+    dependencies: [{ target: Monday }]

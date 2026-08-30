@@ -1,0 +1,10 @@
+{
+  "status": "STRUCTURAL_COMPLETE_SEMANTIC_INCOMPLETE",
+  "structural": {"conversations": 650, "events": 107845, "months": 18, "parse_errors": 0},
+  "semantic": {
+    "exhaustively_adjudicated_conversations": null,
+    "exhaustively_adjudicated_corrections": null,
+    "exhaustively_adjudicated_successes": null
+  },
+  "release_rule": "Do not claim the organism learned every chat until every semantic counter is evidenced."
+}

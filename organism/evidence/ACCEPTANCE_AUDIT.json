@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-08-28T06:00:00Z",
+  "node_tests": {"passed": 12, "failed": 0},
+  "antimonday_checks": {"passed": 10, "failed": 0},
+  "live_readback": {
+    "http_health": "PASS",
+    "mcp_initialize": "PASS",
+    "mcp_tools_list": "PASS",
+    "mcp_status_call": "PASS",
+    "reported_ready": false,
+    "gate": "OPEN_LOOPS"
+  },
+  "native_build": "NOT_RUN_NO_XCODE"
+}

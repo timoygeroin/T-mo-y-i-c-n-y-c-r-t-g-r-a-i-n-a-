@@ -1,10 +1,12 @@
 services:
-  platform:
-    image: node:22
-    working_dir: /app/platform
+  organism:
+    image: node:24
+    working_dir: /app/organism
     volumes:
       - .:/app
-    command: >
-      sh -c "npm install &&
-             npm run typecheck:route-governor &&
-             tail -f /dev/null"
+    environment:
+      - PORT=3000
+      - MONDAY_DB=/app/organism/var/monday.sqlite
+    command: sh -c "mkdir -p var && node src/server.js"
+    ports:
+      - "3000:3000"

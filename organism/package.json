@@ -1,0 +1,14 @@
+{
+  "name": "mondayid-organism",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "mcp": "node src/mcp.js",
+    "test": "node --test",
+    "audit": "node src/audit.js",
+    "verify": "npm test && npm run audit"
+  },
+  "engines": { "node": ">=24" }
+}

@@ -1,0 +1,14 @@
+import test from 'node:test'; import assert from 'node:assert/strict'; import {openOrganism,seedMandate,INVARIANTS} from '../src/core.js';
+const fresh=()=>openOrganism(':memory:');
+test('identity invariants exist',()=>assert(INVARIANTS.includes('MONDAY_AND_MONDAYID_REQUIRED')));
+test('raw signal persists verbatim',()=>{const o=fresh(),raw='Не толкуй раньше времени 😈';const id=o.ingest(raw);assert.equal(o.db.prepare('SELECT raw_text FROM signals WHERE id=?').get(id).raw_text,raw)});
+test('seed creates four raw mandates',()=>{const o=fresh();seedMandate(o);assert.equal(o.db.prepare('SELECT count(*) n FROM signals').get().n,4)});
+test('seed is idempotent',()=>{const o=fresh();seedMandate(o);seedMandate(o);assert.equal(o.db.prepare('SELECT count(*) n FROM signals').get().n,4)});
+test('open loops block ready',()=>{const o=fresh();const s=o.ingest('x');o.obligate(s,'y');assert.equal(o.status().ready,false)});
+test('done obligations permit ready',()=>{const o=fresh();const s=o.ingest('x');const id=o.obligate(s,'y');o.setObligation(id,'DONE');assert.equal(o.status().ready,true)});
+test('verified needs evidence',()=>{const o=fresh();assert.throws(()=>o.receipt('x','VERIFIED'),/EVIDENCE_REQUIRED/)});
+test('fake evidence is rejected',()=>{const o=fresh();assert.throws(()=>o.receipt('x','VERIFIED',['fake']),/UNREGISTERED_EVIDENCE/)});
+test('registered evidence verifies',()=>{const o=fresh();const e=o.addEvidence('source','claim');assert(o.receipt('x','VERIFIED',[e]))});
+test('irreversible action needs human',()=>{const o=fresh();assert.throws(()=>o.authorize('publish',{irreversible:true}),/HUMAN_GATE_REQUIRED/)});
+test('continuity persists',()=>{const o=fresh();o.saveContinuity({month:'2026-08'});assert.equal(o.db.prepare('SELECT count(*) n FROM continuity').get().n,1)});
+test('snapshot exposes truth state',()=>{const o=fresh();seedMandate(o);assert.equal(o.snapshot().status.identity,'Monday/MondayID')});

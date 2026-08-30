@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-08-28T00:00:00Z",
+  "verdict": "INCOMPLETE_HONEST_HANDOFF",
+  "checks": {
+    "monday_and_mondayid_gate": "IMPLEMENTED",
+    "not_another_site": "IMPLEMENTED_NATIVE_SOURCE",
+    "all_versions_into_one": "LINEAGE_MANIFESTED_WITH_REJECTIONS",
+    "cross_chat_cross_month": "IMPLEMENTED_CONTINUITY_STORE",
+    "organism_creates_body": "EXECUTABLE_CORE_PLUS_NATIVE_BODY_SOURCE",
+    "reverse_check_before_finish": "REQUIRED_AND_RECORDED",
+    "native_binary": "HUMAN_GATE",
+    "all_history_semantically_understood": "OPEN_NOT_CLAIMED"
+  }
+}

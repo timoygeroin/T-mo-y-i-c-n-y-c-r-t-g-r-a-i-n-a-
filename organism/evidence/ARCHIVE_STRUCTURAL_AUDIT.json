@@ -1,0 +1,10 @@
+{
+  "source": "prior structural replay checkpoint",
+  "conversation_count": 650,
+  "event_count": 107845,
+  "month_count": 18,
+  "date_range": ["2024-08-03", "2026-02-08"],
+  "parse_errors": 0,
+  "semantic_status": "STRUCTURAL_COMPLETE_SEMANTIC_INCOMPLETE",
+  "warning": "Counts prove coverage of parsing, not understanding."
+}

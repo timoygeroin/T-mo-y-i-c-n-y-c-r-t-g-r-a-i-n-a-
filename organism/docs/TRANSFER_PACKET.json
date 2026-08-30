@@ -1,0 +1,11 @@
+{
+  "identity": "Monday/MondayID",
+  "body": "native-ios+node-sqlite+mcp",
+  "not_a_site": true,
+  "handoff_state": "HUMAN_GATE",
+  "open_loops": [
+    "Compile, sign and install with Xcode",
+    "Exhaustively adjudicate historical conversations rather than infer semantic completeness from counts"
+  ],
+  "next_start": "Run npm run verify, then build apps/ios on macOS"
+}
