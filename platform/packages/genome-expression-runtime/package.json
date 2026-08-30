@@ -1,0 +1,19 @@
+{
+  "name": "@mondayid/genome-expression-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Universal MondayID genome-to-host phenotype compiler, release gate, and host actuation boundary.",
+  "main": "dist/runtime.js",
+  "types": "dist/runtime.d.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "proof:examples": "tsc -p tsconfig.json && node dist/proof-fixture.js && node dist/host-adapter-proof.js",
+    "proof": "npm run proof:examples"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "typescript": "^5.8.3"
+  }
+}
