@@ -5,6 +5,7 @@
   "type": "module",
   "description": "External platform scaffold for MondayiD runtime manifestation.",
   "workspaces": [
+    "packages/genome-expression-runtime",
     "packages/route-governor",
     "packages/processor-fabric",
     "packages/proof-evaluation",
@@ -12,12 +13,14 @@
     "packages/manifestation-engine"
   ],
   "scripts": {
+    "proof:genome-expression-runtime": "npm --workspace @mondayid/genome-expression-runtime run proof:examples",
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
     "proof:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run proof:examples",
     "proof:corpus-memory": "npm --workspace @mondayid/corpus-memory run proof:examples",
     "proof:manifestation-engine": "npm --workspace @mondayid/manifestation-engine run proof:examples",
     "test:route-governor": "npm --workspace @mondayid/route-governor test",
+    "typecheck:genome-expression-runtime": "npm --workspace @mondayid/genome-expression-runtime run typecheck",
     "typecheck:route-governor": "npm --workspace @mondayid/route-governor run typecheck",
     "typecheck:processor-fabric": "npm --workspace @mondayid/processor-fabric run typecheck",
     "typecheck:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run typecheck",
