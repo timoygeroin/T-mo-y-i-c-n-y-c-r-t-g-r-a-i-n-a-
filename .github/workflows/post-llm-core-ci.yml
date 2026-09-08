@@ -31,5 +31,8 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install test runner
+        run: python -m pip install --disable-pip-version-check pytest
+
       - name: Run tests
         run: python -m pytest -q
