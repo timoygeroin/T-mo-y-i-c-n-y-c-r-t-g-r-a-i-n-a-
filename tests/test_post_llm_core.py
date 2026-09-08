@@ -1,4 +1,11 @@
-from post_llm_core import Action, CognitiveRuntime, CognitiveState, Hypothesis
+from post_llm_core import (
+    Action,
+    CognitiveRuntime,
+    CognitiveState,
+    CognitiveSubstrate,
+    Hypothesis,
+    MemoryTrace,
+)
 
 
 def test_closed_loop_records_evidence_and_updates_state():
@@ -39,3 +46,24 @@ def test_failed_prediction_invalidates_causal_line():
 
     assert transition.evidence.supported is False
     assert "switch-v1" in runtime.state.world_model["invalidated_causal_keys"]
+
+
+def test_substrate_persists_memory_and_focuses_attention():
+    state = CognitiveState(identity="monday-core", goals=["verify switch"])
+    substrate = CognitiveSubstrate(state)
+    substrate.remember(MemoryTrace("episodic", "switch", "ON", "sensor", 2.0))
+    substrate.remember(MemoryTrace("episodic", "battery", "LOW", "sensor", 0.5))
+
+    assert substrate.recall("switch")[0]["value"] == "ON"
+    assert substrate.focus(["battery status", "switch status"])[0] == "switch status"
+
+
+def test_invalidated_model_cannot_be_selected_again():
+    state = CognitiveState(identity="monday-core")
+    state.world_model["invalidated_causal_keys"] = ["bad-model"]
+    substrate = CognitiveSubstrate(state)
+    hypotheses = [
+        Hypothesis("bad", "x", "bad-model"),
+        Hypothesis("new", "y", "new-model"),
+    ]
+    assert substrate.next_hypothesis(hypotheses).causal_key == "new-model"
