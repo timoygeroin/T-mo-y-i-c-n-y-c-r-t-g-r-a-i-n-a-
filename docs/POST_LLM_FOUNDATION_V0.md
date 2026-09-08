@@ -12,31 +12,22 @@ Language is an optional interface into this process, not its substrate.
 
 ## Core object
 
-A `CognitiveState` contains:
-
-- identity: persistent system identity and invariants
-- goals: desired state transitions
-- beliefs: propositions with provenance and confidence
-- memory: episodic and semantic traces
-- world_model: entities, relations, causal hypotheses, predictions
-- self_model: capabilities, limits, current resources
-- attention: the subset of state selected for the current transition
-- history: immutable transition records
+A `CognitiveState` contains identity, goals, beliefs, episodic/semantic memory, world model, self model, attention, and immutable transition history.
 
 ## Runtime loop
 
-1. Observe current environment and internal state.
-2. Select what matters using attention, not a fixed context window.
+1. Observe environment and internal state.
+2. Select relevant state using attention.
 3. Generate competing hypotheses.
-4. Predict consequences for each hypothesis.
-5. Select an action/experiment that maximizes information or goal progress under constraints.
-6. Execute or simulate the action.
+4. Predict consequences.
+5. Select an action/experiment.
+6. Execute or simulate.
 7. Compare prediction with observation.
-8. Update beliefs, memory, world model, and self-model.
+8. Update beliefs and models.
 9. Record provenance and causal lineage.
-10. If a failure repeats on the same causal line, invalidate the causal model and generate a materially different one.
+10. Repeated failure invalidates the causal line and requires a materially different model.
 
-## Replacements for the legacy AI stack
+## Legacy stack replacement
 
 | Legacy primitive | Post-LLM primitive |
 |---|---|
@@ -47,7 +38,7 @@ A `CognitiveState` contains:
 | RAG | provenance-aware living knowledge |
 | vector DB | structured memory fabric |
 | tool call | capability/action |
-| chain-of-thought | explicit hypotheses + predictions + evidence |
+| chain-of-thought | hypotheses + predictions + evidence |
 | fine-tuning | experience-driven learning |
 | benchmark-only eval | continuous prediction/action verification |
 | deployment | stateful organism instance |
@@ -58,16 +49,22 @@ A `CognitiveState` contains:
 2. No claim of execution without evidence.
 3. No irreversible mutation without authorization.
 4. Failed causal models become counterexamples; they are not merely reworded.
-5. State and provenance survive individual model replacement.
-6. The system may improve its mechanisms without changing its identity invariants.
-7. Language models may be used as specialist organs, but the runtime must not depend on any single LLM.
+5. State and provenance survive model replacement.
+6. Mechanisms may evolve without silently changing identity invariants.
+7. No single LLM is a required runtime dependency.
 
-## v0 success criterion
+## Verification record
 
-A minimal implementation is successful only if it can complete a full closed loop without an LLM:
+The first executable pass exposed a real defect: the runtime required transition history while the state schema did not define it. The state model was corrected to include persistent `history`. A reconstructed local execution of the four core tests then passed 4/4.
+
+The GitHub status surface did not report a completed CI run for the latest head at the time of verification, so CI success is not claimed.
+
+## v0 completion criterion
+
+A minimal implementation must complete:
 
 `goal -> hypothesis -> prediction -> action -> observation -> verification -> memory update -> next action`
 
-and expose the complete transition record for inspection.
+and expose the complete transition record.
 
-This is the first executable atom of the new class of system.
+This is the first executable atom of the new class of system, not a claim that AGI has been achieved.
