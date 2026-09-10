@@ -53,6 +53,7 @@ jobs:
           npm run proof:one
           npm run proof:work
           npm run proof:workless-v2
+          npm run proof:workless-journal
           npm run proof:origin-convergence
           npm run proof:mcp-work-adapter
           npm run proof:focus-object
