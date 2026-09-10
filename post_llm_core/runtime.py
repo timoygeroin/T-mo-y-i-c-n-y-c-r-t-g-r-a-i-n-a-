@@ -27,6 +27,10 @@ class CognitiveRuntime:
         encoded = json.dumps(payload, sort_keys=True, default=str).encode()
         return hashlib.sha256(encoded).hexdigest()
 
+    def _viable_hypotheses(self, hypotheses: Iterable[Hypothesis]) -> list[Hypothesis]:
+        invalidated = set(self.state.world_model.get("invalidated_causal_keys", []))
+        return [hypothesis for hypothesis in hypotheses if hypothesis.causal_key not in invalidated]
+
     def transition(
         self,
         goal: str,
@@ -38,11 +42,18 @@ class CognitiveRuntime:
     ) -> Transition:
         """Run one complete hypothesis -> prediction -> action -> evidence cycle."""
         prior = self._digest()
-        candidates = list(hypotheses)
-        if not candidates:
+        supplied = list(hypotheses)
+        if not supplied:
             raise ValueError("A cognitive transition requires at least one hypothesis")
 
+        candidates = self._viable_hypotheses(supplied)
+        if not candidates:
+            raise ValueError("No viable hypothesis remains; a new causal model is required")
+
         hypothesis = chooser(candidates)
+        if hypothesis not in candidates:
+            raise ValueError("Chooser returned a hypothesis outside the viable candidate set")
+
         observation = actor(action)
         evidence = Evidence(
             observation=observation,
@@ -61,9 +72,9 @@ class CognitiveRuntime:
 
         if not evidence.supported:
             # A failed prediction is a counterexample to the selected causal line.
-            self.state.world_model.setdefault("invalidated_causal_keys", []).append(
-                hypothesis.causal_key
-            )
+            invalidated = self.state.world_model.setdefault("invalidated_causal_keys", [])
+            if hypothesis.causal_key not in invalidated:
+                invalidated.append(hypothesis.causal_key)
 
         self.state.history.append(
             Transition(
