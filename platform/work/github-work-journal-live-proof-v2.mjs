@@ -3,16 +3,16 @@ import { createGitHubWorkJournal } from "./github-work-journal.mjs";
 
 const accessToken = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
-const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME;
+const stateBranch = process.env.WORKUP_STATE_BRANCH;
 const runId = process.env.GITHUB_RUN_ID || `local-${Date.now()}`;
-if (!accessToken || !repository || !branch) throw new Error("missing GitHub Actions runtime context");
+if (!accessToken || !repository || !stateBranch) throw new Error("missing GitHub Actions runtime context or WORKUP_STATE_BRANCH");
 
 const path = `workup-runtime-state/live-proof-${runId}.json`;
-const makeJournal = () => createGitHubWorkJournal({ repository, branch, path, token: accessToken });
+const makeJournal = () => createGitHubWorkJournal({ repository, branch: stateBranch, path, token: accessToken });
 const first = makeJournal();
 
 try {
-  const task = { instruction: "prove remote WorkUp continuity" };
+  const task = { instruction: "prove remote WorkUp continuity without mutating the code branch" };
   const jobId = await first.open(task);                         // revision 1
   await first.append(jobId, { phase: "observation", value: "client-a" }); // r2
   await first.steer(jobId, { constraint: "preserve remote state" });       // r3
@@ -44,7 +44,13 @@ try {
   assert.equal(closed.result.proof, "remote-readback");
   assert.equal(snapshot.revision, 6);
 
-  console.log(JSON.stringify({ result: "WORKUP_GITHUB_JOURNAL_LIVE_PROOF_PASS", revision: 6, jobId }));
+  console.log(JSON.stringify({
+    result: "WORKUP_GITHUB_JOURNAL_LIVE_PROOF_PASS",
+    revision: 6,
+    jobId,
+    stateBranch,
+    codeBranchUntouched: true,
+  }));
 } finally {
   const result = await makeJournal().destroy();
   assert.ok(["deleted", "already_absent"].includes(result.status));
