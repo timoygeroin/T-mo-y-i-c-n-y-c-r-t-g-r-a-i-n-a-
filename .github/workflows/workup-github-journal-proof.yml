@@ -1,0 +1,37 @@
+name: WorkUp GitHub Journal Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-workless-runtime-v2
+    paths:
+      - "platform/work/github-work-journal.mjs"
+      - "platform/work/github-work-journal-live-proof.mjs"
+      - ".github/workflows/workup-github-journal-proof.yml"
+  pull_request:
+    paths:
+      - "platform/work/github-work-journal.mjs"
+      - "platform/work/github-work-journal-live-proof.mjs"
+      - ".github/workflows/workup-github-journal-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  workup-github-journal:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run live remote journal proof
+        working-directory: platform
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node work/github-work-journal-live-proof.mjs
