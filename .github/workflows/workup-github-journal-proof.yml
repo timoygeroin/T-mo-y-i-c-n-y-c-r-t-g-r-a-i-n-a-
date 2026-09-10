@@ -6,12 +6,12 @@ on:
       - agent/mondayid-workless-runtime-v2
     paths:
       - "platform/work/github-work-journal.mjs"
-      - "platform/work/github-work-journal-live-proof.mjs"
+      - "platform/work/github-work-journal-live-proof-v2.mjs"
       - ".github/workflows/workup-github-journal-proof.yml"
   pull_request:
     paths:
       - "platform/work/github-work-journal.mjs"
-      - "platform/work/github-work-journal-live-proof.mjs"
+      - "platform/work/github-work-journal-live-proof-v2.mjs"
       - ".github/workflows/workup-github-journal-proof.yml"
   workflow_dispatch:
 
@@ -34,4 +34,4 @@ jobs:
         working-directory: platform
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node work/github-work-journal-live-proof.mjs
+        run: node work/github-work-journal-live-proof-v2.mjs
