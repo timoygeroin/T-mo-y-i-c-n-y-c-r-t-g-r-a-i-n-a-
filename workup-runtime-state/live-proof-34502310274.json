@@ -1,10 +1,10 @@
 {
   "schema": "mondayid.workless-github-journal.v1",
-  "revision": 5,
+  "revision": 6,
   "jobs": {
     "workless:e1bd90b7-f22c-4ba4-9bc5-3ca4496b0a4a": {
       "jobId": "workless:e1bd90b7-f22c-4ba4-9bc5-3ca4496b0a4a",
-      "status": "running",
+      "status": "complete",
       "originalTask": {
         "instruction": "prove remote WorkUp continuity without mutating the code branch"
       },
@@ -28,10 +28,18 @@
           "update": {
             "constraint": "preserve remote state"
           }
+        },
+        {
+          "index": 2,
+          "phase": "close",
+          "status": "complete"
         }
       ],
       "steering": [],
-      "result": null
+      "result": {
+        "proof": "remote-readback",
+        "jobId": "workless:e1bd90b7-f22c-4ba4-9bc5-3ca4496b0a4a"
+      }
     }
   }
 }
