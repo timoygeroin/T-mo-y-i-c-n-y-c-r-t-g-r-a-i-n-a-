@@ -216,15 +216,15 @@ export function createWorklessRuntimeV2({
   });
 
   async function run(task, options = {}) {
-    const jobId = options.jobId ?? journal.open(task);
+    const jobId = options.jobId ?? await journal.open(task);
     let activeTask = task;
     const excluded = new Set();
     const routeAttempts = [];
 
     for (let routeIndex = 0; routeIndex <= effectivePolicy.maxComputeReroutes; routeIndex += 1) {
-      const steering = journal.consumeSteering(jobId);
+      const steering = await journal.consumeSteering(jobId);
       activeTask = mergeSteering(activeTask, steering);
-      journal.setActiveTask(jobId, activeTask);
+      await journal.setActiveTask(jobId, activeTask);
 
       const routed = computeRouter.route({
         requiredCapabilities: effectivePolicy.requiredCapabilities,
@@ -239,12 +239,12 @@ export function createWorklessRuntimeV2({
           routeAttempts: freeze([...routeAttempts]),
           router: computeRouter.snapshot?.() ?? null,
         });
-        journal.close(jobId, "blocked", result);
+        await journal.close(jobId, "blocked", result);
         return result;
       }
 
       const provider = routed.provider;
-      journal.append(jobId, {
+      await journal.append(jobId, {
         phase: "compute_route",
         routeIndex,
         providerId: provider.id,
@@ -275,12 +275,12 @@ export function createWorklessRuntimeV2({
           final: workResult.final,
           router: computeRouter.snapshot?.() ?? null,
         });
-        journal.close(jobId, "complete", result);
+        await journal.close(jobId, "complete", result);
         return result;
       }
 
       const blockerCode = extractBlockerCode(workResult);
-      journal.append(jobId, {
+      await journal.append(jobId, {
         phase: "route_result",
         routeIndex,
         providerId: provider.id,
@@ -298,13 +298,13 @@ export function createWorklessRuntimeV2({
           final: workResult.final,
           router: computeRouter.snapshot?.() ?? null,
         });
-        journal.close(jobId, "blocked", result);
+        await journal.close(jobId, "blocked", result);
         return result;
       }
 
       computeRouter.report(provider.id, { ok: false, code: blockerCode });
       excluded.add(provider.id);
-      journal.append(jobId, {
+      await journal.append(jobId, {
         phase: "compute_reroute",
         fromProviderId: provider.id,
         reason: blockerCode,
@@ -318,7 +318,7 @@ export function createWorklessRuntimeV2({
       routeAttempts: freeze([...routeAttempts]),
       router: computeRouter.snapshot?.() ?? null,
     });
-    journal.close(jobId, "blocked", result);
+    await journal.close(jobId, "blocked", result);
     return result;
   }
 
