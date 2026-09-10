@@ -128,7 +128,7 @@ export function createContainerWorkspaceExecutor({
       "--security-opt", "no-new-privileges=true",
       "--read-only",
       "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m",
-      "--mount", `type=bind,src=${workspaceRoot},dst=/workspace,rw=true`,
+      "--mount", `type=bind,src=${workspaceRoot},dst=/workspace`,
       "--workdir", containerCwd,
     ];
     if (hostUser) dockerArgs.push("--user", hostUser);
