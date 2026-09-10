@@ -1,0 +1,40 @@
+name: WorkUp Container Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-workless-runtime-v2
+    paths:
+      - "platform/work/container-workspace-executor.mjs"
+      - "platform/work/container-workspace-executor-proof.mjs"
+      - ".github/workflows/workup-container-proof.yml"
+  pull_request:
+    paths:
+      - "platform/work/container-workspace-executor.mjs"
+      - "platform/work/container-workspace-executor-proof.mjs"
+      - ".github/workflows/workup-container-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  workup-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify Docker engine
+        run: docker version
+
+      - name: Pull pinned execution family
+        run: docker pull python:3.12-slim
+
+      - name: Run isolated WorkUp container proof
+        working-directory: platform
+        run: node work/container-workspace-executor-proof.mjs

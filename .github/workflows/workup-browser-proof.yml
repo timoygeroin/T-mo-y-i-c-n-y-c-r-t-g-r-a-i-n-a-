@@ -1,0 +1,41 @@
+name: WorkUp Browser Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-workless-runtime-v2
+    paths:
+      - "platform/work/agent-browser-workup-capability.mjs"
+      - "platform/work/agent-browser-workup-proof.mjs"
+      - "platform/work/process-workspace-executor.mjs"
+      - ".github/workflows/workup-browser-proof.yml"
+  pull_request:
+    paths:
+      - "platform/work/agent-browser-workup-capability.mjs"
+      - "platform/work/agent-browser-workup-proof.mjs"
+      - "platform/work/process-workspace-executor.mjs"
+      - ".github/workflows/workup-browser-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  workup-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install agent-browser runtime
+        run: |
+          npm install -g agent-browser
+          npx agent-browser install
+
+      - name: Run WorkUp browser proof
+        working-directory: platform
+        run: node work/agent-browser-workup-proof.mjs
