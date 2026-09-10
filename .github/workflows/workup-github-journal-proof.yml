@@ -34,4 +34,5 @@ jobs:
         working-directory: platform
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          WORKUP_STATE_BRANCH: workup-runtime-state-v1
         run: node work/github-work-journal-live-proof-v2.mjs
