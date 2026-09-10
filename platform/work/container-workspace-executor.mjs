@@ -125,7 +125,7 @@ export function createContainerWorkspaceExecutor({
       "--cpus", cpus,
       "--pids-limit", String(pidsLimit),
       "--cap-drop", "ALL",
-      "--security-opt", "no-new-privileges:true",
+      "--security-opt", "no-new-privileges=true",
       "--read-only",
       "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m",
       "--mount", `type=bind,src=${workspaceRoot},dst=/workspace,rw`,
