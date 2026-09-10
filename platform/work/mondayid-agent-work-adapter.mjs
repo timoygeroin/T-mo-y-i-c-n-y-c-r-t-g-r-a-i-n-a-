@@ -27,6 +27,26 @@ function signalFromTask(task) {
   return JSON.stringify(task);
 }
 
+function singleProviderBoundary(providerAdapter) {
+  return freeze({
+    ...providerAdapter,
+    async complete(input) {
+      try {
+        return await providerAdapter.complete(input);
+      } catch (error) {
+        if (!(error instanceof ProviderUnavailableError) || !error.retryable) throw error;
+        const boundaryError = new ProviderUnavailableError(error.message, {
+          providerId: error.providerId ?? providerAdapter.id,
+          code: error.code,
+          retryable: false,
+        });
+        boundaryError.workupRetryable = true;
+        throw boundaryError;
+      }
+    },
+  });
+}
+
 export function createMondayIDAgentWorkFactory({
   providerAdapters,
   tools = [],
@@ -56,7 +76,7 @@ export function createMondayIDAgentWorkFactory({
       }
 
       const agent = createMondayIDAgent({
-        providers: [providerAdapter],
+        providers: [singleProviderBoundary(providerAdapter)],
         tools,
         maxTurns,
         systemPrompt,
@@ -153,7 +173,7 @@ export function createMondayIDAgentWorkFactory({
                   status: code,
                   providerId: provider.id,
                   originalProviderCode: error.code,
-                  retryable: error.retryable,
+                  retryable: error.workupRetryable ?? error.retryable,
                 }),
               });
             }
