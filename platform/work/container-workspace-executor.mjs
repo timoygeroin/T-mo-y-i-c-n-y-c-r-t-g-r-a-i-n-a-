@@ -61,13 +61,15 @@ export function createContainerWorkspaceExecutor({
   function runExec(args, timeoutMs, containerName) {
     const startedAt = Date.now();
     return new Promise((resolveResult) => {
-      execFile(dockerCommand, args, {
+      let timedOut = false;
+      let timer = null;
+      const child = execFile(dockerCommand, args, {
         encoding: "utf8",
-        timeout: timeoutMs,
         maxBuffer: maxBufferBytes,
         windowsHide: true,
       }, async (error, stdout, stderr) => {
-        if (!error) {
+        if (timer) clearTimeout(timer);
+        if (!error && !timedOut) {
           resolveResult(freeze({
             status: "completed",
             exitCode: 0,
@@ -78,19 +80,23 @@ export function createContainerWorkspaceExecutor({
           }));
           return;
         }
-        const timedOut = error.killed === true || error.signal === "SIGTERM";
         if (timedOut) await removeContainer(containerName);
         resolveResult(freeze({
           status: timedOut ? "timeout" : "failed",
           code: timedOut ? "provider_timeout" : "container_process_failed",
-          exitCode: Number.isInteger(error.code) ? error.code : null,
-          signal: error.signal ?? null,
+          exitCode: Number.isInteger(error?.code) ? error.code : null,
+          signal: error?.signal ?? null,
           stdout: stdout ?? "",
           stderr: stderr ?? "",
-          message: error.message,
+          message: error?.message ?? "container execution timed out",
           durationMs: Date.now() - startedAt,
         }));
       });
+      timer = setTimeout(() => {
+        timedOut = true;
+        child.kill("SIGKILL");
+        void removeContainer(containerName);
+      }, timeoutMs);
     });
   }
 
