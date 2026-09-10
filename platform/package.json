@@ -20,6 +20,7 @@
     "proof:work": "node work/mondayid-work-proof.mjs",
     "proof:workless-v2": "node work/workless-runtime-v2-proof.mjs",
     "proof:workless-journal": "node work/file-work-journal-proof.mjs",
+    "proof:workless-executor": "node work/process-workspace-executor-proof.mjs",
     "proof:origin-convergence": "node work/origin-convergence-proof.mjs",
     "proof:mcp-work-adapter": "node work/mcp-work-adapter-proof.mjs",
     "proof:focus-object": "node focus-object/focus-object-proof.mjs",
