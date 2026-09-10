@@ -32,6 +32,7 @@ export function createMondayIDAgentWorkFactory({
   tools = [],
   maxTurns = 12,
   systemPrompt = null,
+  verifyCandidate = null,
 } = {}) {
   const adapters = providerAdapters instanceof Map
     ? providerAdapters
@@ -40,9 +41,13 @@ export function createMondayIDAgentWorkFactory({
   if (adapters.size === 0) {
     throw new TypeError("MondayID agent WorkUp adapter requires providerAdapters");
   }
+  if (verifyCandidate != null && typeof verifyCandidate !== "function") {
+    throw new TypeError("verifyCandidate must be a function when provided");
+  }
 
   return freeze({
-    id: "workup.mondayid-agent-adapter.v1",
+    id: "workup.mondayid-agent-adapter.v2",
+    verificationLaw: "provider terminal output is a candidate; only independent verification may promote it to complete",
 
     async create({ provider, jobId, journal }) {
       const providerAdapter = adapters.get(provider.id);
@@ -71,16 +76,57 @@ export function createMondayIDAgentWorkFactory({
             });
 
             if (result.status === "verified") {
+              const candidate = freeze({
+                providerId: provider.id,
+                result: result.result,
+                trace: result.trace,
+                providerFailures: result.providerFailures,
+                receiptId: result.receiptId,
+                continuation: result.continuation,
+              });
+
+              if (!verifyCandidate) {
+                return freeze({
+                  status: "blocked",
+                  blocker: "external_verification_required",
+                  final: freeze({
+                    status: "candidate_complete",
+                    ...candidate,
+                    verification: freeze({ accepted: false, code: "external_verification_required" }),
+                  }),
+                });
+              }
+
+              const verification = await verifyCandidate({
+                task,
+                provider,
+                candidate,
+                recovered,
+                jobId,
+              });
+
+              if (!verification?.accepted) {
+                return freeze({
+                  status: "blocked",
+                  blocker: "verification_failed",
+                  final: freeze({
+                    status: "verification_failed",
+                    ...candidate,
+                    verification: freeze({
+                      accepted: false,
+                      code: "verification_failed",
+                      ...verification,
+                    }),
+                  }),
+                });
+              }
+
               return freeze({
                 status: "complete",
                 final: freeze({
                   status: "verified",
-                  providerId: provider.id,
-                  result: result.result,
-                  trace: result.trace,
-                  providerFailures: result.providerFailures,
-                  receiptId: result.receiptId,
-                  continuation: result.continuation,
+                  ...candidate,
+                  verification: freeze({ accepted: true, ...verification }),
                 }),
               });
             }
