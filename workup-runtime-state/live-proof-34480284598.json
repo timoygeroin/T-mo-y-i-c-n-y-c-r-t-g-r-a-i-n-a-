@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.workless-github-journal.v1",
-  "revision": 3,
+  "revision": 4,
   "jobs": {
     "workless:8f76fc99-f5a9-4416-88ec-7be993dbe731": {
       "jobId": "workless:8f76fc99-f5a9-4416-88ec-7be993dbe731",
@@ -25,14 +25,7 @@
           }
         }
       ],
-      "steering": [
-        {
-          "index": 0,
-          "update": {
-            "constraint": "preserve remote state"
-          }
-        }
-      ],
+      "steering": [],
       "result": null
     }
   }
