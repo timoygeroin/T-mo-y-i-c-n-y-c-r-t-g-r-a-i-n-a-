@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.workless-github-journal.v1",
-  "revision": 1,
+  "revision": 2,
   "jobs": {
     "workless:6a8c1d55-5692-4464-ae97-bf8383636727": {
       "jobId": "workless:6a8c1d55-5692-4464-ae97-bf8383636727",
@@ -11,7 +11,13 @@
       "activeTask": {
         "instruction": "prove WorkUp state survives a fresh client through remote GitHub state"
       },
-      "events": [],
+      "events": [
+        {
+          "index": 0,
+          "phase": "remote-observation",
+          "value": "first-client"
+        }
+      ],
       "steering": [],
       "result": null
     }
