@@ -148,6 +148,9 @@ try {
     instruction: "finish this job across quota failure using the required execution organs",
   });
 
+  if (result.status !== "complete") {
+    console.error("WORKUP_HELDOUT_DEBUG", JSON.stringify({ result, evidence }, null, 2));
+  }
   assert.equal(result.status, "complete");
   assert.equal(result.providerId, "sol");
   assert.deepEqual(result.routeAttempts.map((attempt) => attempt.providerId), ["astra", "sol"]);
