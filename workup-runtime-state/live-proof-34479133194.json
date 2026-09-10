@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.workless-github-journal.v1",
-  "revision": 1,
+  "revision": 2,
   "jobs": {
     "workless:ea57fa01-d37e-41ac-acf6-d80adf0dabf9": {
       "jobId": "workless:ea57fa01-d37e-41ac-acf6-d80adf0dabf9",
@@ -11,7 +11,13 @@
       "activeTask": {
         "instruction": "prove remote WorkUp continuity"
       },
-      "events": [],
+      "events": [
+        {
+          "index": 0,
+          "phase": "observation",
+          "value": "client-a"
+        }
+      ],
       "steering": [],
       "result": null
     }
