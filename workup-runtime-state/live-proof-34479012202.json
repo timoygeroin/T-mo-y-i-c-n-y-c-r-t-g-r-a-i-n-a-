@@ -1,0 +1,19 @@
+{
+  "schema": "mondayid.workless-github-journal.v1",
+  "revision": 1,
+  "jobs": {
+    "workless:52456c71-c375-49d7-9948-1e37dd64e737": {
+      "jobId": "workless:52456c71-c375-49d7-9948-1e37dd64e737",
+      "status": "running",
+      "originalTask": {
+        "instruction": "prove WorkUp state survives a fresh client through remote GitHub state"
+      },
+      "activeTask": {
+        "instruction": "prove WorkUp state survives a fresh client through remote GitHub state"
+      },
+      "events": [],
+      "steering": [],
+      "result": null
+    }
+  }
+}
