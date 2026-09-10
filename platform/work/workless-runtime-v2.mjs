@@ -25,6 +25,12 @@ function requireFunction(object, name, label) {
   }
 }
 
+function optionalFunction(object, name, label) {
+  if (object != null && typeof object[name] !== "function") {
+    throw new TypeError(`${label} requires ${name}()`);
+  }
+}
+
 function normalizeProvider(provider) {
   if (!provider?.id) throw new TypeError("compute provider requires id");
   return freeze({
@@ -201,10 +207,23 @@ function recoverExcludedProviders(job) {
   );
 }
 
+function recoverInvalidatedCausalKeys(job) {
+  return new Set(
+    (job?.events ?? [])
+      .filter((event) => event.phase === "causal_invalidation" && event.causalKey)
+      .map((event) => event.causalKey),
+  );
+}
+
+function countEvents(job, phase) {
+  return (job?.events ?? []).filter((event) => event.phase === phase).length;
+}
+
 export function createWorklessRuntimeV2({
   workFactory,
   computeRouter,
   journal = createMemoryWorkJournal(),
+  causalController = null,
   policy = {},
 }) {
   requireFunction(workFactory, "create", "Workless workFactory");
@@ -216,13 +235,30 @@ export function createWorklessRuntimeV2({
   requireFunction(journal, "setActiveTask", "Workless journal");
   requireFunction(journal, "close", "Workless journal");
   requireFunction(journal, "read", "Workless journal");
+  optionalFunction(causalController, "identifyFailure", "Workless causalController");
+  optionalFunction(causalController, "replan", "Workless causalController");
 
   const effectivePolicy = freeze({
     maxComputeReroutes: 4,
+    maxSemanticReplans: 4,
     maxPassesPerRoute: 8,
     requiredCapabilities: [],
     ...policy,
   });
+
+  async function finishBlocked({ jobId, blocker, providerId = null, routeAttempts, final = null }) {
+    const result = freeze({
+      status: "blocked",
+      blocker,
+      jobId,
+      providerId,
+      routeAttempts: freeze([...routeAttempts]),
+      final,
+      router: computeRouter.snapshot?.() ?? null,
+    });
+    await journal.close(jobId, "blocked", result);
+    return result;
+  }
 
   async function run(task, options = {}) {
     const existing = options.jobId ? await journal.read(options.jobId) : null;
@@ -233,14 +269,19 @@ export function createWorklessRuntimeV2({
     const jobId = options.jobId ?? await journal.open(task);
     let activeTask = existing?.activeTask ?? task;
     const excluded = recoverExcludedProviders(existing);
+    const invalidatedCausalKeys = recoverInvalidatedCausalKeys(existing);
+    let computeReroutes = excluded.size;
+    let semanticReplans = countEvents(existing, "causal_replan");
+    let attemptIndex = countEvents(existing, "compute_route");
     const routeAttempts = [];
 
     await journal.append(jobId, {
       phase: existing ? "resume" : "start",
       recoveredExcludedProviders: [...excluded],
+      recoveredInvalidatedCausalKeys: [...invalidatedCausalKeys],
     });
 
-    for (let routeIndex = 0; routeIndex <= effectivePolicy.maxComputeReroutes; routeIndex += 1) {
+    while (true) {
       const steering = await journal.consumeSteering(jobId);
       activeTask = mergeSteering(activeTask, steering);
       await journal.setActiveTask(jobId, activeTask);
@@ -251,37 +292,30 @@ export function createWorklessRuntimeV2({
       });
 
       if (routed.status !== "routed") {
-        const result = freeze({
-          status: "blocked",
-          blocker: "no_compute_route",
-          jobId,
-          routeAttempts: freeze([...routeAttempts]),
-          router: computeRouter.snapshot?.() ?? null,
-        });
-        await journal.close(jobId, "blocked", result);
-        return result;
+        return finishBlocked({ jobId, blocker: "no_compute_route", routeAttempts });
       }
 
       const provider = routed.provider;
       await journal.append(jobId, {
         phase: "compute_route",
-        routeIndex,
+        attemptIndex,
         providerId: provider.id,
         providerKind: provider.kind,
       });
+      attemptIndex += 1;
 
       const work = await workFactory.create({
         provider,
         jobId,
-        routeIndex,
+        attemptIndex,
         journal,
+        invalidatedCausalKeys: [...invalidatedCausalKeys],
       });
       requireFunction(work, "runUntilBlocker", `Workless provider ${provider.id}`);
 
       const workResult = await work.runUntilBlocker(activeTask, {
         maxPasses: effectivePolicy.maxPassesPerRoute,
       });
-
       routeAttempts.push(freeze({ providerId: provider.id, result: workResult }));
 
       if (workResult.status === "complete") {
@@ -292,6 +326,7 @@ export function createWorklessRuntimeV2({
           providerId: provider.id,
           routeAttempts: freeze([...routeAttempts]),
           final: workResult.final,
+          invalidatedCausalKeys: freeze([...invalidatedCausalKeys]),
           router: computeRouter.snapshot?.() ?? null,
         });
         await journal.close(jobId, "complete", result);
@@ -301,44 +336,151 @@ export function createWorklessRuntimeV2({
       const blockerCode = extractBlockerCode(workResult);
       await journal.append(jobId, {
         phase: "route_result",
-        routeIndex,
+        attemptIndex: attemptIndex - 1,
         providerId: provider.id,
         blockerCode,
       });
 
-      if (!COMPUTE_FAILURES.has(blockerCode)) {
+      if (COMPUTE_FAILURES.has(blockerCode)) {
         computeRouter.report(provider.id, { ok: false, code: blockerCode });
-        const result = freeze({
-          status: "blocked",
-          blocker: blockerCode,
-          jobId,
-          providerId: provider.id,
-          routeAttempts: freeze([...routeAttempts]),
-          final: workResult.final,
-          router: computeRouter.snapshot?.() ?? null,
+        excluded.add(provider.id);
+        computeReroutes += 1;
+        await journal.append(jobId, {
+          phase: "compute_reroute",
+          fromProviderId: provider.id,
+          reason: blockerCode,
         });
-        await journal.close(jobId, "blocked", result);
-        return result;
+        if (computeReroutes > effectivePolicy.maxComputeReroutes) {
+          return finishBlocked({
+            jobId,
+            blocker: "compute_reroute_limit",
+            providerId: provider.id,
+            routeAttempts,
+            final: workResult.final,
+          });
+        }
+        continue;
       }
 
-      computeRouter.report(provider.id, { ok: false, code: blockerCode });
-      excluded.add(provider.id);
+      if (!causalController) {
+        return finishBlocked({
+          jobId,
+          blocker: blockerCode,
+          providerId: provider.id,
+          routeAttempts,
+          final: workResult.final,
+        });
+      }
+
+      const failure = await causalController.identifyFailure({
+        jobId,
+        task: activeTask,
+        provider,
+        blockerCode,
+        workResult,
+        invalidatedCausalKeys: [...invalidatedCausalKeys],
+      });
+
+      if (failure.status !== "identified") {
+        await journal.append(jobId, {
+          phase: "causal_blocked",
+          reason: failure.reason ?? "causal_key_missing",
+          blockerCode,
+        });
+        return finishBlocked({
+          jobId,
+          blocker: failure.reason ?? blockerCode,
+          providerId: provider.id,
+          routeAttempts,
+          final: workResult.final,
+        });
+      }
+
+      if (invalidatedCausalKeys.has(failure.causalKey)) {
+        await journal.append(jobId, {
+          phase: "unchanged_retry_blocked",
+          causalKey: failure.causalKey,
+          blockerCode,
+        });
+        return finishBlocked({
+          jobId,
+          blocker: "unchanged_causal_retry",
+          providerId: provider.id,
+          routeAttempts,
+          final: workResult.final,
+        });
+      }
+
+      invalidatedCausalKeys.add(failure.causalKey);
       await journal.append(jobId, {
-        phase: "compute_reroute",
-        fromProviderId: provider.id,
-        reason: blockerCode,
+        phase: "causal_invalidation",
+        causalKey: failure.causalKey,
+        hypothesis: failure.hypothesis,
+        predicted: failure.predicted,
+        observed: failure.observed,
+        provenance: failure.provenance,
+        blockerCode,
+      });
+
+      if (semanticReplans >= effectivePolicy.maxSemanticReplans) {
+        return finishBlocked({
+          jobId,
+          blocker: "causal_replan_limit",
+          providerId: provider.id,
+          routeAttempts,
+          final: workResult.final,
+        });
+      }
+
+      const replanned = await causalController.replan({
+        jobId,
+        task: activeTask,
+        provider,
+        blockerCode,
+        workResult,
+        invalidatedCausalKeys: [...invalidatedCausalKeys],
+      });
+
+      if (!replanned.continue) {
+        await journal.append(jobId, {
+          phase: "causal_exhausted",
+          blocker: replanned.blocker,
+          invalidatedCausalKeys: [...invalidatedCausalKeys],
+        });
+        return finishBlocked({
+          jobId,
+          blocker: replanned.blocker,
+          providerId: provider.id,
+          routeAttempts,
+          final: workResult.final,
+        });
+      }
+
+      if (replanned.selectedCausalKey && invalidatedCausalKeys.has(replanned.selectedCausalKey)) {
+        await journal.append(jobId, {
+          phase: "unchanged_retry_blocked",
+          causalKey: replanned.selectedCausalKey,
+          blockerCode,
+        });
+        return finishBlocked({
+          jobId,
+          blocker: "unchanged_causal_retry",
+          providerId: provider.id,
+          routeAttempts,
+          final: workResult.final,
+        });
+      }
+
+      semanticReplans += 1;
+      activeTask = replanned.task;
+      await journal.setActiveTask(jobId, activeTask);
+      await journal.append(jobId, {
+        phase: "causal_replan",
+        fromCausalKey: failure.causalKey,
+        toCausalKey: replanned.selectedCausalKey,
+        evidence: replanned.evidence ?? [],
       });
     }
-
-    const result = freeze({
-      status: "blocked",
-      blocker: "compute_reroute_limit",
-      jobId,
-      routeAttempts: freeze([...routeAttempts]),
-      router: computeRouter.snapshot?.() ?? null,
-    });
-    await journal.close(jobId, "blocked", result);
-    return result;
   }
 
   async function resume(jobId) {
@@ -351,7 +493,7 @@ export function createWorklessRuntimeV2({
   return freeze({
     mode: "MONDAYID_WORKLESS_RUNTIME_V2",
     alias: "WorkUp",
-    law: "quota failure reroutes compute; semantic failure changes the causal route; task state belongs to MondayID",
+    law: "compute failure reroutes compute; failed causal lines are invalidated before semantic replan; task state belongs to MondayID",
     policy: effectivePolicy,
     run,
     resume,
@@ -359,6 +501,7 @@ export function createWorklessRuntimeV2({
     readJob: journal.read,
     journal,
     computeRouter,
+    causalController,
   });
 }
 
