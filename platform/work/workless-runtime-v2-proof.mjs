@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createTaskCandidateCausalController } from "./causal-task-controller.mjs";
 import {
   createComputeRouter,
   createMemoryWorkJournal,
@@ -76,7 +77,7 @@ async function canFallThroughToOssCompute() {
   assert.deepEqual(result.routeAttempts.map((attempt) => attempt.providerId), ["astra", "sol", "oss"]);
 }
 
-async function semanticFailureDoesNotProviderHop() {
+async function semanticFailureDoesNotProviderHopWithoutCausalRoute() {
   const created = [];
   const router = createComputeRouter([
     { id: "astra", priority: 1 },
@@ -100,6 +101,100 @@ async function semanticFailureDoesNotProviderHop() {
   assert.equal(result.status, "blocked");
   assert.equal(result.blocker, "verification_failed");
   assert.deepEqual(created, ["astra"]);
+}
+
+async function semanticFailureInvalidatesCausalLineThenReplans() {
+  const journal = createMemoryWorkJournal();
+  const router = createComputeRouter([
+    { id: "astra", priority: 1, capabilities: ["reason"] },
+    { id: "sol", priority: 2, capabilities: ["reason"] },
+  ]);
+  const providers = [];
+  const attemptedCausalKeys = [];
+
+  const runtime = createWorklessRuntimeV2({
+    journal,
+    computeRouter: router,
+    causalController: createTaskCandidateCausalController(),
+    policy: { requiredCapabilities: ["reason"] },
+    workFactory: {
+      async create({ provider }) {
+        providers.push(provider.id);
+        return fakeWork((task) => {
+          attemptedCausalKeys.push(task.causalKey);
+          if (task.causalKey === "route-a") {
+            return {
+              status: "blocked",
+              blocker: "verification_failed",
+              final: {
+                status: "verification_failed",
+                verification: {
+                  accepted: false,
+                  causalKey: "route-a",
+                  hypothesis: "route A should satisfy the target",
+                  predicted: "target satisfied",
+                  observed: "target not satisfied",
+                  provenance: "held-out-proof",
+                },
+              },
+            };
+          }
+          return {
+            status: "complete",
+            final: { status: "verified", task, execution: { provider: provider.id } },
+          };
+        });
+      },
+    },
+  });
+
+  const task = {
+    instruction: "try route A",
+    causalKey: "route-a",
+    causalCandidates: [
+      { causalKey: "route-a", instruction: "try route A" },
+      { causalKey: "route-b", instruction: "try fundamentally different route B" },
+    ],
+  };
+  const result = await runtime.run(task);
+
+  assert.equal(result.status, "complete");
+  assert.equal(result.providerId, "astra");
+  assert.deepEqual(providers, ["astra", "astra"]);
+  assert.deepEqual(attemptedCausalKeys, ["route-a", "route-b"]);
+  assert.deepEqual(result.invalidatedCausalKeys, ["route-a"]);
+
+  const job = runtime.readJob(result.jobId);
+  assert.equal(job.events.some((event) => event.phase === "causal_invalidation" && event.causalKey === "route-a"), true);
+  assert.equal(job.events.some((event) => event.phase === "causal_replan" && event.toCausalKey === "route-b"), true);
+}
+
+async function exhaustedCausalCandidatesFailClosed() {
+  const router = createComputeRouter([{ id: "astra", priority: 1 }]);
+  const runtime = createWorklessRuntimeV2({
+    computeRouter: router,
+    causalController: createTaskCandidateCausalController(),
+    workFactory: {
+      async create() {
+        return fakeWork((task) => ({
+          status: "blocked",
+          blocker: "verification_failed",
+          final: {
+            status: "verification_failed",
+            verification: { accepted: false, causalKey: task.causalKey },
+          },
+        }));
+      },
+    },
+  });
+
+  const result = await runtime.run({
+    instruction: "only bad route",
+    causalKey: "bad-route",
+    causalCandidates: [{ causalKey: "bad-route", instruction: "same bad route" }],
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.blocker, "no_viable_causal_route");
 }
 
 async function steeringSurvivesReroute() {
@@ -140,7 +235,9 @@ async function steeringSurvivesReroute() {
 
 await quotaReroutesWithoutKillingTask();
 await canFallThroughToOssCompute();
-await semanticFailureDoesNotProviderHop();
+await semanticFailureDoesNotProviderHopWithoutCausalRoute();
+await semanticFailureInvalidatesCausalLineThenReplans();
+await exhaustedCausalCandidatesFailClosed();
 await steeringSurvivesReroute();
 
-console.log("WORKLESS_RUNTIME_V2_PROOF_PASS 4/4");
+console.log("WORKLESS_RUNTIME_V2_PROOF_PASS 6/6");
