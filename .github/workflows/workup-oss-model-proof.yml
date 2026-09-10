@@ -1,0 +1,54 @@
+name: WorkUp OSS Model Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-workless-runtime-v2
+    paths:
+      - "platform/work/workup-oss-model-live-proof.mjs"
+      - "platform/work/mondayid-agent-work-adapter.mjs"
+      - "platform/work/workless-runtime-v2.mjs"
+      - ".github/workflows/workup-oss-model-proof.yml"
+  pull_request:
+    paths:
+      - "platform/work/workup-oss-model-live-proof.mjs"
+      - "platform/work/mondayid-agent-work-adapter.mjs"
+      - "platform/work/workless-runtime-v2.mjs"
+      - ".github/workflows/workup-oss-model-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  workup-oss-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Start local Ollama runtime
+        run: |
+          docker pull ollama/ollama:latest
+          docker run -d --name workup-ollama -p 11434:11434 ollama/ollama:latest
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          docker logs workup-ollama
+          exit 1
+
+      - name: Pull compact open-weight model
+        run: docker exec workup-ollama ollama pull smollm2:135m
+
+      - name: Run WorkUp through real local model
+        working-directory: platform
+        run: node work/workup-oss-model-live-proof.mjs
+
+      - name: Stop local model runtime
+        if: always()
+        run: docker rm -f workup-ollama || true
