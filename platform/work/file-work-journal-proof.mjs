@@ -91,7 +91,73 @@ async function quotaFailoverPersistsToFreshReader() {
   });
 }
 
+async function freshRuntimeResumesAfterRecordedQuota() {
+  await withJournalPath(async (path) => {
+    const beforeCrash = createFileWorkJournal(path);
+    const task = { instruction: "continue after runtime replacement" };
+    const jobId = await beforeCrash.open(task);
+    await beforeCrash.append(jobId, {
+      phase: "compute_route",
+      routeIndex: 0,
+      providerId: "astra",
+      providerKind: "model",
+    });
+    await beforeCrash.append(jobId, {
+      phase: "route_result",
+      routeIndex: 0,
+      providerId: "astra",
+      blockerCode: "quota",
+    });
+    await beforeCrash.append(jobId, {
+      phase: "compute_reroute",
+      fromProviderId: "astra",
+      reason: "quota",
+    });
+    await beforeCrash.steer(jobId, { constraint: "preserve prior work" });
+
+    const afterCrash = createFileWorkJournal(path);
+    const router = createComputeRouter([
+      { id: "astra", kind: "model", priority: 1, capabilities: ["reason"] },
+      { id: "sol", kind: "model", priority: 2, capabilities: ["reason"] },
+    ]);
+    const invokedProviders = [];
+
+    const resumedRuntime = createWorklessRuntimeV2({
+      journal: afterCrash,
+      computeRouter: router,
+      policy: { requiredCapabilities: ["reason"] },
+      workFactory: {
+        async create({ provider }) {
+          invokedProviders.push(provider.id);
+          return {
+            async runUntilBlocker(resumedTask) {
+              return {
+                status: "complete",
+                final: { status: "verified", task: resumedTask, execution: { provider: provider.id } },
+              };
+            },
+          };
+        },
+      },
+    });
+
+    const result = await resumedRuntime.resume(jobId);
+    assert.equal(result.status, "complete");
+    assert.equal(result.jobId, jobId);
+    assert.equal(result.providerId, "sol");
+    assert.deepEqual(invokedProviders, ["sol"]);
+    assert.deepEqual(result.final.task.steering, [{ constraint: "preserve prior work" }]);
+
+    const freshReadback = createFileWorkJournal(path);
+    const recovered = await freshReadback.read(jobId);
+    assert.equal(recovered.status, "complete");
+    const resumeEvent = recovered.events.find((event) => event.phase === "resume");
+    assert.deepEqual(resumeEvent.recoveredExcludedProviders, ["astra"]);
+  });
+}
+
 await freshJournalRecoversSameJob();
 await quotaFailoverPersistsToFreshReader();
+await freshRuntimeResumesAfterRecordedQuota();
 
-console.log("WORKLESS_FILE_JOURNAL_PROOF_PASS 2/2");
+console.log("WORKLESS_FILE_JOURNAL_PROOF_PASS 3/3");
