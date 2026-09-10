@@ -193,6 +193,14 @@ function mergeSteering(task, updates) {
   });
 }
 
+function recoverExcludedProviders(job) {
+  return new Set(
+    (job?.events ?? [])
+      .filter((event) => event.phase === "compute_reroute" && event.fromProviderId)
+      .map((event) => event.fromProviderId),
+  );
+}
+
 export function createWorklessRuntimeV2({
   workFactory,
   computeRouter,
@@ -207,6 +215,7 @@ export function createWorklessRuntimeV2({
   requireFunction(journal, "consumeSteering", "Workless journal");
   requireFunction(journal, "setActiveTask", "Workless journal");
   requireFunction(journal, "close", "Workless journal");
+  requireFunction(journal, "read", "Workless journal");
 
   const effectivePolicy = freeze({
     maxComputeReroutes: 4,
@@ -216,10 +225,20 @@ export function createWorklessRuntimeV2({
   });
 
   async function run(task, options = {}) {
+    const existing = options.jobId ? await journal.read(options.jobId) : null;
+    if (options.jobId && !existing) {
+      throw new Error(`unknown workless job: ${options.jobId}`);
+    }
+
     const jobId = options.jobId ?? await journal.open(task);
-    let activeTask = task;
-    const excluded = new Set();
+    let activeTask = existing?.activeTask ?? task;
+    const excluded = recoverExcludedProviders(existing);
     const routeAttempts = [];
+
+    await journal.append(jobId, {
+      phase: existing ? "resume" : "start",
+      recoveredExcludedProviders: [...excluded],
+    });
 
     for (let routeIndex = 0; routeIndex <= effectivePolicy.maxComputeReroutes; routeIndex += 1) {
       const steering = await journal.consumeSteering(jobId);
@@ -322,12 +341,20 @@ export function createWorklessRuntimeV2({
     return result;
   }
 
+  async function resume(jobId) {
+    const job = await journal.read(jobId);
+    if (!job) throw new Error(`unknown workless job: ${jobId}`);
+    if (job.status === "complete") return job.result;
+    return run(job.activeTask ?? job.originalTask, { jobId });
+  }
+
   return freeze({
     mode: "MONDAYID_WORKLESS_RUNTIME_V2",
     alias: "WorkUp",
     law: "quota failure reroutes compute; semantic failure changes the causal route; task state belongs to MondayID",
     policy: effectivePolicy,
     run,
+    resume,
     steer: journal.steer,
     readJob: journal.read,
     journal,
