@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { resolve, sep } from "node:path";
 
 function freeze(value) {
@@ -47,7 +48,17 @@ export function createContainerWorkspaceExecutor({
     return relative ? `/workspace/${relative.replaceAll("\\", "/")}` : "/workspace";
   }
 
-  function runExec(args, timeoutMs) {
+  function removeContainer(name) {
+    return new Promise((resolveCleanup) => {
+      execFile(dockerCommand, ["rm", "-f", name], {
+        encoding: "utf8",
+        timeout: 10_000,
+        windowsHide: true,
+      }, () => resolveCleanup());
+    });
+  }
+
+  function runExec(args, timeoutMs, containerName) {
     const startedAt = Date.now();
     return new Promise((resolveResult) => {
       execFile(dockerCommand, args, {
@@ -55,7 +66,7 @@ export function createContainerWorkspaceExecutor({
         timeout: timeoutMs,
         maxBuffer: maxBufferBytes,
         windowsHide: true,
-      }, (error, stdout, stderr) => {
+      }, async (error, stdout, stderr) => {
         if (!error) {
           resolveResult(freeze({
             status: "completed",
@@ -68,6 +79,7 @@ export function createContainerWorkspaceExecutor({
           return;
         }
         const timedOut = error.killed === true || error.signal === "SIGTERM";
+        if (timedOut) await removeContainer(containerName);
         resolveResult(freeze({
           status: timedOut ? "timeout" : "failed",
           code: timedOut ? "provider_timeout" : "container_process_failed",
@@ -103,9 +115,11 @@ export function createContainerWorkspaceExecutor({
 
     const containerCwd = resolveCwd(cwd);
     const hostUser = uidGid();
+    const containerName = `workup-${process.pid}-${randomUUID().slice(0, 8)}`;
     const dockerArgs = [
       "run",
       "--rm",
+      "--name", containerName,
       "--network", "none",
       "--memory", memory,
       "--cpus", cpus,
@@ -120,7 +134,7 @@ export function createContainerWorkspaceExecutor({
     if (hostUser) dockerArgs.push("--user", hostUser);
     dockerArgs.push(selected.image, command, ...args);
 
-    const result = await runExec(dockerArgs, timeoutMs);
+    const result = await runExec(dockerArgs, timeoutMs, containerName);
     return freeze({
       ...result,
       profile,
