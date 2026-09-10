@@ -1,0 +1,50 @@
+name: WorkUp Held-Out E2E Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-workless-runtime-v2
+    paths:
+      - "platform/work/workup-heldout-e2e-proof.mjs"
+      - "platform/work/mondayid-agent-work-adapter.mjs"
+      - "platform/work/container-workspace-executor.mjs"
+      - "platform/work/agent-browser-workup-capability.mjs"
+      - "platform/work/file-work-journal.mjs"
+      - ".github/workflows/workup-heldout-e2e-proof.yml"
+  pull_request:
+    paths:
+      - "platform/work/workup-heldout-e2e-proof.mjs"
+      - "platform/work/mondayid-agent-work-adapter.mjs"
+      - "platform/work/container-workspace-executor.mjs"
+      - "platform/work/agent-browser-workup-capability.mjs"
+      - "platform/work/file-work-journal.mjs"
+      - ".github/workflows/workup-heldout-e2e-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  heldout-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install live browser runtime
+        run: |
+          npm install -g agent-browser
+          npx agent-browser install
+
+      - name: Prepare isolated Python image
+        run: docker pull python:3.12-slim
+
+      - name: Run held-out WorkUp vertical
+        working-directory: platform
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node work/workup-heldout-e2e-proof.mjs
