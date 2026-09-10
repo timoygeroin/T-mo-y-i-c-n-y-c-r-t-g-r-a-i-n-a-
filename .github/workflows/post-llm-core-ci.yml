@@ -1,0 +1,38 @@
+name: Post-LLM Core CI
+
+on:
+  pull_request:
+    paths:
+      - "post_llm_core/**"
+      - "tests/**"
+      - ".github/workflows/post-llm-core-ci.yml"
+  push:
+    branches:
+      - post-llm-foundation-v0
+    paths:
+      - "post_llm_core/**"
+      - "tests/**"
+      - ".github/workflows/post-llm-core-ci.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  python-core:
+    name: Python cognitive substrate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test runner
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Run tests
+        run: python -m pytest -q
