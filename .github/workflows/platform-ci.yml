@@ -7,6 +7,7 @@ on:
       - monday-platform-genesis-01
       - agent/mondayid-one-v1
       - agent/mondayid-origin-convergence-v1
+      - agent/mondayid-workless-runtime-v2
     paths:
       - "platform/**"
       - ".github/workflows/platform-ci.yml"
@@ -51,6 +52,7 @@ jobs:
           npm run proof:proof-evaluation
           npm run proof:one
           npm run proof:work
+          npm run proof:workless-v2
           npm run proof:origin-convergence
           npm run proof:mcp-work-adapter
           npm run proof:focus-object
