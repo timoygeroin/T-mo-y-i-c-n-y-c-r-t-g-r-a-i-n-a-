@@ -5,6 +5,7 @@
   "type": "module",
   "description": "External platform scaffold for MondayiD runtime manifestation.",
   "workspaces": [
+    "apps/host",
     "packages/route-governor",
     "packages/processor-fabric",
     "packages/proof-evaluation",
@@ -12,6 +13,8 @@
     "packages/manifestation-engine"
   ],
   "scripts": {
+    "dev:host": "npm --workspace @mondayid/host run dev",
+    "build:host": "npm --workspace @mondayid/host run build",
     "proof:route-governor": "npm --workspace @mondayid/route-governor run proof:examples",
     "proof:processor-fabric": "npm --workspace @mondayid/processor-fabric run proof:examples",
     "proof:proof-evaluation": "npm --workspace @mondayid/proof-evaluation run proof:examples",

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+test-results/
+platform/apps/host/artifacts/
+*.log
+*.tsbuildinfo
+/package-lock.json

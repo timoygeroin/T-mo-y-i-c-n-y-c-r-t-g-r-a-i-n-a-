@@ -1,0 +1,5 @@
+{
+  "name": "MondayID", "short_name": "MondayID", "start_url": "/", "display": "standalone",
+  "background_color": "#071019", "theme_color": "#071019",
+  "description": "Личная когнитивная рабочая поверхность"
+}

@@ -1,8 +1,20 @@
 # Monday Platform
 
-This directory is the first external embodiment boundary for MondayiD's platform runtime.
+This directory contains MondayiD's platform runtime and its first user-facing host.
 
-It is a prototype runtime scaffold, not a deployed platform. Its purpose is to move the existing internal architecture into a durable, versioned GitHub surface that future work can extend without restarting from prompt-only state.
+## MondayID Host
+
+`apps/host` is the usable responsive surface for the system. It deliberately keeps a hard boundary between intent, context, action, and verification. The host persists turns locally, restores them after reload, exports a portable continuity packet, and never marks an action verified until the user confirms its result.
+
+```bash
+npm install
+npm run dev:host
+npm run build:host
+```
+
+The host is installable as a standalone web app. Its first release is local-first; provider execution is the next explicit integration boundary rather than a simulated capability.
+
+The lower-level packages remain a prototype runtime scaffold. They must not be presented as a deployed autonomous platform until their existing gate failures are repaired and a real execution provider is bound.
 
 ## Initial boundaries
 
