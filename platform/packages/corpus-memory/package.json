@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Source-ranked corpus memory ledger for MondayiD continuation routing.",
+  "description": "Source-ranked corpus memory ledger and role-locked lineage genome for MondayiD continuation routing.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -13,7 +13,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "proof:examples": "tsc -p tsconfig.json && node dist/corpus-memory-proof.js"
+    "proof:examples": "tsc -p tsconfig.json && node dist/corpus-memory-proof.js && node dist/lineage-genome-proof.js"
   },
   "dependencies": {},
   "devDependencies": {}
