@@ -5,7 +5,7 @@ test("user-recorded result persists without pretending execution", async ({ page
   const composer = page.getByPlaceholder("Скажи, что должно стать реальностью…");
   await composer.fill("Закончи хост для MondayID");
   await composer.press("Enter");
-  await expect(page.getByText("Закончи хост для MondayID").first()).toBeVisible();
+  await expect(page.locator(".message.user").getByText("Закончи хост для MondayID", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Записать результат" })).toBeDisabled();
   await expect(page.getByText("Не загружен", { exact: true })).toBeVisible();
   await expect(page.getByText("Выполнено", { exact: true })).toHaveCount(0);
@@ -36,6 +36,6 @@ test("invalid import leaves existing history intact", async ({ page }) => {
   await page.getByRole("button", { name: "Записать намерение" }).click();
   await page.getByLabel("Файл продолжения").setInputFiles({ name: "bad.json", mimeType: "application/json", buffer: Buffer.from('{broken') });
   await expect(page.getByRole("alert")).toContainText("корректным JSON");
-  await expect(page.getByText("Сохранить меня", { exact: true }).first()).toBeVisible();
+  await expect(page.locator(".message.user").getByText("Сохранить меня", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Восстановить историю" })).toHaveCount(0);
 });
