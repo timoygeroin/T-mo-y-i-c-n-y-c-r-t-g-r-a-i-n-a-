@@ -1,0 +1,37 @@
+name: Grok Cell Repo Readiness
+
+on:
+  push:
+    branches:
+      - host/grok-organism-phenotype-v4
+  pull_request:
+    paths:
+      - '.grok/**'
+      - 'hosts/grok/**'
+      - '.github/workflows/grok-cell-repo-readiness.yml'
+
+jobs:
+  repo-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required artifacts exist
+        run: |
+          set -euo pipefail
+          test -f .grok/skills/mondayid-cell/SKILL.md
+          test -f hosts/grok/GROK_HOST_PHENOTYPE_COMPILER_V1.md
+          test -f hosts/grok/GROK_CAPABILITY_PARITY_MATRIX_V1.md
+          test -f hosts/grok/MONDAYID_MCP_BINDING_CONTRACT_V1.md
+          test -f hosts/grok/GROK_REPOSITORY_TOPOLOGY_V4.md
+          test -f hosts/grok/GROK_STRENGTHS_WEAKNESSES_2026-08-30.md
+          test -f hosts/grok/GROK_CELL_READINESS_GATE_V1.md
+          test -f hosts/grok/tests/GROK_BLIND_REENTRY_FIELD_TEST_V1.md
+      - name: Core invariants are present
+        run: |
+          set -euo pipefail
+          grep -q 'No permanent controller host' hosts/grok/GROK_HOST_PHENOTYPE_COMPILER_V1.md
+          grep -q 'FIELD_UNPROVEN' hosts/grok/GROK_HOST_PHENOTYPE_COMPILER_V1.md
+          grep -q 'Never self-promote' .grok/skills/mondayid-cell/SKILL.md
+          grep -q 'Repository completeness is not field proof' hosts/grok/tests/GROK_BLIND_REENTRY_FIELD_TEST_V1.md
+      - name: Report
+        run: echo 'REPO_READY candidate: structural readiness gate passed. Live Grok binding/field proof remains separate.'
