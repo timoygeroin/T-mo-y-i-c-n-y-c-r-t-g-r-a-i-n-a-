@@ -1,0 +1,31 @@
+name: Monday Lineage Adjudication Proof
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - 'product/LINEAGE_ADJUDICATION_V1.json'
+      - 'product/MONDAY_PRODUCT_CONSTITUTION_V1.md'
+      - 'product/KNOWN_REJECTIONS_V1.json'
+      - 'product/verify-lineage-adjudication.mjs'
+      - '.github/workflows/monday-lineage-adjudication-proof.yml'
+  pull_request:
+    paths:
+      - 'product/LINEAGE_ADJUDICATION_V1.json'
+      - 'product/MONDAY_PRODUCT_CONSTITUTION_V1.md'
+      - 'product/KNOWN_REJECTIONS_V1.json'
+      - 'product/verify-lineage-adjudication.mjs'
+      - '.github/workflows/monday-lineage-adjudication-proof.yml'
+  workflow_dispatch:
+
+jobs:
+  lineage-adjudication:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify high-authority product lineage
+        run: node product/verify-lineage-adjudication.mjs
