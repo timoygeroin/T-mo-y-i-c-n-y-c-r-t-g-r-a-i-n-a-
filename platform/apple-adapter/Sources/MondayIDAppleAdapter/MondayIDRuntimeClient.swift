@@ -1,6 +1,22 @@
 import Foundation
 import Security
 
+public struct MondayIDRuntimeHealth: Codable, Sendable, Equatable {
+    public let status: String
+    public let runtime: String
+    public let durable: Bool
+
+    public init(status: String, runtime: String, durable: Bool) {
+        self.status = status
+        self.runtime = runtime
+        self.durable = durable
+    }
+
+    public var isReady: Bool {
+        status == "ok" && runtime == "MondayID" && durable
+    }
+}
+
 public struct MondayIDRuntimeReceipt: Codable, Sendable, Equatable {
     public let status: String
     public let result: String?
@@ -20,11 +36,13 @@ public struct MondayIDRuntimeReceipt: Codable, Sendable, Equatable {
 public enum MondayIDRuntimeError: Error, LocalizedError, Equatable {
     case notConfigured
     case invalidResponse(Int)
+    case unhealthyRuntime
 
     public var errorDescription: String? {
         switch self {
         case .notConfigured: "MondayID runtime is not configured"
         case .invalidResponse(let status): "MondayID runtime returned HTTP \(status)"
+        case .unhealthyRuntime: "Endpoint is not a durable MondayID runtime"
         }
     }
 }
@@ -38,6 +56,18 @@ public struct MondayIDRuntimeClient: Sendable {
         self.endpoint = endpoint
         self.controlToken = controlToken
         self.session = session
+    }
+
+    public func health() async throws -> MondayIDRuntimeHealth {
+        var request = URLRequest(url: endpoint.appendingPathComponent("health"))
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        let (data, response) = try await session.data(for: request)
+        let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+        guard status == 200 else { throw MondayIDRuntimeError.invalidResponse(status) }
+        let health = try JSONDecoder().decode(MondayIDRuntimeHealth.self, from: data)
+        guard health.isReady else { throw MondayIDRuntimeError.unhealthyRuntime }
+        return health
     }
 
     public func submit(signal: String) async throws -> MondayIDRuntimeReceipt {
