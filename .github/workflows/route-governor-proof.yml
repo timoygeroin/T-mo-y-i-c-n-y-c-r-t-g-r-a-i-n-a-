@@ -58,6 +58,8 @@ jobs:
           one_status=${PIPESTATUS[0]}
           npm run proof:route-governor 2>&1 | tee -a route-governor-proof-output.log
           route_status=${PIPESTATUS[0]}
+          node packages/route-governor/src/provider-fabric-route-proof.mjs 2>&1 | tee -a route-governor-proof-output.log
+          provider_status=${PIPESTATUS[0]}
           npm run proof:processor-fabric 2>&1 | tee -a route-governor-proof-output.log
           processor_status=${PIPESTATUS[0]}
           npm run proof:proof-evaluation 2>&1 | tee -a route-governor-proof-output.log
@@ -70,6 +72,8 @@ jobs:
             status="$one_status"
           elif [ "$route_status" -ne 0 ]; then
             status="$route_status"
+          elif [ "$provider_status" -ne 0 ]; then
+            status="$provider_status"
           elif [ "$processor_status" -ne 0 ]; then
             status="$processor_status"
           elif [ "$evaluation_status" -ne 0 ]; then
@@ -87,10 +91,10 @@ jobs:
             echo "Head: \`${GITHUB_SHA}\`"
             echo "Exit code: \`${status}\`"
             echo
-            echo "Last 120 output lines:"
+            echo "Last 140 output lines:"
             echo
             echo '```text'
-            tail -n 120 route-governor-proof-output.log
+            tail -n 140 route-governor-proof-output.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           exit "$status"
