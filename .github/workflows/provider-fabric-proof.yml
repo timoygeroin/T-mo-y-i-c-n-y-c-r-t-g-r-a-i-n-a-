@@ -1,0 +1,30 @@
+name: Provider Fabric Proof
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - "platform/packages/route-governor/src/provider-fabric-route.mjs"
+      - "platform/packages/route-governor/src/provider-fabric-route-proof.mjs"
+      - ".github/workflows/provider-fabric-proof.yml"
+  pull_request:
+    paths:
+      - "platform/packages/route-governor/src/provider-fabric-route.mjs"
+      - "platform/packages/route-governor/src/provider-fabric-route-proof.mjs"
+      - ".github/workflows/provider-fabric-proof.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  provider-fabric:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Prove provider routing contract
+        run: node platform/packages/route-governor/src/provider-fabric-route-proof.mjs
