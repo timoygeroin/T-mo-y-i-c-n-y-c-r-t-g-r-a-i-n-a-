@@ -1,0 +1,30 @@
+name: Monday Runtime Truth Proof
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - 'platform/runtime/mondayid-agent.mjs'
+      - 'platform/runtime/mondayid-agent-proof.mjs'
+      - '.github/workflows/monday-runtime-truth-proof.yml'
+  pull_request:
+    paths:
+      - 'platform/runtime/mondayid-agent.mjs'
+      - 'platform/runtime/mondayid-agent-proof.mjs'
+      - '.github/workflows/monday-runtime-truth-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  truth-state:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove model prose cannot manufacture Verified
+        run: node platform/runtime/mondayid-agent-proof.mjs
