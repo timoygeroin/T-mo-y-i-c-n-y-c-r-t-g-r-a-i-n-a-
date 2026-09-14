@@ -33,6 +33,12 @@ private func requestBody(_ request: URLRequest) throws -> Data {
     return data
 }
 
+private func runtimeSession() -> URLSession {
+    let configuration = URLSessionConfiguration.ephemeral
+    configuration.protocolClasses = [RuntimeURLProtocol.self]
+    return URLSession(configuration: configuration)
+}
+
 @Test func commandBusPreservesOrderedCommands() async throws {
     let bus = MondayIDCommandBus()
     await bus.record(.open)
@@ -73,9 +79,31 @@ private func requestBody(_ request: URLRequest) throws -> Data {
     #expect(MondayIDShortcuts.appShortcuts.count == 6)
 }
 
+@Test func runtimeHealthRequiresMondayIDAndDurableState() async throws {
+    RuntimeURLProtocol.handler = { request in
+        #expect(request.url?.path == "/health")
+        #expect(request.httpMethod == "GET")
+        let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
+        let health = MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true)
+        return (response, try JSONEncoder().encode(health))
+    }
+    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
+    #expect(try await client.health() == MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true))
+}
+
+@Test func runtimeHealthRejectsLookalikeEndpoint() async throws {
+    RuntimeURLProtocol.handler = { request in
+        let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
+        let health = MondayIDRuntimeHealth(status: "ok", runtime: "OtherRuntime", durable: true)
+        return (response, try JSONEncoder().encode(health))
+    }
+    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
+    await #expect(throws: MondayIDRuntimeError.unhealthyRuntime) {
+        try await client.health()
+    }
+}
+
 @Test func runtimeClientSendsAuthenticatedSignalAndDecodesReceipt() async throws {
-    let configuration = URLSessionConfiguration.ephemeral
-    configuration.protocolClasses = [RuntimeURLProtocol.self]
     RuntimeURLProtocol.handler = { request in
         #expect(request.url?.path == "/v1/tasks")
         #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer control")
@@ -85,7 +113,7 @@ private func requestBody(_ request: URLRequest) throws -> Data {
         let receipt = MondayIDRuntimeReceipt(status: "verified", result: "continued", receiptId: "r-1", providerId: "openai-mondayid", stateRevision: 7)
         return (response, try JSONEncoder().encode(receipt))
     }
-    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: URLSession(configuration: configuration))
+    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
     let receipt = try await client.submit(signal: "continue")
     #expect(receipt.result == "continued")
     #expect(receipt.stateRevision == 7)
