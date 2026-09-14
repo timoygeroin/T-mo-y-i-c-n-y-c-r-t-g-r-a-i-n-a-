@@ -1,26 +1,24 @@
-name: Monday Consumer Voice Integration
+name: Monday Consumer Navigation Depth
 
 on:
   push:
     branches: [monday/continuum-runtime-integration-20260914]
     paths:
       - '.github/workflows/monday-consumer-voice-integration.yml'
-      - 'platform/apple-host/**'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  voice-capture:
-    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message != 'feat(consumer): add dedicated voice capture'
+  navigation-depth:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: monday/continuum-runtime-integration-20260914
           fetch-depth: 0
-      - name: Patch dedicated Voice capture into existing consumer body
+      - name: Patch actionable navigation into existing consumer body
         shell: python
         run: |
           from pathlib import Path
@@ -29,152 +27,195 @@ jobs:
           def once(old, new):
               global s
               if old not in s:
-                  raise SystemExit('PATCH_ANCHOR_MISSING: '+old[:100])
+                  raise SystemExit('PATCH_ANCHOR_MISSING: '+old[:120])
               if s.count(old) != 1:
-                  raise SystemExit('PATCH_ANCHOR_NONUNIQUE: '+old[:100])
+                  raise SystemExit('PATCH_ANCHOR_NONUNIQUE: '+old[:120])
               s = s.replace(old, new, 1)
 
-          once('import AppIntents\nimport Foundation\n', 'import AppIntents\nimport AVFoundation\nimport Foundation\n')
-          once('    case code = "Code"\n    case image = "Image"\n    case video = "Video"\n', '    case code = "Code"\n    case audio = "Audio"\n    case image = "Image"\n    case video = "Video"\n')
-          once('        case .code: return "chevron.left.forwardslash.chevron.right"\n        case .image: return "photo"\n', '        case .code: return "chevron.left.forwardslash.chevron.right"\n        case .audio: return "waveform"\n        case .image: return "photo"\n')
-          once('        guard kind == .image || kind == .video else { throw CocoaError(.fileWriteUnknown) }\n', '        guard kind == .image || kind == .video || kind == .audio else { throw CocoaError(.fileWriteUnknown) }\n')
-          once('        let ext = safeExtension.isEmpty ? (kind == .image ? "jpg" : "mov") : safeExtension\n', '        let ext = safeExtension.isEmpty ? (kind == .image ? "jpg" : (kind == .audio ? "m4a" : "mov")) : safeExtension\n')
-          once('        let title = kind == .image ? "Image \\(Date().formatted(date: .abbreviated, time: .shortened))" : "Video \\(Date().formatted(date: .abbreviated, time: .shortened))"\n', '        let mediaName = kind == .image ? "Image" : (kind == .audio ? "Voice" : "Video")\n        let title = "\\(mediaName) \\(Date().formatted(date: .abbreviated, time: .shortened))"\n')
-          once('    @State private var showingCamera = false\n    @State private var mediaStatus: String?\n', '    @State private var showingCamera = false\n    @State private var showingVoiceRecorder = false\n    @State private var mediaStatus: String?\n')
-          once('                    Button { selection = .chats } label: { Label("Voice", systemImage: "waveform") }\n', '                    Button { showingVoiceRecorder = true } label: { Label("Voice", systemImage: "waveform") }\n')
-          once('            .sheet(isPresented: $showingCamera) {\n                MondayCameraPicker { data in\n                    persistMedia(data: data, fileExtension: "jpg", kind: .image)\n                }\n            }\n', '            .sheet(isPresented: $showingCamera) {\n                MondayCameraPicker { data in\n                    persistMedia(data: data, fileExtension: "jpg", kind: .image)\n                }\n            }\n            .sheet(isPresented: $showingVoiceRecorder) {\n                MondayVoiceRecorder { data in\n                    persistMedia(data: data, fileExtension: "m4a", kind: .audio)\n                }\n            }\n')
+          once('''    func togglePin(documentID: UUID) {
+        guard let index = documents.firstIndex(where: { $0.id == documentID }) else { return }
+        documents[index].isPinned.toggle()
+        addActivity(title: documents[index].isPinned ? "Pinned" : "Unpinned", detail: documents[index].title)
+    }
 
-          anchor = 'private struct MondayCameraPicker: UIViewControllerRepresentable {'
+''', '''    func togglePin(documentID: UUID) {
+        guard let index = documents.firstIndex(where: { $0.id == documentID }) else { return }
+        documents[index].isPinned.toggle()
+        addActivity(title: documents[index].isPinned ? "Pinned" : "Unpinned", detail: documents[index].title)
+    }
+
+    func updateDocument(_ document: MondayDocument) {
+        guard let index = documents.firstIndex(where: { $0.id == document.id }) else { return }
+        documents[index] = document
+        addActivity(title: "File updated", detail: document.title)
+    }
+
+''')
+          once('''                        ForEach(Array(store.documents.prefix(3))) { item in Label(item.title, systemImage: item.kind.symbol) }
+''', '''                        ForEach(Array(store.documents.prefix(3))) { item in
+                            NavigationLink { MondayDocumentDetailView(documentID: item.id) } label: { Label(item.title, systemImage: item.kind.symbol) }
+                        }
+''')
+          once('''                    ForEach(pinnedDocs) { item in Label(item.title, systemImage: "pin.fill") }
+''', '''                    ForEach(pinnedDocs) { item in
+                        NavigationLink { MondayDocumentDetailView(documentID: item.id) } label: { Label(item.title, systemImage: "pin.fill") }
+                    }
+''')
+          once('''                    List(rows, id: \\.1) { row in Label(row.1, systemImage: row.0 == "Space" ? "square.grid.2x2" : "doc.text") }
+''', '''                    List(Array(rows.enumerated()), id: \\.offset) { _, row in
+                        if row.0 == "Space", let space = store.spaces.first(where: { $0.name == row.1 }) {
+                            NavigationLink { MondaySpaceDetailView(spaceID: space.id) } label: { Label(row.1, systemImage: "square.grid.2x2") }
+                        } else if let doc = store.documents.first(where: { $0.title == row.1 && $0.kind.rawValue == row.0 }) {
+                            NavigationLink { MondayDocumentDetailView(documentID: doc.id) } label: { Label(row.1, systemImage: doc.kind.symbol) }
+                        } else if let task = store.tasks.first(where: { $0.title == row.1 }) {
+                            NavigationLink { MondayTaskDetailView(taskID: task.id) } label: { Label(row.1, systemImage: task.isAutomation ? "clock.arrow.circlepath" : "bell") }
+                        } else {
+                            Label(row.1, systemImage: "text.magnifyingglass")
+                        }
+                    }
+''')
+          once('''                    ForEach(visible) { doc in
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack { Label(doc.title, systemImage: doc.kind.symbol).font(.headline); Spacer(); if doc.isPinned { Image(systemName: "pin.fill") } }
+                            if !doc.body.isEmpty { Text(doc.body).lineLimit(3).foregroundStyle(.secondary) }
+                        }
+                        .swipeActions(edge: .leading) { Button(doc.isPinned ? "Unpin" : "Pin") { store.togglePin(documentID: doc.id) }.tint(.blue) }
+                    }
+''', '''                    ForEach(visible) { doc in
+                        NavigationLink { MondayDocumentDetailView(documentID: doc.id) } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack { Label(doc.title, systemImage: doc.kind.symbol).font(.headline); Spacer(); if doc.isPinned { Image(systemName: "pin.fill") } }
+                                if !doc.body.isEmpty { Text(doc.body).lineLimit(3).foregroundStyle(.secondary) }
+                            }
+                        }
+                        .swipeActions(edge: .leading) { Button(doc.isPinned ? "Unpin" : "Pin") { store.togglePin(documentID: doc.id) }.tint(.blue) }
+                    }
+''')
+          anchor = 'private struct MondayRuntimeConnectionView: View {'
           if anchor not in s:
-              raise SystemExit('VOICE_INSERT_ANCHOR_MISSING')
-          voice = r'''private struct MondayVoiceRecorder: View {
-    @Environment(\.dismiss) private var dismiss
-    let onCapture: (Data) -> Void
-    @State private var recorder: AVAudioRecorder?
-    @State private var recordingURL: URL?
-    @State private var status = "Ready to record."
-    @State private var recording = false
+              raise SystemExit('DETAIL_INSERT_ANCHOR_MISSING')
+          detail = r'''private struct MondayDocumentDetailView: View {
+    @EnvironmentObject private var store: MondayLocalStore
+    let documentID: UUID
+    @State private var title = ""
+    @State private var bodyText = ""
+    @State private var loaded = false
+    @State private var saved = false
+
+    private var document: MondayDocument? { store.documents.first(where: { $0.id == documentID }) }
+    private var isEditableText: Bool {
+        guard let document else { return false }
+        return document.kind == .document || document.kind == .note || document.kind == .generated || document.kind == .code
+    }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                Image(systemName: recording ? "waveform.circle.fill" : "waveform.circle")
-                    .font(.system(size: 72))
-                    .symbolEffect(.pulse, isActive: recording)
-                Text(recording ? "Recording…" : status)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(recording ? .primary : .secondary)
-                Button(recording ? "Stop and save" : "Record voice") {
-                    recording ? finishRecording() : requestAndStart()
+        Group {
+            if let document {
+                Form {
+                    Section("File") {
+                        Label(document.kind.rawValue, systemImage: document.kind.symbol)
+                        LabeledContent("Created") { Text(document.createdAt, style: .date) }
+                        if let spaceID = document.spaceID, let space = store.spaces.first(where: { $0.id == spaceID }) {
+                            LabeledContent("Space", value: space.name)
+                        }
+                    }
+                    if isEditableText {
+                        Section("Content") {
+                            TextField("Title", text: $title)
+                            TextEditor(text: $bodyText).frame(minHeight: 180)
+                            Button(saved ? "Saved" : "Save changes") {
+                                var updated = document
+                                let clean = title.trimmingCharacters(in: .whitespacesAndNewlines)
+                                updated.title = clean.isEmpty ? document.title : clean
+                                updated.body = bodyText
+                                store.updateDocument(updated)
+                                saved = true
+                            }
+                        }
+                    } else {
+                        Section("Stored object") {
+                            Text(document.body).textSelection(.enabled)
+                            Text("Media bytes are stored in Monday's Application Support container; this object is the durable Library pointer.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                if recording {
-                    Button("Cancel recording", role: .destructive) { cancelRecording() }
+                .navigationTitle(document.title)
+                .onAppear {
+                    guard !loaded else { return }
+                    title = document.title
+                    bodyText = document.body
+                    loaded = true
                 }
-                Spacer()
-            }
-            .padding(28)
-            .navigationTitle("Voice")
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { cancelRecording(); dismiss() } } }
-        }
-    }
-
-    private func requestAndStart() {
-        AVAudioSession.sharedInstance().requestRecordPermission { granted in
-            DispatchQueue.main.async {
-                if granted { startRecording() }
-                else { status = "Microphone permission is required to record voice." }
+                .onChange(of: title) { _, _ in saved = false }
+                .onChange(of: bodyText) { _, _ in saved = false }
+            } else {
+                ContentUnavailableView("File unavailable", systemImage: "doc.questionmark")
             }
         }
     }
+}
 
-    private func startRecording() {
-        do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.record, mode: .spokenAudio, options: [])
-            try session.setActive(true)
-            let url = FileManager.default.temporaryDirectory.appendingPathComponent("MondayVoice-\(UUID().uuidString).m4a")
-            let settings: [String: Any] = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 44_100,
-                AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-            ]
-            let value = try AVAudioRecorder(url: url, settings: settings)
-            value.prepareToRecord()
-            guard value.record() else { throw CocoaError(.fileWriteUnknown) }
-            recorder = value
-            recordingURL = url
-            recording = true
-            status = "Recording…"
-        } catch {
-            status = "Recording failed: \(error.localizedDescription)"
-            recording = false
+private struct MondayTaskDetailView: View {
+    @EnvironmentObject private var store: MondayLocalStore
+    let taskID: UUID
+    private var task: MondayTask? { store.tasks.first(where: { $0.id == taskID }) }
+
+    var body: some View {
+        Group {
+            if let task {
+                Form {
+                    Section("Task") {
+                        Text(task.title).font(.headline)
+                        if !task.detail.isEmpty { Text(task.detail) }
+                        LabeledContent("State", value: task.state.rawValue)
+                        LabeledContent("Type", value: task.isAutomation ? "Automation" : "Reminder")
+                        if let dueAt = task.dueAt { LabeledContent("When") { Text(dueAt, style: .date) } }
+                    }
+                    Section("State") {
+                        Button("Running") { store.setTaskState(task.id, state: .running) }
+                        Button("Waiting") { store.setTaskState(task.id, state: .waiting) }
+                        Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }
+                        Button("Completed") { store.setTaskState(task.id, state: .completed) }
+                    }
+                }
+                .navigationTitle(task.title)
+            } else {
+                ContentUnavailableView("Task unavailable", systemImage: "checklist")
+            }
         }
-    }
-
-    private func finishRecording() {
-        recorder?.stop()
-        recorder = nil
-        recording = false
-        guard let url = recordingURL else { status = "No recording was created."; return }
-        defer { try? FileManager.default.removeItem(at: url); recordingURL = nil }
-        do {
-            let data = try Data(contentsOf: url)
-            guard !data.isEmpty else { status = "The recording was empty."; return }
-            onCapture(data)
-            try? AVAudioSession.sharedInstance().setActive(false)
-            dismiss()
-        } catch {
-            status = "Voice save failed: \(error.localizedDescription)"
-        }
-    }
-
-    private func cancelRecording() {
-        recorder?.stop()
-        recorder = nil
-        recording = false
-        if let url = recordingURL { try? FileManager.default.removeItem(at: url) }
-        recordingURL = nil
-        try? AVAudioSession.sharedInstance().setActive(false)
     }
 }
 
 '''
-          s = s.replace(anchor, voice + anchor, 1)
+          s = s.replace(anchor, detail + anchor, 1)
           p.write_text(s)
-
-          pbx = Path('platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj')
-          x = pbx.read_text()
-          camera = 'INFOPLIST_KEY_NSCameraUsageDescription = "Capture photos into Monday.";'
-          if x.count(camera) != 2:
-              raise SystemExit(f'EXPECTED_TWO_CAMERA_KEYS_GOT_{x.count(camera)}')
-          x = x.replace(camera, camera + '\n\t\t\t\tINFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice into Monday.";')
-          pbx.write_text(x)
-      - name: Verify source postconditions
+      - name: Verify navigation postconditions
         run: |
           set -euo pipefail
-          grep -q 'import AVFoundation' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'case audio = "Audio"' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'showingVoiceRecorder = true' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'struct MondayVoiceRecorder' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          test "$(grep -c 'INFOPLIST_KEY_NSMicrophoneUsageDescription' platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj)" -eq 2
+          f=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'func updateDocument' "$f"
+          grep -q 'struct MondayDocumentDetailView' "$f"
+          grep -q 'struct MondayTaskDetailView' "$f"
+          grep -q 'NavigationLink { MondayDocumentDetailView' "$f"
+          grep -q 'NavigationLink { MondayTaskDetailView' "$f"
+          grep -q 'Button(saved ? "Saved" : "Save changes")' "$f"
       - name: Build adapter tests
         run: swift test --package-path platform/apple-adapter
       - name: Compile iOS Simulator body
         run: |
           set -euo pipefail
-          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tee /tmp/monday-voice-build.log
-          grep -q '\*\* BUILD SUCCEEDED \*\*' /tmp/monday-voice-build.log
+          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tee /tmp/monday-navigation-build.log
+          grep -q '\*\* BUILD SUCCEEDED \*\*' /tmp/monday-navigation-build.log
       - name: Commit verified mutation
         run: |
           set -euo pipefail
           git config user.name 'Monday Completion Loop'
           git config user.email 'actions@users.noreply.github.com'
-          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift
           if git diff --cached --quiet; then
-            echo 'VOICE_MUTATION_ALREADY_PRESENT=true'
+            echo 'NAVIGATION_MUTATION_ALREADY_PRESENT=true'
             exit 0
           fi
-          git commit -m 'feat(consumer): add dedicated voice capture'
+          git commit -m 'feat(consumer): make library and search results actionable'
           git push origin HEAD:monday/continuum-runtime-integration-20260914
