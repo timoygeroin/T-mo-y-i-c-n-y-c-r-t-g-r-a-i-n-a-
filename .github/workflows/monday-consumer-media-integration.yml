@@ -1,0 +1,51 @@
+name: Monday Consumer Media Integration
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - platform/apple-host/tools/patch_media_capture.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integrate-and-verify:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: monday/continuum-runtime-integration-20260914
+          fetch-depth: 0
+      - name: Apply idempotent media patch
+        run: python3 platform/apple-host/tools/patch_media_capture.py
+      - name: Static postcondition checks
+        run: |
+          grep -q 'PhotosPicker(selection: $imageItem' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'PhotosPicker(selection: $videoItem' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'UIImagePickerController.isSourceTypeAvailable(.camera)' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'func saveMedia(data: Data' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          test "$(grep -c 'INFOPLIST_KEY_NSCameraUsageDescription' platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj)" -eq 2
+          ! grep -q 'system capture body pending field integration' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+      - name: Build iOS consumer body
+        run: |
+          xcodebuild \
+            -project platform/apple-host/MondayIDHost.xcodeproj \
+            -scheme MondayIDHost \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Commit verified source mutation
+        run: |
+          if git diff --quiet; then
+            echo 'Patch already present; no source commit required.'
+            exit 0
+          fi
+          git config user.name 'MondayID Execution'
+          git config user.email 'actions@users.noreply.github.com'
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj
+          git commit -m 'feat(ios): wire real image video and camera capture paths'
+          git push origin HEAD:monday/continuum-runtime-integration-20260914
