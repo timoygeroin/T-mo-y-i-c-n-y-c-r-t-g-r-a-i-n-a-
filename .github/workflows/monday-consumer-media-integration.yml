@@ -6,6 +6,7 @@ on:
       - monday/continuum-runtime-integration-20260914
     paths:
       - platform/apple-host/tools/patch_media_capture.py
+      - .github/workflows/monday-consumer-media-integration.yml
   workflow_dispatch:
 
 permissions:
