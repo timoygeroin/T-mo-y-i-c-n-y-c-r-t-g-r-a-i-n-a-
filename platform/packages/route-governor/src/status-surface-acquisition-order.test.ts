@@ -91,7 +91,7 @@ test("quarantines PR body and prompt surfaces instead of accepting them as statu
   });
 
   assert.equal(verdict.ok, false);
-  assert.equal(verdict.action, "request_live_status_surface");
+  assert.equal(verdict.action, "block_metadata_only_status_claim");
   assert.deepEqual(verdict.accepted_surface_ids, []);
   assert.deepEqual(verdict.quarantined_surface_ids.sort(), ["pr-body-old-failure", "prompt-repaired-head"].sort());
 });
