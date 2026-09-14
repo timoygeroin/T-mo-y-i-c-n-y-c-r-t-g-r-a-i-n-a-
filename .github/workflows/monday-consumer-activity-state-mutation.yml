@@ -25,70 +25,44 @@ jobs:
           path = Path('platform/apple-host/MondayIDHost/MondayIDHostApp.swift')
           text = path.read_text()
 
-          old_enum = '''private enum MondayTaskState: String, Codable, CaseIterable, Identifiable {
-              case waiting = "Waiting"
-              case needsYou = "Needs you"
-              case completed = "Completed"
-              case failed = "Failed"
-              var id: String { rawValue }
-          }'''
-          new_enum = '''private enum MondayTaskState: String, Codable, CaseIterable, Identifiable {
-              case running = "Running"
-              case waiting = "Waiting"
-              case needsYou = "Needs you"
-              case completed = "Completed"
-              case failed = "Failed"
-              case changed = "Changed"
-              var id: String { rawValue }
-          }'''
-          assert old_enum in text, 'task state enum drifted'
-          text = text.replace(old_enum, new_enum, 1)
+          marker = '    case waiting = "Waiting"\n    case needsYou = "Needs you"\n    case completed = "Completed"\n    case failed = "Failed"'
+          replacement = '    case running = "Running"\n    case waiting = "Waiting"\n    case needsYou = "Needs you"\n    case completed = "Completed"\n    case failed = "Failed"\n    case changed = "Changed"'
+          assert marker in text, 'task state enum drifted'
+          text = text.replace(marker, replacement, 1)
 
-          old_actions = '''        .swipeActions {
-              if task.state != .completed { Button("Complete") { store.setTaskState(task.id, state: .completed) }.tint(.green) }
-              Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }.tint(.orange)
-          }'''
-          new_actions = '''        .swipeActions {
-              if task.state != .completed { Button("Complete") { store.setTaskState(task.id, state: .completed) }.tint(.green) }
-              Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }.tint(.orange)
-          }
-          .contextMenu {
-              Button("Running") { store.setTaskState(task.id, state: .running) }
-              Button("Waiting") { store.setTaskState(task.id, state: .waiting) }
-              Button("Changed") { store.setTaskState(task.id, state: .changed) }
-              Button("Failed") { store.setTaskState(task.id, state: .failed) }
-          }'''
-          assert old_actions in text, 'task row actions drifted'
-          text = text.replace(old_actions, new_actions, 1)
+          action_marker = '        .swipeActions {\n            if task.state != .completed { Button("Complete") { store.setTaskState(task.id, state: .completed) }.tint(.green) }\n            Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }.tint(.orange)\n        }'
+          action_replacement = action_marker + '\n        .contextMenu {\n            Button("Running") { store.setTaskState(task.id, state: .running) }\n            Button("Waiting") { store.setTaskState(task.id, state: .waiting) }\n            Button("Changed") { store.setTaskState(task.id, state: .changed) }\n            Button("Failed") { store.setTaskState(task.id, state: .failed) }\n        }'
+          assert action_marker in text, 'task row actions drifted'
+          text = text.replace(action_marker, action_replacement, 1)
 
-          old_running = '''                Section("Running") { Text("No executor is active.").foregroundStyle(.secondary) }'''
-          new_running = '''                Section("Running") {
-                      let rows = store.tasks.filter { $0.state == .running }
-                      if rows.isEmpty { Text("No executor is active.").foregroundStyle(.secondary) }
-                      else { ForEach(rows) { MondayTaskRow(task: $0) } }
-                  }'''
-          assert old_running in text, 'running activity section drifted'
-          text = text.replace(old_running, new_running, 1)
+          running_marker = '                Section("Running") { Text("No executor is active.").foregroundStyle(.secondary) }'
+          running_replacement = '''                Section("Running") {
+                    let rows = store.tasks.filter { $0.state == .running }
+                    if rows.isEmpty { Text("No executor is active.").foregroundStyle(.secondary) }
+                    else { ForEach(rows) { MondayTaskRow(task: $0) } }
+                }'''
+          assert running_marker in text, 'running activity section drifted'
+          text = text.replace(running_marker, running_replacement, 1)
 
-          old_recent = '''                Section("Recent changes") {
-                      if store.activity.isEmpty { Text("No local changes yet.").foregroundStyle(.secondary) }
-                      else { ForEach(store.activity) { item in VStack(alignment: .leading, spacing: 3) { Text(item.title); Text(item.detail).font(.caption).foregroundStyle(.secondary) } } }
-                  }'''
-          new_recent = '''                Section("Changed") {
-                      let changedTasks = store.tasks.filter { $0.state == .changed }
-                      if changedTasks.isEmpty && store.activity.isEmpty { Text("No material changes yet.").foregroundStyle(.secondary) }
-                      else {
-                          ForEach(changedTasks) { MondayTaskRow(task: $0) }
-                          ForEach(store.activity.prefix(20)) { item in VStack(alignment: .leading, spacing: 3) { Text(item.title); Text(item.detail).font(.caption).foregroundStyle(.secondary) } }
-                      }
-                  }
-                  Section("Failed") {
-                      let rows = store.tasks.filter { $0.state == .failed }
-                      if rows.isEmpty { Text("No failed local tasks.").foregroundStyle(.secondary) }
-                      else { ForEach(rows) { MondayTaskRow(task: $0) } }
-                  }'''
-          assert old_recent in text, 'recent changes section drifted'
-          text = text.replace(old_recent, new_recent, 1)
+          recent_marker = '''                Section("Recent changes") {
+                    if store.activity.isEmpty { Text("No local changes yet.").foregroundStyle(.secondary) }
+                    else { ForEach(store.activity) { item in VStack(alignment: .leading, spacing: 3) { Text(item.title); Text(item.detail).font(.caption).foregroundStyle(.secondary) } } }
+                }'''
+          recent_replacement = '''                Section("Changed") {
+                    let changedTasks = store.tasks.filter { $0.state == .changed }
+                    if changedTasks.isEmpty && store.activity.isEmpty { Text("No material changes yet.").foregroundStyle(.secondary) }
+                    else {
+                        ForEach(changedTasks) { MondayTaskRow(task: $0) }
+                        ForEach(store.activity.prefix(20)) { item in VStack(alignment: .leading, spacing: 3) { Text(item.title); Text(item.detail).font(.caption).foregroundStyle(.secondary) } }
+                    }
+                }
+                Section("Failed") {
+                    let rows = store.tasks.filter { $0.state == .failed }
+                    if rows.isEmpty { Text("No failed local tasks.").foregroundStyle(.secondary) }
+                    else { ForEach(rows) { MondayTaskRow(task: $0) } }
+                }'''
+          assert recent_marker in text, 'recent changes section drifted'
+          text = text.replace(recent_marker, recent_replacement, 1)
 
           path.write_text(text)
           PY
