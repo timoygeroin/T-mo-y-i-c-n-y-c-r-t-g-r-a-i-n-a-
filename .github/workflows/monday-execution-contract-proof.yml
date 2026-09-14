@@ -1,0 +1,32 @@
+name: Monday Execution Contract Proof
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - 'platform/work/execution-contract.mjs'
+      - 'platform/work/execution-contract-proof.mjs'
+      - 'platform/work/file-work-journal.mjs'
+      - '.github/workflows/monday-execution-contract-proof.yml'
+  pull_request:
+    paths:
+      - 'platform/work/execution-contract.mjs'
+      - 'platform/work/execution-contract-proof.mjs'
+      - 'platform/work/file-work-journal.mjs'
+      - '.github/workflows/monday-execution-contract-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  execution-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove durable execution truth contract
+        run: node platform/work/execution-contract-proof.mjs
