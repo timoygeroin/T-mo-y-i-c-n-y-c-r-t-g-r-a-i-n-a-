@@ -6,8 +6,9 @@ const ok = (message) => console.log(`PASS: ${message}`);
 const constitutionPath = new URL('./MONDAY_PRODUCT_CONSTITUTION_V1.md', import.meta.url);
 const planPath = new URL('./CONTINUUM_INTEGRATION_PLAN.json', import.meta.url);
 const rejectionPath = new URL('./KNOWN_REJECTIONS_V1.json', import.meta.url);
+const iosHostPath = new URL('../platform/apple-host/MondayIDHost/MondayIDHostApp.swift', import.meta.url);
 
-for (const [name, url] of [['constitution', constitutionPath], ['plan', planPath], ['rejections', rejectionPath]]) {
+for (const [name, url] of [['constitution', constitutionPath], ['plan', planPath], ['rejections', rejectionPath], ['ios-host', iosHostPath]]) {
   if (!fs.existsSync(url)) fail(`${name} artifact missing`); else ok(`${name} artifact exists`);
 }
 
@@ -16,6 +17,7 @@ if (process.exitCode) process.exit(process.exitCode);
 const constitution = fs.readFileSync(constitutionPath, 'utf8');
 const plan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
 const rejections = JSON.parse(fs.readFileSync(rejectionPath, 'utf8'));
+const iosHost = fs.readFileSync(iosHostPath, 'utf8');
 
 const requiredConstitution = [
   'Home / Chats / Create / Spaces / You',
@@ -41,10 +43,45 @@ for (const gate of requiredGates) gateIds.has(gate) ? ok(`release gate: ${gate}`
 
 const rejectionIds = new Set((rejections.rules ?? []).map(x => x.id));
 for (const id of ['site-showcase','dashboard-home','chatgpt-clone','cyberpunk-shell','orange-task-shell','fake-work','fake-verification','beautiful-substitute','forgotten-reinvention']) {
-  rejectionIds.has(id) ? ok(`anti-regression: ${id}`) : fail(`missing anti-regression: ${id}`);
+  rejectionIds.has(id) ? ok(`anti-regression registered: ${id}`) : fail(`missing anti-regression: ${id}`);
 }
-
 if (!rejections.release_blocking) fail('known rejections must be release-blocking');
 else ok('known rejections are release-blocking');
+
+// Real release-surface regression checks. These fail if the iPhone host drifts back
+// to a developer form/dashboard or loses the familiar stable consumer shell.
+const rootStart = iosHost.indexOf('private struct MondayRootView');
+const homeStart = iosHost.indexOf('private struct MondayHomeView');
+if (rootStart < 0 || homeStart < 0 || homeStart <= rootStart) {
+  fail('cannot isolate MondayRootView consumer shell');
+} else {
+  const root = iosHost.slice(rootStart, homeStart);
+  root.includes('TabView') ? ok('consumer root uses stable TabView') : fail('consumer root lost stable TabView');
+  for (const label of ['Home', 'Chats', 'Create', 'Spaces', 'You']) {
+    root.includes(`Label("${label}"`) ? ok(`consumer tab present: ${label}`) : fail(`consumer tab missing: ${label}`);
+  }
+  root.includes('showingSearch') && root.includes('MondaySearchView') ? ok('global Search is reachable') : fail('global Search missing');
+  root.includes('showingActivity') && root.includes('MondayActivityView') ? ok('global Activity is reachable') : fail('global Activity missing');
+  for (const forbidden of ['Form {', 'Control token', 'Canonical runtime', 'Telemetry', 'Dashboard']) {
+    !root.includes(forbidden) ? ok(`root rejects developer/dashboard shell token: ${forbidden}`) : fail(`rejected developer/dashboard shell leaked into root: ${forbidden}`);
+  }
+}
+
+const appBody = iosHost.match(/var body: some Scene \{([^]*?)\n    \}/)?.[1] ?? '';
+appBody.includes('MondayRootView()') ? ok('WindowGroup enters consumer root') : fail('WindowGroup does not enter consumer root');
+!appBody.includes('MondayRuntimeConnectionView()') ? ok('runtime settings are not the app root') : fail('runtime settings became the app root');
+
+iosHost.includes('NavigationLink("Library")') ? ok('Library has an explicit manual path') : fail('Library manual path missing');
+iosHost.includes('NavigationLink("Connections") { MondayRuntimeConnectionView() }') ? ok('runtime configuration is scoped under You/Connections') : fail('runtime configuration is not scoped under Connections');
+
+const fakeStatusClaims = [
+  'Work complete',
+  'Everything is synced',
+  'All systems operational',
+  '100% complete'
+];
+for (const claim of fakeStatusClaims) {
+  !iosHost.includes(claim) ? ok(`no fake completion literal: ${claim}`) : fail(`fake completion literal present: ${claim}`);
+}
 
 if (!process.exitCode) console.log('PRODUCT_CONTRACT_GATE=PASS');
