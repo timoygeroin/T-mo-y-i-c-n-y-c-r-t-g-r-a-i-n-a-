@@ -79,46 +79,49 @@ private func runtimeSession() -> URLSession {
     #expect(MondayIDShortcuts.appShortcuts.count == 6)
 }
 
-@Test func runtimeHealthRequiresMondayIDAndDurableState() async throws {
-    RuntimeURLProtocol.handler = { request in
-        #expect(request.url?.path == "/health")
-        #expect(request.httpMethod == "GET")
-        let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
-        let health = MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true)
-        return (response, try JSONEncoder().encode(health))
+@Suite(.serialized)
+struct RuntimeClientTests {
+    @Test func runtimeHealthRequiresMondayIDAndDurableState() async throws {
+        RuntimeURLProtocol.handler = { request in
+            #expect(request.url?.path == "/health")
+            #expect(request.httpMethod == "GET")
+            let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
+            let health = MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true)
+            return (response, try JSONEncoder().encode(health))
+        }
+        let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
+        #expect(try await client.health() == MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true))
     }
-    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
-    #expect(try await client.health() == MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true))
-}
 
-@Test func runtimeHealthRejectsLookalikeEndpoint() async throws {
-    RuntimeURLProtocol.handler = { request in
-        let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
-        let health = MondayIDRuntimeHealth(status: "ok", runtime: "OtherRuntime", durable: true)
-        return (response, try JSONEncoder().encode(health))
+    @Test func runtimeHealthRejectsLookalikeEndpoint() async throws {
+        RuntimeURLProtocol.handler = { request in
+            let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
+            let health = MondayIDRuntimeHealth(status: "ok", runtime: "OtherRuntime", durable: true)
+            return (response, try JSONEncoder().encode(health))
+        }
+        let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
+        var rejected = false
+        do {
+            _ = try await client.health()
+        } catch let error as MondayIDRuntimeError {
+            rejected = error == .unhealthyRuntime
+        }
+        #expect(rejected)
     }
-    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
-    var rejected = false
-    do {
-        _ = try await client.health()
-    } catch let error as MondayIDRuntimeError {
-        rejected = error == .unhealthyRuntime
-    }
-    #expect(rejected)
-}
 
-@Test func runtimeClientSendsAuthenticatedSignalAndDecodesReceipt() async throws {
-    RuntimeURLProtocol.handler = { request in
-        #expect(request.url?.path == "/v1/tasks")
-        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer control")
-        let body = try requestBody(request)
-        #expect(try JSONDecoder().decode([String: String].self, from: body)["signal"] == "continue")
-        let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
-        let receipt = MondayIDRuntimeReceipt(status: "verified", result: "continued", receiptId: "r-1", providerId: "openai-mondayid", stateRevision: 7)
-        return (response, try JSONEncoder().encode(receipt))
+    @Test func runtimeClientSendsAuthenticatedSignalAndDecodesReceipt() async throws {
+        RuntimeURLProtocol.handler = { request in
+            #expect(request.url?.path == "/v1/tasks")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer control")
+            let body = try requestBody(request)
+            #expect(try JSONDecoder().decode([String: String].self, from: body)["signal"] == "continue")
+            let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
+            let receipt = MondayIDRuntimeReceipt(status: "verified", result: "continued", receiptId: "r-1", providerId: "openai-mondayid", stateRevision: 7)
+            return (response, try JSONEncoder().encode(receipt))
+        }
+        let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
+        let receipt = try await client.submit(signal: "continue")
+        #expect(receipt.result == "continued")
+        #expect(receipt.stateRevision == 7)
     }
-    let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
-    let receipt = try await client.submit(signal: "continue")
-    #expect(receipt.result == "continued")
-    #expect(receipt.stateRevision == 7)
 }
