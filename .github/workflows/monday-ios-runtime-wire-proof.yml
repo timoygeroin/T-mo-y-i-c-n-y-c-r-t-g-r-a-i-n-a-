@@ -6,12 +6,14 @@ on:
       - monday/continuum-runtime-integration-20260914
     paths:
       - 'platform/apple-adapter/**'
+      - 'platform/apple-host/**'
       - 'platform/runtime/http-runtime*.mjs'
       - 'platform/runtime/secure-state.mjs'
       - '.github/workflows/monday-ios-runtime-wire-proof.yml'
   pull_request:
     paths:
       - 'platform/apple-adapter/**'
+      - 'platform/apple-host/**'
       - 'platform/runtime/http-runtime*.mjs'
       - 'platform/runtime/secure-state.mjs'
       - '.github/workflows/monday-ios-runtime-wire-proof.yml'
@@ -31,6 +33,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Run Swift package tests
+        working-directory: platform/apple-adapter
+        run: swift test
+      - name: Compile MondayID iOS host without signing
+        working-directory: platform/apple-host
+        run: |
+          xcodebuild \
+            -project MondayIDHost.xcodeproj \
+            -scheme MondayIDHost \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
       - name: Start deterministic MondayID HTTP runtime
         working-directory: platform
         run: |
