@@ -18,6 +18,7 @@ function candidate(overrides: Partial<CurrentInstructionEmbodimentCandidate> = {
     changed_files: ["platform/packages/route-governor/src/current-instruction-head-boundary.ts"],
     executable_artifacts: ["arbitrateCurrentInstructionHeadBoundary"],
     routing_artifacts: ["current instruction authority is preserved while live head fact wins"],
+    proof_artifacts: ["dist/current-instruction-head-boundary-proof.js"],
     ...overrides,
   };
 }

@@ -57,6 +57,7 @@ test("selects executable embodiment over a merely fresh moved-head readback", ()
             changed_files: ["platform/packages/route-governor/src/terminal-progress-arbiter.ts"],
             executable_artifacts: ["arbitrateTerminalProgress"],
             routing_artifacts: ["terminal progress conflict arbitration"],
+            proof_artifacts: ["dist/finalization-terminal-progress-contract-proof.js"],
             new_check_runs: [],
           },
         },

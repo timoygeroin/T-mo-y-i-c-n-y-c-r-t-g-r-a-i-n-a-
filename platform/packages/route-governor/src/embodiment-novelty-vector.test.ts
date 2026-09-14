@@ -94,7 +94,7 @@ test("blocks thin novelty when fewer than the required axes change", () => {
   const verdict = evaluateEmbodimentNovelty({
     candidate: candidate({
       artifact_class: "head_surface_arbitration",
-      execution_phase: "surface_intake",
+      execution_phase: "new_surface_intake",
       behavior_surfaces: ["live PR metadata arbitration"],
       routing_effects: ["quarantines prompt-carried and PR-body head claims"],
       source_paths: ["live PR metadata"],

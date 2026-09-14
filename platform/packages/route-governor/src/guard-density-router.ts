@@ -53,10 +53,12 @@ export interface GuardDensityRouterVerdict {
 const GUARD_TERMS = [
   "admission",
   "boundary",
+  "contract",
   "gate",
   "guard",
   "handoff",
   "ledger",
+  "lease",
   "policy",
   "receipt",
   "reconciliation",

@@ -105,6 +105,12 @@ const registeredProofModules = [
   "live-embodiment-covenant",
   "post-write-status-escrow",
   "review-feedback-delta-router",
+  "post-status-progress-router",
+  "head-bound-candidate-novelty",
+  "root-export-surface-admission",
+  "final-review-authority-bundle",
+  "final-review-outcome-router",
+  "post-review-terminal-handoff",
 ];
 
 function sourcePath(moduleName: string): string {

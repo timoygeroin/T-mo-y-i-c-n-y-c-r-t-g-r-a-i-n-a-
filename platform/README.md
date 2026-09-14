@@ -4,15 +4,22 @@ This directory contains MondayiD's platform runtime and its first user-facing ho
 
 ## MondayID Host
 
-`apps/host` is the usable responsive surface for the system. It deliberately keeps a hard boundary between intent, context, action, and verification. The host persists turns locally, restores them after reload, exports a portable continuity packet, and never marks an action verified until the user confirms its result.
+`apps/host` is a local conversation and continuation surface. It stores intentions and user-entered outcomes, with optional user attestation. It does not execute requests, retrieve account context, or independently verify outcomes. Previously generated placeholder outcomes are removed on load; they are not evidence of execution.
+
+History can be exported and restored after validating the packet and explicitly confirming replacement. Import preserves the selected turn. Invalid files leave current state untouched. Corrupt browser storage pauses automatic writes; storage failures show a warning. Editing an intention invalidates its prior outcome and attestation. Disabled controls identify integrations that are not implemented.
+
+The host's `mondayid.continuity.v1` envelope is a local host format, not an implementation of `packages/contracts/continuity-packet.schema.json` and not a cross-model runtime handoff.
 
 ```bash
 npm install
 npm run dev:host
 npm run build:host
+npm run test:model --workspace @mondayid/host
 ```
 
 The host is installable as a standalone web app. Its first release is local-first; provider execution is the next explicit integration boundary rather than a simulated capability.
+
+State tests require Node 24 (native TypeScript stripping). Browser regressions live in `apps/host/tests/host.spec.ts` and run through the host job in the existing platform CI workflow. They verify local UI behavior only; a passing browser test is not proof of model execution.
 
 The lower-level packages remain a prototype runtime scaffold. They must not be presented as a deployed autonomous platform until their existing gate failures are repaired and a real execution provider is bound.
 

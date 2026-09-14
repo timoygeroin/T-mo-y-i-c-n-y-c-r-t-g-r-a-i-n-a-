@@ -132,7 +132,7 @@ const blockedStaleReceipt = compileSourceAuthorizedProcessorConvergence({
 });
 
 assert.equal(blockedStaleReceipt.ok, false);
-assert.equal(blockedStaleReceipt.action, "block_unauthorized_processor_result");
+assert.equal(blockedStaleReceipt.action, "block_wrong_head");
 assert.ok(blockedStaleReceipt.blockers.some((blocker) => blocker.includes("live head")));
 
 const blockerDispatch: ProcessorResultReceiptDispatch = {
