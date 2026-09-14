@@ -1,0 +1,103 @@
+name: Monday Consumer Activity State Mutation
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - '.github/workflows/monday-consumer-activity-state-mutation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  mutate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: monday/continuum-runtime-integration-20260914
+          fetch-depth: 0
+      - name: Extend truthful task/activity states
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('platform/apple-host/MondayIDHost/MondayIDHostApp.swift')
+          text = path.read_text()
+
+          old_enum = '''private enum MondayTaskState: String, Codable, CaseIterable, Identifiable {
+              case waiting = "Waiting"
+              case needsYou = "Needs you"
+              case completed = "Completed"
+              case failed = "Failed"
+              var id: String { rawValue }
+          }'''
+          new_enum = '''private enum MondayTaskState: String, Codable, CaseIterable, Identifiable {
+              case running = "Running"
+              case waiting = "Waiting"
+              case needsYou = "Needs you"
+              case completed = "Completed"
+              case failed = "Failed"
+              case changed = "Changed"
+              var id: String { rawValue }
+          }'''
+          assert old_enum in text, 'task state enum drifted'
+          text = text.replace(old_enum, new_enum, 1)
+
+          old_actions = '''        .swipeActions {
+              if task.state != .completed { Button("Complete") { store.setTaskState(task.id, state: .completed) }.tint(.green) }
+              Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }.tint(.orange)
+          }'''
+          new_actions = '''        .swipeActions {
+              if task.state != .completed { Button("Complete") { store.setTaskState(task.id, state: .completed) }.tint(.green) }
+              Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }.tint(.orange)
+          }
+          .contextMenu {
+              Button("Running") { store.setTaskState(task.id, state: .running) }
+              Button("Waiting") { store.setTaskState(task.id, state: .waiting) }
+              Button("Changed") { store.setTaskState(task.id, state: .changed) }
+              Button("Failed") { store.setTaskState(task.id, state: .failed) }
+          }'''
+          assert old_actions in text, 'task row actions drifted'
+          text = text.replace(old_actions, new_actions, 1)
+
+          old_running = '''                Section("Running") { Text("No executor is active.").foregroundStyle(.secondary) }'''
+          new_running = '''                Section("Running") {
+                      let rows = store.tasks.filter { $0.state == .running }
+                      if rows.isEmpty { Text("No executor is active.").foregroundStyle(.secondary) }
+                      else { ForEach(rows) { MondayTaskRow(task: $0) } }
+                  }'''
+          assert old_running in text, 'running activity section drifted'
+          text = text.replace(old_running, new_running, 1)
+
+          old_recent = '''                Section("Recent changes") {
+                      if store.activity.isEmpty { Text("No local changes yet.").foregroundStyle(.secondary) }
+                      else { ForEach(store.activity) { item in VStack(alignment: .leading, spacing: 3) { Text(item.title); Text(item.detail).font(.caption).foregroundStyle(.secondary) } } }
+                  }'''
+          new_recent = '''                Section("Changed") {
+                      let changedTasks = store.tasks.filter { $0.state == .changed }
+                      if changedTasks.isEmpty && store.activity.isEmpty { Text("No material changes yet.").foregroundStyle(.secondary) }
+                      else {
+                          ForEach(changedTasks) { MondayTaskRow(task: $0) }
+                          ForEach(store.activity.prefix(20)) { item in VStack(alignment: .leading, spacing: 3) { Text(item.title); Text(item.detail).font(.caption).foregroundStyle(.secondary) } }
+                      }
+                  }
+                  Section("Failed") {
+                      let rows = store.tasks.filter { $0.state == .failed }
+                      if rows.isEmpty { Text("No failed local tasks.").foregroundStyle(.secondary) }
+                      else { ForEach(rows) { MondayTaskRow(task: $0) } }
+                  }'''
+          assert old_recent in text, 'recent changes section drifted'
+          text = text.replace(old_recent, new_recent, 1)
+
+          path.write_text(text)
+          PY
+      - name: Remove one-shot mutator
+        run: rm .github/workflows/monday-consumer-activity-state-mutation.yml
+      - name: Commit mutation
+        run: |
+          git config user.name 'mondayid-continuum-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift .github/workflows/monday-consumer-activity-state-mutation.yml
+          git commit -m 'feat(consumer): expose truthful Activity task states'
+          git push origin HEAD:monday/continuum-runtime-integration-20260914
