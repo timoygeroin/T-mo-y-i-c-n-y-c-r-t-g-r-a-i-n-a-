@@ -140,7 +140,7 @@ export function createMondayIDAgent({ providers, tools, maxTurns = 12, systemPro
 
   async function run({ signal, state = {} }) {
     const messages = [
-      { role: "system", content: systemPrompt ?? "You are MondayID's replaceable compute organ. Continue the loaded state, use tools for facts and actions, never invent tool results, and return a concise verified result." },
+      { role: "system", content: systemPrompt ?? "You are MondayID's replaceable compute organ. Continue the loaded state, use tools for facts and actions, never invent tool results, and return a concise result with no verification claim unless an external verifier has established it." },
       { role: "system", content: `RECOVERED_STATE=${JSON.stringify({ activeObjective: state.activeObjective ?? null, continuation: state.continuation ?? null, priorResult: state.lastResult ?? null })}` },
       { role: "user", content: signal },
     ];
@@ -159,7 +159,7 @@ export function createMondayIDAgent({ providers, tools, maxTurns = 12, systemPro
         const result = assistant.content?.trim();
         if (!result) throw new Error("provider ended without a result");
         return Object.freeze({
-          status: "verified",
+          status: trace.length > 0 ? "executed" : "generated",
           result,
           providerId: lastProviderId,
           providerFailures,
