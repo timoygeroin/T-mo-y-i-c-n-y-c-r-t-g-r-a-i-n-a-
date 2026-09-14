@@ -28,15 +28,22 @@ try {
   const tools = createGitHubTools({ token: "test", repository: "owner/repo", apiBase: origin });
   const agent = createMondayIDAgent({ providers: [primary, fallback], tools });
   const result = await agent.run({ signal: "continue", state: { activeObjective: "build", continuation: "step-2" } });
-  assert.equal(result.status, "verified");
+  assert.equal(result.status, "executed", "tool use may prove execution but must not manufacture Verified");
+  assert.notEqual(result.status, "verified");
   assert.equal(result.providerId, "fallback");
   assert.equal(result.providerFailures[0].code, "quota_or_rate_limit");
   assert.equal(result.trace[0].tool, "github_read_file");
   assert.match(result.result, /continued/);
+
+  const proseOnly = createMondayIDAgent({ providers: [{ id: "prose", async complete() { return { role: "assistant", content: "A model answer only." }; } }], tools: [] });
+  const generated = await proseOnly.run({ signal: "answer" });
+  assert.equal(generated.status, "generated");
+  assert.notEqual(generated.status, "verified");
+
   const secret = "correct horse battery staple";
   const encrypted = encryptState({ result: result.result, continuation: null }, secret);
   assert.ok(!encrypted.includes(result.result));
   assert.equal(decryptState(encrypted, secret).result, result.result);
   assert.throws(() => decryptState(encrypted, "wrong secret value"));
-  console.log(JSON.stringify({ RESULT: "PASS", vertical: "signal -> recovered state -> primary quota failure -> fallback model -> live tool -> verified result -> encrypted continuation", receiptId: result.receiptId }, null, 2));
+  console.log(JSON.stringify({ RESULT: "PASS", vertical: "signal -> recovered state -> quota failover -> live tool execution -> truthful EXECUTED status -> encrypted continuation; prose-only -> GENERATED", receiptId: result.receiptId }, null, 2));
 } finally { server.close(); }
