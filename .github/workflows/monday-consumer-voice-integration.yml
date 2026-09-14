@@ -1,0 +1,180 @@
+name: Monday Consumer Voice Integration
+
+on:
+  push:
+    branches: [monday/continuum-runtime-integration-20260914]
+    paths:
+      - '.github/workflows/monday-consumer-voice-integration.yml'
+      - 'platform/apple-host/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  voice-capture:
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message != 'feat(consumer): add dedicated voice capture'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: monday/continuum-runtime-integration-20260914
+          fetch-depth: 0
+      - name: Patch dedicated Voice capture into existing consumer body
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('platform/apple-host/MondayIDHost/MondayIDHostApp.swift')
+          s = p.read_text()
+          def once(old, new):
+              global s
+              if old not in s:
+                  raise SystemExit('PATCH_ANCHOR_MISSING: '+old[:100])
+              if s.count(old) != 1:
+                  raise SystemExit('PATCH_ANCHOR_NONUNIQUE: '+old[:100])
+              s = s.replace(old, new, 1)
+
+          once('import AppIntents\nimport Foundation\n', 'import AppIntents\nimport AVFoundation\nimport Foundation\n')
+          once('    case code = "Code"\n    case image = "Image"\n    case video = "Video"\n', '    case code = "Code"\n    case audio = "Audio"\n    case image = "Image"\n    case video = "Video"\n')
+          once('        case .code: return "chevron.left.forwardslash.chevron.right"\n        case .image: return "photo"\n', '        case .code: return "chevron.left.forwardslash.chevron.right"\n        case .audio: return "waveform"\n        case .image: return "photo"\n')
+          once('        guard kind == .image || kind == .video else { throw CocoaError(.fileWriteUnknown) }\n', '        guard kind == .image || kind == .video || kind == .audio else { throw CocoaError(.fileWriteUnknown) }\n')
+          once('        let ext = safeExtension.isEmpty ? (kind == .image ? "jpg" : "mov") : safeExtension\n', '        let ext = safeExtension.isEmpty ? (kind == .image ? "jpg" : (kind == .audio ? "m4a" : "mov")) : safeExtension\n')
+          once('        let title = kind == .image ? "Image \\(Date().formatted(date: .abbreviated, time: .shortened))" : "Video \\(Date().formatted(date: .abbreviated, time: .shortened))"\n', '        let mediaName = kind == .image ? "Image" : (kind == .audio ? "Voice" : "Video")\n        let title = "\\(mediaName) \\(Date().formatted(date: .abbreviated, time: .shortened))"\n')
+          once('    @State private var showingCamera = false\n    @State private var mediaStatus: String?\n', '    @State private var showingCamera = false\n    @State private var showingVoiceRecorder = false\n    @State private var mediaStatus: String?\n')
+          once('                    Button { selection = .chats } label: { Label("Voice", systemImage: "waveform") }\n', '                    Button { showingVoiceRecorder = true } label: { Label("Voice", systemImage: "waveform") }\n')
+          once('            .sheet(isPresented: $showingCamera) {\n                MondayCameraPicker { data in\n                    persistMedia(data: data, fileExtension: "jpg", kind: .image)\n                }\n            }\n', '            .sheet(isPresented: $showingCamera) {\n                MondayCameraPicker { data in\n                    persistMedia(data: data, fileExtension: "jpg", kind: .image)\n                }\n            }\n            .sheet(isPresented: $showingVoiceRecorder) {\n                MondayVoiceRecorder { data in\n                    persistMedia(data: data, fileExtension: "m4a", kind: .audio)\n                }\n            }\n')
+
+          anchor = 'private struct MondayCameraPicker: UIViewControllerRepresentable {'
+          if anchor not in s:
+              raise SystemExit('VOICE_INSERT_ANCHOR_MISSING')
+          voice = r'''private struct MondayVoiceRecorder: View {
+    @Environment(\.dismiss) private var dismiss
+    let onCapture: (Data) -> Void
+    @State private var recorder: AVAudioRecorder?
+    @State private var recordingURL: URL?
+    @State private var status = "Ready to record."
+    @State private var recording = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Image(systemName: recording ? "waveform.circle.fill" : "waveform.circle")
+                    .font(.system(size: 72))
+                    .symbolEffect(.pulse, isActive: recording)
+                Text(recording ? "Recording…" : status)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(recording ? .primary : .secondary)
+                Button(recording ? "Stop and save" : "Record voice") {
+                    recording ? finishRecording() : requestAndStart()
+                }
+                .buttonStyle(.borderedProminent)
+                if recording {
+                    Button("Cancel recording", role: .destructive) { cancelRecording() }
+                }
+                Spacer()
+            }
+            .padding(28)
+            .navigationTitle("Voice")
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { cancelRecording(); dismiss() } } }
+        }
+    }
+
+    private func requestAndStart() {
+        AVAudioSession.sharedInstance().requestRecordPermission { granted in
+            DispatchQueue.main.async {
+                if granted { startRecording() }
+                else { status = "Microphone permission is required to record voice." }
+            }
+        }
+    }
+
+    private func startRecording() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.record, mode: .spokenAudio, options: [])
+            try session.setActive(true)
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("MondayVoice-\(UUID().uuidString).m4a")
+            let settings: [String: Any] = [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 44_100,
+                AVNumberOfChannelsKey: 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+            let value = try AVAudioRecorder(url: url, settings: settings)
+            value.prepareToRecord()
+            guard value.record() else { throw CocoaError(.fileWriteUnknown) }
+            recorder = value
+            recordingURL = url
+            recording = true
+            status = "Recording…"
+        } catch {
+            status = "Recording failed: \(error.localizedDescription)"
+            recording = false
+        }
+    }
+
+    private func finishRecording() {
+        recorder?.stop()
+        recorder = nil
+        recording = false
+        guard let url = recordingURL else { status = "No recording was created."; return }
+        defer { try? FileManager.default.removeItem(at: url); recordingURL = nil }
+        do {
+            let data = try Data(contentsOf: url)
+            guard !data.isEmpty else { status = "The recording was empty."; return }
+            onCapture(data)
+            try? AVAudioSession.sharedInstance().setActive(false)
+            dismiss()
+        } catch {
+            status = "Voice save failed: \(error.localizedDescription)"
+        }
+    }
+
+    private func cancelRecording() {
+        recorder?.stop()
+        recorder = nil
+        recording = false
+        if let url = recordingURL { try? FileManager.default.removeItem(at: url) }
+        recordingURL = nil
+        try? AVAudioSession.sharedInstance().setActive(false)
+    }
+}
+
+'''
+          s = s.replace(anchor, voice + anchor, 1)
+          p.write_text(s)
+
+          pbx = Path('platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj')
+          x = pbx.read_text()
+          camera = 'INFOPLIST_KEY_NSCameraUsageDescription = "Capture photos into Monday.";'
+          if x.count(camera) != 2:
+              raise SystemExit(f'EXPECTED_TWO_CAMERA_KEYS_GOT_{x.count(camera)}')
+          x = x.replace(camera, camera + '\n\t\t\t\tINFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice into Monday.";')
+          pbx.write_text(x)
+      - name: Verify source postconditions
+        run: |
+          set -euo pipefail
+          grep -q 'import AVFoundation' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'case audio = "Audio"' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'showingVoiceRecorder = true' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'struct MondayVoiceRecorder' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          test "$(grep -c 'INFOPLIST_KEY_NSMicrophoneUsageDescription' platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj)" -eq 2
+      - name: Build adapter tests
+        run: swift test --package-path platform/apple-adapter
+      - name: Compile iOS Simulator body
+        run: |
+          set -euo pipefail
+          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tee /tmp/monday-voice-build.log
+          grep -q '\*\* BUILD SUCCEEDED \*\*' /tmp/monday-voice-build.log
+      - name: Commit verified mutation
+        run: |
+          set -euo pipefail
+          git config user.name 'Monday Completion Loop'
+          git config user.email 'actions@users.noreply.github.com'
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj
+          if git diff --cached --quiet; then
+            echo 'VOICE_MUTATION_ALREADY_PRESENT=true'
+            exit 0
+          fi
+          git commit -m 'feat(consumer): add dedicated voice capture'
+          git push origin HEAD:monday/continuum-runtime-integration-20260914
