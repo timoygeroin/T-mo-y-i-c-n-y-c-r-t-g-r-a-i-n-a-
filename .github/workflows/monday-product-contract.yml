@@ -10,15 +10,49 @@ on:
       - '.github/workflows/monday-product-contract.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   product-contract:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: monday/continuum-runtime-integration-20260914
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify recovered product constitution and rejection gates
         run: node product/verify-product-contract.mjs
+      - name: Apply guarded consumer navigation patch
+        run: python3 scripts/consumer_navigation_patch.py
+      - name: Verify navigation source postconditions
+        run: |
+          set -euo pipefail
+          f=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'func updateDocument' "$f"
+          grep -q 'struct MondayDocumentDetailView' "$f"
+          grep -q 'struct MondayTaskDetailView' "$f"
+          grep -q 'NavigationLink { MondayDocumentDetailView' "$f"
+          grep -q 'NavigationLink { MondayTaskDetailView' "$f"
+          grep -q 'Button(saved ? "Saved" : "Save changes")' "$f"
+      - name: Run Apple adapter tests
+        run: swift test --package-path platform/apple-adapter
+      - name: Compile iOS Simulator body
+        run: |
+          set -euo pipefail
+          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tee /tmp/monday-navigation-build.log
+          grep -q '\*\* BUILD SUCCEEDED \*\*' /tmp/monday-navigation-build.log
+      - name: Commit verified mutation
+        run: |
+          set -euo pipefail
+          git config user.name 'Monday Completion Loop'
+          git config user.email 'actions@users.noreply.github.com'
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          if git diff --cached --quiet; then
+            echo NAVIGATION_MUTATION_ALREADY_PRESENT=true
+            exit 0
+          fi
+          git commit -m 'feat(consumer): make library and search results actionable'
+          git push origin HEAD:monday/continuum-runtime-integration-20260914
