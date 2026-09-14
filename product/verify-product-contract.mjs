@@ -6,9 +6,10 @@ const ok = (message) => console.log(`PASS: ${message}`);
 const constitutionPath = new URL('./MONDAY_PRODUCT_CONSTITUTION_V1.md', import.meta.url);
 const planPath = new URL('./CONTINUUM_INTEGRATION_PLAN.json', import.meta.url);
 const rejectionPath = new URL('./KNOWN_REJECTIONS_V1.json', import.meta.url);
+const lineagePath = new URL('./LINEAGE_ADJUDICATION_V1.json', import.meta.url);
 const iosHostPath = new URL('../platform/apple-host/MondayIDHost/MondayIDHostApp.swift', import.meta.url);
 
-for (const [name, url] of [['constitution', constitutionPath], ['plan', planPath], ['rejections', rejectionPath], ['ios-host', iosHostPath]]) {
+for (const [name, url] of [['constitution', constitutionPath], ['plan', planPath], ['rejections', rejectionPath], ['lineage', lineagePath], ['ios-host', iosHostPath]]) {
   if (!fs.existsSync(url)) fail(`${name} artifact missing`); else ok(`${name} artifact exists`);
 }
 
@@ -17,6 +18,7 @@ if (process.exitCode) process.exit(process.exitCode);
 const constitution = fs.readFileSync(constitutionPath, 'utf8');
 const plan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
 const rejections = JSON.parse(fs.readFileSync(rejectionPath, 'utf8'));
+const lineage = JSON.parse(fs.readFileSync(lineagePath, 'utf8'));
 const iosHost = fs.readFileSync(iosHostPath, 'utf8');
 
 const requiredConstitution = [
@@ -48,6 +50,18 @@ for (const id of ['site-showcase','dashboard-home','chatgpt-clone','cyberpunk-sh
 if (!rejections.release_blocking) fail('known rejections must be release-blocking');
 else ok('known rejections are release-blocking');
 
+if (lineage.schema !== 'monday.lineage-adjudication.v1') fail('lineage adjudication schema mismatch');
+else ok('lineage adjudication schema locked');
+const highAuthority = (lineage.contradictions ?? []).filter(x => x.authority === 'high');
+if (highAuthority.length === 0) fail('lineage adjudication has no high-authority conflicts');
+else ok(`lineage adjudication tracks ${highAuthority.length} high-authority conflicts`);
+const unresolvedHighAuthority = highAuthority.filter(x => x.status !== 'RESOLVED');
+if (unresolvedHighAuthority.length) fail(`unresolved high-authority lineage conflicts: ${unresolvedHighAuthority.map(x => x.id).join(', ')}`);
+else ok('no unresolved high-authority lineage contradiction');
+for (const item of highAuthority) {
+  if (!item.decision || !item.basis) fail(`lineage conflict lacks decision/basis: ${item.id}`);
+}
+
 // Real release-surface regression checks. These fail if the iPhone host drifts back
 // to a developer form/dashboard or loses the familiar stable consumer shell.
 const rootStart = iosHost.indexOf('private struct MondayRootView');
@@ -73,6 +87,21 @@ appBody.includes('MondayRootView()') ? ok('WindowGroup enters consumer root') : 
 
 iosHost.includes('NavigationLink("Library")') ? ok('Library has an explicit manual path') : fail('Library manual path missing');
 iosHost.includes('NavigationLink("Connections") { MondayRuntimeConnectionView() }') ? ok('runtime configuration is scoped under You/Connections') : fail('runtime configuration is not scoped under Connections');
+
+const consumerBehaviorTokens = [
+  'togglePin(spaceID:',
+  'togglePin(documentID:',
+  'MondaySpaceDetailView',
+  'MondayNewTaskView',
+  'MondayCapabilityComposer',
+  'MondayPreferences',
+  'appendChat(role:',
+  'MondayDocumentKind'
+];
+for (const token of consumerBehaviorTokens) iosHost.includes(token) ? ok(`consumer behavior present: ${token}`) : fail(`consumer behavior missing: ${token}`);
+for (const stalePlaceholder of ['Pinning is not implemented yet.', 'Section("Not implemented yet")']) {
+  !iosHost.includes(stalePlaceholder) ? ok(`stale placeholder removed: ${stalePlaceholder}`) : fail(`stale placeholder still present: ${stalePlaceholder}`);
+}
 
 const fakeStatusClaims = [
   'Work complete',
