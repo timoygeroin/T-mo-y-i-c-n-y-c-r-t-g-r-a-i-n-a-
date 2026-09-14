@@ -1,0 +1,21 @@
+{
+  "receipt":"MONDAY_PRODUCT_LINEAGE_RECOVERY_20260914",
+  "status":"READ_BACK_FROM_LIBRARY_AND_APPLIED",
+  "sources":[
+    "MONDAY_APP_MASTER_PRODUCT_BIBLE_2026-08-27.docx",
+    "MONDAY_APP_MASTER_BUILD_ORDER_2026-08-27.docx",
+    "MONDAY_ORGANISM_BODY_v0.4_2026-08-28.zip",
+    "docs/MUTATION_UI_002_ORGANISM_NOT_DASHBOARD.md from Body v0.4"
+  ],
+  "recovered_facts":[
+    "Monday is not a chatbot skin, agent dashboard, model picker, or unfamiliar future UI",
+    "Stable iPhone shell is Home/Chats/Create/Spaces/You with global Search/Activity",
+    "Home v1 dashboard/orange/monday.com-adjacent direction was explicitly rejected",
+    "Home v2/Continuum was tested but field acceptance remained open",
+    "Body v0.4 SwiftUI was assembled but not wired to Node/MCP runtime",
+    "Physical iPhone install/signing and exhaustive historical semantic adjudication remained open",
+    "Existing donor bodies must not force accidental donor UI onto the consumer product"
+  ],
+  "application":"PR #39 release contract and anti-regression gates",
+  "completion_claim":false
+}
