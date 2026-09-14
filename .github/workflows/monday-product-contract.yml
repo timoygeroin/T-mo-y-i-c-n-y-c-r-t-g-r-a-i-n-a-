@@ -1,0 +1,24 @@
+name: Monday Product Contract
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+  pull_request:
+    paths:
+      - 'product/**'
+      - '.github/workflows/monday-product-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  product-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify recovered product constitution and rejection gates
+        run: node product/verify-product-contract.mjs
