@@ -1,0 +1,36 @@
+name: Monday Real User Task
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - 'platform/work/github-issue-receipt-executor.mjs'
+      - 'platform/work/real-user-task-runner.mjs'
+      - '.github/workflows/monday-real-user-task.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  execute-real-user-task:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute current user completion task and verify external GitHub effect
+        id: execute
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MONDAYID_LEDGER_ISSUE: '40'
+          MONDAYID_SOURCE_SIGNAL: 'Continue the MondayID completion program from GitHub PR #39 and issue #40; perform safe implementation and verification actions and write durable receipts/results back to authorized project surfaces.'
+        run: node platform/work/real-user-task-runner.mjs
+      - name: Expose verified receipt
+        run: |
+          test "${{ steps.execute.outputs.status }}" = "verified"
+          echo "receipt=${{ steps.execute.outputs.receipt_id }}"
+          echo "comment=${{ steps.execute.outputs.comment_url }}"
