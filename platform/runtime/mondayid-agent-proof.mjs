@@ -4,6 +4,7 @@ import { once } from "node:events";
 import { createGitHubTools, createMondayIDAgent, createOpenAICompatibleProvider } from "./mondayid-agent.mjs";
 import { decryptState, encryptState } from "./secure-state.mjs";
 
+const TERMINAL_TRUTH_STATES = new Set(["generated", "executed"]);
 let modelCalls = 0;
 const server = createServer(async (request, response) => {
   if (request.url === "/primary/chat/completions") { response.writeHead(429); return response.end("quota exhausted"); }
@@ -28,6 +29,7 @@ try {
   const tools = createGitHubTools({ token: "test", repository: "owner/repo", apiBase: origin });
   const agent = createMondayIDAgent({ providers: [primary, fallback], tools });
   const result = await agent.run({ signal: "continue", state: { activeObjective: "build", continuation: "step-2" } });
+  assert.ok(TERMINAL_TRUTH_STATES.has(result.status));
   assert.equal(result.status, "executed", "tool use may prove execution but must not manufacture Verified");
   assert.notEqual(result.status, "verified");
   assert.equal(result.providerId, "fallback");
@@ -37,6 +39,7 @@ try {
 
   const proseOnly = createMondayIDAgent({ providers: [{ id: "prose", async complete() { return { role: "assistant", content: "A model answer only." }; } }], tools: [] });
   const generated = await proseOnly.run({ signal: "answer" });
+  assert.ok(TERMINAL_TRUTH_STATES.has(generated.status));
   assert.equal(generated.status, "generated");
   assert.notEqual(generated.status, "verified");
 
@@ -45,5 +48,5 @@ try {
   assert.ok(!encrypted.includes(result.result));
   assert.equal(decryptState(encrypted, secret).result, result.result);
   assert.throws(() => decryptState(encrypted, "wrong secret value"));
-  console.log(JSON.stringify({ RESULT: "PASS", vertical: "signal -> recovered state -> quota failover -> live tool execution -> truthful EXECUTED status -> encrypted continuation; prose-only -> GENERATED", receiptId: result.receiptId }, null, 2));
+  console.log(JSON.stringify({ RESULT: "PASS", gate: "MONDAY_RUNTIME_TRUTH", vertical: "signal -> recovered state -> quota failover -> live tool execution -> truthful EXECUTED status -> encrypted continuation; prose-only -> GENERATED", receiptId: result.receiptId }, null, 2));
 } finally { server.close(); }
