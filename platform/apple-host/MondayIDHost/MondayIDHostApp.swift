@@ -75,8 +75,10 @@ private struct MondayIDRuntimeView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                     SecureField("Control token", text: $token)
-                    Button("Save connection") { saveConnection() }
-                        .disabled(URL(string: endpoint) == nil || token.isEmpty)
+                    Button(working ? "Checking runtime…" : "Verify & save connection") {
+                        Task { await verifyAndSaveConnection() }
+                    }
+                    .disabled(working || URL(string: endpoint) == nil || token.isEmpty)
                 }
                 Section("Live signal") {
                     TextField("Monday, now do this…", text: $signal, axis: .vertical)
@@ -88,13 +90,20 @@ private struct MondayIDRuntimeView: View {
         }
     }
 
-    private func saveConnection() {
+    @MainActor private func verifyAndSaveConnection() async {
         guard let url = URL(string: endpoint) else { return }
+        working = true
+        defer { working = false }
         do {
+            let candidate = MondayIDRuntimeClient(endpoint: url, controlToken: token)
+            let health = try await candidate.health()
+            guard health.isReady else { throw MondayIDRuntimeError.unhealthyRuntime }
             try MondayIDRuntimeSettings.save(endpoint: url, controlToken: token)
             token = ""
-            result = "Runtime connection saved securely on this iPhone."
-        } catch { result = "Connection could not be saved: \(error.localizedDescription)" }
+            result = "Verified durable MondayID runtime and saved this connection securely on this iPhone."
+        } catch {
+            result = "Connection not saved: \(error.localizedDescription)"
+        }
     }
 
     @MainActor private func submit() async {
