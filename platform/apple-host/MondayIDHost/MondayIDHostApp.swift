@@ -55,10 +55,12 @@ private struct MondayDocument: Codable, Identifiable, Hashable {
 }
 
 private enum MondayTaskState: String, Codable, CaseIterable, Identifiable {
+    case running = "Running"
     case waiting = "Waiting"
     case needsYou = "Needs you"
     case completed = "Completed"
     case failed = "Failed"
+    case changed = "Changed"
     var id: String { rawValue }
 }
 
@@ -616,6 +618,12 @@ private struct MondayTaskRow: View {
             if task.state != .completed { Button("Complete") { store.setTaskState(task.id, state: .completed) }.tint(.green) }
             Button("Needs you") { store.setTaskState(task.id, state: .needsYou) }.tint(.orange)
         }
+        .contextMenu {
+            Button("Running") { store.setTaskState(task.id, state: .running) }
+            Button("Waiting") { store.setTaskState(task.id, state: .waiting) }
+            Button("Changed") { store.setTaskState(task.id, state: .changed) }
+            Button("Failed") { store.setTaskState(task.id, state: .failed) }
+        }
     }
 }
 
@@ -678,7 +686,11 @@ private struct MondayActivityView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Running") { Text("No executor is active.").foregroundStyle(.secondary) }
+                Section("Running") {
+                    let rows = store.tasks.filter { $0.state == .running }
+                    if rows.isEmpty { Text("No executor is active.").foregroundStyle(.secondary) }
+                    else { ForEach(rows) { MondayTaskRow(task: $0) } }
+                }
                 Section("Waiting") {
                     let rows = store.tasks.filter { $0.state == .waiting }
                     if rows.isEmpty { Text("No persistent task is waiting.").foregroundStyle(.secondary) }
@@ -693,6 +705,16 @@ private struct MondayActivityView: View {
                     let rows = store.tasks.filter { $0.state == .completed }.prefix(10)
                     if rows.isEmpty { Text("No completed local tasks yet.").foregroundStyle(.secondary) }
                     else { ForEach(Array(rows)) { MondayTaskRow(task: $0) } }
+                }
+                Section("Changed") {
+                    let rows = store.tasks.filter { $0.state == .changed }
+                    if rows.isEmpty { Text("No changed local tasks.").foregroundStyle(.secondary) }
+                    else { ForEach(rows) { MondayTaskRow(task: $0) } }
+                }
+                Section("Failed") {
+                    let rows = store.tasks.filter { $0.state == .failed }
+                    if rows.isEmpty { Text("No failed local tasks.").foregroundStyle(.secondary) }
+                    else { ForEach(rows) { MondayTaskRow(task: $0) } }
                 }
                 Section("Recent changes") {
                     if store.activity.isEmpty { Text("No local changes yet.").foregroundStyle(.secondary) }
