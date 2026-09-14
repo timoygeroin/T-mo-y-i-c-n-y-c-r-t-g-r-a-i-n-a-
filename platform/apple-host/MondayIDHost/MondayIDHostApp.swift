@@ -1,4 +1,5 @@
 import AppIntents
+import AVFoundation
 import Foundation
 import PhotosUI
 import SwiftUI
@@ -35,6 +36,7 @@ private enum MondayDocumentKind: String, Codable, CaseIterable, Identifiable {
     case note = "Note"
     case generated = "Generated"
     case code = "Code"
+    case audio = "Audio"
     case image = "Image"
     case video = "Video"
     var id: String { rawValue }
@@ -44,6 +46,7 @@ private enum MondayDocumentKind: String, Codable, CaseIterable, Identifiable {
         case .note: return "note.text"
         case .generated: return "wand.and.stars"
         case .code: return "chevron.left.forwardslash.chevron.right"
+        case .audio: return "waveform"
         case .image: return "photo"
         case .video: return "video"
         }
@@ -177,16 +180,17 @@ private final class MondayLocalStore: ObservableObject {
 
     @discardableResult
     func saveMedia(data: Data, fileExtension: String, kind: MondayDocumentKind) throws -> MondayDocument {
-        guard kind == .image || kind == .video else { throw CocoaError(.fileWriteUnknown) }
+        guard kind == .image || kind == .video || kind == .audio else { throw CocoaError(.fileWriteUnknown) }
         let base = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         let directory = base.appendingPathComponent("MondayMedia", isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let id = UUID()
         let safeExtension = fileExtension.trimmingCharacters(in: CharacterSet.alphanumerics.inverted).lowercased()
-        let ext = safeExtension.isEmpty ? (kind == .image ? "jpg" : "mov") : safeExtension
+        let ext = safeExtension.isEmpty ? (kind == .image ? "jpg" : (kind == .audio ? "m4a" : "mov")) : safeExtension
         let url = directory.appendingPathComponent("\(id.uuidString).\(ext)")
         try data.write(to: url, options: .atomic)
-        let title = kind == .image ? "Image \(Date().formatted(date: .abbreviated, time: .shortened))" : "Video \(Date().formatted(date: .abbreviated, time: .shortened))"
+        let mediaName = kind == .image ? "Image" : (kind == .audio ? "Voice" : "Video")
+        let title = "\(mediaName) \(Date().formatted(date: .abbreviated, time: .shortened))"
         let document = MondayDocument(id: id, title: title, body: "MondayMedia/\(url.lastPathComponent)", createdAt: Date(), kind: kind)
         documents.insert(document, at: 0)
         addActivity(title: "\(kind.rawValue) captured", detail: title)
@@ -389,6 +393,7 @@ private struct MondayCreateView: View {
     @State private var imageItem: PhotosPickerItem?
     @State private var videoItem: PhotosPickerItem?
     @State private var showingCamera = false
+    @State private var showingVoiceRecorder = false
     @State private var mediaStatus: String?
 
     private enum CreateSheet: String, Identifiable {
@@ -412,7 +417,7 @@ private struct MondayCreateView: View {
                     Button { sheet = .automation } label: { Label("Automation", systemImage: "clock.arrow.circlepath") }
                 }
                 Section("Capture & media") {
-                    Button { selection = .chats } label: { Label("Voice", systemImage: "waveform") }
+                    Button { showingVoiceRecorder = true } label: { Label("Voice", systemImage: "waveform") }
                     Button {
                         if UIImagePickerController.isSourceTypeAvailable(.camera) { showingCamera = true }
                         else { mediaStatus = "Camera is unavailable on this device." }
@@ -435,6 +440,11 @@ private struct MondayCreateView: View {
             .sheet(isPresented: $showingCamera) {
                 MondayCameraPicker { data in
                     persistMedia(data: data, fileExtension: "jpg", kind: .image)
+                }
+            }
+            .sheet(isPresented: $showingVoiceRecorder) {
+                MondayVoiceRecorder { data in
+                    persistMedia(data: data, fileExtension: "m4a", kind: .audio)
                 }
             }
             .onChange(of: imageItem) { _, item in
@@ -468,6 +478,71 @@ private struct MondayCreateView: View {
         } catch {
             mediaStatus = "Save failed: \(error.localizedDescription)"
         }
+    }
+}
+
+private struct MondayVoiceRecorder: View {
+    @Environment(\.dismiss) private var dismiss
+    let onCapture: (Data) -> Void
+    @State private var recorder: AVAudioRecorder?
+    @State private var recordingURL: URL?
+    @State private var status = "Ready to record."
+    @State private var recording = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Image(systemName: recording ? "waveform.circle.fill" : "waveform.circle")
+                    .font(.system(size: 72))
+                Text(recording ? "Recording…" : status).multilineTextAlignment(.center)
+                Button(recording ? "Stop and save" : "Record voice") { recording ? finishRecording() : requestAndStart() }
+                    .buttonStyle(.borderedProminent)
+                if recording { Button("Cancel recording", role: .destructive) { cancelRecording() } }
+                Spacer()
+            }
+            .padding(28)
+            .navigationTitle("Voice")
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { cancelRecording(); dismiss() } } }
+        }
+    }
+
+    private func requestAndStart() {
+        AVAudioSession.sharedInstance().requestRecordPermission { granted in
+            DispatchQueue.main.async {
+                if granted { startRecording() } else { status = "Microphone permission is required to record voice." }
+            }
+        }
+    }
+
+    private func startRecording() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.record, mode: .spokenAudio, options: [])
+            try session.setActive(true)
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("MondayVoice-\(UUID().uuidString).m4a")
+            let settings: [String: Any] = [AVFormatIDKey: Int(kAudioFormatMPEG4AAC), AVSampleRateKey: 44_100, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue]
+            let value = try AVAudioRecorder(url: url, settings: settings)
+            value.prepareToRecord()
+            guard value.record() else { throw CocoaError(.fileWriteUnknown) }
+            recorder=value; recordingURL=url; recording=true; status="Recording…"
+        } catch { status="Recording failed: \(error.localizedDescription)"; recording=false }
+    }
+
+    private func finishRecording() {
+        recorder?.stop(); recorder=nil; recording=false
+        guard let url=recordingURL else { status="No recording was created."; return }
+        defer { try? FileManager.default.removeItem(at: url); recordingURL=nil }
+        do {
+            let data=try Data(contentsOf: url)
+            guard !data.isEmpty else { status="The recording was empty."; return }
+            onCapture(data); try? AVAudioSession.sharedInstance().setActive(false); dismiss()
+        } catch { status="Voice save failed: \(error.localizedDescription)" }
+    }
+
+    private func cancelRecording() {
+        recorder?.stop(); recorder=nil; recording=false
+        if let url=recordingURL { try? FileManager.default.removeItem(at: url) }
+        recordingURL=nil; try? AVAudioSession.sharedInstance().setActive(false)
     }
 }
 
