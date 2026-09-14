@@ -1,4 +1,5 @@
 import AppIntents
+import Foundation
 import SwiftUI
 import MondayIDAppleAdapter
 
@@ -19,9 +20,96 @@ struct MondayIDHostApp: App {
     var body: some Scene { WindowGroup { MondayRootView() } }
 }
 
+private struct MondaySpace: Codable, Identifiable, Hashable {
+    let id: UUID
+    var name: String
+    var createdAt: Date
+}
+
+private struct MondayDocument: Codable, Identifiable, Hashable {
+    let id: UUID
+    var title: String
+    var body: String
+    var createdAt: Date
+}
+
+private struct MondayActivity: Codable, Identifiable, Hashable {
+    let id: UUID
+    var title: String
+    var detail: String
+    var createdAt: Date
+}
+
+@MainActor
+private final class MondayLocalStore: ObservableObject {
+    @Published var spaces: [MondaySpace] { didSet { persist() } }
+    @Published var documents: [MondayDocument] { didSet { persist() } }
+    @Published var activity: [MondayActivity] { didSet { persist() } }
+
+    private static let key = "monday.consumer.local-store.v1"
+    private struct Snapshot: Codable {
+        var spaces: [MondaySpace]
+        var documents: [MondayDocument]
+        var activity: [MondayActivity]
+    }
+
+    init() {
+        if let data = UserDefaults.standard.data(forKey: Self.key),
+           let snapshot = try? JSONDecoder().decode(Snapshot.self, from: data) {
+            spaces = snapshot.spaces
+            documents = snapshot.documents
+            activity = snapshot.activity
+        } else {
+            spaces = []
+            documents = []
+            activity = []
+        }
+    }
+
+    func addSpace(name: String) {
+        let clean = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !clean.isEmpty else { return }
+        spaces.insert(MondaySpace(id: UUID(), name: clean, createdAt: Date()), at: 0)
+        addActivity(title: "Space created", detail: clean)
+    }
+
+    func addDocument(title: String, body: String) {
+        let cleanTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanBody = body.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanTitle.isEmpty || !cleanBody.isEmpty else { return }
+        documents.insert(MondayDocument(id: UUID(), title: cleanTitle.isEmpty ? "Untitled" : cleanTitle, body: cleanBody, createdAt: Date()), at: 0)
+        addActivity(title: "Document saved", detail: cleanTitle.isEmpty ? "Untitled" : cleanTitle)
+    }
+
+    func deleteSpaces(at offsets: IndexSet) { spaces.remove(atOffsets: offsets) }
+    func deleteDocuments(at offsets: IndexSet) { documents.remove(atOffsets: offsets) }
+
+    func addActivity(title: String, detail: String) {
+        activity.insert(MondayActivity(id: UUID(), title: title, detail: detail, createdAt: Date()), at: 0)
+        if activity.count > 100 { activity = Array(activity.prefix(100)) }
+    }
+
+    func search(_ query: String) -> [(String, String)] {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !q.isEmpty else { return [] }
+        var rows: [(String, String)] = []
+        rows += spaces.filter { $0.name.lowercased().contains(q) }.map { ("Space", $0.name) }
+        rows += documents.filter { $0.title.lowercased().contains(q) || $0.body.lowercased().contains(q) }.map { ("Document", $0.title) }
+        return rows
+    }
+
+    private func persist() {
+        let snapshot = Snapshot(spaces: spaces, documents: documents, activity: activity)
+        if let data = try? JSONEncoder().encode(snapshot) {
+            UserDefaults.standard.set(data, forKey: Self.key)
+        }
+    }
+}
+
 private enum MondayTab: Hashable { case home, chats, create, spaces, you }
 
 private struct MondayRootView: View {
+    @StateObject private var store = MondayLocalStore()
     @State private var selection: MondayTab = .home
     @State private var showingSearch = false
     @State private var showingActivity = false
@@ -34,6 +122,7 @@ private struct MondayRootView: View {
             MondaySpacesView().tag(MondayTab.spaces).tabItem { Label("Spaces", systemImage: "square.grid.2x2") }
             MondayYouView().tag(MondayTab.you).tabItem { Label("You", systemImage: "person.crop.circle") }
         }
+        .environmentObject(store)
         .safeAreaInset(edge: .top) {
             HStack(spacing: 12) {
                 Button { showingSearch = true } label: { Label("Search", systemImage: "magnifyingglass").labelStyle(.iconOnly) }
@@ -46,19 +135,30 @@ private struct MondayRootView: View {
             .padding(.vertical, 8)
             .background(.bar)
         }
-        .sheet(isPresented: $showingSearch) { MondaySearchView() }
-        .sheet(isPresented: $showingActivity) { MondayActivityView() }
+        .sheet(isPresented: $showingSearch) { MondaySearchView().environmentObject(store) }
+        .sheet(isPresented: $showingActivity) { MondayActivityView().environmentObject(store) }
     }
 }
 
 private struct MondayHomeView: View {
+    @EnvironmentObject private var store: MondayLocalStore
     var body: some View {
         NavigationStack {
             List {
-                Section("Continue") { Text("Nothing active yet.").foregroundStyle(.secondary) }
+                Section("Continue") {
+                    if let first = store.spaces.first { Label(first.name, systemImage: "square.grid.2x2") }
+                    else { Text("Nothing active yet.").foregroundStyle(.secondary) }
+                }
                 Section("Today") { Text("Nothing needs you.").foregroundStyle(.secondary) }
-                Section("Recent") { Text("Recent objects will appear here after use.").foregroundStyle(.secondary) }
-                Section("Pinned") { Text("Pin chats, spaces, files or tasks to keep them here.").foregroundStyle(.secondary) }
+                Section("Recent") {
+                    if store.documents.isEmpty && store.spaces.isEmpty {
+                        Text("Create a Space or document to start your local continuity.").foregroundStyle(.secondary)
+                    } else {
+                        ForEach(Array(store.documents.prefix(3))) { item in Label(item.title, systemImage: "doc.text") }
+                        ForEach(Array(store.spaces.prefix(3))) { item in Label(item.name, systemImage: "square.grid.2x2") }
+                    }
+                }
+                Section("Pinned") { Text("Pinning is not implemented yet.").foregroundStyle(.secondary) }
             }
             .navigationTitle("Home")
         }
@@ -66,6 +166,7 @@ private struct MondayHomeView: View {
 }
 
 private struct MondayChatsView: View {
+    @EnvironmentObject private var store: MondayLocalStore
     @State private var signal = ""
     @State private var result = ""
     @State private var working = false
@@ -93,46 +194,105 @@ private struct MondayChatsView: View {
     }
 
     @MainActor private func submit() async {
+        let submitted = signal.trimmingCharacters(in: .whitespacesAndNewlines)
         working = true
         defer { working = false }
         do {
-            let receipt = try await sendToMondayID(signal)
+            let receipt = try await sendToMondayID(submitted)
             result = receipt.result ?? "State advanced to revision \(receipt.stateRevision)."
+            store.addActivity(title: "Runtime receipt", detail: "\(receipt.receiptId) · revision \(receipt.stateRevision)")
             signal = ""
         } catch { result = "Runtime unavailable: \(error.localizedDescription)" }
     }
 }
 
 private struct MondayCreateView: View {
-    private let groups: [(String, [(String, String)])] = [
-        ("Conversation", [("Chat", "message"), ("Voice", "waveform")]),
-        ("Capture", [("Camera", "camera"), ("Scan", "doc.viewfinder"), ("Audio", "mic")]),
-        ("Media", [("Image", "photo"), ("Video", "video")]),
-        ("Knowledge", [("Document", "doc"), ("Research", "magnifyingglass")]),
-        ("Persistent", [("Space", "square.grid.2x2"), ("Reminder", "bell"), ("Automation", "clock.arrow.circlepath")])
-    ]
+    @EnvironmentObject private var store: MondayLocalStore
+    @State private var showingSpace = false
+    @State private var showingDocument = false
+
     var body: some View {
         NavigationStack {
             List {
-                ForEach(groups, id: \.0) { group in
-                    Section(group.0) {
-                        ForEach(group.1, id: \.0) { item in
-                            Label(item.0, systemImage: item.1).foregroundStyle(.secondary)
-                        }
-                    }
+                Section("Ready now") {
+                    Button { showingSpace = true } label: { Label("Space", systemImage: "square.grid.2x2") }
+                    Button { showingDocument = true } label: { Label("Document", systemImage: "doc.text") }
+                }
+                Section("Conversation") { Label("Chat", systemImage: "message") }
+                Section("Not implemented yet") {
+                    Label("Voice", systemImage: "waveform").foregroundStyle(.secondary)
+                    Label("Camera", systemImage: "camera").foregroundStyle(.secondary)
+                    Label("Image", systemImage: "photo").foregroundStyle(.secondary)
+                    Label("Video", systemImage: "video").foregroundStyle(.secondary)
+                    Label("Research", systemImage: "magnifyingglass").foregroundStyle(.secondary)
+                    Label("Reminder", systemImage: "bell").foregroundStyle(.secondary)
+                    Label("Automation", systemImage: "clock.arrow.circlepath").foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("Create")
-            .overlay(alignment: .bottom) { Text("Unavailable creation modes stay visible instead of pretending to run.").font(.caption).foregroundStyle(.secondary).padding() }
+            .sheet(isPresented: $showingSpace) { MondayNewSpaceView().environmentObject(store) }
+            .sheet(isPresented: $showingDocument) { MondayNewDocumentView().environmentObject(store) }
+        }
+    }
+}
+
+private struct MondayNewSpaceView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: MondayLocalStore
+    @State private var name = ""
+    var body: some View {
+        NavigationStack {
+            Form { TextField("Space name", text: $name) }
+                .navigationTitle("New Space")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                    ToolbarItem(placement: .confirmationAction) { Button("Create") { store.addSpace(name: name); dismiss() }.disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) }
+                }
+        }
+    }
+}
+
+private struct MondayNewDocumentView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: MondayLocalStore
+    @State private var title = ""
+    @State private var bodyText = ""
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("Title", text: $title)
+                TextField("Write something", text: $bodyText, axis: .vertical).lineLimit(4...12)
+            }
+            .navigationTitle("New Document")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) { Button("Save") { store.addDocument(title: title, body: bodyText); dismiss() }.disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) }
+            }
         }
     }
 }
 
 private struct MondaySpacesView: View {
+    @EnvironmentObject private var store: MondayLocalStore
+    @State private var showingNew = false
     var body: some View {
         NavigationStack {
-            ContentUnavailableView("No Spaces yet", systemImage: "square.grid.2x2", description: Text("Persistent project, person, topic and trip contexts will live here."))
-                .navigationTitle("Spaces")
+            List {
+                if store.spaces.isEmpty {
+                    Text("No Spaces yet. Create one with + or from Create.").foregroundStyle(.secondary)
+                } else {
+                    ForEach(store.spaces) { space in
+                        VStack(alignment: .leading) {
+                            Text(space.name)
+                            Text(space.createdAt, style: .date).font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                    .onDelete(perform: store.deleteSpaces)
+                }
+            }
+            .navigationTitle("Spaces")
+            .toolbar { ToolbarItem(placement: .primaryAction) { Button { showingNew = true } label: { Image(systemName: "plus") } } }
+            .sheet(isPresented: $showingNew) { MondayNewSpaceView().environmentObject(store) }
         }
     }
 }
@@ -160,25 +320,47 @@ private struct MondayYouView: View {
 
 private struct MondaySearchView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: MondayLocalStore
     @State private var query = ""
     var body: some View {
         NavigationStack {
-            ContentUnavailableView(query.isEmpty ? "Search Monday" : "No indexed result", systemImage: "magnifyingglass", description: Text(query.isEmpty ? "Search will span chats, files, spaces, decisions and changes." : "No local result is available for this query yet."))
-                .searchable(text: $query)
-                .navigationTitle("Search")
-                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            Group {
+                let rows = store.search(query)
+                if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    ContentUnavailableView("Search Monday", systemImage: "magnifyingglass", description: Text("Search Spaces and local documents."))
+                } else if rows.isEmpty {
+                    ContentUnavailableView("No result", systemImage: "magnifyingglass", description: Text("No local Space or document matches this query."))
+                } else {
+                    List(rows, id: \.1) { row in Label(row.1, systemImage: row.0 == "Space" ? "square.grid.2x2" : "doc.text") }
+                }
+            }
+            .searchable(text: $query)
+            .navigationTitle("Search")
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
     }
 }
 
 private struct MondayActivityView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: MondayLocalStore
     var body: some View {
         NavigationStack {
             List {
                 Section("Running") { Text("No executor is active.").foregroundStyle(.secondary) }
                 Section("Waiting") { Text("No persistent task is waiting.").foregroundStyle(.secondary) }
                 Section("Needs you") { Text("No human gate is open.").foregroundStyle(.secondary) }
+                Section("Recent changes") {
+                    if store.activity.isEmpty { Text("No local changes yet.").foregroundStyle(.secondary) }
+                    else {
+                        ForEach(store.activity) { item in
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(item.title)
+                                Text(item.detail).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
             }
             .navigationTitle("Activity")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
@@ -187,17 +369,31 @@ private struct MondayActivityView: View {
 }
 
 private struct MondayLibraryView: View {
+    @EnvironmentObject private var store: MondayLocalStore
+    @State private var showingNew = false
     var body: some View {
         List {
-            Section("Files") { Text("No local library objects yet.").foregroundStyle(.secondary) }
+            Section("Documents") {
+                if store.documents.isEmpty { Text("No local documents yet.").foregroundStyle(.secondary) }
+                else {
+                    ForEach(store.documents) { doc in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(doc.title).font(.headline)
+                            if !doc.body.isEmpty { Text(doc.body).lineLimit(3).foregroundStyle(.secondary) }
+                        }
+                    }
+                    .onDelete(perform: store.deleteDocuments)
+                }
+                Button { showingNew = true } label: { Label("New document", systemImage: "plus") }
+            }
             Section("Views") {
-                Label("Images", systemImage: "photo")
-                Label("Documents", systemImage: "doc")
-                Label("Code", systemImage: "chevron.left.forwardslash.chevron.right")
-                Label("Generated", systemImage: "wand.and.stars")
+                Label("Images", systemImage: "photo").foregroundStyle(.secondary)
+                Label("Code", systemImage: "chevron.left.forwardslash.chevron.right").foregroundStyle(.secondary)
+                Label("Generated", systemImage: "wand.and.stars").foregroundStyle(.secondary)
             }
         }
         .navigationTitle("Library")
+        .sheet(isPresented: $showingNew) { MondayNewDocumentView().environmentObject(store) }
     }
 }
 
