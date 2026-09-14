@@ -1,53 +1,36 @@
-name: Monday Consumer Navigation Depth
+name: Monday Consumer Voice Integration
 
 on:
   push:
     branches:
       - monday/continuum-runtime-integration-20260914
     paths:
-      - scripts/consumer_navigation_patch.py
-      - .github/workflows/monday-consumer-voice-integration.yml
+      - '.github/workflows/monday-consumer-voice-integration.yml'
+      - 'platform/apple-host/**'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  consumer-navigation:
+  voice-capture-proof:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: monday/continuum-runtime-integration-20260914
-          fetch-depth: 0
-      - name: Apply guarded source patch
-        run: python3 scripts/consumer_navigation_patch.py
-      - name: Verify source postconditions
+      - name: Verify persisted voice source postconditions
         run: |
           set -euo pipefail
           f=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'func updateDocument' "$f"
-          grep -q 'struct MondayDocumentDetailView' "$f"
-          grep -q 'struct MondayTaskDetailView' "$f"
-          grep -q 'NavigationLink { MondayDocumentDetailView' "$f"
-          grep -q 'NavigationLink { MondayTaskDetailView' "$f"
-          grep -q 'Button(saved ? "Saved" : "Save changes")' "$f"
-      - name: Run adapter tests
+          grep -q 'import AVFoundation' "$f"
+          grep -q 'case audio = "Audio"' "$f"
+          grep -q 'showingVoiceRecorder = true' "$f"
+          grep -q 'struct MondayVoiceRecorder' "$f"
+          grep -q 'AVAudioRecorder' "$f"
+          test "$(grep -c 'INFOPLIST_KEY_NSMicrophoneUsageDescription' platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj)" -eq 2
+      - name: Run Apple adapter tests
         run: swift test --package-path platform/apple-adapter
       - name: Compile iOS Simulator body
         run: |
           set -euo pipefail
-          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tee /tmp/monday-navigation-build.log
-          grep -q '\*\* BUILD SUCCEEDED \*\*' /tmp/monday-navigation-build.log
-      - name: Commit verified mutation
-        run: |
-          set -euo pipefail
-          git config user.name 'Monday Completion Loop'
-          git config user.email 'actions@users.noreply.github.com'
-          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          if git diff --cached --quiet; then
-            echo NAVIGATION_MUTATION_ALREADY_PRESENT=true
-            exit 0
-          fi
-          git commit -m 'feat(consumer): make library and search results actionable'
-          git push origin HEAD:monday/continuum-runtime-integration-20260914
+          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tee /tmp/monday-voice-regression.log
+          grep -q '\*\* BUILD SUCCEEDED \*\*' /tmp/monday-voice-regression.log
