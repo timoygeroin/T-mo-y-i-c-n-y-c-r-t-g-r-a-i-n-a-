@@ -8,10 +8,12 @@ let package = Package(
         .macOS(.v15)
     ],
     products: [
-        .library(name: "MondayIDAppleAdapter", targets: ["MondayIDAppleAdapter"])
+        .library(name: "MondayIDAppleAdapter", targets: ["MondayIDAppleAdapter"]),
+        .executable(name: "MondayIDRuntimeProbe", targets: ["MondayIDRuntimeProbe"])
     ],
     targets: [
         .target(name: "MondayIDAppleAdapter"),
+        .executableTarget(name: "MondayIDRuntimeProbe", dependencies: ["MondayIDAppleAdapter"]),
         .testTarget(name: "MondayIDAppleAdapterTests", dependencies: ["MondayIDAppleAdapter"])
     ]
 )
