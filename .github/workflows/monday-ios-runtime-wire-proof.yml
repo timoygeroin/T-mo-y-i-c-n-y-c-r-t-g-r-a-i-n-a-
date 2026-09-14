@@ -1,0 +1,83 @@
+name: Monday iOS Runtime Wire Proof
+
+on:
+  push:
+    branches:
+      - monday/continuum-runtime-integration-20260914
+    paths:
+      - 'platform/apple-adapter/**'
+      - 'platform/runtime/http-runtime*.mjs'
+      - 'platform/runtime/secure-state.mjs'
+      - '.github/workflows/monday-ios-runtime-wire-proof.yml'
+  pull_request:
+    paths:
+      - 'platform/apple-adapter/**'
+      - 'platform/runtime/http-runtime*.mjs'
+      - 'platform/runtime/secure-state.mjs'
+      - '.github/workflows/monday-ios-runtime-wire-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  swift-node-wire:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start deterministic MondayID HTTP runtime
+        working-directory: platform
+        run: |
+          rm -rf .mondayid-wire
+          mkdir -p .mondayid-wire
+          MONDAYID_WIRE_STATE_PATH=.mondayid-wire/state.enc \
+          MONDAYID_STATE_KEY=wire-state-key-with-enough-entropy \
+          MONDAYID_CONTROL_TOKEN=wire-control-secret \
+          PORT=8787 \
+          node runtime/http-runtime-wire-fixture.mjs > .mondayid-wire/server.log 2>&1 &
+          echo $! > .mondayid-wire/server.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8787/health > .mondayid-wire/health.json; then
+              cat .mondayid-wire/health.json
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .mondayid-wire/server.log
+          exit 1
+      - name: Run Swift adapter against real Node runtime
+        working-directory: platform/apple-adapter
+        env:
+          MONDAYID_PROBE_ENDPOINT: http://127.0.0.1:8787
+          MONDAYID_PROBE_TOKEN: wire-control-secret
+          MONDAYID_PROBE_SIGNAL: continue Monday
+        run: swift run MondayIDRuntimeProbe
+      - name: Read back encrypted runtime state
+        working-directory: platform
+        run: |
+          MONDAYID_WIRE_STATE_PATH=.mondayid-wire/state.enc \
+          MONDAYID_STATE_KEY=wire-state-key-with-enough-entropy \
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readEncryptedState } from './runtime/secure-state.mjs';
+          const state = await readEncryptedState(process.env.MONDAYID_WIRE_STATE_PATH, process.env.MONDAYID_STATE_KEY);
+          assert.equal(state.revision, 1);
+          assert.equal(state.activeObjective, 'continue Monday');
+          assert.equal(state.lastReceiptId, 'wire-r-1');
+          assert.equal(state.lastProviderId, 'wire-provider');
+          assert.deepEqual(state.continuation, { objective: 'continue Monday', checkpoint: 1 });
+          console.log(JSON.stringify({ RESULT: 'PASS', gate: 'SWIFT_TO_REAL_HTTP_RUNTIME_WIRE', revision: state.revision, receiptId: state.lastReceiptId }, null, 2));
+          NODE
+      - name: Stop runtime
+        if: always()
+        working-directory: platform
+        run: |
+          if test -f .mondayid-wire/server.pid; then
+            kill "$(cat .mondayid-wire/server.pid)" || true
+          fi
