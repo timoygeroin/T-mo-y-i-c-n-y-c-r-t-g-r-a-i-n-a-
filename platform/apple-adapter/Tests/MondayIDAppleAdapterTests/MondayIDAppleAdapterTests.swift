@@ -98,9 +98,13 @@ private func runtimeSession() -> URLSession {
         return (response, try JSONEncoder().encode(health))
     }
     let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
-    await #expect(throws: MondayIDRuntimeError.unhealthyRuntime) {
-        try await client.health()
+    var rejected = false
+    do {
+        _ = try await client.health()
+    } catch let error as MondayIDRuntimeError {
+        rejected = error == .unhealthyRuntime
     }
+    #expect(rejected)
 }
 
 @Test func runtimeClientSendsAuthenticatedSignalAndDecodesReceipt() async throws {
