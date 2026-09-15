@@ -1,11 +1,11 @@
-name: Monday Consumer Media Integration
+name: Monday Consumer Space Depth Integration
 
 on:
   push:
     branches:
       - monday/continuum-runtime-integration-20260914
     paths:
-      - platform/apple-host/tools/patch_media_capture.py
+      - platform/apple-host/tools/patch_space_depth.py
       - .github/workflows/monday-consumer-media-integration.yml
   workflow_dispatch:
 
@@ -20,16 +20,19 @@ jobs:
         with:
           ref: monday/continuum-runtime-integration-20260914
           fetch-depth: 0
-      - name: Apply idempotent media patch
-        run: python3 platform/apple-host/tools/patch_media_capture.py
+      - name: Apply guarded space depth patch
+        run: python3 platform/apple-host/tools/patch_space_depth.py
+      - name: Product rejection gate
+        run: node product/verify-product-contract.mjs
       - name: Static postcondition checks
         run: |
-          grep -q 'PhotosPicker(selection: $imageItem' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'PhotosPicker(selection: $videoItem' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'UIImagePickerController.isSourceTypeAvailable(.camera)' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          grep -q 'func saveMedia(data: Data' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          test "$(grep -c 'INFOPLIST_KEY_NSCameraUsageDescription' platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj)" -eq 2
-          ! grep -q 'system capture body pending field integration' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          SRC=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -q 'NavigationLink { MondayTaskDetailView(taskID: task.id) }' "$SRC"
+          test "$(grep -c 'NavigationLink { MondayDocumentDetailView(documentID: doc.id) }' "$SRC")" -ge 2
+          test "$(grep -c 'NavigationLink { MondayTaskDetailView(taskID: task.id) }' "$SRC")" -ge 3
+          ! grep -A8 'case 2:' "$SRC" | grep -q 'ForEach(documents) { doc in Label'
+      - name: Apple adapter runtime tests
+        run: swift test --package-path platform/apple-adapter
       - name: Build iOS consumer body
         run: |
           xcodebuild \
@@ -47,6 +50,6 @@ jobs:
           fi
           git config user.name 'MondayID Execution'
           git config user.email 'actions@users.noreply.github.com'
-          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj
-          git commit -m 'feat(ios): wire real image video and camera capture paths'
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          git commit -m 'feat(consumer): make home and space objects actionable'
           git push origin HEAD:monday/continuum-runtime-integration-20260914
