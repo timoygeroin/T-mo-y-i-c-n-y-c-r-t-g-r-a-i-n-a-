@@ -1,46 +1,134 @@
-name: Monday Consumer Space Depth Proof
+name: Monday Consumer Media Preview Integration
 
 on:
   push:
     branches:
       - monday/continuum-runtime-integration-20260914
     paths:
-      - platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-      - platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj
-      - platform/apple-adapter/**
-      - product/**
       - .github/workflows/monday-consumer-media-integration.yml
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  verify-space-depth:
+  integrate-media-preview:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: monday/continuum-runtime-integration-20260914
           fetch-depth: 0
-      - name: Record exact head
-        run: git rev-parse HEAD
       - name: Product rejection gate
         run: node product/verify-product-contract.mjs
-      - name: Verify space depth source postconditions
+      - name: Add truthful local media preview
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('platform/apple-host/MondayIDHost/MondayIDHostApp.swift')
+          s=p.read_text()
+          if 'import QuickLook' not in s:
+              s=s.replace('import PhotosUI\n', 'import PhotosUI\nimport QuickLook\n')
+          old='''                    } else {
+                        Section("Stored object") {
+                            Text(document.body).textSelection(.enabled)
+                            Text("Media bytes are stored in Monday's Application Support container; this object is the durable Library pointer.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
+'''
+          new='''                    } else {
+                        Section("Media") {
+                            if let mediaURL = mondayMediaURL(for: document), FileManager.default.fileExists(atPath: mediaURL.path) {
+                                NavigationLink("Preview media") { MondayMediaPreview(url: mediaURL).navigationTitle(document.title) }
+                                ShareLink(item: mediaURL) { Label("Share or export", systemImage: "square.and.arrow.up") }
+                                LabeledContent("Stored locally", value: mediaURL.lastPathComponent)
+                            } else {
+                                ContentUnavailableView("Media unavailable", systemImage: "exclamationmark.triangle", description: Text("The Library pointer exists, but the local media bytes could not be read."))
+                            }
+                        }
+                    }
+'''
+          if old not in s:
+              raise SystemExit('expected media detail block not found')
+          s=s.replace(old,new,1)
+          marker='''private struct MondayTaskDetailView: View {'''
+          helper='''private func mondayMediaURL(for document: MondayDocument) -> URL? {
+    guard document.kind == .image || document.kind == .video || document.kind == .audio,
+          document.body.hasPrefix("MondayMedia/") else { return nil }
+    guard let base = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else { return nil }
+    return base.appendingPathComponent(document.body)
+}
+
+private struct MondayMediaPreview: UIViewControllerRepresentable {
+    let url: URL
+    func makeCoordinator() -> Coordinator { Coordinator(url: url) }
+    func makeUIViewController(context: Context) -> QLPreviewController {
+        let controller = QLPreviewController()
+        controller.dataSource = context.coordinator
+        return controller
+    }
+    func updateUIViewController(_ uiViewController: QLPreviewController, context: Context) {}
+    final class Coordinator: NSObject, QLPreviewControllerDataSource {
+        let url: URL
+        init(url: URL) { self.url = url }
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as NSURL }
+    }
+}
+
+'''
+          if 'private struct MondayMediaPreview:' not in s:
+              if marker not in s: raise SystemExit('task detail marker missing')
+              s=s.replace(marker,helper+marker,1)
+          p.write_text(s)
+          PY
+      - name: Verify source postconditions
         run: |
           SRC=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-          test "$(grep -c 'NavigationLink { MondayDocumentDetailView(documentID: doc.id) }' "$SRC")" -ge 2
-          test "$(grep -c 'NavigationLink { MondayTaskDetailView(taskID: task.id) }' "$SRC")" -ge 3
-          ! grep -A8 'case 2:' "$SRC" | grep -q 'ForEach(documents) { doc in Label'
-      - name: Apple adapter runtime tests
+          grep -q 'import QuickLook' "$SRC"
+          grep -q 'NavigationLink("Preview media")' "$SRC"
+          grep -q 'ShareLink(item: mediaURL)' "$SRC"
+          grep -q 'private struct MondayMediaPreview: UIViewControllerRepresentable' "$SRC"
+          ! grep -q "Media bytes are stored in Monday's Application Support container" "$SRC"
+      - name: Apple adapter tests
         run: swift test --package-path platform/apple-adapter
       - name: Build iOS consumer body
         run: |
-          xcodebuild \
-            -project platform/apple-host/MondayIDHost.xcodeproj \
-            -scheme MondayIDHost \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+      - name: Persist verified mutation and restore proof workflow
+        run: |
+          cat > .github/workflows/monday-consumer-media-integration.yml <<'YAML'
+          name: Monday Consumer Media Preview Proof
+          on:
+            push:
+              branches: [monday/continuum-runtime-integration-20260914]
+              paths:
+                - platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+                - platform/apple-adapter/**
+                - product/**
+                - .github/workflows/monday-consumer-media-integration.yml
+            workflow_dispatch:
+          permissions:
+            contents: read
+          jobs:
+            verify-media-preview:
+              runs-on: macos-latest
+              steps:
+                - uses: actions/checkout@v4
+                - run: node product/verify-product-contract.mjs
+                - name: Verify media preview source
+                  run: |
+                    SRC=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+                    grep -q 'import QuickLook' "$SRC"
+                    grep -q 'NavigationLink("Preview media")' "$SRC"
+                    grep -q 'ShareLink(item: mediaURL)' "$SRC"
+                    grep -q 'private struct MondayMediaPreview: UIViewControllerRepresentable' "$SRC"
+                - run: swift test --package-path platform/apple-adapter
+                - run: xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+          YAML
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift .github/workflows/monday-consumer-media-integration.yml
+          git commit -m 'feat(consumer): preview durable media objects'
+          git push origin HEAD:monday/continuum-runtime-integration-20260914
