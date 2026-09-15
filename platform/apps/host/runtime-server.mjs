@@ -1,11 +1,10 @@
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getVercelOidcToken } from '@vercel/oidc';
 import { compileOrganismMove } from '../../skills/mondayid-organism-kernel/runtime.mjs';
 import { LIVE_KERNEL } from '../../skills/mondayid-organism-kernel/live-kernel.mjs';
 
-// Vercel AI Gateway uses provider-qualified model IDs. Direct OpenAI fallback
-// strips the provider prefix before calling api.openai.com.
 export const DEFAULT_MODEL = 'openai/gpt-5.6-sol';
 export const DEFAULT_REASONING_EFFORT = 'high';
 export const AI_GATEWAY_RESPONSES_URL = 'https://ai-gateway.vercel.sh/v1/responses';
@@ -80,11 +79,7 @@ function directOpenAIModel(model) {
   return value.startsWith('openai/') ? value.slice('openai/'.length) : value;
 }
 
-export function resolveModelTransport({
-  gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN,
-  apiKey = process.env.OPENAI_API_KEY,
-  model = DEFAULT_MODEL
-} = {}) {
+export function resolveModelTransport({ gatewayToken, apiKey = process.env.OPENAI_API_KEY, model = DEFAULT_MODEL } = {}) {
   if (gatewayToken) {
     return {
       transport: 'vercel_ai_gateway',
@@ -94,7 +89,7 @@ export function resolveModelTransport({
       model: gatewayModel(model),
       auth_source: process.env.AI_GATEWAY_API_KEY && gatewayToken === process.env.AI_GATEWAY_API_KEY
         ? 'ai_gateway_api_key'
-        : 'vercel_oidc_or_explicit_gateway_token'
+        : 'vercel_oidc_context_or_env'
     };
   }
   if (apiKey) {
@@ -107,12 +102,19 @@ export function resolveModelTransport({
       auth_source: 'openai_api_key'
     };
   }
-  throw new Error('No server-side model credential is available (VERCEL_OIDC_TOKEN / AI_GATEWAY_API_KEY / OPENAI_API_KEY)');
+  throw new Error('No server-side model credential is available (Vercel OIDC / AI_GATEWAY_API_KEY / OPENAI_API_KEY)');
+}
+
+export function resolveGatewayToken(explicitToken) {
+  if (explicitToken) return explicitToken;
+  if (process.env.AI_GATEWAY_API_KEY) return process.env.AI_GATEWAY_API_KEY;
+  if (process.env.VERCEL_OIDC_TOKEN) return process.env.VERCEL_OIDC_TOKEN;
+  try { return getVercelOidcToken(); } catch { return undefined; }
 }
 
 export async function callOpenAI({
   apiKey = process.env.OPENAI_API_KEY,
-  gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN,
+  gatewayToken,
   model = DEFAULT_MODEL,
   reasoningEffort = DEFAULT_REASONING_EFFORT,
   message,
@@ -121,17 +123,13 @@ export async function callOpenAI({
 }) {
   if (typeof message !== 'string' || !message.trim()) throw new Error('Non-empty message required');
 
-  const transport = resolveModelTransport({ gatewayToken, apiKey, model });
-  const move = compileOrganismMove({
-    message,
-    context,
-    receptors: liveReceptors(transport.transport)
-  });
+  const transport = resolveModelTransport({ gatewayToken: resolveGatewayToken(gatewayToken), apiKey, model });
+  const move = compileOrganismMove({ message, context, receptors: liveReceptors(transport.transport) });
 
   const response = await fetchImpl(transport.endpoint, {
     method: 'POST',
     headers: {
-      'authorization': `Bearer ${transport.token}`,
+      authorization: `Bearer ${transport.token}`,
       'content-type': 'application/json'
     },
     body: JSON.stringify({
@@ -185,7 +183,7 @@ async function readBody(req) {
 
 export async function handleRuntimeRequest(req, res, options = {}) {
   if (req.method === 'GET' && req.url === '/api/organism/health') {
-    const gatewayAvailable = Boolean(options.gatewayToken || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN);
+    const gatewayAvailable = Boolean(resolveGatewayToken(options.gatewayToken));
     const directOpenAIAvailable = Boolean(options.apiKey || process.env.OPENAI_API_KEY);
     return json(res, 200, {
       ok: true,
@@ -205,7 +203,7 @@ export async function handleRuntimeRequest(req, res, options = {}) {
     const body = JSON.parse(raw || '{}');
     const result = await callOpenAI({
       apiKey: options.apiKey ?? process.env.OPENAI_API_KEY,
-      gatewayToken: options.gatewayToken ?? process.env.AI_GATEWAY_API_KEY ?? process.env.VERCEL_OIDC_TOKEN,
+      gatewayToken: options.gatewayToken,
       model: options.model || process.env.MONDAYID_MODEL || DEFAULT_MODEL,
       reasoningEffort: options.reasoningEffort || process.env.MONDAYID_REASONING || DEFAULT_REASONING_EFFORT,
       message: body.message,
@@ -221,9 +219,7 @@ export async function handleRuntimeRequest(req, res, options = {}) {
 
 export function startRuntimeServer({ port = Number(process.env.MONDAYID_RUNTIME_PORT || 8787), ...options } = {}) {
   const server = createServer((req, res) => void handleRuntimeRequest(req, res, options));
-  server.listen(port, '127.0.0.1', () => {
-    console.log(`MondayID runtime bridge listening on http://127.0.0.1:${port}`);
-  });
+  server.listen(port, '127.0.0.1', () => console.log(`MondayID runtime bridge listening on http://127.0.0.1:${port}`));
   return server;
 }
 
