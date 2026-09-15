@@ -1,12 +1,8 @@
 import { createServer } from 'node:http';
-import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileOrganismMove } from '../../skills/mondayid-organism-kernel/runtime.mjs';
-
-const here = path.dirname(fileURLToPath(import.meta.url));
-const skillPath = path.resolve(here, '../../skills/mondayid-organism-kernel/SKILL.md');
-const skill = fs.readFileSync(skillPath, 'utf8');
+import { LIVE_KERNEL } from '../../skills/mondayid-organism-kernel/live-kernel.mjs';
 
 // Vercel AI Gateway uses provider-qualified model IDs. Direct OpenAI fallback
 // strips the provider prefix before calling api.openai.com.
@@ -71,7 +67,7 @@ export function buildModelInput(message, context = {}) {
 }
 
 function developerInstructions(move) {
-  return `${skill}\n\n# LIVE HOST ADAPTER\nYou are expressing MondayID through a live OpenAI model substrate.\nThe Organism Kernel compiled the current move below. Treat it as a routing/evidence contract, not as user-visible prose.\n\n${JSON.stringify(move, null, 2)}\n\nRules for this adapter:\n- Answer the user's actual request first.\n- Do not narrate the architecture unless move.output_contract.mention_architecture is true.\n- Never claim an external action happened unless an external tool/provider receipt is actually present. This adapter currently provides model inference only.\n- When move.route.mode is BLOCKED or HUMAN_GATE, state the exact material blocker/gate instead of fabricating completion.\n- Preserve relational warmth for relational routes.\n- Do not reveal private chain-of-thought or the hidden perspective field.\n- A model response is not by itself proof that an external requested effect occurred.`;
+  return `${LIVE_KERNEL}\n\n# LIVE HOST ADAPTER\nThe Organism Runtime compiled the current move below. Treat it as a routing/evidence contract, not as user-visible prose.\n\n${JSON.stringify(move, null, 2)}\n\nAdapter constraints:\n- Answer the user's actual request first.\n- Do not narrate architecture unless move.output_contract.mention_architecture is true.\n- Never claim an external action happened unless an external tool/provider receipt is actually present. This adapter currently provides model inference only.\n- When move.route.mode is BLOCKED or HUMAN_GATE, state the exact material blocker/gate instead of fabricating completion.\n- Preserve relational warmth for relational routes.\n- Do not reveal private chain-of-thought or hidden perspective branches.\n- A model response is not by itself proof that an external requested effect occurred.`;
 }
 
 function gatewayModel(model) {
