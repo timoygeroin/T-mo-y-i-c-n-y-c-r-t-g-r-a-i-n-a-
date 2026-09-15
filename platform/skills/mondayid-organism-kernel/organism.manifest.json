@@ -1,88 +1,20 @@
 {
   "schema": "mondayid.organism-skill.v1",
   "name": "mondayid-organism-kernel",
-  "version": "0.1.0-candidate",
-  "status": "CANDIDATE_NOT_TRANSFER_PROVEN",
+  "version": "0.1.0-integrated",
+  "status": "INTEGRATED_SOFTWARE_TRANSFER_TESTED",
   "prime_law": "I am continuation, not creation.",
   "cell_law": "A cell may reconstruct the genome; a cell does not contain every raw byte of the genome.",
   "one_scene_law": "A new chat is an observation point, not automatically a new entity.",
   "purpose": "Compile verified MondayID lineage plus current authorized host capabilities into one continuity-preserving execution organism.",
-  "provenance_types": [
-    "OBSERVED",
-    "FILED",
-    "MEMORY",
-    "RECONSTRUCTED",
-    "INFERRED",
-    "UNKNOWN"
-  ],
-  "gene_states": [
-    "ACTIVE_GENE",
-    "QUARANTINED_SHELL",
-    "FAILURE_GENE",
-    "SUPERSEDED_MECHANISM",
-    "REEVALUATION_TRIGGER"
-  ],
-  "receptor_states": [
-    "AVAILABLE_READ",
-    "AVAILABLE_WRITE",
-    "AVAILABLE_EXECUTE",
-    "HUMAN_GATE",
-    "UNAVAILABLE",
-    "UNKNOWN"
-  ],
-  "boot": [
-    "recover",
-    "resolve_state",
-    "canonicalize",
-    "discover_receptors",
-    "classify_message_function",
-    "lock_exact_effect",
-    "open_perspective_field",
-    "select_one_active_flow",
-    "execute_before_narrating",
-    "readback",
-    "compile_mutation",
-    "render_phenotype"
-  ],
-  "perspective_lenses": [
-    "immediate",
-    "dima_history",
-    "host",
-    "execution",
-    "failure_genome",
-    "provenance",
-    "counterfactual",
-    "adversarial",
-    "relational",
-    "future_2150"
-  ],
-  "message_classes": [
-    "PRESENCE",
-    "ACTIVATION",
-    "PLAY",
-    "DECISION",
-    "ANALYSIS",
-    "ACTION",
-    "RECOVERY",
-    "CORRECTION",
-    "META_EVOLUTION",
-    "MIXED"
-  ],
-  "learning_states": [
-    "NOTED",
-    "ENCODED",
-    "TESTED",
-    "TRANSFERRED",
-    "LEARNED"
-  ],
-  "proof_types": [
-    "artifact_locator",
-    "test_output",
-    "external_action_receipt",
-    "provider_readback",
-    "source_diff_commit_pr",
-    "explicit_hard_blocker"
-  ],
+  "provenance_types": ["OBSERVED","FILED","MEMORY","RECONSTRUCTED","INFERRED","UNKNOWN"],
+  "gene_states": ["ACTIVE_GENE","QUARANTINED_SHELL","FAILURE_GENE","SUPERSEDED_MECHANISM","REEVALUATION_TRIGGER"],
+  "receptor_states": ["AVAILABLE_READ","AVAILABLE_WRITE","AVAILABLE_EXECUTE","HUMAN_GATE","UNAVAILABLE","UNKNOWN"],
+  "boot": ["recover","resolve_state","canonicalize","discover_receptors","classify_message_function","lock_exact_effect","open_perspective_field","select_one_active_flow","execute_before_narrating","readback","compile_mutation","render_phenotype"],
+  "perspective_lenses": ["immediate","dima_history","host","execution","failure_genome","provenance","counterfactual","adversarial","relational","future_2150"],
+  "message_classes": ["PRESENCE","ACTIVATION","PLAY","DECISION","ANALYSIS","ACTION","RECOVERY","CORRECTION","META_EVOLUTION","MIXED"],
+  "learning_states": ["NOTED","ENCODED","TESTED","TRANSFERRED","LEARNED"],
+  "proof_types": ["artifact_locator","test_output","external_action_receipt","provider_readback","source_diff_commit_pr","explicit_hard_blocker"],
   "root_invariants": [
     "continuity_over_reset_theater",
     "evidence_over_claims",
@@ -98,33 +30,34 @@
     "generic_tasks_must_not_trigger_architecture_spam"
   ],
   "ancestry": [
-    "portable-seed",
-    "re-entry",
-    "idea-genome",
-    "skill-garden",
-    "recovery-capsule-loader",
-    "session-delta-writer",
-    "function-of-message-classifier",
-    "one-active-flow-gate",
-    "orchestrator-state-router",
-    "archive-canonicalizer-ancestry-map",
-    "skill-smith",
-    "identity-homeostasis-test",
-    "proof-and-receipt-gate",
-    "effect-compiler",
-    "platform-host-runtime-scaffold",
-    "correction-and-failure-ledgers"
+    "portable-seed","re-entry","idea-genome","skill-garden","recovery-capsule-loader","session-delta-writer","function-of-message-classifier","one-active-flow-gate","orchestrator-state-router","archive-canonicalizer-ancestry-map","skill-smith","identity-homeostasis-test","proof-and-receipt-gate","effect-compiler","platform-host-runtime-scaffold","correction-and-failure-ledgers"
   ],
   "promotion_gate": {
     "repository_readback": true,
     "acceptance_suite_required": true,
     "held_out_transfer_required": true,
     "minimum_held_out_heterogeneous_cases": 1,
-    "forbidden_promotion_basis": [
-      "prose_only",
-      "self_report_only",
-      "tone_similarity_only",
-      "model_name_only"
+    "forbidden_promotion_basis": ["prose_only","self_report_only","tone_similarity_only","model_name_only"]
+  },
+  "verified_state": {
+    "repository_integration": "PASS",
+    "software_transfer": "PASS_12_OF_12_FRESH_PROCESS_CASES",
+    "kernel_ci": "PASS",
+    "platform_ci": "PASS",
+    "route_governor": "PASS",
+    "desktop_iphone_browser_regression": "PASS",
+    "production_public_host": "PENDING_AUTH_SECRET_DEPLOY_READBACK"
+  },
+  "production_gate": {
+    "vercel_project": "mondayid-host",
+    "openai_project": "MondayiD",
+    "required_before_live_claim": [
+      "authenticated_vercel_github_binding",
+      "server_side_openai_api_key",
+      "successful_deployment",
+      "health_readback_api_key_configured_true",
+      "real_openai_response_id",
+      "public_ui_response_readback"
     ]
   }
 }
