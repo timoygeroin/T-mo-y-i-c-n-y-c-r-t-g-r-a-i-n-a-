@@ -105,11 +105,11 @@ export function resolveModelTransport({ gatewayToken, apiKey = process.env.OPENA
   throw new Error('No server-side model credential is available (Vercel OIDC / AI_GATEWAY_API_KEY / OPENAI_API_KEY)');
 }
 
-export function resolveGatewayToken(explicitToken) {
+export async function resolveGatewayToken(explicitToken) {
   if (explicitToken) return explicitToken;
   if (process.env.AI_GATEWAY_API_KEY) return process.env.AI_GATEWAY_API_KEY;
   if (process.env.VERCEL_OIDC_TOKEN) return process.env.VERCEL_OIDC_TOKEN;
-  try { return getVercelOidcToken(); } catch { return undefined; }
+  try { return await getVercelOidcToken(); } catch { return undefined; }
 }
 
 export async function callOpenAI({
@@ -123,7 +123,8 @@ export async function callOpenAI({
 }) {
   if (typeof message !== 'string' || !message.trim()) throw new Error('Non-empty message required');
 
-  const transport = resolveModelTransport({ gatewayToken: resolveGatewayToken(gatewayToken), apiKey, model });
+  const resolvedGatewayToken = await resolveGatewayToken(gatewayToken);
+  const transport = resolveModelTransport({ gatewayToken: resolvedGatewayToken, apiKey, model });
   const move = compileOrganismMove({ message, context, receptors: liveReceptors(transport.transport) });
 
   const response = await fetchImpl(transport.endpoint, {
@@ -183,7 +184,8 @@ async function readBody(req) {
 
 export async function handleRuntimeRequest(req, res, options = {}) {
   if (req.method === 'GET' && req.url === '/api/organism/health') {
-    const gatewayAvailable = Boolean(resolveGatewayToken(options.gatewayToken));
+    const gatewayToken = await resolveGatewayToken(options.gatewayToken);
+    const gatewayAvailable = Boolean(gatewayToken);
     const directOpenAIAvailable = Boolean(options.apiKey || process.env.OPENAI_API_KEY);
     return json(res, 200, {
       ok: true,
