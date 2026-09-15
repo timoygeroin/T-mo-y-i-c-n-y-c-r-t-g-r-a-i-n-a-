@@ -290,7 +290,9 @@ private struct MondayHomeView: View {
             List {
                 Section("Continue") {
                     if let task = store.tasks.first(where: { $0.state == .waiting || $0.state == .needsYou }) {
-                        Label(task.title, systemImage: task.state == .needsYou ? "person.crop.circle.badge.exclamationmark" : "clock")
+                        NavigationLink { MondayTaskDetailView(taskID: task.id) } label: {
+                            Label(task.title, systemImage: task.state == .needsYou ? "person.crop.circle.badge.exclamationmark" : "clock")
+                        }
                     } else if let first = store.spaces.first {
                         NavigationLink { MondaySpaceDetailView(spaceID: first.id) } label: { Label(first.name, systemImage: "square.grid.2x2") }
                     } else {
@@ -303,7 +305,11 @@ private struct MondayHomeView: View {
                         return Calendar.current.isDateInToday(dueAt) && task.state != .completed
                     }
                     if due.isEmpty { Text("Nothing needs you.").foregroundStyle(.secondary) }
-                    else { ForEach(due) { task in Label(task.title, systemImage: "bell") } }
+                    else {
+                        ForEach(due) { task in
+                            NavigationLink { MondayTaskDetailView(taskID: task.id) } label: { Label(task.title, systemImage: "bell") }
+                        }
+                    }
                 }
                 Section("Recent") {
                     if store.documents.isEmpty && store.spaces.isEmpty {
@@ -764,12 +770,16 @@ private struct MondaySpaceDetailView: View {
                         MondayChatsView()
                     case 2:
                         List {
-                            ForEach(documents) { doc in Label(doc.title, systemImage: doc.kind.symbol) }
+                            ForEach(documents) { doc in
+                                NavigationLink { MondayDocumentDetailView(documentID: doc.id) } label: { Label(doc.title, systemImage: doc.kind.symbol) }
+                            }
                             Button { showingDocument = true } label: { Label("Add file object", systemImage: "plus") }
                         }
                     case 3:
                         List {
-                            ForEach(tasks) { task in MondayTaskRow(task: task) }
+                            ForEach(tasks) { task in
+                                NavigationLink { MondayTaskDetailView(taskID: task.id) } label: { MondayTaskRow(task: task) }
+                            }
                             Button { showingTask = true } label: { Label("Add task", systemImage: "plus") }
                         }
                     default:
