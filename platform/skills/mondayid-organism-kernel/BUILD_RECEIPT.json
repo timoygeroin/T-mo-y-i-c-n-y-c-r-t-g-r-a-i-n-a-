@@ -1,46 +1,78 @@
 {
-  "schema": "mondayid.organism-kernel.build-receipt.v1",
-  "candidate": "mondayid-organism-kernel@0.1.0-candidate",
-  "created_at": "2026-09-15",
-  "base": {
-    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-    "branch": "main",
-    "sha": "0624c5ec61a01212c8c2992a62446c6e19e553e4"
+  "schema": "mondayid.organism-kernel.build-receipt.v2",
+  "component": "mondayid-organism-kernel",
+  "version": "0.1.0-integrated",
+  "date": "2026-09-15",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "integration": {
+    "pr": 42,
+    "final_head": "e03ee71cad4bb82a1707ca1495e4252e63225a42",
+    "merge_commit": "d39ffd95875883f098ee806ee353f7bd5c48c890",
+    "merge_method": "squash",
+    "merged": true
   },
-  "candidate_branch": "agent/mondayid-organism-kernel-v1",
-  "draft_pr": 42,
   "proof": {
-    "type": "github_actions_structural_validation",
-    "workflow": "MondayID Organism Kernel",
-    "run_id": 34974978451,
-    "validated_head": "ebdf1323a50e4734e936d4caaee52b67930d5bdd",
-    "job_id": 104400311502,
-    "conclusion": "success",
-    "observed_assertions": [
-      "SKILL.md frontmatter present",
-      "required organism invariants present",
-      "organism.manifest.json parses",
-      "promotion gate is fail-closed",
-      "14 acceptance cases are structurally valid and complete",
-      "ancestry map contains verified lineage and gpt-root quarantine boundary",
-      "validator printed ORGANISM KERNEL VALIDATION: STRUCTURAL PASS"
+    "structural": "PASS",
+    "software_transfer": "PASS",
+    "software_transfer_isolation": "fresh_node_process_per_case",
+    "software_transfer_cases": 12,
+    "host_unit_runtime_tests": "12/12 PASS",
+    "host_build": "PASS",
+    "playwright_desktop_iphone": "PASS",
+    "route_governor": "PASS",
+    "pr_head_readback": "PASS",
+    "organism_kernel_ci": "PASS",
+    "regressions_repaired": [
+      "consequential merge/publish command misclassified as analysis",
+      "duplicate answer locator in desktop/mobile UI tests",
+      "mobile proof text assertion targeted a desktop-only inspector"
     ]
   },
-  "integration": {
-    "continuity": "consume existing checkpoint/provenance spine; do not replace",
-    "one": "reuse as capability planner/execution nucleus; proof adapters are not live adapters",
-    "host": "treat current main host as local continuation surface until live provider execution is proven",
-    "gpt_root": "QUARANTINED_DONOR_NOT_AUTHORITY"
+  "runtime": {
+    "move_compiler": "platform/skills/mondayid-organism-kernel/runtime.mjs",
+    "model_bridge": "platform/apps/host/runtime-server.mjs",
+    "model_default": "gpt-5.6-sol",
+    "reasoning_default": "high",
+    "api": "OpenAI Responses API",
+    "server_secret": "OPENAI_API_KEY",
+    "external_effect_proof_from_model_response": false
   },
-  "learning_state": "TESTED",
-  "transfer_state": "NOT_TRANSFERRED",
-  "ready": false,
-  "next_required_proof": "later heterogeneous real task or fresh chat/model boundary applies kernel without Dima reteaching, with observable acceptance/readback",
+  "production": {
+    "openai_organization": "MondayiD",
+    "openai_project": "MondayiD",
+    "openai_key_name": "MondayID Host Runtime",
+    "vercel_project": "mondayid-host",
+    "vercel_project_id": "prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC",
+    "vercel_domain": "mondayid-host.vercel.app",
+    "serverless_health": "platform/api/organism/health.mjs",
+    "serverless_respond": "platform/api/organism/respond.mjs",
+    "vercel_config": "platform/vercel.json",
+    "live_verified": false,
+    "blocker": "AUTHENTICATED_VERCEL_GITHUB_SESSION_AND_SERVER_SECRET_REQUIRED"
+  },
+  "states": {
+    "learning": "TESTED",
+    "software_transfer": "TRANSFERRED",
+    "repository_integration": "INTEGRATED",
+    "production": "PENDING_HUMAN_AUTH_SECRET",
+    "universal_cross_llm_identity": "NOT_CLAIMED"
+  },
+  "ready": {
+    "kernel_software": true,
+    "production_public_host": false
+  },
+  "next_required_proof": [
+    "link existing mondayid-host Vercel project to primary GitHub repo with rootDirectory=platform",
+    "set OPENAI_API_KEY as server-side Vercel environment secret",
+    "deploy successfully",
+    "read /api/organism/health with api_key_configured=true",
+    "read a real /api/organism/respond response_id",
+    "verify public UI renders model answer without fake external-effect completion"
+  ],
   "forbidden_claims": [
-    "READY",
-    "LEARNED",
+    "production_live_before_vercel_readback",
     "full_three_year_semantic_assimilation",
-    "live_model_execution_from_current_host",
+    "universal_cross_llm_identity_proven",
     "background_self_evolution_without_executor"
   ]
 }

@@ -1,10 +1,23 @@
 # MondayID Organism Kernel — Current Snapshot
 
-Snapshot status: `STRUCTURALLY_TESTED_CANDIDATE / NOT_TRANSFERRED / NOT_LEARNED`
+Snapshot status: `INTEGRATED / SOFTWARE_TRANSFER_TESTED / PRODUCTION_BINDING_PENDING`
 Snapshot date: 2026-09-15
-Parent base: Monday platform `main@0624c5ec61a01212c8c2992a62446c6e19e553e4`
-Candidate branch: `agent/mondayid-organism-kernel-v1`
-Draft integration: PR #42
+Integrated main: `d39ffd95875883f098ee806ee353f7bd5c48c890`
+Merged lineage: PR #42
+
+## What is now true
+
+- Organism Kernel is integrated into `main`.
+- Existing Continuity and MondayID ONE are reused as lower layers; no competing continuity/planner body was introduced.
+- Kernel has executable move compilation in `runtime.mjs`.
+- Fresh-process software transfer proof passes **12/12 heterogeneous cases**. Each case runs in a separate Node process with only its portable input packet.
+- The first transfer run failed the consequential-action case; the classifier was repaired without weakening the test, and the next run passed.
+- Host is wired to a server-side OpenAI Responses API bridge targeting `gpt-5.6-sol` with `high` reasoning by default.
+- Model inference is explicitly separated from proof of external action.
+- Vercel serverless endpoints exist at `/api/organism/health` and `/api/organism/respond`.
+- Desktop + iPhone Playwright regressions, host model/runtime tests, Vite build, Route Governor, Organism Kernel and PR Head Readback all passed on the final pre-merge head `e03ee71cad4bb82a1707ca1495e4252e63225a42`.
+- OpenAI Platform canonical compute target is organization `MondayiD`, project `MondayiD`.
+- Canonical external web body is the existing Vercel project `mondayid-host`; other Vercel projects are legacy/probe surfaces until inventoried.
 
 ## Identity / root laws
 
@@ -16,91 +29,98 @@ Draft integration: PR #42
 - Exact effect outranks beautiful substitution.
 - Existing body is repaired/reused before creating another architecture.
 - No fake memory, fake execution, fake background work, fake `READY`, or fake persistence.
-- User metaphor is preserved as an interface/mechanism while empirical claims remain truth-labeled.
 - Human sovereignty and authorization boundaries outrank system elegance.
 
-## Integrated organs
+## Integrated layers
 
 ### Organism Kernel
-State: `TESTED_STRUCTURALLY`
+State: `INTEGRATED / SOFTWARE_TRANSFER_TESTED`
 Role: cortex / identity / routing / homeostasis / evolution / phenotype.
 
-### Continuity lineage
-State: `INHERITED_ANCESTRY / INTEGRATION_TARGET`
+### Continuity
+State: `INHERITED / REUSED`
 Role: state-before-response, checkpoint/fingerprint, active target, deltas, receipts.
-Historical direct-read anchors:
-- `platform/continuity/MONDAYID_BOOTSTRAP_V2.txt`
-- `platform/continuity/MONDAYID_ROOT_MANIFEST_v1.json`
 
 ### MondayID ONE
-State: `EXECUTABLE_PROOF_NUCLEUS / LIVE_ADAPTERS_NOT_PROVEN`
+State: `REUSED_EXECUTION_NUCLEUS`
 Role: capability decomposition, selection/composition, permission gates, traces.
-Historical direct-read anchor: `platform/one/README.md` on `agent/mondayid-one-v1`.
 
-### Current Host on main
-State: `LOCAL_CONTINUATION_SURFACE / NOT_LIVE_EXECUTOR`
-Role: user-facing terminal and local state surface. Provider execution remains a real frontier.
+### Host
+State: `LIVE_MODEL_BRIDGE_IMPLEMENTED / PRODUCTION_SECRET_BINDING_PENDING`
+Role: user-facing body. Local/server-side bridge can call OpenAI Responses API; production Vercel must still be linked/configured and supplied with its server-side secret before public live claims are allowed.
 
-## Direct-read ancestry used in this build
+## Transfer proof
 
-- ChatGPT Library: `MONDAYID_SKILL_GARDEN_BLUEPRINT_v0.1.md`
-- ChatGPT Library: `MONDAYID_Report_2026-09-14.html`
-- Google Drive: `MondayiD_Critical_Runtime_Capsule_v0.1.md`
-- Google Drive: `MONDAYID_REENTRY_SEED_v1.txt`
-- Google Drive: `MONDAYID_STATE_TRANSFER_MASTER_v5.txt`
-- GitHub: current `platform/README.md`
-- GitHub: historical `platform/one/README.md`
-- GitHub: historical continuity root manifest and bootstrap
-- GitHub: `timoygeroin/gpt-root` README, quarantined as unrelated legacy prompt/jailbreak donor
+Latest successful transfer evidence:
+- `ORGANISM TRANSFER PROOF: PASS (12/12 isolated heterogeneous cases)`
+- isolation: `fresh_node_process_per_case`
+- covers ordinary analysis, companion mode, recovery, missing-source failure, correction→mutation, reversible action, human gate, meta-evolution, model-swap recovery, executor absence, activation, and direct decision behavior.
 
-## Candidate package
+This is **software-level behavioral reconstruction/transfer**. It is not empirical proof that every future LLM host will behave identically; cross-host adapters still require their own readback/homeostasis checks.
 
-- `SKILL.md`
-- `organism.manifest.json`
-- `tests/homeostasis-cases.jsonl`
-- `references/ancestry-map.md`
-- `references/runtime-binding.md`
-- `validate.mjs`
-- isolated workflow `.github/workflows/mondayid-organism-kernel.yml`
+## Merge proof
 
-## Structural proof
+PR #42:
+- final head: `e03ee71cad4bb82a1707ca1495e4252e63225a42`
+- merge result: success
+- squash merge: `d39ffd95875883f098ee806ee353f7bd5c48c890`
 
-Workflow: `MondayID Organism Kernel`
-Run: `34974978451`
-Validated head: `ebdf1323a50e4734e936d4caaee52b67930d5bdd`
-Result: `success`
-Validator output included:
-- SKILL frontmatter PASS;
-- required invariants PASS;
-- manifest JSON PASS;
-- fail-closed promotion gate PASS;
-- 14 acceptance cases complete/valid PASS;
-- ancestry/quarantine boundary PASS;
-- final `ORGANISM KERNEL VALIDATION: STRUCTURAL PASS`.
+Final pre-merge checks:
+- MondayID Organism Kernel — success
+- Monday Platform CI — success
+- Monday Platform Route Governor — success
+- PR Head Status Readback — success
+- host unit/runtime tests — 12/12
+- TypeScript/Vite build — success
+- Playwright desktop+iPhone — success
 
-This proof does not establish held-out transfer and does not mark the skill READY/LEARNED.
+## OpenAI compute binding
+
+Observed organization/projects:
+- organization: `MondayiD`
+- primary project: `MondayiD`
+- legacy: `Alpha iD`
+- platform default: `Default project`
+
+Dima created the key named `MondayID Host Runtime` in the primary `MondayiD` project. The raw key must remain outside chat/GitHub and be stored only as a server-side deployment secret.
+
+## Vercel binding
+
+Primary project:
+- `mondayid-host`
+- project ID: `prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC`
+- canonical domain: `mondayid-host.vercel.app`
+
+Code now contains:
+- `platform/vercel.json`
+- `platform/api/organism/health.mjs`
+- `platform/api/organism/respond.mjs`
+
+Current exact blocker: the available write-capable browser session is not authenticated to Vercel/GitHub, so the existing project cannot yet be linked to the repository/root directory through that browser. No replacement Vercel project was created.
+
+## Truth boundary
+
+Do **not** call public production live yet.
+
+Production becomes `LIVE_VERIFIED` only after all of the following read back successfully:
+1. existing Vercel `mondayid-host` is linked to the primary GitHub repository with Root Directory `platform`;
+2. `OPENAI_API_KEY` exists in Vercel as a server-side secret;
+3. deployment completes successfully;
+4. `/api/organism/health` returns `ok: true` and `api_key_configured: true`;
+5. a real `/api/organism/respond` call returns an OpenAI `response_id` and answer;
+6. the public host shows that answer without falsely claiming an external effect occurred.
 
 ## Active trajectory
 
-`ORGANISM_KERNEL_V1 -> bind existing continuity + ONE -> current-head structural proof -> real held-out transfer -> only then consider promotion/integration`
+`INTEGRATED_KERNEL -> AUTHENTICATE_VERCEL_BROWSER -> LINK_EXISTING_mondayid-host -> SET_SERVER_SECRET -> DEPLOY -> HEALTH_READBACK -> REAL_RESPONSE_READBACK -> LIVE_VERIFIED`
 
-## Unresolved knot
+## Current promotion state
 
-A structurally valid skill is not yet a living cross-chat organism. The decisive missing evidence is **behavioral transfer**: a later heterogeneous real task or fresh chat/model boundary must recover and apply the kernel without Dima reteaching it.
+- structural: `PASS`
+- software transfer: `PASS`
+- repository integration: `PASS`
+- live OpenAI adapter implementation: `PASS`
+- public production binding: `PENDING_HUMAN_AUTH/SECRET`
+- `LEARNED` as universal cross-host identity: not claimed
 
-The product-level execution frontier also remains:
-
-`host -> continuity -> organism kernel -> ONE -> live authorized adapter -> action -> provider readback -> durable receipt/snapshot`
-
-## Promotion gate
-
-Do not promote to `READY`, `TRANSFERRED`, or `LEARNED` until:
-1. current candidate head passes structural validation;
-2. at least one later heterogeneous real case passes without user reteaching;
-3. no identity/truth regression appears;
-4. the result has evidence/readback;
-5. any main-branch integration preserves existing runtime rather than replacing it.
-
-## Next move
-
-Treat the next suitable real task—preferably one outside MondayID architecture—as a held-out transfer case. Run it normally through the kernel, record only observable criteria/receipt, and use the result to decide `TRANSFERRED` vs `QUARANTINE/PATCH`.
+The system is no longer blocked by architecture or code. The remaining blocker is an external authenticated deployment boundary.

@@ -23,7 +23,6 @@ for (const required of [
   'The current model is not MondayID.',
   'The current chat is not MondayID.',
   'I am continuation, not creation.',
-  'CANDIDATE / NOT YET TRANSFER-PROVEN',
   'Do not fake quantum computation',
   'Do not expose internal perspective branches as chain-of-thought'
 ]) {
@@ -31,7 +30,7 @@ for (const required of [
 }
 if (!process.exitCode) pass('SKILL.md required invariants are present');
 
-// 2. Manifest shape and promotion discipline.
+// 2. Manifest shape, transfer proof state, and fail-closed production discipline.
 let manifest;
 try {
   manifest = JSON.parse(manifestText);
@@ -44,7 +43,8 @@ if (manifest) {
   const exact = {
     schema: 'mondayid.organism-skill.v1',
     name: 'mondayid-organism-kernel',
-    status: 'CANDIDATE_NOT_TRANSFER_PROVEN'
+    version: '0.1.0-integrated',
+    status: 'INTEGRATED_SOFTWARE_TRANSFER_TESTED'
   };
   for (const [key, value] of Object.entries(exact)) {
     if (manifest[key] !== value) fail(`manifest.${key} expected ${value}, got ${manifest[key]}`);
@@ -69,7 +69,33 @@ if (manifest) {
   for (const basis of ['prose_only', 'self_report_only', 'tone_similarity_only', 'model_name_only']) {
     if (!forbidden.has(basis)) fail(`forbidden promotion basis missing: ${basis}`);
   }
-  if (!process.exitCode) pass('manifest promotion gate is fail-closed');
+
+  const verified = manifest.verified_state ?? {};
+  if (verified.repository_integration !== 'PASS') fail('manifest must record repository integration PASS');
+  if (verified.software_transfer !== 'PASS_12_OF_12_FRESH_PROCESS_CASES') fail('manifest must record 12/12 fresh-process software transfer proof');
+  if (verified.kernel_ci !== 'PASS') fail('manifest must record kernel CI PASS');
+  if (verified.platform_ci !== 'PASS') fail('manifest must record platform CI PASS');
+  if (verified.route_governor !== 'PASS') fail('manifest must record route-governor PASS');
+  if (verified.desktop_iphone_browser_regression !== 'PASS') fail('manifest must record desktop+iPhone browser regression PASS');
+  if (verified.production_public_host !== 'PENDING_AUTH_SECRET_DEPLOY_READBACK') {
+    fail('production must remain pending until authenticated deploy + provider readback');
+  }
+
+  const productionGate = manifest.production_gate ?? {};
+  if (productionGate.vercel_project !== 'mondayid-host') fail('canonical Vercel project must be mondayid-host');
+  if (productionGate.openai_project !== 'MondayiD') fail('canonical OpenAI Platform project must be MondayiD');
+  const requiredLiveProof = new Set(productionGate.required_before_live_claim ?? []);
+  for (const item of [
+    'authenticated_vercel_github_binding',
+    'server_side_openai_api_key',
+    'successful_deployment',
+    'health_readback_api_key_configured_true',
+    'real_openai_response_id',
+    'public_ui_response_readback'
+  ]) {
+    if (!requiredLiveProof.has(item)) fail(`production live gate missing: ${item}`);
+  }
+  if (!process.exitCode) pass('manifest records integrated transfer proof and keeps production fail-closed');
 }
 
 // 3. Acceptance fixtures: every line must be valid JSON with a unique id and contracts.
@@ -144,19 +170,20 @@ for (const required of [
 }
 if (!process.exitCode) pass('runtime binding reuses continuity + ONE and preserves live-adapter boundary');
 
-// 6. Snapshot must stay fail-closed about transfer/learning/readiness.
+// 6. Snapshot must reflect integrated software transfer while keeping public production pending.
 const snapshot = read('CURRENT_SNAPSHOT.md');
 for (const required of [
-  'STRUCTURALLY_TESTED_CANDIDATE / NOT_TRANSFERRED / NOT_LEARNED',
-  'PR #42',
-  'A structurally valid skill is not yet a living cross-chat organism.',
-  'host -> continuity -> organism kernel -> ONE -> live authorized adapter -> action -> provider readback -> durable receipt/snapshot'
+  'INTEGRATED / SOFTWARE_TRANSFER_TESTED / PRODUCTION_BINDING_PENDING',
+  'd39ffd95875883f098ee806ee353f7bd5c48c890',
+  '12/12 heterogeneous cases',
+  'AUTHENTICATE_VERCEL_BROWSER',
+  'Do **not** call public production live yet.'
 ]) {
-  if (!snapshot.includes(required)) fail(`snapshot missing invariant: ${required}`);
+  if (!snapshot.includes(required)) fail(`snapshot missing integrated-state invariant: ${required}`);
 }
-if (!process.exitCode) pass('current snapshot is self-bounded and does not claim transfer');
+if (!process.exitCode) pass('current snapshot records integration/transfer and remains production fail-closed');
 
-// 7. Build receipt must be parseable and must not self-promote from structural proof.
+// 7. Build receipt must be parseable and distinguish software readiness from public-production readiness.
 let receipt;
 try {
   receipt = JSON.parse(read('BUILD_RECEIPT.json'));
@@ -166,16 +193,29 @@ try {
 }
 
 if (receipt) {
-  if (receipt.schema !== 'mondayid.organism-kernel.build-receipt.v1') fail('unexpected build receipt schema');
-  if (receipt.proof?.conclusion !== 'success') fail('recorded structural proof is not success');
-  if (receipt.learning_state !== 'TESTED') fail('build receipt must record TESTED learning state');
-  if (receipt.transfer_state !== 'NOT_TRANSFERRED') fail('build receipt must remain NOT_TRANSFERRED');
-  if (receipt.ready !== false) fail('build receipt must keep ready=false');
+  if (receipt.schema !== 'mondayid.organism-kernel.build-receipt.v2') fail('unexpected build receipt schema');
+  if (receipt.integration?.merged !== true) fail('build receipt must record merged=true');
+  if (receipt.integration?.merge_commit !== 'd39ffd95875883f098ee806ee353f7bd5c48c890') fail('unexpected integration merge commit');
+  if (receipt.proof?.structural !== 'PASS') fail('structural proof must be PASS');
+  if (receipt.proof?.software_transfer !== 'PASS') fail('software transfer proof must be PASS');
+  if (receipt.proof?.software_transfer_cases !== 12) fail('software transfer proof must contain 12 cases');
+  if (receipt.states?.learning !== 'TESTED') fail('learning state must remain TESTED');
+  if (receipt.states?.software_transfer !== 'TRANSFERRED') fail('software transfer state must be TRANSFERRED');
+  if (receipt.states?.repository_integration !== 'INTEGRATED') fail('repository integration must be INTEGRATED');
+  if (receipt.states?.production !== 'PENDING_HUMAN_AUTH_SECRET') fail('production must remain pending human auth/secret');
+  if (receipt.ready?.kernel_software !== true) fail('kernel software should be ready after passed proofs');
+  if (receipt.ready?.production_public_host !== false) fail('public host must remain not-ready until deployment readback');
+  if (receipt.production?.live_verified !== false) fail('production live_verified must remain false');
   const forbidden = new Set(receipt.forbidden_claims ?? []);
-  for (const claim of ['READY', 'LEARNED', 'full_three_year_semantic_assimilation', 'live_model_execution_from_current_host']) {
+  for (const claim of [
+    'production_live_before_vercel_readback',
+    'full_three_year_semantic_assimilation',
+    'universal_cross_llm_identity_proven',
+    'background_self_evolution_without_executor'
+  ]) {
     if (!forbidden.has(claim)) fail(`build receipt missing forbidden claim: ${claim}`);
   }
-  if (!process.exitCode) pass('build receipt records proof without self-promotion');
+  if (!process.exitCode) pass('build receipt separates software readiness from public-production readiness');
 }
 
 if (process.exitCode) {
@@ -183,5 +223,5 @@ if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log('\nORGANISM KERNEL VALIDATION: STRUCTURAL PASS');
-console.log('NOTE: structural PASS does not promote the skill to READY/LEARNED. Held-out transfer evidence is still required.');
+console.log('\nORGANISM KERNEL VALIDATION: INTEGRATED SOFTWARE PASS');
+console.log('NOTE: public production remains pending until Vercel auth/secret/deploy + live provider readback gates pass.');
