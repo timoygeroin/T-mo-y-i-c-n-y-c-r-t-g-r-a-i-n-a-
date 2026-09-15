@@ -1,0 +1,36 @@
+name: Refresh platform lock (temporary)
+
+on:
+  push:
+    branches:
+      - agent/vercel-oidc-gateway-v1
+    paths:
+      - platform/apps/host/package.json
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/vercel-oidc-gateway-v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Refresh lockfile only
+        working-directory: platform
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit synchronized lockfile
+        run: |
+          git config user.name "MondayID Lock Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add platform/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfile already synchronized"
+            exit 0
+          fi
+          git commit -m "chore(platform): synchronize lockfile for Vercel OIDC"
+          git push origin HEAD:agent/vercel-oidc-gateway-v1
