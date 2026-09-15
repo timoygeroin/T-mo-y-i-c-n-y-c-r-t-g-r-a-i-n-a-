@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:host",
+  "installCommand": "npm install --prefix apps/host --no-audit --no-fund",
+  "buildCommand": "npm --prefix apps/host run build",
   "outputDirectory": "apps/host/dist",
-  "installCommand": "npm ci",
   "functions": {
     "api/organism/*.mjs": {
       "runtime": "nodejs24.x",
