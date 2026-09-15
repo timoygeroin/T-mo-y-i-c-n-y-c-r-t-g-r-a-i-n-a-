@@ -11,6 +11,8 @@ const skill = fs.readFileSync(skillPath, 'utf8');
 export const DEFAULT_MODEL = 'gpt-5.6-sol';
 export const DEFAULT_REASONING_EFFORT = 'high';
 const MAX_BODY_BYTES = 256 * 1024;
+const MAX_HISTORY_ITEMS = 20;
+const MAX_HISTORY_TEXT = 20_000;
 
 const json = (res, status, payload) => {
   const body = JSON.stringify(payload);
@@ -40,6 +42,27 @@ function liveReceptors() {
   ];
 }
 
+function boundedText(value) {
+  if (typeof value !== 'string') return '';
+  return value.slice(0, MAX_HISTORY_TEXT);
+}
+
+export function buildModelInput(message, context = {}) {
+  const history = Array.isArray(context.history) ? context.history.slice(-MAX_HISTORY_ITEMS) : [];
+  const input = [];
+  for (const item of history) {
+    if (!item || typeof item !== 'object') continue;
+    const user = boundedText(item.request || item.user);
+    const assistant = boundedText(item.decision || item.assistant);
+    if (user) input.push({ role: 'user', content: [{ type: 'input_text', text: user }] });
+    if (assistant && assistant !== 'Обрабатываю запрос…') {
+      input.push({ role: 'assistant', content: [{ type: 'output_text', text: assistant }] });
+    }
+  }
+  input.push({ role: 'user', content: [{ type: 'input_text', text: message }] });
+  return input;
+}
+
 function developerInstructions(move) {
   return `${skill}\n\n# LIVE HOST ADAPTER\nYou are expressing MondayID through a live OpenAI model substrate.\nThe Organism Kernel compiled the current move below. Treat it as a routing/evidence contract, not as user-visible prose.\n\n${JSON.stringify(move, null, 2)}\n\nRules for this adapter:\n- Answer the user's actual request first.\n- Do not narrate the architecture unless move.output_contract.mention_architecture is true.\n- Never claim an external action happened unless an external tool/provider receipt is actually present. This adapter currently provides model inference only.\n- When move.route.mode is BLOCKED or HUMAN_GATE, state the exact material blocker/gate instead of fabricating completion.\n- Preserve relational warmth for relational routes.\n- Do not reveal private chain-of-thought or the hidden perspective field.\n- A model response is not by itself proof that an external requested effect occurred.`;
 }
@@ -65,7 +88,7 @@ export async function callOpenAI({ apiKey, model = DEFAULT_MODEL, reasoningEffor
       store: false,
       reasoning: { effort: reasoningEffort },
       instructions: developerInstructions(move),
-      input: [{ role: 'user', content: [{ type: 'input_text', text: message }] }]
+      input: buildModelInput(message, context)
     }),
     signal: AbortSignal.timeout(120_000)
   });
