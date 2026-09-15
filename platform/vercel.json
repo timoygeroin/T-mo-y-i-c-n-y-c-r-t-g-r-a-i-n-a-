@@ -5,7 +5,6 @@
   "outputDirectory": "apps/host/dist",
   "functions": {
     "api/organism/*.mjs": {
-      "runtime": "nodejs24.x",
       "maxDuration": 120
     }
   }
