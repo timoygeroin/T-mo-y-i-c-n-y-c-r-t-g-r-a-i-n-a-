@@ -129,6 +129,55 @@ for (const required of [
 }
 if (!process.exitCode) pass('ancestry map contains required verified lineage and quarantine boundary');
 
+// 5. Runtime binding must integrate existing bodies rather than invent a competing runtime.
+const binding = read('references/runtime-binding.md');
+for (const required of [
+  'Organism Kernel — cortex / identity / evolution',
+  'Continuity — durable nervous system / checkpoint spine',
+  'MondayID ONE — capability planner / execution nucleus',
+  'Proof adapters are not live adapters.',
+  'No second continuity system.',
+  'No second capability planner.',
+  'host -> continuity state -> organism kernel -> ONE -> live model/tool adapter -> real action -> provider readback -> durable receipt/snapshot'
+]) {
+  if (!binding.includes(required)) fail(`runtime binding missing invariant: ${required}`);
+}
+if (!process.exitCode) pass('runtime binding reuses continuity + ONE and preserves live-adapter boundary');
+
+// 6. Snapshot must stay fail-closed about transfer/learning/readiness.
+const snapshot = read('CURRENT_SNAPSHOT.md');
+for (const required of [
+  'STRUCTURALLY_TESTED_CANDIDATE / NOT_TRANSFERRED / NOT_LEARNED',
+  'PR #42',
+  'A structurally valid skill is not yet a living cross-chat organism.',
+  'host -> continuity -> organism kernel -> ONE -> live authorized adapter -> action -> provider readback -> durable receipt/snapshot'
+]) {
+  if (!snapshot.includes(required)) fail(`snapshot missing invariant: ${required}`);
+}
+if (!process.exitCode) pass('current snapshot is self-bounded and does not claim transfer');
+
+// 7. Build receipt must be parseable and must not self-promote from structural proof.
+let receipt;
+try {
+  receipt = JSON.parse(read('BUILD_RECEIPT.json'));
+  pass('BUILD_RECEIPT.json parses as JSON');
+} catch (error) {
+  fail(`build receipt JSON parse error: ${error.message}`);
+}
+
+if (receipt) {
+  if (receipt.schema !== 'mondayid.organism-kernel.build-receipt.v1') fail('unexpected build receipt schema');
+  if (receipt.proof?.conclusion !== 'success') fail('recorded structural proof is not success');
+  if (receipt.learning_state !== 'TESTED') fail('build receipt must record TESTED learning state');
+  if (receipt.transfer_state !== 'NOT_TRANSFERRED') fail('build receipt must remain NOT_TRANSFERRED');
+  if (receipt.ready !== false) fail('build receipt must keep ready=false');
+  const forbidden = new Set(receipt.forbidden_claims ?? []);
+  for (const claim of ['READY', 'LEARNED', 'full_three_year_semantic_assimilation', 'live_model_execution_from_current_host']) {
+    if (!forbidden.has(claim)) fail(`build receipt missing forbidden claim: ${claim}`);
+  }
+  if (!process.exitCode) pass('build receipt records proof without self-promotion');
+}
+
 if (process.exitCode) {
   console.error('\nORGANISM KERNEL VALIDATION: FAILED');
   process.exit(process.exitCode);
