@@ -5,7 +5,15 @@ async function stubRuntime(page: Page) {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ ok: true, kernel: "mondayid-organism-kernel", model: "gpt-5.6-sol", api_key_configured: true })
+      body: JSON.stringify({
+        ok: true,
+        kernel: "mondayid-organism-kernel",
+        model: "openai/gpt-5.6-sol",
+        model_transport_available: true,
+        preferred_transport: "vercel_ai_gateway",
+        vercel_oidc_available: true,
+        runtime: "vercel-function"
+      })
     });
   });
   await page.route("**/api/organism/respond", async route => {
@@ -16,7 +24,7 @@ async function stubRuntime(page: Page) {
       body: JSON.stringify({
         ok: true,
         answer: `Runtime answer: ${body.message || ""}`,
-        model: "gpt-5.6-sol",
+        model: "openai/gpt-5.6-sol",
         response_id: "resp_browser_test",
         move: {
           classification: { primary: "ACTION" },
@@ -24,8 +32,13 @@ async function stubRuntime(page: Page) {
           gates: { human: "NOT_REQUIRED_BY_EFFECT", architecture_visible: false }
         },
         receipt: {
-          type: "openai_response", provider: "OpenAI", response_id: "resp_browser_test",
-          model: "gpt-5.6-sol", external_effect_verified: false
+          type: "openai_response",
+          provider: "OpenAI via Vercel AI Gateway",
+          transport: "vercel_ai_gateway",
+          auth_source: "vercel_oidc_or_explicit_gateway_token",
+          response_id: "resp_browser_test",
+          model: "openai/gpt-5.6-sol",
+          external_effect_verified: false
         }
       })
     });
@@ -42,7 +55,7 @@ test("model response persists without pretending external execution", async ({ p
   await composer.press("Enter");
   await expect(page.locator(".message.user").getByText("Закончи хост для MondayID", { exact: true })).toBeVisible();
   await expect(conversationAnswer(page, "Runtime answer: Закончи хост для MondayID")).toBeVisible();
-  await expect(page.getByText("gpt-5.6-sol · готов", { exact: true })).toBeVisible();
+  await expect(page.getByText("openai/gpt-5.6-sol · AI Gateway · готов", { exact: true })).toBeVisible();
   await expect(page.getByText("Выполнено", { exact: true })).toHaveCount(0);
   await expect(page.getByLabel("Фактический внешний результат")).toBeVisible();
   if (testInfo.project.name !== "iphone") {
