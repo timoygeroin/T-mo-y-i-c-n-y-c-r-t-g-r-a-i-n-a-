@@ -12,6 +12,7 @@
     "preview": "vite --host 127.0.0.1"
   },
   "dependencies": {
+    "@vercel/oidc": "latest",
     "@vitejs/plugin-react": "latest",
     "vite": "latest",
     "typescript": "latest",
