@@ -24,12 +24,19 @@ function stop(code = 0) {
   setTimeout(() => process.exit(code), 150).unref();
 }
 
-if (!process.env.OPENAI_API_KEY) {
-  console.error('OPENAI_API_KEY is not configured. Create/select the MondayiD Platform key before starting the live host.');
+const modelCredentialAvailable = Boolean(
+  process.env.VERCEL_OIDC_TOKEN || process.env.AI_GATEWAY_API_KEY || process.env.OPENAI_API_KEY
+);
+
+if (!modelCredentialAvailable) {
+  console.error('No model credential is configured. Use VERCEL_OIDC_TOKEN / AI_GATEWAY_API_KEY for Vercel AI Gateway or OPENAI_API_KEY for direct local OpenAI fallback.');
   process.exit(1);
 }
 
-console.log(`MondayID stack: model=${process.env.MONDAYID_MODEL || 'gpt-5.6-sol'} reasoning=${process.env.MONDAYID_REASONING || 'high'}`);
+const transport = (process.env.VERCEL_OIDC_TOKEN || process.env.AI_GATEWAY_API_KEY)
+  ? 'vercel_ai_gateway'
+  : 'direct_openai';
+console.log(`MondayID stack: transport=${transport} model=${process.env.MONDAYID_MODEL || 'openai/gpt-5.6-sol'} reasoning=${process.env.MONDAYID_REASONING || 'high'}`);
 run('runtime', process.execPath, ['runtime-server.mjs']);
 run('vite', process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'dev']);
 
