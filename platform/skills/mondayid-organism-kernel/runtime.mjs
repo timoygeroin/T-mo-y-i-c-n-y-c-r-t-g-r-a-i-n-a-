@@ -14,7 +14,6 @@ const EXEC_PRIORITY = [
 
 const normalize = (value = '') => String(value).toLowerCase().replace(/ё/g, 'е').trim();
 const includesAny = (text, patterns) => patterns.some((p) => text.includes(p));
-const wordsAny = (text, patterns) => patterns.some((p) => new RegExp(`(^|\\s|[,.!?;:()])${p}($|\\s|[,.!?;:()])`, 'u').test(text));
 
 export function classifyMessage(message, hint) {
   if (hint) {
@@ -44,8 +43,9 @@ export function classifyMessage(message, hint) {
   ]));
   hit('ACTION', includesAny(text, [
     'создай', 'сделай', 'исправь', 'измени', 'добавь', 'удали', 'отправь', 'запусти',
-    'запиши', 'обнови', 'подключи', 'собери', 'доделай', 'доведи до конца', 'merge',
-    'create ', 'fix ', 'update ', 'delete ', 'send ', 'run ', 'build ', 'implement '
+    'запиши', 'обнови', 'подключи', 'собери', 'доделай', 'доведи до конца', 'слей',
+    'опубликуй', 'публикуй', 'merge', 'publish', 'create ', 'fix ', 'update ', 'delete ',
+    'send ', 'run ', 'build ', 'implement '
   ]));
   hit('DECISION', includesAny(text, [
     'что выбрать', 'какой лучше', 'какая лучше', 'что предлагаешь', 'как лучше',
