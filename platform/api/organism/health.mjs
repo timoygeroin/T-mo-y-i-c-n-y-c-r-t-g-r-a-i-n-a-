@@ -1,4 +1,4 @@
-import { DEFAULT_MODEL } from '../../apps/host/runtime-server.mjs';
+import { DEFAULT_MODEL, resolveGatewayToken } from '../../apps/host/runtime-server.mjs';
 
 export default function handler(req, res) {
   if (req.method !== 'GET') {
@@ -8,7 +8,8 @@ export default function handler(req, res) {
     return res.end(JSON.stringify({ ok: false, error: 'METHOD_NOT_ALLOWED' }));
   }
 
-  const gatewayAvailable = Boolean(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN);
+  const gatewayToken = resolveGatewayToken();
+  const gatewayAvailable = Boolean(gatewayToken);
   const directOpenAIAvailable = Boolean(process.env.OPENAI_API_KEY);
 
   res.statusCode = 200;
@@ -20,7 +21,7 @@ export default function handler(req, res) {
     model: process.env.MONDAYID_MODEL || DEFAULT_MODEL,
     model_transport_available: gatewayAvailable || directOpenAIAvailable,
     preferred_transport: gatewayAvailable ? 'vercel_ai_gateway' : (directOpenAIAvailable ? 'direct_openai' : null),
-    vercel_oidc_available: Boolean(process.env.VERCEL_OIDC_TOKEN),
+    vercel_oidc_available: Boolean(gatewayToken && !process.env.AI_GATEWAY_API_KEY),
     runtime: 'vercel-function'
   }));
 }
