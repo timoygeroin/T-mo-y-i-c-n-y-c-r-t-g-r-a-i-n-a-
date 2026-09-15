@@ -1,6 +1,6 @@
 import { DEFAULT_MODEL, resolveGatewayToken } from '../../apps/host/runtime-server.mjs';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.setHeader('allow', 'GET');
@@ -8,7 +8,7 @@ export default function handler(req, res) {
     return res.end(JSON.stringify({ ok: false, error: 'METHOD_NOT_ALLOWED' }));
   }
 
-  const gatewayToken = resolveGatewayToken();
+  const gatewayToken = await resolveGatewayToken();
   const gatewayAvailable = Boolean(gatewayToken);
   const directOpenAIAvailable = Boolean(process.env.OPENAI_API_KEY);
 
