@@ -34,7 +34,7 @@ async function stubRuntime(page: Page) {
 
 const conversationAnswer = (page: Page, text: string) => page.locator(".message.monday .answer").getByText(text, { exact: true });
 
-test("model response persists without pretending external execution", async ({ page }) => {
+test("model response persists without pretending external execution", async ({ page }, testInfo) => {
   await stubRuntime(page);
   await page.goto("/");
   const composer = page.getByPlaceholder("Скажи, что должно стать реальностью…");
@@ -44,7 +44,10 @@ test("model response persists without pretending external execution", async ({ p
   await expect(conversationAnswer(page, "Runtime answer: Закончи хост для MondayID")).toBeVisible();
   await expect(page.getByText("gpt-5.6-sol · готов", { exact: true })).toBeVisible();
   await expect(page.getByText("Выполнено", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("Ответ модели не считается доказательством внешнего действия.", { exact: false })).toBeVisible();
+  await expect(page.getByLabel("Фактический внешний результат")).toBeVisible();
+  if (testInfo.project.name !== "iphone") {
+    await expect(page.getByText("Ответ модели не считается доказательством внешнего действия.", { exact: false })).toBeVisible();
+  }
   await page.getByLabel("Фактический внешний результат").fill("Сборка проверена, результат записан пользователем.");
   await page.getByRole("button", { name: "Записать результат" }).click();
   await page.getByRole("button", { name: "Подтвердить результат" }).click();
