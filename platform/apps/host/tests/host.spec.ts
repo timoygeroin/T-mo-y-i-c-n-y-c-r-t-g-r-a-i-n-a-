@@ -32,6 +32,8 @@ async function stubRuntime(page: Page) {
   });
 }
 
+const conversationAnswer = (page: Page, text: string) => page.locator(".message.monday .answer").getByText(text, { exact: true });
+
 test("model response persists without pretending external execution", async ({ page }) => {
   await stubRuntime(page);
   await page.goto("/");
@@ -39,7 +41,7 @@ test("model response persists without pretending external execution", async ({ p
   await composer.fill("Закончи хост для MondayID");
   await composer.press("Enter");
   await expect(page.locator(".message.user").getByText("Закончи хост для MondayID", { exact: true })).toBeVisible();
-  await expect(page.getByText("Runtime answer: Закончи хост для MondayID", { exact: true })).toBeVisible();
+  await expect(conversationAnswer(page, "Runtime answer: Закончи хост для MondayID")).toBeVisible();
   await expect(page.getByText("gpt-5.6-sol · готов", { exact: true })).toBeVisible();
   await expect(page.getByText("Выполнено", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Ответ модели не считается доказательством внешнего действия.", { exact: false })).toBeVisible();
@@ -57,7 +59,7 @@ test("intent edit clears stale confirmation", async ({ page }, testInfo) => {
   await page.goto("/");
   await page.getByPlaceholder("Скажи, что должно стать реальностью…").fill("Первая задача");
   await page.getByRole("button", { name: "Отправить Monday" }).click();
-  await expect(page.getByText("Runtime answer: Первая задача", { exact: true })).toBeVisible();
+  await expect(conversationAnswer(page, "Runtime answer: Первая задача")).toBeVisible();
   await page.getByLabel("Фактический внешний результат").fill("Есть результат");
   await page.getByRole("button", { name: "Записать результат" }).click();
   await page.getByRole("button", { name: "Подтвердить результат" }).click();
@@ -71,7 +73,7 @@ test("invalid import leaves existing history intact", async ({ page }) => {
   await page.goto("/");
   await page.getByPlaceholder("Скажи, что должно стать реальностью…").fill("Сохранить меня");
   await page.getByRole("button", { name: "Отправить Monday" }).click();
-  await expect(page.getByText("Runtime answer: Сохранить меня", { exact: true })).toBeVisible();
+  await expect(conversationAnswer(page, "Runtime answer: Сохранить меня")).toBeVisible();
   await page.getByLabel("Файл продолжения").setInputFiles({ name: "bad.json", mimeType: "application/json", buffer: Buffer.from('{broken') });
   await expect(page.getByRole("alert")).toContainText("корректным JSON");
   await expect(page.locator(".message.user").getByText("Сохранить меня", { exact: true })).toBeVisible();
