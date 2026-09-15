@@ -7,6 +7,7 @@ on:
     paths:
       - platform/apple-host/tools/patch_space_depth.py
       - .github/workflows/monday-consumer-media-integration.yml
+      - platform/apple-host/MondayIDHost/MondayIDHostApp.swift
   workflow_dispatch:
 
 permissions:
