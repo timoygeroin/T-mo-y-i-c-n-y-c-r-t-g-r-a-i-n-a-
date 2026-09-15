@@ -63,8 +63,7 @@ export function newTurn(request: string): Turn {
   const trimmed = request.trim();
   return {
     id: crypto.randomUUID(), createdAt: new Date().toISOString(), request: trimmed,
-    intent: trimmed, context: [],
-    decision: "Намерение записано. Модель и выполнение действий ещё не подключены. Здесь можно сохранить фактический результат и перенести историю.", verified: false
+    intent: trimmed, context: [], decision: "Обрабатываю запрос…", verified: false
   };
 }
 export function exportPacket(state: HostState) {

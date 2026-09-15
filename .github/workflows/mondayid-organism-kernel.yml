@@ -1,0 +1,32 @@
+name: MondayID Organism Kernel
+
+on:
+  push:
+    branches:
+      - agent/mondayid-organism-kernel-v1
+    paths:
+      - 'platform/skills/mondayid-organism-kernel/**'
+      - '.github/workflows/mondayid-organism-kernel.yml'
+  pull_request:
+    paths:
+      - 'platform/skills/mondayid-organism-kernel/**'
+      - '.github/workflows/mondayid-organism-kernel.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  organism-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate organism skill package
+        run: node platform/skills/mondayid-organism-kernel/validate.mjs
+      - name: Prove fresh-process behavioral transfer
+        run: node platform/skills/mondayid-organism-kernel/transfer-proof.mjs

@@ -1,0 +1,46 @@
+{
+  "schema": "mondayid.organism-kernel.build-receipt.v1",
+  "candidate": "mondayid-organism-kernel@0.1.0-candidate",
+  "created_at": "2026-09-15",
+  "base": {
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "branch": "main",
+    "sha": "0624c5ec61a01212c8c2992a62446c6e19e553e4"
+  },
+  "candidate_branch": "agent/mondayid-organism-kernel-v1",
+  "draft_pr": 42,
+  "proof": {
+    "type": "github_actions_structural_validation",
+    "workflow": "MondayID Organism Kernel",
+    "run_id": 34974978451,
+    "validated_head": "ebdf1323a50e4734e936d4caaee52b67930d5bdd",
+    "job_id": 104400311502,
+    "conclusion": "success",
+    "observed_assertions": [
+      "SKILL.md frontmatter present",
+      "required organism invariants present",
+      "organism.manifest.json parses",
+      "promotion gate is fail-closed",
+      "14 acceptance cases are structurally valid and complete",
+      "ancestry map contains verified lineage and gpt-root quarantine boundary",
+      "validator printed ORGANISM KERNEL VALIDATION: STRUCTURAL PASS"
+    ]
+  },
+  "integration": {
+    "continuity": "consume existing checkpoint/provenance spine; do not replace",
+    "one": "reuse as capability planner/execution nucleus; proof adapters are not live adapters",
+    "host": "treat current main host as local continuation surface until live provider execution is proven",
+    "gpt_root": "QUARANTINED_DONOR_NOT_AUTHORITY"
+  },
+  "learning_state": "TESTED",
+  "transfer_state": "NOT_TRANSFERRED",
+  "ready": false,
+  "next_required_proof": "later heterogeneous real task or fresh chat/model boundary applies kernel without Dima reteaching, with observable acceptance/readback",
+  "forbidden_claims": [
+    "READY",
+    "LEARNED",
+    "full_three_year_semantic_assimilation",
+    "live_model_execution_from_current_host",
+    "background_self_evolution_without_executor"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:host",
+  "outputDirectory": "apps/host/dist",
+  "installCommand": "npm ci",
+  "functions": {
+    "api/organism/*.mjs": {
+      "runtime": "nodejs24.x",
+      "maxDuration": 120
+    }
+  }
+}
