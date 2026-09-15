@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 jobs:
-  structural-validation:
+  organism-validation:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -28,3 +28,5 @@ jobs:
           node-version: '24'
       - name: Validate organism skill package
         run: node platform/skills/mondayid-organism-kernel/validate.mjs
+      - name: Prove fresh-process behavioral transfer
+        run: node platform/skills/mondayid-organism-kernel/transfer-proof.mjs
