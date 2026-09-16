@@ -1,0 +1,21 @@
+name: Visual Causality Proof
+
+on:
+  push:
+    branches:
+      - 'agent/visual-causality-governor-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run visual causality proof
+        run: node platform/skills/mondayid-organism-kernel/visual-causality-proof.mjs
