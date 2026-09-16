@@ -108,3 +108,4 @@ jobs:
           fi
           git commit -m 'feat(consumer): preview durable media objects'
           git push origin HEAD:monday/continuum-runtime-integration-20260914
+# rerun requested after recovering latest organism state
