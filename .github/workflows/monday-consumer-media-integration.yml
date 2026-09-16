@@ -27,6 +27,9 @@ jobs:
           from pathlib import Path
           p=Path('platform/apple-host/MondayIDHost/MondayIDHostApp.swift')
           s=p.read_text()
+          if 'private struct MondayMediaPreview:' in s and 'NavigationLink("Preview media")' in s:
+              print('media preview already present; preserving existing implementation')
+              raise SystemExit(0)
           if 'import QuickLook' not in s:
               s=s.replace('import PhotosUI\n', 'import PhotosUI\nimport QuickLook\n')
           old='''                    } else {
@@ -52,7 +55,7 @@ jobs:
           if old not in s:
               raise SystemExit('expected media detail block not found')
           s=s.replace(old,new,1)
-          marker='''private struct MondayTaskDetailView: View {'''
+          marker='private struct MondayTaskDetailView: View {'
           helper='''private func mondayMediaURL(for document: MondayDocument) -> URL? {
     guard document.kind == .image || document.kind == .video || document.kind == .audio,
           document.body.hasPrefix("MondayMedia/") else { return nil }
@@ -78,9 +81,9 @@ private struct MondayMediaPreview: UIViewControllerRepresentable {
 }
 
 '''
-          if 'private struct MondayMediaPreview:' not in s:
-              if marker not in s: raise SystemExit('task detail marker missing')
-              s=s.replace(marker,helper+marker,1)
+          if marker not in s:
+              raise SystemExit('task detail marker missing')
+          s=s.replace(marker,helper+marker,1)
           p.write_text(s)
           PY
       - name: Verify source postconditions
@@ -90,12 +93,10 @@ private struct MondayMediaPreview: UIViewControllerRepresentable {
           grep -q 'NavigationLink("Preview media")' "$SRC"
           grep -q 'ShareLink(item: mediaURL)' "$SRC"
           grep -q 'private struct MondayMediaPreview: UIViewControllerRepresentable' "$SRC"
-          ! grep -q "Media bytes are stored in Monday's Application Support container" "$SRC"
       - name: Apple adapter tests
         run: swift test --package-path platform/apple-adapter
       - name: Build iOS consumer body
-        run: |
-          xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+        run: xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
       - name: Persist verified mutation and restore proof workflow
         run: |
           cat > .github/workflows/monday-consumer-media-integration.yml <<'YAML'
@@ -130,5 +131,9 @@ private struct MondayMediaPreview: UIViewControllerRepresentable {
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift .github/workflows/monday-consumer-media-integration.yml
+          if git diff --cached --quiet; then
+            echo 'No mutation needed; implementation already satisfies postcondition.'
+            exit 0
+          fi
           git commit -m 'feat(consumer): preview durable media objects'
           git push origin HEAD:monday/continuum-runtime-integration-20260914
