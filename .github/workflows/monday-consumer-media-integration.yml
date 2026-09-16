@@ -110,3 +110,4 @@ jobs:
           git push origin HEAD:monday/continuum-runtime-integration-20260914
 # rerun requested after recovering latest organism state
 # rerun 2026-09-16: close durable-media preview gap on recovered head
+# rerun 2026-09-16T23:26+03:00: automation cell 7 recovered ATTEMPTED delta and retriggers exact existing carrier
