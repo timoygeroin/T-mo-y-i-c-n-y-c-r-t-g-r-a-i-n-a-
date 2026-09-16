@@ -57,30 +57,30 @@ jobs:
           s=s.replace(old,new,1)
           marker='private struct MondayTaskDetailView: View {'
           helper='''private func mondayMediaURL(for document: MondayDocument) -> URL? {
-    guard document.kind == .image || document.kind == .video || document.kind == .audio,
-          document.body.hasPrefix("MondayMedia/") else { return nil }
-    guard let base = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else { return nil }
-    return base.appendingPathComponent(document.body)
-}
+              guard document.kind == .image || document.kind == .video || document.kind == .audio,
+                    document.body.hasPrefix("MondayMedia/") else { return nil }
+              guard let base = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else { return nil }
+              return base.appendingPathComponent(document.body)
+          }
 
-private struct MondayMediaPreview: UIViewControllerRepresentable {
-    let url: URL
-    func makeCoordinator() -> Coordinator { Coordinator(url: url) }
-    func makeUIViewController(context: Context) -> QLPreviewController {
-        let controller = QLPreviewController()
-        controller.dataSource = context.coordinator
-        return controller
-    }
-    func updateUIViewController(_ uiViewController: QLPreviewController, context: Context) {}
-    final class Coordinator: NSObject, QLPreviewControllerDataSource {
-        let url: URL
-        init(url: URL) { self.url = url }
-        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
-        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as NSURL }
-    }
-}
+          private struct MondayMediaPreview: UIViewControllerRepresentable {
+              let url: URL
+              func makeCoordinator() -> Coordinator { Coordinator(url: url) }
+              func makeUIViewController(context: Context) -> QLPreviewController {
+                  let controller = QLPreviewController()
+                  controller.dataSource = context.coordinator
+                  return controller
+              }
+              func updateUIViewController(_ uiViewController: QLPreviewController, context: Context) {}
+              final class Coordinator: NSObject, QLPreviewControllerDataSource {
+                  let url: URL
+                  init(url: URL) { self.url = url }
+                  func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+                  func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as NSURL }
+              }
+          }
 
-'''
+          '''
           if marker not in s:
               raise SystemExit('task detail marker missing')
           s=s.replace(marker,helper+marker,1)
@@ -97,40 +97,11 @@ private struct MondayMediaPreview: UIViewControllerRepresentable {
         run: swift test --package-path platform/apple-adapter
       - name: Build iOS consumer body
         run: xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
-      - name: Persist verified mutation and restore proof workflow
+      - name: Persist verified mutation
         run: |
-          cat > .github/workflows/monday-consumer-media-integration.yml <<'YAML'
-          name: Monday Consumer Media Preview Proof
-          on:
-            push:
-              branches: [monday/continuum-runtime-integration-20260914]
-              paths:
-                - platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-                - platform/apple-adapter/**
-                - product/**
-                - .github/workflows/monday-consumer-media-integration.yml
-            workflow_dispatch:
-          permissions:
-            contents: read
-          jobs:
-            verify-media-preview:
-              runs-on: macos-latest
-              steps:
-                - uses: actions/checkout@v4
-                - run: node product/verify-product-contract.mjs
-                - name: Verify media preview source
-                  run: |
-                    SRC=platform/apple-host/MondayIDHost/MondayIDHostApp.swift
-                    grep -q 'import QuickLook' "$SRC"
-                    grep -q 'NavigationLink("Preview media")' "$SRC"
-                    grep -q 'ShareLink(item: mediaURL)' "$SRC"
-                    grep -q 'private struct MondayMediaPreview: UIViewControllerRepresentable' "$SRC"
-                - run: swift test --package-path platform/apple-adapter
-                - run: xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
-          YAML
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift .github/workflows/monday-consumer-media-integration.yml
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift
           if git diff --cached --quiet; then
             echo 'No mutation needed; implementation already satisfies postcondition.'
             exit 0
