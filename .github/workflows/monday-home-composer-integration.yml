@@ -1,0 +1,46 @@
+name: Monday Home Composer Integration
+on:
+  push:
+    branches: [monday/continuum-runtime-integration-20260914]
+    paths: [.github/workflows/monday-home-composer-integration.yml]
+permissions:
+  contents: write
+jobs:
+  integrate:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: monday/continuum-runtime-integration-20260914
+          fetch-depth: 0
+      - name: Guard product contract
+        run: node product/verify-product-contract.mjs
+      - name: Patch Home universal composer
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('platform/apple-host/MondayIDHost/MondayIDHostApp.swift')
+          s=p.read_text()
+          old='''            .navigationTitle("Home")\n        }\n    }\n}\n\nprivate struct MondayChatsView: View {'''
+          new='''            .navigationTitle("Home")\n            .safeAreaInset(edge: .bottom) {\n                Button { selection = .chats } label: {\n                    HStack(spacing: 10) {\n                        Image(systemName: "plus")\n                        Text("Message Monday or start something…")\n                            .foregroundStyle(.secondary)\n                        Spacer()\n                        Image(systemName: "arrow.up.circle.fill")\n                            .font(.title3)\n                    }\n                    .padding(.horizontal, 16)\n                    .padding(.vertical, 12)\n                    .background(.regularMaterial, in: Capsule())\n                    .padding(.horizontal)\n                    .padding(.vertical, 8)\n                }\n                .buttonStyle(.plain)\n                .accessibilityLabel("Open the universal Monday composer")\n            }\n        }\n    }\n}\n\nprivate struct MondayChatsView: View {'''
+          if old not in s:
+              raise SystemExit('guard failed: Home terminator changed')
+          if 'Message Monday or start something…' in s:
+              raise SystemExit('guard failed: composer already present')
+          p.write_text(s.replace(old,new,1))
+      - name: Verify source postconditions
+        run: |
+          grep -F 'Message Monday or start something…' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -F 'selection = .chats' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          grep -F 'accessibilityLabel("Open the universal Monday composer")' platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+      - name: Apple adapter tests
+        run: swift test --package-path platform/apple-adapter
+      - name: iOS Simulator build
+        run: xcodebuild -project platform/apple-host/MondayIDHost.xcodeproj -scheme MondayIDHost -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build
+      - name: Commit verified mutation
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add platform/apple-host/MondayIDHost/MondayIDHostApp.swift
+          git commit -m 'feat(consumer): add Home universal composer' || exit 0
+          git push origin HEAD:monday/continuum-runtime-integration-20260914
