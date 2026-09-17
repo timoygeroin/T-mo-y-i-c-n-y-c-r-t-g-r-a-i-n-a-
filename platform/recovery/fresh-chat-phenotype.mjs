@@ -75,6 +75,10 @@ function classifySignal(message, state) {
     /хватит.*просто/u,
     /работ[а-я]* в полсил/u,
     /не архитектор/u,
+    /^почини(?:\s+вс[её])?[.!…]*$/u,
+    /не\s+вижу/u,
+    /исчезл/u,
+    /одни\s+отказ/u,
   ])) return "DISSATISFACTION";
 
   if (hasAny(text, [
