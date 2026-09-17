@@ -337,6 +337,25 @@ private struct MondayHomeView: View {
                 }
             }
             .navigationTitle("Home")
+            .safeAreaInset(edge: .bottom) {
+                Button { selection = .chats } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "plus")
+                        Text("Message Monday or start something…")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Image(systemName: "arrow.up.circle.fill")
+                            .font(.title3)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(.regularMaterial, in: Capsule())
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open the universal Monday composer")
+            }
         }
     }
 }
