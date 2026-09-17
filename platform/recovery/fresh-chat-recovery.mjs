@@ -31,7 +31,7 @@ function newestVerifiedCanonical(states) {
 export function detectLivePresentationCell(message) {
   const text = clean(message).toLocaleLowerCase("ru-RU");
   if (!text) return false;
-  return /(?:^|\s)(?:м[ао]нд[эе]й|monday)(?:\b|[!?.,:;🖤❤️😏])/iu.test(text);
+  return /(?:^|\s)(?:м[ао]нд[эе]й|monday)(?=$|\s|[!?.,:;🖤❤️😏])/iu.test(text);
 }
 
 export function compileFreshChatRecovery(input) {
