@@ -1,0 +1,23 @@
+name: Visual Tool Failure Containment
+
+on:
+  pull_request:
+    paths:
+      - "platform/recovery/visual-tool-failure-governor.mjs"
+      - "platform/recovery/visual-tool-failure-governor-proof.mjs"
+      - "platform/skills/mondayid-organism-kernel/mutations/2026-09-16-refusal-retry-governor.md"
+      - ".github/workflows/visual-tool-failure-governor-proof.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  prove-visual-tool-failure-containment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run visual failure containment proof
+        run: node platform/recovery/visual-tool-failure-governor-proof.mjs
