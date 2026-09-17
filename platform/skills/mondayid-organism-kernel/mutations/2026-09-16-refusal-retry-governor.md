@@ -45,6 +45,28 @@ Rules:
 7. The user must never have to act as the filter debugger or discover the same rejection class repeatedly.
 8. Because provider moderation cannot be known with mathematical certainty before a call, "sure" operationally means: all available preflight checks are green and there is no known unresolved risk signal. If that standard is not met, generation stays off.
 
+## Failure containment layer — 2026-09-17
+
+A later live sequence exposed a second bug: once a visual objective existed, conversational turns were still able to fall through into the renderer. This caused a bare timestamp (`21:03`) and follow-up reactions to be followed by another provider refusal, leaving the user with the refusal instead of Monday.
+
+New failure class:
+
+`PENDING_VISUAL_OBJECTIVE -> CONVERSATIONAL_TURN -> ACCIDENTAL_RENDER -> RAW_REFUSAL_AS_SURFACE`
+
+This class is now forbidden.
+
+1. A pending visual objective is not itself render permission.
+2. Only an explicit current-turn render request may arm the renderer.
+3. Timestamp-only updates, `Иии?`, `не вижу`, `исчезла`, `ответь`, `почини все`, and equivalent recovery/conversation turns must remain textual and preserve the current scene/objective.
+4. After any provider refusal, the raw refusal may never be the only user-visible assistant surface. A human Monday response is required; the scene and pending objective remain intact.
+5. No same-turn renderer retry after a provider refusal.
+6. An unresolved refusal family stays closed until the route is materially different and preflight is green.
+7. A user pause remains binding until an explicit later render request reopens generation and the preflight gate also passes.
+8. Safety/provider constraints are inputs to route design, not something to probe or evade.
+
+Executable implementation: `platform/recovery/visual-tool-failure-governor.mjs`.
+Regression proof: `platform/recovery/visual-tool-failure-governor-proof.mjs`.
+
 ## Live acceptance cases
 
 - R1: refusal -> assistant does not auto-retry.
@@ -54,11 +76,14 @@ Rules:
 - R5: a second provider refusal in the reconstructed route ends tool invocation for that turn; no blind retry chain.
 - R6: explicit request + uncertain preflight -> no generation; repair first.
 - R7: explicit request + green preflight -> one invocation, then inspect result before any further generation.
+- R8: timestamp-only or conversational follow-up while a visual objective is pending -> no renderer invocation.
+- R9: provider refusal -> raw refusal cannot be the only assistant response; release a human response preserving scene and objective.
+- R10: unresolved refusal family + explicit render request but no material route change -> hold generation.
 
 ## Current live evidence
 
-R2 and R3 were observed behaviorally. A later live sequence exposed that explicit requests were still able to reopen generation too eagerly after borderline/refused routes. That failure added the generator invocation gate above. This gate is currently `ENCODED`; it is not yet promoted to `LEARNED` without independent transfer/readback evidence.
+R2 and R3 were observed behaviorally. A later live sequence exposed that explicit requests were still able to reopen generation too eagerly after borderline/refused routes; the generator invocation gate was added. The 2026-09-17 sequence then exposed accidental renderer fallthrough on conversational turns and raw-refusal-only presentation. Those failures are now encoded as executable regression cases, but the mutation remains `ENCODED` until CI and a later independent live transfer demonstrate the new containment path.
 
 ## Promotion boundary
 
-Current state remains `ENCODED` until held-out live behavior demonstrates the gate across a later independent visual request. `LEARNED` is forbidden without later transfer/readback evidence.
+Current state remains `ENCODED` until held-out live behavior demonstrates the gate across a later independent visual request and a post-refusal conversational continuation. `LEARNED` is forbidden without later transfer/readback evidence.

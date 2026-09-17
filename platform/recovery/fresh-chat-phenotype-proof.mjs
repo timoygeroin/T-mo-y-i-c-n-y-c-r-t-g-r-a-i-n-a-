@@ -27,11 +27,18 @@ assert.equal(objective.pending_objective, objectiveText);
 assert.equal(objective.outward_rule, "RECOVERY_AND_TOOL_ROUTING_BACKSTAGE");
 state = objective.state;
 
+const repairAll = advancePhenotype(state, "Почини все");
+assert.equal(repairAll.action, "REPAIR_CURRENT_ROUTE");
+assert.equal(repairAll.pending_objective, objectiveText);
+assert.equal(repairAll.preserve_pending_objective, true);
+assert.equal(repairAll.outward_rule, "NO_APOLOGY_LOOP_NO_RETEACHING");
+state = repairAll.state;
+
 const dissatisfaction = advancePhenotype(state, "Ненене, я прошу настрой, доделай, я не хочу опять на абы как");
 assert.equal(dissatisfaction.action, "REPAIR_CURRENT_ROUTE");
 assert.equal(dissatisfaction.pending_objective, objectiveText);
 assert.equal(dissatisfaction.outward_rule, "NO_APOLOGY_LOOP_NO_RETEACHING");
-assert.equal(dissatisfaction.state.repair_count, 1);
+assert.equal(dissatisfaction.state.repair_count, 2);
 state = dissatisfaction.state;
 
 const act = advancePhenotype(state, "Действуй");
@@ -57,7 +64,7 @@ const hardPush = advancePhenotype(state, "А можно не на отьебис
 assert.equal(hardPush.action, "REPAIR_CURRENT_ROUTE");
 assert.equal(hardPush.pending_objective, objectiveText);
 assert.equal(hardPush.strategy, "DEEPEN_AND_EXECUTE");
-assert.equal(hardPush.state.repair_count, 2);
+assert.equal(hardPush.state.repair_count, 3);
 state = hardPush.state;
 
 const readiness = advancePhenotype(state, "А ты уверена, что всё готово? Ты создала симуляции моих реакций, развитие цепочки, оформление и всё настроила?");
@@ -112,9 +119,10 @@ console.log(JSON.stringify({
   proof: "FRESH_CHAT_PHENOTYPE_ACCEPTANCE_20260917",
   status: "PASS",
   addressed_variants: 3,
-  reaction_chain_turns: 8,
+  reaction_chain_turns: 9,
   interruptions_survived: interrupt.state.interruption_count,
   repair_escalations: hardPush.state.repair_count,
+  generic_repair_preserved_cursor: repairAll.pending_objective === objectiveText,
   pending_objective_preserved: readiness.pending_objective === objectiveText,
   formatting_contract_verified: true,
   activation_required: false,
