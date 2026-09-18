@@ -37,10 +37,11 @@ export class Worldline {
   }
 
   materialize() {
-    const state = { facts: {}, tasks: {}, failures: {}, capabilities: {}, receipts: {} };
+    const state = { facts: {}, tasks: {}, intents: {}, failures: {}, capabilities: {}, receipts: {} };
     for (const e of this.#events) {
       if (e.kind === 'fact') state.facts[e.subject] = e.payload;
       if (e.kind === 'task') state.tasks[e.subject] = e.payload;
+      if (e.kind === 'intent') state.intents[e.subject] = e.payload;
       if (e.kind === 'failure') state.failures[e.subject] = e.payload;
       if (e.kind === 'capability') state.capabilities[e.subject] = e.payload;
       if (e.kind === 'receipt') state.receipts[e.subject] = e.payload;
