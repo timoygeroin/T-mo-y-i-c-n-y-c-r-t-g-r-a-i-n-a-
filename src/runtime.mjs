@@ -1,6 +1,7 @@
 import { compileSignals } from './compiler.mjs';
 import { buildFrontier } from './planner.mjs';
 import { Worldline } from './worldline.mjs';
+import { persistIntents, activeIntents, settleIntents } from './intent-field.mjs';
 
 export class MondayRuntime {
   constructor({ worldline = new Worldline(), capabilities = {}, foundry = null } = {}) {
@@ -27,6 +28,7 @@ export class MondayRuntime {
         return {
           domain: action.domain,
           objectiveId: action.objectiveId,
+          sourceSignal: action.sourceSignal,
           ok: outcome?.ok === true,
           state: outcome?.state || 'UNRESOLVED',
           code: outcome?.code || null,
@@ -38,6 +40,7 @@ export class MondayRuntime {
         return {
           domain: action.domain,
           objectiveId: action.objectiveId,
+          sourceSignal: action.sourceSignal,
           ok: false,
           state: 'UNRESOLVED',
           code: 'FOUNDRY_ERROR',
@@ -47,17 +50,24 @@ export class MondayRuntime {
     }));
   }
 
-  async cycle(signals) {
-    const startedAtRevision = this.worldline.revision();
-    const { graph } = this.observe(signals);
+  async cycle(incomingSignals = []) {
+    const persisted = persistIntents(this.worldline, incomingSignals);
+    if (!persisted.ok) return persisted;
+
+    const field = activeIntents(this.worldline);
+    const { graph } = this.observe(field);
     let frontier = buildFrontier(graph, this.capabilities);
 
     const observations = this.worldline.append({
       kind: 'fact',
       subject: `cycle:${Date.now()}`,
-      payload: { graph, blocked: frontier.blocked },
+      payload: {
+        activeIntentIds: field.map(intent => intent.id),
+        graph,
+        blocked: frontier.blocked
+      },
       epistemic: 'observed'
-    }, startedAtRevision);
+    }, this.worldline.revision());
     if (!observations.ok) return observations;
 
     const forged = await this.invent(frontier.blocked);
@@ -92,24 +102,28 @@ export class MondayRuntime {
     }));
 
     rev = this.worldline.revision();
-    for (const r of results) {
+    for (const result of results) {
       const out = this.worldline.append({
-        kind: r.ok ? 'receipt' : 'failure',
-        subject: r.action.id,
-        payload: r,
-        epistemic: r.ok ? 'verified' : 'observed'
+        kind: result.ok ? 'receipt' : 'failure',
+        subject: result.action.id,
+        payload: result,
+        epistemic: result.ok ? 'verified' : 'observed'
       }, rev);
       if (!out.ok) return out;
       rev = out.revision;
     }
 
+    const settled = settleIntents(this.worldline, graph, results);
+    if (!settled.ok) return settled;
+
     return {
       ok: true,
-      revision: rev,
+      revision: this.worldline.revision(),
       graph,
       frontier,
       forged,
       results,
+      intents: this.worldline.materialize().intents,
       state: this.worldline.materialize()
     };
   }
