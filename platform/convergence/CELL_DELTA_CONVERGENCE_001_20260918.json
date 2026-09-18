@@ -1,0 +1,22 @@
+{
+  "schema": "mondayid.cell-delta.v1",
+  "delta_id": "CELL_DELTA:CONVERGENCE_001:20260918T2244+0300",
+  "parent_state_id": "mondayid-system:1:d562826",
+  "parent_main_head": "d562826b9d42c11fa4effffeea5dd57fea0c37ca",
+  "next_move": "REBASE_OR_PORT_PR46_LIVE_MODEL_TRANSPORT_ON_CURRENT_MAIN_AND_VERIFY_PRODUCTION_READBACK",
+  "status": "EXECUTED_READ_BACK_PENDING_VERIFICATION",
+  "cell_branch": "cell/convergence-001-rebase-pr46-20260918",
+  "ported_from": "agent/vercel-oidc-gateway-v1@788effc4ebaac32876c75a33cd609bdf92b035a7",
+  "mutation_head": "ce09cde8482b56c2ee60b96fa1363f46f3d7c339",
+  "mutations": [
+    "port live-kernel prerequisite",
+    "add @vercel/oidc dependency",
+    "port Vercel OIDC/AI Gateway preferred transport with direct OpenAI fallback"
+  ],
+  "truth": {
+    "production_readback_verified": false,
+    "canonical_state_promoted": false,
+    "reason": "Port is bound to canonical parent but tests/deploy/provider readback are not yet evidenced."
+  },
+  "next_cursor": "Run exact branch tests/build; port remaining serverless API/config/test deltas required by PR46; deploy through existing Vercel project; require OIDC health + real response_id + public UI readback before promotion."
+}
