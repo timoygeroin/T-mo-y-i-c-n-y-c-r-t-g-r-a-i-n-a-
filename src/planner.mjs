@@ -8,6 +8,7 @@ export function buildFrontier(graph, capabilities = {}) {
     return {
       id: `action:${o.id}`,
       objectiveId: o.id,
+      sourceSignal: o.sourceSignal,
       domain: o.domain,
       effect: o.effect,
       receptor: receptor?.name || null,
