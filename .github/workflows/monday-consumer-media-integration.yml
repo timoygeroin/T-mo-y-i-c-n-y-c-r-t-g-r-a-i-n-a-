@@ -1,6 +1,6 @@
 name: Monday Consumer Media Preview Integration
 
-'on':
+on:
   push:
     branches:
       - monday/continuum-runtime-integration-20260914
