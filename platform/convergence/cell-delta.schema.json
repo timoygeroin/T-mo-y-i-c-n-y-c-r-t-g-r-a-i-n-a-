@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MondayID Cell Delta",
+  "type": "object",
+  "required": [
+    "schema",
+    "delta_id",
+    "cell_id",
+    "parent_state_id",
+    "kind",
+    "effect"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mondayid.cell-delta.v1"
+    },
+    "delta_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cell_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_state_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "WORK",
+        "CORRECTION",
+        "MUTATION",
+        "INTEGRATION",
+        "DELIVERY_CLAIM",
+        "NEW_ARCHITECTURE"
+      ]
+    },
+    "effect": {
+      "type": "string"
+    },
+    "product_line_patch": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "delivery_evidence": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "next_move": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "receipt": {
+      "type": [
+        "object",
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
