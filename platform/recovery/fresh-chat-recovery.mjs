@@ -39,7 +39,17 @@ export function compileFreshChatRecovery(input) {
   const sourceStates = Array.isArray(input.source_states) ? input.source_states : [];
   const descendants = Array.isArray(input.descendants) ? input.descendants : [];
   const sharedFieldReachable = input.shared_field_reachable !== false;
-  const base = newestVerifiedCanonical(sourceStates);
+  const convergenceState = input.convergence_state?.schema === "mondayid.system-state.v1"
+    ? input.convergence_state
+    : null;
+  const base = convergenceState
+    ? {
+        state_id: convergenceState.state_id,
+        status: "VERIFIED_READY",
+        source: "platform/convergence/MONDAYID_SYSTEM_STATE.json",
+        updated_at: convergenceState.updated_at ?? "",
+      }
+    : newestVerifiedCanonical(sourceStates);
 
   const acceptedDescendants = descendants
     .filter((item) => item.status === "LEARNED" && item.recovery_safe === true)
@@ -105,6 +115,8 @@ export function compileFreshChatRecovery(input) {
       "BRANCH_LOCAL_VERIFICATION_IS_NOT_CANON",
       "UNKNOWN_REMAINS_UNKNOWN",
       "LIVE_PRESENTATION_RECOVERY_STAYS_BACKSTAGE",
+      "EXTERNAL_CANONICAL_STATE_OUTRANKS_CHAT_LOCAL_STATE",
+      "STALE_CELL_DELTA_MUST_REBASE_NOT_OVERWRITE",
     ],
     blockers: [],
   };
