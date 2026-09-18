@@ -6,7 +6,7 @@ const DOMAIN_HINTS = {
   code: /github|code|branch|commit|repo/i
 };
 
-function domainOf(text='') {
+export function inferDomains(text='') {
   const hits = Object.entries(DOMAIN_HINTS).filter(([,rx]) => rx.test(text)).map(([k]) => k);
   return hits.length ? hits : ['general'];
 }
@@ -15,19 +15,22 @@ export function compileSignals(signals = []) {
   const nodes = [];
   for (const signal of signals) {
     const text = String(signal.text ?? signal.intent ?? '');
-    const domains = signal.domains || domainOf(text);
+    const domains = signal.domains || inferDomains(text);
+    const completedDomains = Array.isArray(signal.completedDomains) ? signal.completedDomains : [];
     const rootId = signal.id || `signal:${nodes.length}`;
     nodes.push({
       id: rootId,
       type: 'signal',
       text,
       domains,
+      completedDomains,
       source: signal.source || 'human',
       priority: signal.priority ?? 50,
-      status: 'observed',
+      status: signal.status || 'active',
       dependsOn: []
     });
     for (const domain of domains) {
+      if (completedDomains.includes(domain)) continue;
       nodes.push({
         id: `${rootId}:${domain}`,
         type: 'objective',
@@ -41,5 +44,5 @@ export function compileSignals(signals = []) {
       });
     }
   }
-  return { schema: 'mondayid.intent-graph.v2', nodes };
+  return { schema: 'mondayid.intent-graph.v3', nodes };
 }
