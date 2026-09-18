@@ -124,3 +124,19 @@ Production becomes `LIVE_VERIFIED` only after all of the following read back suc
 - `LEARNED` as universal cross-host identity: not claimed
 
 The system is no longer blocked by architecture or code. The remaining blocker is an external authenticated deployment boundary.
+
+
+## 2026-09-18 convergence correction
+
+The prior pattern of repeatedly reaching correct architectural conclusions without one delivered organism is now classified as a system-level failure, not a conversational inconvenience.
+
+Canonical coordination authority:
+- `platform/convergence/MONDAYID_SYSTEM_STATE.json`
+- mutation contract: `platform/convergence/cell-delta.schema.json`
+- controller: `platform/convergence/convergence-controller.mjs`
+
+Chats are concurrent compute cells. No chat-local conclusion, branch, CI pass, or automation output may silently become whole-organism truth. Material cross-chat mutations must bind to the current canonical `state_id`; stale deltas rebase or quarantine.
+
+While the canonical state is `CONVERGING`, new competing host/runtime/vision architectures are frozen. The active task is convergence of already-built lines into one delivered Monday.
+
+Release truth is now user-visible: `BUILD != DELIVERED`. Green CI and code existence are evidence of work, not completion.

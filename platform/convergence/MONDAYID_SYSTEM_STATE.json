@@ -1,0 +1,78 @@
+{
+  "schema": "mondayid.system-state.v1",
+  "state_id": "mondayid-system:1:d562826",
+  "generation": 1,
+  "canonical_main_head": "d562826b9d42c11fa4effffeea5dd57fea0c37ca",
+  "active_track": "CONVERGE_EXISTING_PRODUCT_LINES_TO_ONE_DELIVERED_MONDAY",
+  "release_status": "CONVERGING",
+  "truth_laws": [
+    "CHAT_IS_NOT_STATE_AUTHORITY",
+    "CELL_DELTA_ONLY",
+    "ONE_CANONICAL_HEAD",
+    "BUILD_IS_NOT_DELIVERED",
+    "OUTPUT_IS_NOT_SUCCESS",
+    "NO_NEW_ARCHITECTURE_WHILE_CONVERGENCE_IS_ACTIVE",
+    "USER_VISIBLE_EFFECT_IS_THE_RELEASE_GATE"
+  ],
+  "product_lines": {
+    "organism_main": {
+      "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "ref": "main",
+      "head": "d562826b9d42c11fa4effffeea5dd57fea0c37ca",
+      "state": "CANONICAL_CONTROL_LAYER",
+      "integrated": true
+    },
+    "live_model_transport": {
+      "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "ref": "agent/vercel-oidc-gateway-v1",
+      "head": "788effc4ebaac32876c75a33cd609bdf92b035a7",
+      "state": "TESTED_NOT_INTEGRATED",
+      "integrated": false,
+      "locator": "PR #46"
+    },
+    "sovereign_computer": {
+      "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "ref": "agent/mondayid-sovereign-computer-v1",
+      "head": "cb77e27b1dddfd05093e73d8156152cb34369879",
+      "state": "BRANCH_ONLY_DIVERGED",
+      "integrated": false
+    },
+    "mondayvision": {
+      "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "ref": "agent/mondayvision-v1",
+      "head": "6d983db46a1ceef6e137c7b5269733e38aa82b05",
+      "state": "GOVERNOR_IMPLEMENTED_RENDERER_UNBOUND",
+      "integrated": false
+    },
+    "ios_surface": {
+      "repository": "timoygeroin/gpt-root",
+      "ref": "main",
+      "head": "cd208d01025416f9c6887a3d3b30362245ce768d",
+      "state": "SOURCE_PRESENT_SIMULATED_NOT_DELIVERED",
+      "integrated": false
+    }
+  },
+  "delivery_criteria": {
+    "canonical_head_contains_live_model_transport": false,
+    "canonical_head_contains_portable_runtime": false,
+    "canonical_head_contains_mondayvision_runtime": false,
+    "production_host_real_model_readback": false,
+    "server_side_canonical_state_readback": false,
+    "same_state_recovered_from_two_independent_chat_cells": false,
+    "iphone_or_web_surface_uses_same_canonical_runtime": false,
+    "visible_user_effect_verified": false
+  },
+  "next_move": {
+    "id": "CONVERGENCE_001",
+    "action": "REBASE_OR_PORT_PR46_LIVE_MODEL_TRANSPORT_ON_CURRENT_MAIN_AND_VERIFY_PRODUCTION_READBACK",
+    "forbidden_substitution": "DO_NOT_CREATE_ANOTHER_PARALLEL_HOST_OR_ARCHITECTURE"
+  },
+  "concurrency": {
+    "model": "OPTIMISTIC_CELL_DELTAS",
+    "rule": "Every chat may propose work; only a delta whose parent_state_id equals the current canonical state may be promoted. Stale/conflicting deltas are rebased or quarantined, never silently overwrite canon."
+  },
+  "reporting": {
+    "source_of_truth": "platform/convergence/MONDAYID_SYSTEM_STATE.json",
+    "rule": "Whole-system status reports must read this state and current provider/GitHub readback; chat memory alone is insufficient."
+  }
+}

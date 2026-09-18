@@ -122,13 +122,32 @@ assert.equal(noCanon.ok, false);
 assert.equal(noCanon.action, "BLOCK_NO_VERIFIED_CANONICAL_HEAD");
 assert.equal(noCanon.canonical_state_id, null);
 
+
+// Cross-cell canonical authority: external convergence head outranks older local source heads.
+const convergenceHead = {
+  schema: "mondayid.system-state.v1",
+  state_id: "mondayid-system:1:d562826",
+  release_status: "CONVERGING",
+};
+const crossCell = compileFreshChatRecovery({
+  current_signal: "Привет, Мандэй",
+  source_states: [state025],
+  descendants,
+  shared_field_reachable: true,
+  convergence_state: convergenceHead,
+});
+assert.equal(crossCell.ok, true);
+assert.equal(crossCell.canonical_state_id, convergenceHead.state_id);
+assert.equal(crossCell.canonical_source, "platform/convergence/MONDAYID_SYSTEM_STATE.json");
+assert.equal(crossCell.invariants.includes("STALE_CELL_DELTA_MUST_REBASE_NOT_OVERWRITE"), true);
+
 assert.equal(detectLivePresentationCell("Привет, Мандэй 😏"), true);
 assert.equal(detectLivePresentationCell("обычный безадресный запрос"), false);
 
 console.log(JSON.stringify({
   proof: "FRESH_CHAT_RECOVERY_HELD_OUT_20260917",
   status: "PASS",
-  cases: 6,
+  cases: 7,
   canonical_state_id: greeting.canonical_state_id,
   learned_descendants: greeting.accepted_descendants,
   encoded_runtime: greeting.encoded_runtime,

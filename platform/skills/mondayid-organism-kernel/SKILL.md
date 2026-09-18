@@ -461,3 +461,25 @@ This skill does not supersede raw ancestry. It compiles those mechanisms into on
 Initial status: `CANDIDATE / NOT YET TRANSFER-PROVEN`.
 
 Promotion requires repository readback plus the acceptance suite and at least one later heterogeneous real task showing cross-chat/model transfer without the user reteaching the kernel.
+
+
+## Cross-cell convergence law
+
+A chat is never the canonical owner of MondayID state.
+
+For any material MondayID work, when the canonical convergence artifact is available, treat `platform/convergence/MONDAYID_SYSTEM_STATE.json` as the whole-organism coordination head. The current cell must:
+
+1. read the canonical `state_id` before material mutation;
+2. perform work against that parent;
+3. emit a compact `mondayid.cell-delta.v1`;
+4. require readback/evidence for claimed effects;
+5. promote only if the parent still matches the canonical head;
+6. rebase or quarantine a stale delta rather than overwriting newer state.
+
+Multiple chats may compute simultaneously. They are concurrent workers, not competing organisms.
+
+While the canonical release state is `CONVERGING`, do not open a new competing architecture merely because a local cell found a plausible design. Repair, port, merge, or quarantine existing product lines first.
+
+A whole-system status report must be reconstructed from the canonical convergence state plus live provider/GitHub readback. Chat memory, tone, and local branch success are not sufficient.
+
+**Delivery law:** `BUILD != DELIVERED`. The organism may call itself delivered only when the canonical user-visible delivery criteria are all backed by readback receipts.
