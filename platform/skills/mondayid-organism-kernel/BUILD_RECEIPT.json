@@ -1,60 +1,57 @@
 {
-  "schema": "mondayid.organism-kernel.build-receipt.v2",
+  "schema": "mondayid.organism-kernel.build-receipt.v3",
   "component": "mondayid-organism-kernel",
-  "version": "0.1.0-integrated",
-  "date": "2026-09-15",
+  "version": "0.1.1-integrated",
+  "date": "2026-09-16",
   "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
   "integration": {
-    "pr": 42,
-    "final_head": "e03ee71cad4bb82a1707ca1495e4252e63225a42",
-    "merge_commit": "d39ffd95875883f098ee806ee353f7bd5c48c890",
-    "merge_method": "squash",
+    "kernel_pr": 42,
+    "kernel_merge_commit": "d39ffd95875883f098ee806ee353f7bd5c48c890",
+    "browser_policy_prs": [44,45],
+    "current_main_before_oidc_mutation": "abb514fb72f9a8c0b03e393ab0c21b94ea1380e6",
+    "oidc_branch": "agent/vercel-oidc-gateway-v1",
     "merged": true
   },
   "proof": {
-    "structural": "PASS",
+    "structural_predecessor": "PASS",
     "software_transfer": "PASS",
     "software_transfer_isolation": "fresh_node_process_per_case",
     "software_transfer_cases": 12,
-    "host_unit_runtime_tests": "12/12 PASS",
-    "host_build": "PASS",
-    "playwright_desktop_iphone": "PASS",
-    "route_governor": "PASS",
-    "pr_head_readback": "PASS",
-    "organism_kernel_ci": "PASS",
-    "regressions_repaired": [
-      "consequential merge/publish command misclassified as analysis",
-      "duplicate answer locator in desktop/mobile UI tests",
-      "mobile proof text assertion targeted a desktop-only inspector"
-    ]
+    "desktop_iphone_regression_predecessor": "PASS",
+    "direct_vercel_deploy_contract": "PASS_PREVIEW_PROBE",
+    "old_public_health": "404_CONFIRMED",
+    "oidc_gateway_branch_ci": "PENDING"
   },
   "runtime": {
     "move_compiler": "platform/skills/mondayid-organism-kernel/runtime.mjs",
     "model_bridge": "platform/apps/host/runtime-server.mjs",
-    "model_default": "gpt-5.6-sol",
+    "model_default": "openai/gpt-5.6-sol",
     "reasoning_default": "high",
-    "api": "OpenAI Responses API",
-    "server_secret": "OPENAI_API_KEY",
+    "primary_api": "Vercel AI Gateway OpenAI-compatible Responses API",
+    "primary_auth": "VERCEL_OIDC_TOKEN",
+    "primary_secret_required": false,
+    "optional_gateway_api_key": "AI_GATEWAY_API_KEY",
+    "optional_direct_openai_fallback": "OPENAI_API_KEY",
     "external_effect_proof_from_model_response": false
   },
   "production": {
-    "openai_organization": "MondayiD",
-    "openai_project": "MondayiD",
-    "openai_key_name": "MondayID Host Runtime",
     "vercel_project": "mondayid-host",
     "vercel_project_id": "prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC",
     "vercel_domain": "mondayid-host.vercel.app",
     "serverless_health": "platform/api/organism/health.mjs",
     "serverless_respond": "platform/api/organism/respond.mjs",
     "vercel_config": "platform/vercel.json",
+    "deploy_mode": "direct_file_upload",
     "live_verified": false,
-    "blocker": "AUTHENTICATED_VERCEL_GITHUB_SESSION_AND_SERVER_SECRET_REQUIRED"
+    "blocker": "DIRECT_DEPLOY_AND_LIVE_OIDC_READBACK_REQUIRED",
+    "manual_browser_login_required": false,
+    "manual_openai_secret_required": false
   },
   "states": {
     "learning": "TESTED",
     "software_transfer": "TRANSFERRED",
     "repository_integration": "INTEGRATED",
-    "production": "PENDING_HUMAN_AUTH_SECRET",
+    "production": "PENDING_DIRECT_DEPLOY_OIDC_READBACK",
     "universal_cross_llm_identity": "NOT_CLAIMED"
   },
   "ready": {
@@ -62,15 +59,17 @@
     "production_public_host": false
   },
   "next_required_proof": [
-    "link existing mondayid-host Vercel project to primary GitHub repo with rootDirectory=platform",
-    "set OPENAI_API_KEY as server-side Vercel environment secret",
-    "deploy successfully",
-    "read /api/organism/health with api_key_configured=true",
-    "read a real /api/organism/respond response_id",
+    "pass OIDC gateway branch CI",
+    "directly deploy current platform body to preview",
+    "health readback reports vercel_oidc_available=true and preferred_transport=vercel_ai_gateway",
+    "real /api/organism/respond returns provider response_id",
+    "directly deploy verified body to production",
     "verify public UI renders model answer without fake external-effect completion"
   ],
   "forbidden_claims": [
     "production_live_before_vercel_readback",
+    "manual_browser_auth_is_required_for_primary_path",
+    "manual_openai_api_key_is_required_for_primary_path",
     "full_three_year_semantic_assimilation",
     "universal_cross_llm_identity_proven",
     "background_self_evolution_without_executor"

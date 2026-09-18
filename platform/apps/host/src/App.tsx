@@ -56,7 +56,7 @@ export default function App(){
   const [notice,setNotice]=useState(""); const [pending,setPending]=useState<HostState>(); const [busy,setBusy]=useState(false);
   const [runtime,setRuntime]=useState("Проверяю соединение…"); const fileInput=useRef<HTMLInputElement>(null);
   useEffect(()=>{if(storagePaused)return;const saved=saveState(state);setStorageError(saved.ok?"":saved.error);},[state,storagePaused]);
-  useEffect(()=>{let alive=true;readRuntimeHealth().then(h=>{if(alive)setRuntime(h.api_key_configured?`${h.model} · готов`:`${h.model} · нужен API key`)}).catch(()=>{if(alive)setRuntime("bridge не запущен")});return()=>{alive=false};},[]);
+  useEffect(()=>{let alive=true;readRuntimeHealth().then(h=>{if(!alive)return;const transport=h.preferred_transport==="vercel_ai_gateway"?"AI Gateway":h.preferred_transport==="direct_openai"?"OpenAI direct":"нет транспорта";setRuntime(h.model_transport_available?`${h.model} · ${transport} · готов`:`${h.model} · ${transport}`)}).catch(()=>{if(alive)setRuntime("runtime недоступен")});return()=>{alive=false};},[]);
   const active=useMemo(()=>state.turns.find(t=>t.id===state.activeId)??state.turns[0],[state]);
   const update=(patch:Partial<Turn>)=>active&&setState(s=>({...s,turns:s.turns.map(t=>t.id===active.id?patchTurn(t,patch):t)}));
   const submit=async()=>{
@@ -67,11 +67,11 @@ export default function App(){
     setState(s=>({...s,turns:[turn,...s.turns],activeId:turn.id}));setText("");setBusy(true);setNotice("");
     try{
       const reply=await askMondayRuntime(request,{active_flow:parentFlow,history});
-      const trace=[`Model: ${reply.model}`,`Route: ${reply.move.classification.primary} → ${reply.move.route.mode}`,`Proof: ${reply.move.route.proof_requirement}`];
+      const trace=[`Model: ${reply.model}`,`Transport: ${reply.receipt.transport}`,`Route: ${reply.move.classification.primary} → ${reply.move.route.mode}`,`Proof: ${reply.move.route.proof_requirement}`];
       if(reply.response_id)trace.push(`Response: ${reply.response_id}`);
       if(reply.move.route.blocker)trace.push(`Blocker: ${reply.move.route.blocker}`);
       setState(s=>({...s,turns:s.turns.map(t=>t.id===turn.id?patchTurn(t,{decision:reply.answer,context:trace}):t)}));
-      setRuntime(`${reply.model} · готов`);
+      setRuntime(`${reply.model} · ${reply.receipt.transport==="vercel_ai_gateway"?"AI Gateway":"OpenAI direct"} · готов`);
     }catch(e){
       const message=(e as Error).message||"Неизвестная ошибка runtime";
       setState(s=>({...s,turns:s.turns.map(t=>t.id===turn.id?patchTurn(t,{decision:`Runtime не выполнил запрос: ${message}`,context:["Runtime: ERROR"]}):t)}));

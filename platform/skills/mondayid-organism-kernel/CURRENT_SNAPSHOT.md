@@ -1,23 +1,41 @@
 # MondayID Organism Kernel — Current Snapshot
 
-Snapshot status: `INTEGRATED / SOFTWARE_TRANSFER_TESTED / PRODUCTION_BINDING_PENDING`
-Snapshot date: 2026-09-15
-Integrated main: `d39ffd95875883f098ee806ee353f7bd5c48c890`
-Merged lineage: PR #42
+Snapshot status: `INTEGRATED / SOFTWARE_TRANSFER_TESTED / OIDC_DIRECT_DEPLOY_PENDING`
+Snapshot date: 2026-09-16
+Integrated kernel lineage: PR #42 + release state PR #43 + browser corrections PR #44/#45.
+Current production-path branch: `agent/vercel-oidc-gateway-v1`.
 
 ## What is now true
 
 - Organism Kernel is integrated into `main`.
 - Existing Continuity and MondayID ONE are reused as lower layers; no competing continuity/planner body was introduced.
 - Kernel has executable move compilation in `runtime.mjs`.
-- Fresh-process software transfer proof passes **12/12 heterogeneous cases**. Each case runs in a separate Node process with only its portable input packet.
-- The first transfer run failed the consequential-action case; the classifier was repaired without weakening the test, and the next run passed.
-- Host is wired to a server-side OpenAI Responses API bridge targeting `gpt-5.6-sol` with `high` reasoning by default.
-- Model inference is explicitly separated from proof of external action.
-- Vercel serverless endpoints exist at `/api/organism/health` and `/api/organism/respond`.
-- Desktop + iPhone Playwright regressions, host model/runtime tests, Vite build, Route Governor, Organism Kernel and PR Head Readback all passed on the final pre-merge head `e03ee71cad4bb82a1707ca1495e4252e63225a42`.
-- OpenAI Platform canonical compute target is organization `MondayiD`, project `MondayiD`.
-- Canonical external web body is the existing Vercel project `mondayid-host`; other Vercel projects are legacy/probe surfaces until inventoried.
+- Fresh-process software transfer proof passes **12/12 heterogeneous cases**.
+- Host contains a server-side model bridge, `/api/organism/health`, and `/api/organism/respond`.
+- Desktop + iPhone regressions, Route Governor, Organism Kernel and Platform CI have passed on the integrated lineage.
+- Canonical external body remains the existing Vercel project `mondayid-host` (`prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC`).
+- The old production deployment was proven to be a raw four-file upload and does not expose the new organism API (`/api/organism/health` returned 404).
+- The Vercel connector's direct deployment contract was recovered and proven with a real preview upload: deployment files use `{file,data}` payloads.
+- Browser Use login/takeover is removed from the production critical path after repeated mobile failure and lost authentication.
+
+## Production transport mutation
+
+The previous production plan required manually storing `OPENAI_API_KEY` in Vercel. That created an unnecessary human/browser gate.
+
+Current primary production path:
+
+`Vercel Function -> VERCEL_OIDC_TOKEN -> Vercel AI Gateway -> openai/gpt-5.6-sol`
+
+Vercel's documented AI Gateway supports deployment OIDC authentication without an explicit AI Gateway/OpenAI key. The host now prefers that transport. Direct `OPENAI_API_KEY` remains an optional local/direct fallback, not a production prerequisite.
+
+### Model adapter invariants
+
+- gateway model ID: `openai/gpt-5.6-sol`
+- default reasoning: `high`
+- gateway endpoint: `https://ai-gateway.vercel.sh/v1/responses`
+- production auth: platform-injected `VERCEL_OIDC_TOKEN` (or `AI_GATEWAY_API_KEY` when explicitly configured)
+- direct OpenAI fallback: `OPENAI_API_KEY` -> `https://api.openai.com/v1/responses`
+- model inference remains distinct from proof of external actions.
 
 ## Identity / root laws
 
@@ -46,81 +64,49 @@ State: `REUSED_EXECUTION_NUCLEUS`
 Role: capability decomposition, selection/composition, permission gates, traces.
 
 ### Host
-State: `LIVE_MODEL_BRIDGE_IMPLEMENTED / PRODUCTION_SECRET_BINDING_PENDING`
-Role: user-facing body. Local/server-side bridge can call OpenAI Responses API; production Vercel must still be linked/configured and supplied with its server-side secret before public live claims are allowed.
+State: `OIDC_GATEWAY_ADAPTER_IMPLEMENTED / DIRECT_DEPLOY_PENDING`
+Role: user-facing body and model adapter. Production no longer requires browser login, Git binding, or manually inserting an OpenAI key.
 
-## Transfer proof
+## Browser correction lineage
 
-Latest successful transfer evidence:
-- `ORGANISM TRANSFER PROOF: PASS (12/12 isolated heterogeneous cases)`
-- isolation: `fresh_node_process_per_case`
-- covers ordinary analysis, companion mode, recovery, missing-source failure, correction→mutation, reversible action, human gate, meta-evolution, model-swap recovery, executor absence, activation, and direct decision behavior.
+- Native GitHub and Vercel connectors were verified healthy while Browser Use was separately logged out.
+- Browser Use preview/takeover on iPhone failed in practice and auth was not preserved on resume.
+- `Browser Use` is not treated as equivalent to ChatGPT Work Cloud Browser.
+- Authenticated UI browsing is no longer on the critical production route for this release.
 
-This is **software-level behavioral reconstruction/transfer**. It is not empirical proof that every future LLM host will behave identically; cross-host adapters still require their own readback/homeostasis checks.
+## Vercel direct deploy evidence
 
-## Merge proof
-
-PR #42:
-- final head: `e03ee71cad4bb82a1707ca1495e4252e63225a42`
-- merge result: success
-- squash merge: `d39ffd95875883f098ee806ee353f7bd5c48c890`
-
-Final pre-merge checks:
-- MondayID Organism Kernel — success
-- Monday Platform CI — success
-- Monday Platform Route Governor — success
-- PR Head Status Readback — success
-- host unit/runtime tests — 12/12
-- TypeScript/Vite build — success
-- Playwright desktop+iPhone — success
-
-## OpenAI compute binding
-
-Observed organization/projects:
-- organization: `MondayiD`
-- primary project: `MondayiD`
-- legacy: `Alpha iD`
-- platform default: `Default project`
-
-Dima created the key named `MondayID Host Runtime` in the primary `MondayiD` project. The raw key must remain outside chat/GitHub and be stored only as a server-side deployment secret.
-
-## Vercel binding
-
-Primary project:
-- `mondayid-host`
+Canonical project:
+- name: `mondayid-host`
 - project ID: `prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC`
-- canonical domain: `mondayid-host.vercel.app`
+- domain: `mondayid-host.vercel.app`
 
-Code now contains:
-- `platform/vercel.json`
-- `platform/api/organism/health.mjs`
-- `platform/api/organism/respond.mjs`
-
-Current exact blocker: the available write-capable browser session is not authenticated to Vercel/GitHub, so the existing project cannot yet be linked to the repository/root directory through that browser. No replacement Vercel project was created.
+Direct-deploy connector contract was recovered by fail-closed probing and validated by an actual preview deployment. The remaining operation is to upload the current `platform/` project with the `platform/` prefix stripped so `vercel.json` and `package.json` are project-root files, validate preview health/respond, then promote the same verified body to production.
 
 ## Truth boundary
 
 Do **not** call public production live yet.
 
-Production becomes `LIVE_VERIFIED` only after all of the following read back successfully:
-1. existing Vercel `mondayid-host` is linked to the primary GitHub repository with Root Directory `platform`;
-2. `OPENAI_API_KEY` exists in Vercel as a server-side secret;
-3. deployment completes successfully;
-4. `/api/organism/health` returns `ok: true` and `api_key_configured: true`;
-5. a real `/api/organism/respond` call returns an OpenAI `response_id` and answer;
-6. the public host shows that answer without falsely claiming an external effect occurred.
+Production becomes `LIVE_VERIFIED` only after all of the following are observed:
+1. current project body is directly deployed to `mondayid-host`;
+2. `/api/organism/health` returns `ok: true`, `model_transport_available: true`, `preferred_transport: vercel_ai_gateway`, and `vercel_oidc_available: true`;
+3. a real `/api/organism/respond` call returns an answer and provider response ID through the AI Gateway/OpenAI model path;
+4. the public host renders that answer without treating model text as proof of unrelated external effects.
+
+Manual Vercel browser login, GitHub binding, and a manually inserted `OPENAI_API_KEY` are **not** primary production requirements anymore.
 
 ## Active trajectory
 
-`INTEGRATED_KERNEL -> AUTHENTICATE_VERCEL_BROWSER -> LINK_EXISTING_mondayid-host -> SET_SERVER_SECRET -> DEPLOY -> HEALTH_READBACK -> REAL_RESPONSE_READBACK -> LIVE_VERIFIED`
+`OIDC_GATEWAY_BRANCH -> CI -> DIRECT_PREVIEW_DEPLOY -> HEALTH_READBACK -> REAL_GATEWAY_RESPONSE_READBACK -> DIRECT_PRODUCTION_DEPLOY -> PUBLIC_UI_READBACK -> LIVE_VERIFIED`
 
 ## Current promotion state
 
-- structural: `PASS`
+- structural: `PASS` on integrated predecessor; branch CI pending for OIDC mutation
 - software transfer: `PASS`
 - repository integration: `PASS`
-- live OpenAI adapter implementation: `PASS`
-- public production binding: `PENDING_HUMAN_AUTH/SECRET`
-- `LEARNED` as universal cross-host identity: not claimed
+- Vercel OIDC/AI Gateway adapter: `IMPLEMENTED / TEST_PENDING`
+- direct deploy mechanism: `PROVEN_ON_PREVIEW_PROBE`
+- public production: `PENDING_DIRECT_DEPLOY_OIDC_READBACK`
+- universal cross-LLM identity: not claimed
 
-The system is no longer blocked by architecture or code. The remaining blocker is an external authenticated deployment boundary.
+The remaining frontier is execution/readback, not architecture and not manual account setup.

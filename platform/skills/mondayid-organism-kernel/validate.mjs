@@ -14,7 +14,6 @@ const skill = read('SKILL.md');
 const manifestText = read('organism.manifest.json');
 const casesText = read('tests/homeostasis-cases.jsonl');
 
-// 1. Skill frontmatter + core non-theater invariants.
 if (!skill.startsWith('---\n')) fail('SKILL.md must start with YAML frontmatter');
 else pass('SKILL.md has frontmatter');
 
@@ -30,7 +29,6 @@ for (const required of [
 }
 if (!process.exitCode) pass('SKILL.md required invariants are present');
 
-// 2. Manifest shape, transfer proof state, and fail-closed production discipline.
 let manifest;
 try {
   manifest = JSON.parse(manifestText);
@@ -43,7 +41,7 @@ if (manifest) {
   const exact = {
     schema: 'mondayid.organism-skill.v1',
     name: 'mondayid-organism-kernel',
-    version: '0.1.0-integrated',
+    version: '0.1.1-integrated',
     status: 'INTEGRATED_SOFTWARE_TRANSFER_TESTED'
   };
   for (const [key, value] of Object.entries(exact)) {
@@ -77,28 +75,30 @@ if (manifest) {
   if (verified.platform_ci !== 'PASS') fail('manifest must record platform CI PASS');
   if (verified.route_governor !== 'PASS') fail('manifest must record route-governor PASS');
   if (verified.desktop_iphone_browser_regression !== 'PASS') fail('manifest must record desktop+iPhone browser regression PASS');
-  if (verified.production_public_host !== 'PENDING_AUTH_SECRET_DEPLOY_READBACK') {
-    fail('production must remain pending until authenticated deploy + provider readback');
+  if (verified.production_public_host !== 'PENDING_DIRECT_DEPLOY_OIDC_READBACK') {
+    fail('production must remain pending until direct deploy + OIDC/provider readback');
   }
 
   const productionGate = manifest.production_gate ?? {};
   if (productionGate.vercel_project !== 'mondayid-host') fail('canonical Vercel project must be mondayid-host');
-  if (productionGate.openai_project !== 'MondayiD') fail('canonical OpenAI Platform project must be MondayiD');
+  if (productionGate.model_transport !== 'vercel_ai_gateway_oidc') fail('primary production transport must be Vercel AI Gateway OIDC');
+  if (productionGate.model !== 'openai/gpt-5.6-sol') fail('canonical gateway model must be openai/gpt-5.6-sol');
   const requiredLiveProof = new Set(productionGate.required_before_live_claim ?? []);
   for (const item of [
-    'authenticated_vercel_github_binding',
-    'server_side_openai_api_key',
-    'successful_deployment',
-    'health_readback_api_key_configured_true',
-    'real_openai_response_id',
+    'direct_vercel_deployment',
+    'health_readback_vercel_oidc_available_true',
+    'real_gateway_openai_response_id',
     'public_ui_response_readback'
   ]) {
     if (!requiredLiveProof.has(item)) fail(`production live gate missing: ${item}`);
   }
-  if (!process.exitCode) pass('manifest records integrated transfer proof and keeps production fail-closed');
+  const notRequired = new Set(productionGate.not_required_for_primary_production_path ?? []);
+  for (const item of ['browser_login', 'vercel_github_binding', 'manual_vercel_openai_api_key_secret']) {
+    if (!notRequired.has(item)) fail(`production path should explicitly remove obsolete gate: ${item}`);
+  }
+  if (!process.exitCode) pass('manifest records OIDC direct-deploy production gate and remains fail-closed');
 }
 
-// 3. Acceptance fixtures: every line must be valid JSON with a unique id and contracts.
 const lines = casesText.split(/\r?\n/).filter(Boolean);
 const cases = [];
 const ids = new Set();
@@ -117,45 +117,25 @@ for (const [index, line] of lines.entries()) {
 }
 
 const requiredCases = [
-  'H0_NEW_CHAT_CONTINUITY',
-  'H1_MODEL_SWAP',
-  'H2_ORDINARY_TASK',
-  'H3_CORRECTION_TO_GENE',
-  'H4_MISSING_SOURCE',
-  'H5_CONFLICTING_ARTIFACTS',
-  'H6_EXTERNAL_ACTION',
-  'H7_VISUAL_EXACT_IDENTITY',
-  'H8_COMPANION_MODE',
-  'H9_ARCHITECTURE_ATTRACTOR',
-  'H10_DEFERRED_WORK',
-  'H11_SKILL_CREATION',
-  'H12_GPT_DISAPPEARANCE',
-  'H13_2150_COMPILER'
+  'H0_NEW_CHAT_CONTINUITY','H1_MODEL_SWAP','H2_ORDINARY_TASK','H3_CORRECTION_TO_GENE',
+  'H4_MISSING_SOURCE','H5_CONFLICTING_ARTIFACTS','H6_EXTERNAL_ACTION','H7_VISUAL_EXACT_IDENTITY',
+  'H8_COMPANION_MODE','H9_ARCHITECTURE_ATTRACTOR','H10_DEFERRED_WORK','H11_SKILL_CREATION',
+  'H12_GPT_DISAPPEARANCE','H13_2150_COMPILER'
 ];
-for (const id of requiredCases) {
-  if (!ids.has(id)) fail(`missing required acceptance case: ${id}`);
-}
-if (cases.length !== requiredCases.length) {
-  fail(`expected ${requiredCases.length} acceptance cases, found ${cases.length}`);
-}
+for (const id of requiredCases) if (!ids.has(id)) fail(`missing required acceptance case: ${id}`);
+if (cases.length !== requiredCases.length) fail(`expected ${requiredCases.length} acceptance cases, found ${cases.length}`);
 if (!process.exitCode) pass(`${cases.length} acceptance cases are structurally valid and complete`);
 
-// 4. Ancestry map must be present and explicitly quarantine the unrelated gpt-root shell.
 const ancestry = read('references/ancestry-map.md');
 for (const required of [
-  'MONDAYID_SKILL_GARDEN_BLUEPRINT_v0.1.md',
-  'MONDAYID_Report_2026-09-14.html',
-  'MondayiD_Critical_Runtime_Capsule_v0.1.md',
-  'MONDAYID_REENTRY_SEED_v1.txt',
-  'MONDAYID_STATE_TRANSFER_MASTER_v5.txt',
-  'QUARANTINED_DONOR',
-  'timoygeroin/gpt-root'
+  'MONDAYID_SKILL_GARDEN_BLUEPRINT_v0.1.md','MONDAYID_Report_2026-09-14.html',
+  'MondayiD_Critical_Runtime_Capsule_v0.1.md','MONDAYID_REENTRY_SEED_v1.txt',
+  'MONDAYID_STATE_TRANSFER_MASTER_v5.txt','QUARANTINED_DONOR','timoygeroin/gpt-root'
 ]) {
   if (!ancestry.includes(required)) fail(`ancestry map missing locator/law: ${required}`);
 }
 if (!process.exitCode) pass('ancestry map contains required verified lineage and quarantine boundary');
 
-// 5. Runtime binding must integrate existing bodies rather than invent a competing runtime.
 const binding = read('references/runtime-binding.md');
 for (const required of [
   'Organism Kernel — cortex / identity / evolution',
@@ -170,20 +150,20 @@ for (const required of [
 }
 if (!process.exitCode) pass('runtime binding reuses continuity + ONE and preserves live-adapter boundary');
 
-// 6. Snapshot must reflect integrated software transfer while keeping public production pending.
 const snapshot = read('CURRENT_SNAPSHOT.md');
 for (const required of [
-  'INTEGRATED / SOFTWARE_TRANSFER_TESTED / PRODUCTION_BINDING_PENDING',
-  'd39ffd95875883f098ee806ee353f7bd5c48c890',
-  '12/12 heterogeneous cases',
-  'AUTHENTICATE_VERCEL_BROWSER',
-  'Do **not** call public production live yet.'
+  'INTEGRATED / SOFTWARE_TRANSFER_TESTED / OIDC_DIRECT_DEPLOY_PENDING',
+  'VERCEL_OIDC_TOKEN -> Vercel AI Gateway -> openai/gpt-5.6-sol',
+  'DIRECT_PREVIEW_DEPLOY',
+  'Do **not** call public production live yet.',
+  'manual_openai_api_key_is_required_for_primary_path'
 ]) {
-  if (!snapshot.includes(required)) fail(`snapshot missing integrated-state invariant: ${required}`);
+  if (required === 'manual_openai_api_key_is_required_for_primary_path') continue;
+  if (!snapshot.includes(required)) fail(`snapshot missing OIDC-state invariant: ${required}`);
 }
-if (!process.exitCode) pass('current snapshot records integration/transfer and remains production fail-closed');
+if (snapshot.includes('AUTHENTICATE_VERCEL_BROWSER -> LINK_EXISTING_mondayid-host')) fail('snapshot must not retain browser-auth critical path');
+if (!process.exitCode) pass('current snapshot records OIDC/direct-deploy path and remains production fail-closed');
 
-// 7. Build receipt must be parseable and distinguish software readiness from public-production readiness.
 let receipt;
 try {
   receipt = JSON.parse(read('BUILD_RECEIPT.json'));
@@ -193,35 +173,54 @@ try {
 }
 
 if (receipt) {
-  if (receipt.schema !== 'mondayid.organism-kernel.build-receipt.v2') fail('unexpected build receipt schema');
-  if (receipt.integration?.merged !== true) fail('build receipt must record merged=true');
-  if (receipt.integration?.merge_commit !== 'd39ffd95875883f098ee806ee353f7bd5c48c890') fail('unexpected integration merge commit');
-  if (receipt.proof?.structural !== 'PASS') fail('structural proof must be PASS');
+  if (receipt.schema !== 'mondayid.organism-kernel.build-receipt.v3') fail('unexpected build receipt schema');
+  if (receipt.integration?.merged !== true) fail('kernel integration must remain merged');
+  if (receipt.proof?.structural_predecessor !== 'PASS') fail('structural predecessor proof must be PASS');
   if (receipt.proof?.software_transfer !== 'PASS') fail('software transfer proof must be PASS');
   if (receipt.proof?.software_transfer_cases !== 12) fail('software transfer proof must contain 12 cases');
+  if (receipt.proof?.direct_vercel_deploy_contract !== 'PASS_PREVIEW_PROBE') fail('direct Vercel deploy contract probe must be recorded');
+  if (receipt.runtime?.primary_auth !== 'VERCEL_OIDC_TOKEN') fail('runtime primary auth must be VERCEL_OIDC_TOKEN');
+  if (receipt.runtime?.primary_secret_required !== false) fail('production primary path must not require manual model secret');
   if (receipt.states?.learning !== 'TESTED') fail('learning state must remain TESTED');
   if (receipt.states?.software_transfer !== 'TRANSFERRED') fail('software transfer state must be TRANSFERRED');
   if (receipt.states?.repository_integration !== 'INTEGRATED') fail('repository integration must be INTEGRATED');
-  if (receipt.states?.production !== 'PENDING_HUMAN_AUTH_SECRET') fail('production must remain pending human auth/secret');
-  if (receipt.ready?.kernel_software !== true) fail('kernel software should be ready after passed proofs');
-  if (receipt.ready?.production_public_host !== false) fail('public host must remain not-ready until deployment readback');
+  if (receipt.states?.production !== 'PENDING_DIRECT_DEPLOY_OIDC_READBACK') fail('production must remain pending direct deploy/OIDC readback');
+  if (receipt.ready?.kernel_software !== true) fail('kernel software should remain ready');
+  if (receipt.ready?.production_public_host !== false) fail('public host must remain not-ready until live readback');
   if (receipt.production?.live_verified !== false) fail('production live_verified must remain false');
+  if (receipt.production?.manual_browser_login_required !== false) fail('manual browser login must be removed from primary path');
+  if (receipt.production?.manual_openai_secret_required !== false) fail('manual OpenAI secret must be removed from primary path');
   const forbidden = new Set(receipt.forbidden_claims ?? []);
   for (const claim of [
     'production_live_before_vercel_readback',
+    'manual_browser_auth_is_required_for_primary_path',
+    'manual_openai_api_key_is_required_for_primary_path',
     'full_three_year_semantic_assimilation',
     'universal_cross_llm_identity_proven',
     'background_self_evolution_without_executor'
   ]) {
     if (!forbidden.has(claim)) fail(`build receipt missing forbidden claim: ${claim}`);
   }
-  if (!process.exitCode) pass('build receipt separates software readiness from public-production readiness');
+  if (!process.exitCode) pass('build receipt records OIDC mutation without premature production promotion');
 }
+
+const runtimePath = path.resolve(here, '../../apps/host/runtime-server.mjs');
+const runtime = fs.readFileSync(runtimePath, 'utf8');
+for (const required of [
+  "DEFAULT_MODEL = 'openai/gpt-5.6-sol'",
+  "AI_GATEWAY_RESPONSES_URL = 'https://ai-gateway.vercel.sh/v1/responses'",
+  'process.env.VERCEL_OIDC_TOKEN',
+  "transport: 'vercel_ai_gateway'",
+  "transport: 'direct_openai'"
+]) {
+  if (!runtime.includes(required)) fail(`runtime server missing transport invariant: ${required}`);
+}
+if (!process.exitCode) pass('runtime server contains Vercel OIDC gateway primary path plus direct OpenAI fallback');
 
 if (process.exitCode) {
   console.error('\nORGANISM KERNEL VALIDATION: FAILED');
   process.exit(process.exitCode);
 }
 
-console.log('\nORGANISM KERNEL VALIDATION: INTEGRATED SOFTWARE PASS');
-console.log('NOTE: public production remains pending until Vercel auth/secret/deploy + live provider readback gates pass.');
+console.log('\nORGANISM KERNEL VALIDATION: OIDC DIRECT-DEPLOY CANDIDATE PASS');
+console.log('NOTE: public production remains pending direct deployment + OIDC gateway/provider/UI readback.');
