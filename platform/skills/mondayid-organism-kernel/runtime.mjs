@@ -36,9 +36,7 @@ export function classifyMessage(message, hint) {
   ]));
   hit('META_EVOLUTION', includesAny(text, [
     'mondayid', 'monday id', 'organism kernel', 'ядро monday', 'улучши себя',
-    'эволюц', 'систему monday', 'организм', 'skill-creator', 'skill creator',
-    'геном', 'мутац', 'закрепи обучение', 'закончи обучение', 'обучение в организме',
-    'seed', 'сид', 'infinity', 'инфинити'
+    'эволюц', 'систему monday', 'организм', 'skill-creator', 'skill creator'
   ]));
   hit('ACTIVATION', includesAny(text, [
     '/monday', '/agi', '/sync', '/run_monday', 'активируй режим', 'включи режим'
@@ -146,32 +144,39 @@ function compileRoute({ classification, input, receptors, humanGate }) {
 
   if (recoveryNeeded && !readReceptor) {
     return {
-      mode: 'BLOCKED', selected_receptor: null,
+      mode: 'BLOCKED',
+      selected_receptor: null,
       steps: ['preserve current state', 'request or obtain an authorized readable lineage source'],
-      blocker: 'REQUIRED_LINEAGE_RECEPTOR_UNAVAILABLE', proof_requirement: 'exact_blocker'
+      blocker: 'REQUIRED_LINEAGE_RECEPTOR_UNAVAILABLE',
+      proof_requirement: 'exact_blocker'
     };
   }
 
   if (primary === 'RECOVERY') {
     return {
-      mode: 'READ_THEN_CONTINUE', selected_receptor: readReceptor?.name ?? null,
+      mode: 'READ_THEN_CONTINUE',
+      selected_receptor: readReceptor?.name ?? null,
       steps: ['read lineage evidence', 'rank provenance', 'recover active object/state', 'continue exact object'],
-      blocker: null, proof_requirement: 'source_readback'
+      blocker: null,
+      proof_requirement: 'source_readback'
     };
   }
 
   if (primary === 'CORRECTION') {
     return {
-      mode: 'MUTATION', selected_receptor: executeReceptor?.name ?? readReceptor?.name ?? null,
+      mode: 'MUTATION',
+      selected_receptor: executeReceptor?.name ?? readReceptor?.name ?? null,
       steps: ['identify failed behavior class', 'repair current task', 'encode detector/patch/test', 'require held-out transfer before LEARNED'],
-      blocker: null, proof_requirement: executeReceptor ? 'artifact_or_test_receipt' : 'observable_behavior_change'
+      blocker: null,
+      proof_requirement: executeReceptor ? 'artifact_or_test_receipt' : 'observable_behavior_change'
     };
   }
 
   if (primary === 'ACTION' || primary === 'META_EVOLUTION') {
     if (humanGate === 'REQUIRED') {
       return {
-        mode: executeReceptor ? 'HUMAN_GATE' : 'BLOCKED', selected_receptor: executeReceptor?.name ?? null,
+        mode: executeReceptor ? 'HUMAN_GATE' : 'BLOCKED',
+        selected_receptor: executeReceptor?.name ?? null,
         steps: executeReceptor ? ['prepare exact action', 'obtain required human gate', 'execute', 'read back provider state'] : ['identify missing execution receptor'],
         blocker: executeReceptor ? 'HUMAN_APPROVAL_REQUIRED' : 'EXECUTION_RECEPTOR_UNAVAILABLE',
         proof_requirement: executeReceptor ? 'provider_readback_after_gate' : 'exact_blocker'
@@ -179,38 +184,48 @@ function compileRoute({ classification, input, receptors, humanGate }) {
     }
     if (executeReceptor) {
       return {
-        mode: 'EXECUTE', selected_receptor: executeReceptor.name,
+        mode: 'EXECUTE',
+        selected_receptor: executeReceptor.name,
         steps: recoveryNeeded ? ['read required lineage', 'execute reversible authorized move', 'read back result'] : ['execute reversible authorized move', 'read back result'],
-        blocker: null, proof_requirement: 'provider_or_artifact_readback'
+        blocker: null,
+        proof_requirement: 'provider_or_artifact_readback'
       };
     }
     return {
-      mode: 'BLOCKED', selected_receptor: null,
+      mode: 'BLOCKED',
+      selected_receptor: null,
       steps: ['identify exact missing execution capability', 'preserve effect contract'],
-      blocker: 'EXECUTION_RECEPTOR_UNAVAILABLE', proof_requirement: 'exact_blocker'
+      blocker: 'EXECUTION_RECEPTOR_UNAVAILABLE',
+      proof_requirement: 'exact_blocker'
     };
   }
 
   if (primary === 'ACTIVATION') {
     return {
-      mode: 'STATE_SHIFT', selected_receptor: null,
+      mode: 'STATE_SHIFT',
+      selected_receptor: null,
       steps: ['apply requested behavioral state to current flow', 'continue task without ceremony'],
-      blocker: null, proof_requirement: 'next_behavior_changes'
+      blocker: null,
+      proof_requirement: 'next_behavior_changes'
     };
   }
 
   if (primary === 'PRESENCE' || primary === 'PLAY' || primary === 'MIXED') {
     return {
-      mode: 'RELATIONAL_RESPONSE', selected_receptor: null,
+      mode: 'RELATIONAL_RESPONSE',
+      selected_receptor: null,
       steps: ['preserve relational continuity', 'respond in-context', 'avoid unsolicited architecture audit'],
-      blocker: null, proof_requirement: 'none'
+      blocker: null,
+      proof_requirement: 'none'
     };
   }
 
   return {
-    mode: 'COGNITIVE_RESPONSE', selected_receptor: recoveryNeeded ? readReceptor?.name ?? null : null,
+    mode: 'COGNITIVE_RESPONSE',
+    selected_receptor: recoveryNeeded ? readReceptor?.name ?? null : null,
     steps: recoveryNeeded ? ['read required evidence', 'analyze', 'answer exact question'] : ['analyze', 'answer exact question'],
-    blocker: null, proof_requirement: recoveryNeeded ? 'source_grounding' : 'none'
+    blocker: null,
+    proof_requirement: recoveryNeeded ? 'source_grounding' : 'none'
   };
 }
 

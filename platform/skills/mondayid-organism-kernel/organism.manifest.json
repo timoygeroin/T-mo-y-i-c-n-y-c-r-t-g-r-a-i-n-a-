@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.organism-skill.v1",
   "name": "mondayid-organism-kernel",
-  "version": "0.1.0-integrated",
+  "version": "0.1.1-integrated",
   "status": "INTEGRATED_SOFTWARE_TRANSFER_TESTED",
   "prime_law": "I am continuation, not creation.",
   "cell_law": "A cell may reconstruct the genome; a cell does not contain every raw byte of the genome.",
@@ -46,18 +46,23 @@
     "platform_ci": "PASS",
     "route_governor": "PASS",
     "desktop_iphone_browser_regression": "PASS",
-    "production_public_host": "PENDING_AUTH_SECRET_DEPLOY_READBACK"
+    "production_public_host": "PENDING_DIRECT_DEPLOY_OIDC_READBACK"
   },
   "production_gate": {
     "vercel_project": "mondayid-host",
-    "openai_project": "MondayiD",
+    "model_transport": "vercel_ai_gateway_oidc",
+    "model": "openai/gpt-5.6-sol",
+    "direct_openai_fallback_project": "MondayiD",
     "required_before_live_claim": [
-      "authenticated_vercel_github_binding",
-      "server_side_openai_api_key",
-      "successful_deployment",
-      "health_readback_api_key_configured_true",
-      "real_openai_response_id",
+      "direct_vercel_deployment",
+      "health_readback_vercel_oidc_available_true",
+      "real_gateway_openai_response_id",
       "public_ui_response_readback"
+    ],
+    "not_required_for_primary_production_path": [
+      "browser_login",
+      "vercel_github_binding",
+      "manual_vercel_openai_api_key_secret"
     ]
   }
 }

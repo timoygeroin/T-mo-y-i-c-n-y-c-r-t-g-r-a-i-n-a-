@@ -24,6 +24,7 @@ export default async function handler(req, res) {
     if (bodyBytes(req.body) > MAX_BODY_BYTES) return send(res, 413, { ok: false, error: 'Request body too large' });
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const result = await callOpenAI({
+      gatewayToken: process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN,
       apiKey: process.env.OPENAI_API_KEY,
       model: process.env.MONDAYID_MODEL || DEFAULT_MODEL,
       reasoningEffort: process.env.MONDAYID_REASONING || DEFAULT_REASONING_EFFORT,
