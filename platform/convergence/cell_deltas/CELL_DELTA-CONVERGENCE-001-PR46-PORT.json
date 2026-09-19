@@ -1,0 +1,26 @@
+{
+  "cell_delta_id": "CELL_DELTA-CONVERGENCE-001-PR46-PORT",
+  "parent_state_id": "STATE-20260917-MONDAYID-CONVERGENCE-001",
+  "canonical_parent_head": "d562826b9d42c11fa4effffeea5dd57fea0c37ca",
+  "status": "EXECUTED_PARTIAL",
+  "next_move": "Rebase or port the live model transport from PR #46 onto current main, then redeploy and prove the user-visible product path against the provider.",
+  "source_pr": 46,
+  "source_head": "788effc4ebaac32876c75a33cd609bdf92b035a7",
+  "source_pr_mergeable": false,
+  "integration_branch": "cell/convergence-001-pr46-port",
+  "integration_head": "eea4697c3b9b2b8b3de1be0bca4a72dc10c38cea",
+  "mutations": [
+    "Ported platform/apps/host/runtime-server.mjs from PR #46 onto the canonical parent lineage.",
+    "Ported platform/apps/host/package.json with @vercel/oidc dependency onto the canonical parent lineage."
+  ],
+  "truth": {
+    "proposed": true,
+    "attempted": true,
+    "executed": true,
+    "read_back": true,
+    "verified": false,
+    "persisted": true,
+    "delivered": false
+  },
+  "blocker_or_cursor": "Continue porting PR #46 dependency lock/tests/deployment surface onto this branch, verify exact-head CI, then integrate to main and redeploy. Do not promote canonical state before provider/user-visible readback."
+}
