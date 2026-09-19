@@ -8,26 +8,59 @@ function stable(value) {
   }
   return JSON.stringify(value);
 }
+
+function isSystemState(state) {
+  return Boolean(state && (
+    state.schema === "mondayid.system-state.v1" ||
+    state.schema === "mondayid.system-state.v2"
+  ));
+}
+
 export function fingerprintState(state) {
   const copy = clone(state);
   delete copy.state_id;
   return crypto.createHash("sha256").update(stable(copy)).digest("hex").slice(0, 12);
 }
+
 export function evaluateDelivery(state) {
   const criteria = state?.delivery_criteria ?? {};
   const missing = Object.entries(criteria).filter(([,v]) => v !== true).map(([k]) => k);
   return { delivered: missing.length === 0, missing };
 }
-export function applyCellDelta(current, delta) {
-  if (!current || current.schema !== "mondayid.system-state.v1") {
+
+export function verifyCoordinationCAS(current, delta, options = {}) {
+  if (!isSystemState(current)) return { ok:false, code:"INVALID_CANONICAL_STATE" };
+  if (delta?.parent_state_id !== current.state_id) {
+    return { ok:false, code:"STALE_PARENT", expected:current.state_id, got:delta?.parent_state_id ?? null };
+  }
+
+  // v2 removes repository-head equality from coordination. Git main is code provenance,
+  // not the semantic state lock. The CAS token is the blob SHA returned when the
+  // canonical state file itself was read.
+  if (current.schema === "mondayid.system-state.v2") {
+    const expectedBlob = String(delta?.parent_state_blob_sha || "");
+    const observedBlob = String(options?.observed_state_blob_sha || "");
+    if (!expectedBlob) return { ok:false, code:"MISSING_STATE_BLOB_LOCK" };
+    if (!observedBlob) return { ok:false, code:"MISSING_STATE_BLOB_READBACK" };
+    if (expectedBlob !== observedBlob) {
+      return { ok:false, code:"STALE_STATE_BLOB", expected:observedBlob, got:expectedBlob };
+    }
+  }
+
+  return { ok:true };
+}
+
+export function applyCellDelta(current, delta, options = {}) {
+  if (!isSystemState(current)) {
     return { ok:false, code:"INVALID_CANONICAL_STATE" };
   }
-  if (!delta || delta.schema !== "mondayid.cell-delta.v1") {
+  if (!delta || !["mondayid.cell-delta.v1","mondayid.cell-delta.v2"].includes(delta.schema)) {
     return { ok:false, code:"INVALID_CELL_DELTA" };
   }
-  if (delta.parent_state_id !== current.state_id) {
-    return { ok:false, code:"STALE_PARENT", expected:current.state_id, got:delta.parent_state_id };
-  }
+
+  const cas = verifyCoordinationCAS(current, delta, options);
+  if (!cas.ok) return cas;
+
   if (current.release_status === "CONVERGING" && delta.kind === "NEW_ARCHITECTURE") {
     return { ok:false, code:"ARCHITECTURE_FREEZE_ACTIVE" };
   }
@@ -58,6 +91,8 @@ export function applyCellDelta(current, delta) {
     cell_id:delta.cell_id,
     delta_id:delta.delta_id,
     kind:delta.kind,
+    parent_state_id:delta.parent_state_id,
+    parent_state_blob_sha:delta.parent_state_blob_sha ?? null,
     receipt:delta.receipt ?? null
   });
   next.history = next.history.slice(-50);
@@ -70,10 +105,11 @@ export function applyCellDelta(current, delta) {
 
 export function compileCellDelta(input={}) {
   return {
-    schema:"mondayid.cell-delta.v1",
+    schema:"mondayid.cell-delta.v2",
     delta_id:String(input.delta_id || ""),
     cell_id:String(input.cell_id || ""),
     parent_state_id:String(input.parent_state_id || ""),
+    parent_state_blob_sha:String(input.parent_state_blob_sha || ""),
     kind:String(input.kind || "WORK"),
     effect:String(input.effect || ""),
     product_line_patch:input.product_line_patch ?? null,
