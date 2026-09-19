@@ -1,18 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "MondayID Cell Delta",
+  "title": "MondayID Cell Delta v2",
   "type": "object",
   "required": [
     "schema",
     "delta_id",
     "cell_id",
     "parent_state_id",
+    "parent_state_blob_sha",
     "kind",
     "effect"
   ],
   "properties": {
     "schema": {
-      "const": "mondayid.cell-delta.v1"
+      "const": "mondayid.cell-delta.v2"
     },
     "delta_id": {
       "type": "string",
@@ -23,6 +24,10 @@
       "minLength": 1
     },
     "parent_state_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_state_blob_sha": {
       "type": "string",
       "minLength": 1
     },
