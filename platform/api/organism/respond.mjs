@@ -24,7 +24,10 @@ export default async function handler(req, res) {
     if (bodyBytes(req.body) > MAX_BODY_BYTES) return send(res, 413, { ok: false, error: 'Request body too large' });
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const result = await callOpenAI({
-      gatewayToken: process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN,
+      // Let runtime-server resolve Vercel OIDC dynamically when no explicit
+      // AI Gateway token is configured. Passing an undefined explicit token is
+      // intentional: resolveGatewayToken() can then call getVercelOidcToken().
+      gatewayToken: process.env.AI_GATEWAY_API_KEY || undefined,
       apiKey: process.env.OPENAI_API_KEY,
       model: process.env.MONDAYID_MODEL || DEFAULT_MODEL,
       reasoningEffort: process.env.MONDAYID_REASONING || DEFAULT_REASONING_EFFORT,
