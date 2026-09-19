@@ -1,9 +1,13 @@
 import { createServer } from 'node:http';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getVercelOidcToken } from '@vercel/oidc';
 import { compileOrganismMove } from '../../skills/mondayid-organism-kernel/runtime.mjs';
-import { LIVE_KERNEL } from '../../skills/mondayid-organism-kernel/live-kernel.mjs';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const skillPath = path.resolve(here, '../../skills/mondayid-organism-kernel/SKILL.md');
+const LIVE_KERNEL = fs.readFileSync(skillPath, 'utf8');
 
 export const DEFAULT_MODEL = 'openai/gpt-5.6-sol';
 export const DEFAULT_REASONING_EFFORT = 'high';
