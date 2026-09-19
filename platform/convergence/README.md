@@ -12,22 +12,37 @@ The controller therefore makes one distinction executable:
 
 A chat is a compute cell. It may recover state, act, test, and propose a mutation. It cannot silently become the organism's canonical state.
 
+## Coordination authority
+
+The coordination lock is **not the repository's main commit SHA**.
+
+A state file cannot safely require `main == a SHA stored inside that same commit`: merging the state file itself advances main and creates a false split-brain signal.
+
+MondayID therefore uses compare-and-swap over two values read together:
+
+1. canonical `state_id` from `MONDAYID_SYSTEM_STATE.json`;
+2. the GitHub blob SHA returned when that exact state file was read.
+
+The pair is the semantic coordination head.
+
+Repository `main` remains code provenance and a rebase baseline. If main moves while the canonical state file is unchanged, a worker may need a code rebase, but its semantic CELL_DELTA is **not stale merely because main moved**.
+
 ## Simultaneous-chat model
 
 Every active chat follows:
 
-`READ CANONICAL STATE -> LOCK PARENT STATE_ID -> DO WORK -> PRODUCE CELL_DELTA -> READBACK -> PROMOTE OR REBASE`
+`READ STATE + BLOB SHA -> LOCK BOTH -> DO WORK -> PRODUCE CELL_DELTA -> READBACK STATE + BLOB -> PROMOTE OR REBASE`
 
-If two chats work at once, both may start from the same parent. The first accepted delta advances the canonical `state_id`. The second is now stale and must be rebased against the new state. It is never allowed to overwrite the newer organism merely because it finished later.
+If two chats start from the same state/blob pair, the first accepted state mutation changes the canonical file and therefore its blob SHA/state_id. The second worker then fails CAS and must rebase or quarantine. It can never silently overwrite newer organism state.
 
-This is optimistic concurrency for cognition.
+This is optimistic concurrency for cognition using the state artifact itself as the CAS object.
 
 ## One canonical report
 
 Whole-system reports must be compiled from:
 
-1. `MONDAYID_SYSTEM_STATE.json`;
-2. live GitHub/provider readback for the referenced heads;
+1. `MONDAYID_SYSTEM_STATE.json` and its current blob SHA;
+2. live GitHub/provider readback for referenced code/deployments;
 3. verified receipts.
 
 Chat recollection alone is never sufficient for a system status report.
@@ -50,9 +65,17 @@ The governing laws are:
 - OUTPUT != SUCCESS
 - CHAT != ORGANISM
 - CELL_DELTA_ONLY
-- ONE_CANONICAL_HEAD
+- ONE CANONICAL STATE ARTIFACT
+- REPOSITORY HEAD != STATE AUTHORITY
+- STATE_ID + STATE BLOB SHA = COORDINATION CAS
 - USER_VISIBLE_EFFECT_IS_THE_RELEASE_GATE
+
+## 2026-09-19 correction
+
+PR #53 successfully put convergence on main. The first live transport attempts then exposed a flaw in v1: PR #56 quarantined a valid semantic delta simply because the merge of #53 had advanced main while the state artifact itself had not changed.
+
+v2 treats that as a code-rebase concern, not semantic staleness.
 
 ## Current convergence target
 
-The current first move is not another design exercise. It is to port/rebase the already-tested PR #46 live model transport onto current main, then obtain real production readback before opening another product architecture line.
+Repair the failed live-model transport port from PR #55 on current main, using state CAS rather than main-SHA equality, then obtain real provider and user-visible production readback.

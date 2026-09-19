@@ -1,8 +1,7 @@
 {
-  "schema": "mondayid.system-state.v1",
-  "state_id": "mondayid-system:1:d562826",
-  "generation": 1,
-  "canonical_main_head": "d562826b9d42c11fa4effffeea5dd57fea0c37ca",
+  "schema": "mondayid.system-state.v2",
+  "state_id": "mondayid-system:2:3414526ffdd8",
+  "generation": 2,
   "active_track": "CONVERGE_EXISTING_PRODUCT_LINES_TO_ONE_DELIVERED_MONDAY",
   "release_status": "CONVERGING",
   "truth_laws": [
@@ -12,13 +11,26 @@
     "BUILD_IS_NOT_DELIVERED",
     "OUTPUT_IS_NOT_SUCCESS",
     "NO_NEW_ARCHITECTURE_WHILE_CONVERGENCE_IS_ACTIVE",
-    "USER_VISIBLE_EFFECT_IS_THE_RELEASE_GATE"
+    "USER_VISIBLE_EFFECT_IS_THE_RELEASE_GATE",
+    "REPOSITORY_HEAD_IS_NOT_COORDINATION_AUTHORITY",
+    "STATE_ID_PLUS_BLOB_SHA_IS_COORDINATION_CAS"
   ],
+  "coordination": {
+    "authority": "STATE_ID_PLUS_GITHUB_BLOB_SHA",
+    "state_path": "platform/convergence/MONDAYID_SYSTEM_STATE.json",
+    "repository_head_is_authority": false,
+    "repository_head_role": "CODE_PROVENANCE_AND_REBASE_BASELINE",
+    "promotion_rule": "A cell delta is stale only when the canonical state_id or the observed blob SHA of the canonical state file changed after the cell locked them. Ordinary main movement requires code rebase when necessary but does not by itself invalidate the semantic delta."
+  },
+  "repository_observation": {
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "observed_main_head": "843509f4b7e7e0e838592ec08806421977e4f78b",
+    "observed_reason": "Convergence controller PR #53 merged. This is provenance, not state authority."
+  },
   "product_lines": {
     "organism_main": {
       "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
       "ref": "main",
-      "head": "d562826b9d42c11fa4effffeea5dd57fea0c37ca",
       "state": "CANONICAL_CONTROL_LAYER",
       "integrated": true
     },
@@ -28,7 +40,11 @@
       "head": "788effc4ebaac32876c75a33cd609bdf92b035a7",
       "state": "TESTED_NOT_INTEGRATED",
       "integrated": false,
-      "locator": "PR #46"
+      "locator": "PR #46",
+      "latest_attempts": [
+        "PR #55 CLOSED_CI_FAILURE",
+        "PR #56 QUARANTINED_FALSE_POSITIVE_MAIN_DRIFT"
+      ]
     },
     "sovereign_computer": {
       "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -63,16 +79,24 @@
     "visible_user_effect_verified": false
   },
   "next_move": {
-    "id": "CONVERGENCE_001",
-    "action": "REBASE_OR_PORT_PR46_LIVE_MODEL_TRANSPORT_ON_CURRENT_MAIN_AND_VERIFY_PRODUCTION_READBACK",
+    "id": "CONVERGENCE_001B",
+    "action": "REPAIR_LIVE_TRANSPORT_PORT_FROM_PR55_FAILURE_ON_CURRENT_MAIN_USING_STATE_CAS_NOT_MAIN_SHA",
     "forbidden_substitution": "DO_NOT_CREATE_ANOTHER_PARALLEL_HOST_OR_ARCHITECTURE"
   },
   "concurrency": {
-    "model": "OPTIMISTIC_CELL_DELTAS",
-    "rule": "Every chat may propose work; only a delta whose parent_state_id equals the current canonical state may be promoted. Stale/conflicting deltas are rebased or quarantined, never silently overwrite canon."
+    "model": "OPTIMISTIC_CELL_DELTAS_WITH_FILE_CAS",
+    "rule": "Every cell locks canonical state_id and the GitHub blob SHA returned when reading the state file. Promotion is valid only if both still match. Main may move independently; that is a code-rebase concern, not a semantic-staleness signal."
   },
   "reporting": {
     "source_of_truth": "platform/convergence/MONDAYID_SYSTEM_STATE.json",
-    "rule": "Whole-system status reports must read this state and current provider/GitHub readback; chat memory alone is insufficient."
-  }
+    "rule": "Whole-system status reports must read this state plus the current blob SHA and live provider/GitHub readback; chat memory alone is insufficient."
+  },
+  "history": [
+    {
+      "generation": 2,
+      "kind": "CORRECTION",
+      "effect": "Remove self-referential main-SHA freshness rule after PR #53 merge caused false split-brain quarantine.",
+      "receipt": "PR #55 CI failed; PR #56 quarantined solely because main moved to the convergence merge while state_id/blob had not changed."
+    }
+  ]
 }
