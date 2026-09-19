@@ -1,0 +1,33 @@
+{
+  "schema": "mondayid.cell-delta.v2",
+  "delta_id": "CONVERGENCE_001B_LIVE_TRANSPORT_LOCKFIX_20260919",
+  "cell_id": "chat:2026-09-19:live-convergence",
+  "parent_state_id": "mondayid-system:2:3414526ffdd8",
+  "parent_state_blob_sha": "1950029fc300dd06a102aff1d80cdda02a8ebe0b",
+  "kind": "INTEGRATION",
+  "effect": "Port the already-tested Vercel OIDC / AI Gateway live-model transport onto current canonical code and repair the exact PR #55 package-lock mismatch without creating a parallel host architecture.",
+  "product_line_patch": {
+    "id": "live_model_transport",
+    "patch": {
+      "state": "PORTED_TO_CURRENT_MAIN_AWAITING_CI_AND_PROVIDER_READBACK",
+      "candidate_branch": "cell/convergence-001b-live-transport-lockfix",
+      "source_pr": "#46",
+      "failed_predecessor": "#55",
+      "correction": "Synchronize @vercel/oidc 3.8.8 and 23 transitive lock entries plus apps/host lock metadata."
+    }
+  },
+  "delivery_evidence": null,
+  "next_move": {
+    "id": "CONVERGENCE_001C",
+    "action": "IF_CI_GREEN_PROMOTE_LIVE_TRANSPORT_THEN_DEPLOY_AND_REQUIRE_OIDC_HEALTH_REAL_RESPONSE_ID_AND_PUBLIC_UI_READBACK",
+    "forbidden_substitution": "DO_NOT_MARK_TRANSPORT_DELIVERED_FROM_CI_ALONE"
+  },
+  "receipt": {
+    "type": "source_patch",
+    "base_main": "7d9aaf7994fd2b13be5b2257a3e893b1ebff114e",
+    "source_transport_head": "46e92466af03a0c3087e7ed10c49a12d3b4fc914",
+    "lockfile_fix_commit": "e52f5af54bd65a499286eab75981cbd48027127c",
+    "canonical_state_blob_sha": "1950029fc300dd06a102aff1d80cdda02a8ebe0b"
+  },
+  "created_at": "2026-09-19T17:00:00+03:00"
+}
