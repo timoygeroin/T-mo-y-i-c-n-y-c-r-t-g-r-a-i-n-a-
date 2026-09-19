@@ -131,45 +131,65 @@ export async function callOpenAI({
   const transport = resolveModelTransport({ gatewayToken: resolvedGatewayToken, apiKey, model });
   const move = compileOrganismMove({ message, context, receptors: liveReceptors(transport.transport) });
 
-  const response = await fetchImpl(transport.endpoint, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${transport.token}`,
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: transport.model,
-      store: false,
-      reasoning: { effort: reasoningEffort },
-      instructions: developerInstructions(move),
-      input: buildModelInput(message, context)
-    }),
-    signal: AbortSignal.timeout(120_000)
+  const requestPayload = (selectedTransport) => ({
+    model: selectedTransport.model,
+    store: false,
+    reasoning: { effort: reasoningEffort },
+    instructions: developerInstructions(move),
+    input: buildModelInput(message, context)
   });
 
-  const payload = await response.json().catch(() => ({}));
+  const perform = async (selectedTransport) => {
+    const response = await fetchImpl(selectedTransport.endpoint, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${selectedTransport.token}`,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(requestPayload(selectedTransport)),
+      signal: AbortSignal.timeout(120_000)
+    });
+    const payload = await response.json().catch(() => ({}));
+    return { response, payload };
+  };
+
+  let selectedTransport = transport;
+  let { response, payload } = await perform(selectedTransport);
+
+  const gatewayFallbackStatus = new Set([401, 402, 403, 429]);
+  const gatewayUnavailable =
+    selectedTransport.transport === 'vercel_ai_gateway' &&
+    Boolean(apiKey) &&
+    (gatewayFallbackStatus.has(response.status) || response.status >= 500);
+
+  if (!response.ok && gatewayUnavailable) {
+    selectedTransport = resolveModelTransport({ gatewayToken: '', apiKey, model });
+    ({ response, payload } = await perform(selectedTransport));
+  }
+
   if (!response.ok) {
-    const detail = payload?.error?.message || `${transport.provider} Responses API returned HTTP ${response.status}`;
+    const detail = payload?.error?.message || `${selectedTransport.provider} Responses API returned HTTP ${response.status}`;
     const error = new Error(detail);
     error.status = response.status;
     throw error;
   }
 
   const answer = extractOutputText(payload);
-  if (!answer) throw new Error(`${transport.provider} response contained no output text`);
+  if (!answer) throw new Error(`${selectedTransport.provider} response contained no output text`);
 
   return {
     answer,
-    model: payload.model || transport.model,
+    model: payload.model || selectedTransport.model,
     response_id: payload.id || null,
     move,
     receipt: {
       type: 'openai_response',
-      provider: transport.provider,
-      transport: transport.transport,
-      auth_source: transport.auth_source,
+      provider: selectedTransport.provider,
+      transport: selectedTransport.transport,
+      auth_source: selectedTransport.auth_source,
       response_id: payload.id || null,
-      model: payload.model || transport.model,
+      model: payload.model || selectedTransport.model,
+      fallback_from: selectedTransport.transport === transport.transport ? null : transport.transport,
       external_effect_verified: false
     }
   };
