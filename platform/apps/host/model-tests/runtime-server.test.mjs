@@ -96,6 +96,56 @@ test('callOpenAI uses direct OpenAI when gateway credential is absent', async ()
   assert.equal(result.receipt.provider, 'OpenAI');
 });
 
+test('callOpenAI retries direct OpenAI exactly once when Vercel AI Gateway returns 403 and a direct key exists', async () => {
+  const observed = [];
+  const fetchImpl = async (url, init) => {
+    observed.push({ url, auth: init.headers.authorization, body: JSON.parse(init.body) });
+    if (url === AI_GATEWAY_RESPONSES_URL) {
+      return new Response(JSON.stringify({
+        error: { message: 'AI Gateway requires a valid credit card on file to service requests.' }
+      }), { status: 403, headers: { 'content-type': 'application/json' } });
+    }
+    return new Response(JSON.stringify({
+      id: 'resp_direct_after_gateway_403',
+      model: 'gpt-5.6-sol',
+      output: [{ type: 'message', content: [{ type: 'output_text', text: 'Fallback live.' }] }]
+    }), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+
+  const result = await callOpenAI({
+    gatewayToken: 'oidc-test',
+    apiKey: 'openai-direct-test',
+    message: 'Привет',
+    fetchImpl
+  });
+
+  assert.equal(observed.length, 2);
+  assert.equal(observed[0].url, AI_GATEWAY_RESPONSES_URL);
+  assert.equal(observed[1].url, OPENAI_RESPONSES_URL);
+  assert.equal(observed[1].auth, 'Bearer openai-direct-test');
+  assert.equal(result.answer, 'Fallback live.');
+  assert.equal(result.receipt.transport, 'direct_openai');
+  assert.equal(result.receipt.provider, 'OpenAI');
+  assert.equal(result.receipt.fallback_from, 'vercel_ai_gateway');
+});
+
+test('callOpenAI does not retry gateway 403 when no direct OpenAI key exists', async () => {
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls += 1;
+    return new Response(JSON.stringify({ error: { message: 'Gateway billing gate' } }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' }
+    });
+  };
+
+  await assert.rejects(
+    callOpenAI({ gatewayToken: 'oidc-test', apiKey: '', message: 'Привет', fetchImpl }),
+    /Gateway billing gate/
+  );
+  assert.equal(calls, 1);
+});
+
 test('callOpenAI fails closed without any server-side model credential', async () => {
   await assert.rejects(
     callOpenAI({ gatewayToken: '', apiKey: '', message: 'Привет' }),
