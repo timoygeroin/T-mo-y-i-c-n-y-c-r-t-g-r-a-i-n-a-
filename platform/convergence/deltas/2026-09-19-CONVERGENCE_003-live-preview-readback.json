@@ -1,0 +1,53 @@
+{
+  "schema": "mondayid.cell-delta.v2",
+  "delta_id": "CONVERGENCE_003_LIVE_PREVIEW_READBACK",
+  "cell_id": "chat-current",
+  "parent_state_id": "mondayid-system:3:b753b876a216",
+  "parent_state_blob_sha": "d19e3e25b77ec626f3b472229e373c44cfd3dafd",
+  "kind": "CORRECTION",
+  "effect": "Persist live preview readback, exact Gateway 403 billing blocker, and merged direct fallback repair; advance next move to one-time Vercel auth/deploy gate.",
+  "product_line_patch": {
+    "id": "live_model_transport",
+    "patch": {
+      "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "ref": "main",
+      "head": "36171873fe12713f3b43135d461cc09f7643e8c0",
+      "state": "PREVIEW_OIDC_LIVE_GATEWAY_403_DIRECT_FALLBACK_REPAIRED_IN_MAIN_AWAITING_DEPLOY_OR_SECRET",
+      "integrated": true,
+      "source_locator": "CONVERGENCE_001B + PR #60",
+      "receipt": "preview dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ health 200 with OIDC/Gateway available; real UI POST returned 403 billing gate; main 36171873 adds exact-once direct fallback when OPENAI_API_KEY exists."
+    }
+  },
+  "delivery_evidence": {
+    "canonical_head_contains_live_model_transport": true
+  },
+  "next_move": {
+    "id": "CONVERGENCE_003",
+    "action": "AUTHENTICATE_EXISTING_VERCEL_ACCOUNT_ONCE_THEN_DEPLOY_MAIN_36171873_AND_BIND_DIRECT_OPENAI_SECRET_OR_ENABLE_GATEWAY_BILLING_THEN_VERIFY_RESPONSE_ID_AND_PUBLIC_UI",
+    "human_gate": {
+      "type": "VERCEL_ACCOUNT_AUTHENTICATION_OR_BILLING",
+      "minimum_user_action": "Complete Vercel/GitHub sign-in in the existing browser/session. Do not paste credentials into chat.",
+      "after_auth_automatic_work": [
+        "deploy or promote current main 36171873 to mondayid-host",
+        "prefer existing server-side OPENAI_API_KEY direct fallback if available",
+        "otherwise choose explicitly between setting the existing MondayID Host Runtime key as Vercel server secret or enabling Vercel Gateway billing",
+        "verify /api/organism/health",
+        "submit one real UI prompt",
+        "capture response_id/provider receipt",
+        "promote only after readback"
+      ],
+      "stable_gate_do_not_repeat_notification": true
+    },
+    "forbidden_substitution": "DO_NOT_CREATE_NEW_HOST_DO_NOT_REINTEGRATE_TRANSPORT_DO_NOT_START_MONDAYVISION_TRAINING_BEFORE_LIVE_HOST_READBACK"
+  },
+  "receipt": {
+    "preview_deployment": "dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ",
+    "health_status": 200,
+    "vercel_oidc_available": true,
+    "real_ui_post_status": 403,
+    "runtime_log": "POST /api/organism/respond 403",
+    "repair_main": "36171873fe12713f3b43135d461cc09f7643e8c0",
+    "production_health_status": 404
+  },
+  "created_at": "2026-09-19T17:30:00+03:00"
+}

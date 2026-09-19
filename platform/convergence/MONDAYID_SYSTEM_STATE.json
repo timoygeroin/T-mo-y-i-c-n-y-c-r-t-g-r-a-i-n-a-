@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.system-state.v2",
-  "state_id": "mondayid-system:3:b753b876a216",
-  "generation": 3,
+  "state_id": "mondayid-system:4:8711086092d6",
+  "generation": 4,
   "active_track": "CONVERGE_EXISTING_PRODUCT_LINES_TO_ONE_DELIVERED_MONDAY",
   "release_status": "CONVERGING",
   "truth_laws": [
@@ -24,8 +24,8 @@
   },
   "repository_observation": {
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-    "observed_main_head": "e2f4dcbb4839bc164f706e09b4c018d7687f7571",
-    "observed_reason": "CONVERGENCE_001B live Vercel OIDC model transport integrated after regression gates passed."
+    "observed_main_head": "36171873fe12713f3b43135d461cc09f7643e8c0",
+    "observed_reason": "Live transport fallback repair merged after exact Vercel Gateway 403 was reproduced; model/build/browser/route regression gates passed."
   },
   "product_lines": {
     "organism_main": {
@@ -37,11 +37,11 @@
     "live_model_transport": {
       "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
       "ref": "main",
-      "head": "e2f4dcbb4839bc164f706e09b4c018d7687f7571",
-      "state": "IN_MAIN_AWAITING_PRODUCTION_DEPLOY_READBACK",
+      "head": "36171873fe12713f3b43135d461cc09f7643e8c0",
+      "state": "PREVIEW_OIDC_LIVE_GATEWAY_403_DIRECT_FALLBACK_REPAIRED_IN_MAIN_AWAITING_DEPLOY_OR_SECRET",
       "integrated": true,
-      "source_locator": "PR #46 lineage / CONVERGENCE_001B",
-      "receipt": "main commit e2f4dcbb4839bc164f706e09b4c018d7687f7571"
+      "source_locator": "CONVERGENCE_001B + PR #60",
+      "receipt": "preview dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ health 200 with OIDC/Gateway available; real UI POST returned 403 billing gate; main 36171873 adds exact-once direct fallback when OPENAI_API_KEY exists."
     },
     "sovereign_computer": {
       "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -65,6 +65,26 @@
       "integrated": false
     }
   },
+  "live_readback": {
+    "preview_deployment": {
+      "id": "dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ",
+      "health_status": 200,
+      "model": "openai/gpt-5.6-sol",
+      "model_transport_available": true,
+      "preferred_transport": "vercel_ai_gateway",
+      "vercel_oidc_available": true,
+      "runtime": "vercel-function",
+      "real_ui_post_status": 403,
+      "real_ui_post_error": "AI Gateway requires a valid credit card on file to service requests."
+    },
+    "production": {
+      "domain": "mondayid-host.vercel.app",
+      "health_status": 404,
+      "homepage_status": 200,
+      "observed_last_modified": "2026-09-14T11:36:35Z",
+      "current_main_not_deployed": true
+    }
+  },
   "delivery_criteria": {
     "canonical_head_contains_live_model_transport": true,
     "canonical_head_contains_portable_runtime": false,
@@ -76,19 +96,23 @@
     "visible_user_effect_verified": false
   },
   "next_move": {
-    "id": "CONVERGENCE_002",
-    "action": "DEPLOY_CURRENT_MAIN_E2F4DCB_TO_MONDAYID_HOST_AND_VERIFY_OIDC_PROVIDER_RESPONSE_AND_PUBLIC_UI_READBACK",
+    "id": "CONVERGENCE_003",
+    "action": "AUTHENTICATE_EXISTING_VERCEL_ACCOUNT_ONCE_THEN_DEPLOY_MAIN_36171873_AND_BIND_DIRECT_OPENAI_SECRET_OR_ENABLE_GATEWAY_BILLING_THEN_VERIFY_RESPONSE_ID_AND_PUBLIC_UI",
     "human_gate": {
-      "type": "VERCEL_AUTHENTICATION",
-      "evidence": "Vercel browser -> Continue with GitHub -> GitHub sign-in form requesting username/email and password.",
-      "alternate_routes_exhausted": [
-        "Vercel connector deployment write action unavailable in current connector surface",
-        "project is historical manual-upload with no Git link, so GitHub main merge does not auto-deploy",
-        "cloud browser Vercel session unauthenticated",
-        "GitHub SSO requires human credentials"
-      ]
+      "type": "VERCEL_ACCOUNT_AUTHENTICATION_OR_BILLING",
+      "minimum_user_action": "Complete Vercel/GitHub sign-in in the existing browser/session. Do not paste credentials into chat.",
+      "after_auth_automatic_work": [
+        "deploy or promote current main 36171873 to mondayid-host",
+        "prefer existing server-side OPENAI_API_KEY direct fallback if available",
+        "otherwise choose explicitly between setting the existing MondayID Host Runtime key as Vercel server secret or enabling Vercel Gateway billing",
+        "verify /api/organism/health",
+        "submit one real UI prompt",
+        "capture response_id/provider receipt",
+        "promote only after readback"
+      ],
+      "stable_gate_do_not_repeat_notification": true
     },
-    "forbidden_substitution": "DO_NOT_REINTEGRATE_LIVE_TRANSPORT_OR_CREATE_PARALLEL_HOST"
+    "forbidden_substitution": "DO_NOT_CREATE_NEW_HOST_DO_NOT_REINTEGRATE_TRANSPORT_DO_NOT_START_MONDAYVISION_TRAINING_BEFORE_LIVE_HOST_READBACK"
   },
   "concurrency": {
     "model": "OPTIMISTIC_CELL_DELTAS_WITH_FILE_CAS",
@@ -110,6 +134,12 @@
       "kind": "INTEGRATION",
       "effect": "Live Vercel OIDC model transport is now in canonical main; production deploy remains unverified.",
       "receipt": "main e2f4dcbb4839bc164f706e09b4c018d7687f7571; Vercel production still older manual deployment; browser auth blocked at GitHub credential gate."
+    },
+    {
+      "generation": 4,
+      "kind": "LIVE_READBACK_AND_REPAIR",
+      "effect": "Preview Vercel runtime reached live OIDC/Gateway and real UI request; exact Gateway 403 billing failure reproduced; controlled direct OpenAI fallback repaired and merged.",
+      "receipt": "preview dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ health 200 OIDC=true; POST /api/organism/respond 403; main 36171873 merged after all regression gates passed."
     }
   ]
 }
