@@ -1,0 +1,44 @@
+{
+  "schema": "mondayid.cell-delta.v2",
+  "delta_id": "CONVERGENCE_002_RECORD_LIVE_TRANSPORT",
+  "cell_id": "chat-current",
+  "parent_state_id": "mondayid-system:2:3414526ffdd8",
+  "parent_state_blob_sha": "1950029fc300dd06a102aff1d80cdda02a8ebe0b",
+  "kind": "INTEGRATION",
+  "effect": "Advance canonical truth after live Vercel OIDC transport entered main; mark deploy/auth as the remaining delivery gate.",
+  "product_line_patch": {
+    "id": "live_model_transport",
+    "patch": {
+      "ref": "main",
+      "head": "e2f4dcbb4839bc164f706e09b4c018d7687f7571",
+      "state": "IN_MAIN_AWAITING_PRODUCTION_DEPLOY_READBACK",
+      "integrated": true
+    }
+  },
+  "delivery_evidence": {
+    "canonical_head_contains_live_model_transport": true
+  },
+  "next_move": {
+    "id": "CONVERGENCE_002",
+    "action": "DEPLOY_CURRENT_MAIN_E2F4DCB_TO_MONDAYID_HOST_AND_VERIFY_OIDC_PROVIDER_RESPONSE_AND_PUBLIC_UI_READBACK",
+    "human_gate": {
+      "type": "VERCEL_AUTHENTICATION",
+      "evidence": "Vercel browser -> Continue with GitHub -> GitHub sign-in form requesting username/email and password.",
+      "alternate_routes_exhausted": [
+        "Vercel connector deployment write action unavailable in current connector surface",
+        "project is historical manual-upload with no Git link, so GitHub main merge does not auto-deploy",
+        "cloud browser Vercel session unauthenticated",
+        "GitHub SSO requires human credentials"
+      ]
+    },
+    "forbidden_substitution": "DO_NOT_REINTEGRATE_LIVE_TRANSPORT_OR_CREATE_PARALLEL_HOST"
+  },
+  "receipt": {
+    "main_commit": "e2f4dcbb4839bc164f706e09b4c018d7687f7571",
+    "prior_state_blob_sha": "1950029fc300dd06a102aff1d80cdda02a8ebe0b",
+    "vercel_production_deployment": "dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi",
+    "vercel_delivery_verified": false,
+    "browser_auth_gate": "GitHub sign-in form after Vercel Continue with GitHub"
+  },
+  "created_at": "2026-09-19T17:00:00+03:00"
+}
