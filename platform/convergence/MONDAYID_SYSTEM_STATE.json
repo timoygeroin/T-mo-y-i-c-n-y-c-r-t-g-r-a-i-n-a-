@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.system-state.v2",
-  "state_id": "mondayid-system:2:3414526ffdd8",
-  "generation": 2,
+  "state_id": "mondayid-system:3:b753b876a216",
+  "generation": 3,
   "active_track": "CONVERGE_EXISTING_PRODUCT_LINES_TO_ONE_DELIVERED_MONDAY",
   "release_status": "CONVERGING",
   "truth_laws": [
@@ -24,8 +24,8 @@
   },
   "repository_observation": {
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-    "observed_main_head": "843509f4b7e7e0e838592ec08806421977e4f78b",
-    "observed_reason": "Convergence controller PR #53 merged. This is provenance, not state authority."
+    "observed_main_head": "e2f4dcbb4839bc164f706e09b4c018d7687f7571",
+    "observed_reason": "CONVERGENCE_001B live Vercel OIDC model transport integrated after regression gates passed."
   },
   "product_lines": {
     "organism_main": {
@@ -36,15 +36,12 @@
     },
     "live_model_transport": {
       "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-      "ref": "agent/vercel-oidc-gateway-v1",
-      "head": "788effc4ebaac32876c75a33cd609bdf92b035a7",
-      "state": "TESTED_NOT_INTEGRATED",
-      "integrated": false,
-      "locator": "PR #46",
-      "latest_attempts": [
-        "PR #55 CLOSED_CI_FAILURE",
-        "PR #56 QUARANTINED_FALSE_POSITIVE_MAIN_DRIFT"
-      ]
+      "ref": "main",
+      "head": "e2f4dcbb4839bc164f706e09b4c018d7687f7571",
+      "state": "IN_MAIN_AWAITING_PRODUCTION_DEPLOY_READBACK",
+      "integrated": true,
+      "source_locator": "PR #46 lineage / CONVERGENCE_001B",
+      "receipt": "main commit e2f4dcbb4839bc164f706e09b4c018d7687f7571"
     },
     "sovereign_computer": {
       "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,7 +66,7 @@
     }
   },
   "delivery_criteria": {
-    "canonical_head_contains_live_model_transport": false,
+    "canonical_head_contains_live_model_transport": true,
     "canonical_head_contains_portable_runtime": false,
     "canonical_head_contains_mondayvision_runtime": false,
     "production_host_real_model_readback": false,
@@ -79,9 +76,19 @@
     "visible_user_effect_verified": false
   },
   "next_move": {
-    "id": "CONVERGENCE_001B",
-    "action": "REPAIR_LIVE_TRANSPORT_PORT_FROM_PR55_FAILURE_ON_CURRENT_MAIN_USING_STATE_CAS_NOT_MAIN_SHA",
-    "forbidden_substitution": "DO_NOT_CREATE_ANOTHER_PARALLEL_HOST_OR_ARCHITECTURE"
+    "id": "CONVERGENCE_002",
+    "action": "DEPLOY_CURRENT_MAIN_E2F4DCB_TO_MONDAYID_HOST_AND_VERIFY_OIDC_PROVIDER_RESPONSE_AND_PUBLIC_UI_READBACK",
+    "human_gate": {
+      "type": "VERCEL_AUTHENTICATION",
+      "evidence": "Vercel browser -> Continue with GitHub -> GitHub sign-in form requesting username/email and password.",
+      "alternate_routes_exhausted": [
+        "Vercel connector deployment write action unavailable in current connector surface",
+        "project is historical manual-upload with no Git link, so GitHub main merge does not auto-deploy",
+        "cloud browser Vercel session unauthenticated",
+        "GitHub SSO requires human credentials"
+      ]
+    },
+    "forbidden_substitution": "DO_NOT_REINTEGRATE_LIVE_TRANSPORT_OR_CREATE_PARALLEL_HOST"
   },
   "concurrency": {
     "model": "OPTIMISTIC_CELL_DELTAS_WITH_FILE_CAS",
@@ -97,6 +104,12 @@
       "kind": "CORRECTION",
       "effect": "Remove self-referential main-SHA freshness rule after PR #53 merge caused false split-brain quarantine.",
       "receipt": "PR #55 CI failed; PR #56 quarantined solely because main moved to the convergence merge while state_id/blob had not changed."
+    },
+    {
+      "generation": 3,
+      "kind": "INTEGRATION",
+      "effect": "Live Vercel OIDC model transport is now in canonical main; production deploy remains unverified.",
+      "receipt": "main e2f4dcbb4839bc164f706e09b4c018d7687f7571; Vercel production still older manual deployment; browser auth blocked at GitHub credential gate."
     }
   ]
 }
