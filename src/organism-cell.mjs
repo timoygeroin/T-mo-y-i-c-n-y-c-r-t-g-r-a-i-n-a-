@@ -52,14 +52,20 @@ export class OrganismCell {
     if (!childId) throw new Error('CHILD_ID_REQUIRED');
     if (this.children.has(childId)) return this.children.get(childId);
 
+    const childRuntime = options.runtime || new MondayRuntime({
+      worldline:this.runtime.worldline,
+      policyField:this.runtime.policyField,
+      capabilities:options.capabilities || {},
+      foundry:options.foundry || null
+    });
+
     const child = new OrganismCell({
       id:childId,
       parentId:this.id,
+      runtime:childRuntime,
       lineage:this.lineage,
       miniDima:this.miniDima,
-      anti:this.anti,
-      capabilities:options.capabilities || {},
-      foundry:options.foundry || null
+      anti:this.anti
     });
     this.children.set(childId, child);
     return child;
