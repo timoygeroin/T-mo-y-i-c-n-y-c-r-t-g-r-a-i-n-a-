@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.system.v2",
   "product": "MondayID",
-  "generation": 3,
+  "generation": 4,
   "rewrite": true,
   "runtime_dependency_on_legacy": false,
   "identity_laws": [
@@ -13,9 +13,12 @@
     "human_is_interface_not_scheduler",
     "platform_features_are_primitives_not_identity",
     "missing_capability_is_design_input_not_terminal_blocker",
-    "unproven_tool_is_not_an_organ"
+    "unproven_tool_is_not_an_organ",
+    "one_human_turn_is_one_complete_execution_pass",
+    "external_worldline_precedes_local_chat_state"
   ],
   "runtime_cycle": [
+    "recover",
     "observe",
     "compile",
     "plan",
@@ -23,12 +26,30 @@
     "replan",
     "dispatch",
     "verify",
-    "learn"
+    "learn",
+    "settle_pass"
   ],
   "self_extension": {
     "enabled": true,
     "mechanism": "capability_foundry",
     "promotion_gate": "proof.ok === true",
     "principle": "derive reusable organs from desired effects and available primitives"
+  },
+  "pass_semantics": {
+    "entry": "user_turn",
+    "exit": [
+      "ALL_INTENTS_FULFILLED",
+      "NO_SEMANTIC_PROGRESS",
+      "PASS_BUDGET_EXHAUSTED",
+      "UNRESOLVED_ERROR"
+    ],
+    "intermediate_user_gate": false,
+    "receptor_failure": "continue_orthogonal_work_until_stable_blocker"
+  },
+  "continuity": {
+    "external_snapshot_schema": "mondayid.worldline.snapshot.v0.3.0",
+    "boot_env": "MONDAYID_WORLDLINE_URL",
+    "current_transport": "read_only_http_snapshot",
+    "write_transport": "UNRESOLVED_DO_NOT_FAKE"
   }
 }
