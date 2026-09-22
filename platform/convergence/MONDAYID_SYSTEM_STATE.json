@@ -105,7 +105,7 @@
       "type": "VERCEL_AUTHENTICATED_DEPLOY_SURFACE",
       "minimum_user_action": "If no connector deploy route becomes available, sign in to the existing Vercel account inside the Browser Use preview/session. Do not add a card, enable billing, buy credits, or paste credentials into chat.",
       "after_auth_automatic_work": [
-        "deploy current canonical main 0baf19e5e79d780f0924639c2b52325a0069ee42 to existing mondayid-host production",
+        "freshly re-read {state_id,state_blob_sha} CAS, then deploy the current canonical main to the existing mondayid-host production",
         "verify /api/organism/health",
         "confirm Vercel OIDC availability",
         "attempt one real UI/model request only through already-funded credentials/transport",
@@ -153,6 +153,12 @@
       "kind": "ACCOUNT_RECONFIG_AND_CAPABILITY_CORRECTION",
       "effect": "Consolidated background monitors, corrected phantom Vercel deploy capability, and made Dima's no-spend boundary canonical.",
       "receipt": "2026-09-22: public production /api/organism/health still 404; latest production deployment unchanged; deploy_to_vercel advertised by tool registry/docs but backend returned Tool not found; Browser Use Vercel dashboard unauthenticated; no billing or purchase attempted."
+    },
+    {
+      "generation": 5,
+      "kind": "SELF_REFERENCE_REPAIR",
+      "effect": "Removed a hard-coded repository main SHA from the human-gate continuation so the state-file commit itself cannot make the next move stale.",
+      "receipt": "Next deploy instruction now requires a fresh semantic CAS re-read and current main at execution time."
     }
   ],
   "authority_boundary": {
