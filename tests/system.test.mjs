@@ -82,9 +82,12 @@ test('legacy is one-way evidence import, not a runtime dependency', () => {
   assert.equal(runtimeSource.includes('legacy-import'), false);
 });
 
-test('system manifest declares rewrite and no legacy runtime dependency', () => {
+test('system manifest declares rewrite, stable meta-invariants, and evolvable policies', () => {
   const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
   assert.equal(system.rewrite,true);
   assert.equal(system.runtime_dependency_on_legacy,false);
-  assert.ok(system.identity_laws.includes('human_is_interface_not_scheduler'));
+  assert.ok(system.meta_invariants.includes('truth_requires_evidence'));
+  assert.ok(system.current_policies.includes('human_is_interface_not_scheduler'));
+  assert.equal(system.policy_evolution.mutable,true);
+  assert.equal(system.authority.explicit_exclusions.includes('spending_money'),true);
 });
