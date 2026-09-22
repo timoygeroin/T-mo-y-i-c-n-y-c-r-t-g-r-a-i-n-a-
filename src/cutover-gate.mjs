@@ -20,3 +20,50 @@ export function evaluateCutover(receipts = {}) {
     verified:REQUIRED_CUTOVER_PROOFS.filter(key => receipts[key]?.ok === true)
   };
 }
+
+export function evaluateCutoverManifest(manifest = {}) {
+  const proof = evaluateCutover(manifest.receipts || {});
+  if (!proof.ready) {
+    return {
+      ok:false,
+      phase:'BLOCKED',
+      state:'BLOCKED',
+      missing:proof.missing,
+      verified:proof.verified
+    };
+  }
+
+  if (manifest.status === 'READY_FOR_CODE_CUTOVER') {
+    return {
+      ok:true,
+      phase:'READY_FOR_CODE_CUTOVER',
+      state:'READY',
+      missing:[],
+      verified:proof.verified
+    };
+  }
+
+  if (manifest.status === 'CUTOVER_COMPLETE') {
+    const completionMissing = [];
+    if (manifest.code_cutover?.ok !== true) completionMissing.push('code_cutover');
+    if (manifest.external_receipt_after_cutover?.trusted_worldline_write?.ok !== true) {
+      completionMissing.push('trusted_worldline_cutover_receipt');
+    }
+
+    return {
+      ok:completionMissing.length === 0,
+      phase:'CUTOVER_COMPLETE',
+      state:completionMissing.length === 0 ? 'COMPLETE' : 'BLOCKED',
+      missing:completionMissing,
+      verified:proof.verified
+    };
+  }
+
+  return {
+    ok:false,
+    phase:'UNKNOWN',
+    state:'BLOCKED',
+    missing:['valid_cutover_status'],
+    verified:proof.verified
+  };
+}
