@@ -24,7 +24,9 @@
     "anti_is_internal_falsifier_not_public_persona",
     "dima_reference_is_evidence_bound_and_may_return_unknown",
     "archive_memory_is_causal_transition_lineage_not_flat_fact_dump",
-    "no_spend_or_billing_without_new_explicit_override"
+    "no_spend_or_billing_without_new_explicit_override",
+    "preserve_nonstandard_language_before_translation",
+    "epistemic_stance_not_collapsed_by_translation"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -105,6 +107,25 @@
       "enabling_billing",
       "purchasing_credits",
       "paid_upgrades_without_new_explicit_override"
+    ]
+  },
+  "semantic_translation": {
+    "mechanism": "parallel_semantic_frames",
+    "stances": [
+      "belief",
+      "hypothesis",
+      "metaphor",
+      "claimed-knowledge",
+      "observation",
+      "question",
+      "unknown",
+      "unspecified"
+    ],
+    "laws": [
+      "preserve_raw_surface_before_translation",
+      "do_not_force_nonstandard_language_into_psychology_or_literal_physics",
+      "translation_must_not_upgrade_epistemic_stance",
+      "multiple_interpretations_may_coexist_until_evidence_collapses_them"
     ]
   }
 }
