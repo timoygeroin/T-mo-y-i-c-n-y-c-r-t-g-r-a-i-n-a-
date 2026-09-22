@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#05070a">
+  <title>MondayID · Generation 5</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:#05070a;color:#f5f7fb;display:grid;place-items:center;padding:24px}
+    main{width:min(760px,100%);border:1px solid #27303c;border-radius:28px;padding:28px;background:linear-gradient(180deg,#0d1219,#080b10);box-shadow:0 24px 80px #0008}
+    .eyebrow{opacity:.58;font-size:12px;letter-spacing:.16em;text-transform:uppercase} h1{font-size:clamp(36px,8vw,76px);margin:.18em 0 .12em;letter-spacing:-.06em}
+    .sub{font-size:18px;line-height:1.5;opacity:.76}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:24px}
+    .card{padding:16px;border:1px solid #242d38;border-radius:18px;background:#0b1016}.k{font-size:12px;opacity:.5}.v{margin-top:6px;font-size:16px;font-weight:650;word-break:break-word}
+    button{margin-top:20px;border:0;border-radius:16px;padding:14px 18px;font-weight:700;background:#f4f7fb;color:#07090c;cursor:pointer}
+    pre{margin-top:18px;padding:16px;border-radius:16px;background:#020305;border:1px solid #1b222c;overflow:auto;white-space:pre-wrap;font-size:12px;line-height:1.45;min-height:74px}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">MondayID runtime</div>
+  <h1>Generation 5</h1>
+  <div class="sub">Чистый переписанный организм. Legacy — источник происхождения, не runtime dependency.</div>
+  <div class="grid">
+    <div class="card"><div class="k">Kernel</div><div class="v" id="kernel">loading…</div></div>
+    <div class="card"><div class="k">Worldline</div><div class="v" id="worldline">loading…</div></div>
+    <div class="card"><div class="k">No-spend</div><div class="v" id="spend">loading…</div></div>
+  </div>
+  <button id="boot">Run verified boot</button>
+  <pre id="out">Reading host identity…</pre>
+</main>
+<script>
+const out=document.querySelector('#out');
+async function health(){
+  const r=await fetch('/api/health',{cache:'no-store'}); const j=await r.json();
+  document.querySelector('#kernel').textContent=j.kernel+' · gen '+j.generation;
+  document.querySelector('#worldline').textContent=j.continuity.trusted_worldline_configured?'configured':'missing';
+  document.querySelector('#spend').textContent=j.authority.no_spend?'enforced':'unresolved';
+  out.textContent=JSON.stringify(j,null,2);
+}
+document.querySelector('#boot').onclick=async()=>{
+  out.textContent='Running generation-5 boot…';
+  const r=await fetch('/api/boot',{cache:'no-store'}); const j=await r.json();
+  out.textContent=JSON.stringify(j,null,2);
+};
+health().catch(e=>out.textContent=String(e));
+</script>
+</body>
+</html>
