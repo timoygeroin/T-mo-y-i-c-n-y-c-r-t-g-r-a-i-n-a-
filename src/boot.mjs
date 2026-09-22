@@ -1,4 +1,5 @@
 import { MondayRuntime } from './runtime.mjs';
+import { OrganismCell } from './organism-cell.mjs';
 import { renderHumanSurface } from './interface.mjs';
 import { recoverWorldline } from './remote-worldline.mjs';
 
@@ -23,10 +24,19 @@ const runtime = new MondayRuntime({
   }
 });
 
-const pass = await runtime.runPass([{
+const root = new OrganismCell({
+  id:'mondayid:root',
+  runtime
+});
+
+const pass = await root.runPass([{
   id:'boot',
   text:'boot MondayID unified organism',
   effect:'prove unified runtime boots'
 }]);
 const surface = renderHumanSurface(pass.final);
-console.log(JSON.stringify({ pass:{ state:pass.state, reason:pass.reason, cycles:pass.cycles.length }, surface }, null, 2));
+console.log(JSON.stringify({
+  organism:root.describe(),
+  pass:{ state:pass.state, reason:pass.reason, cycles:pass.cycles.length },
+  surface
+}, null, 2));
