@@ -1,5 +1,8 @@
 import { Worldline } from './worldline.mjs';
 
+const TRUSTED_SCHEMA = 'mondayid.worldline.snapshot.v0.4.0';
+const LEGACY_SCHEMA = 'mondayid.worldline.snapshot.v0.3.0';
+
 const parseValue = (value) => {
   if (typeof value !== 'string') return value;
   try { return JSON.parse(value); } catch { return value; }
@@ -18,17 +21,25 @@ export function externalEventToLocal(event = {}) {
     },
     evidence: {
       sourceRef: event.sourceRef ?? null,
-      verificationReceipt: event.verificationReceipt ?? null
+      verificationReceipt: event.verificationReceipt ?? null,
+      writerKeyId: event.writerKeyId ?? null
     },
     epistemic: String(event.epistemicStatus || event.epistemic || 'observed').toLowerCase()
   };
 }
 
-export async function fetchWorldlineSnapshot({ baseUrl, limit = 10, fetchImpl = globalThis.fetch } = {}) {
+export async function fetchWorldlineSnapshot({
+  baseUrl,
+  limit = 10,
+  trust = 'trusted',
+  fetchImpl = globalThis.fetch
+} = {}) {
   if (!baseUrl) return { ok:false, code:'NO_WORLDLINE_URL' };
   if (typeof fetchImpl !== 'function') return { ok:false, code:'NO_FETCH' };
+  if (!['trusted','legacy'].includes(trust)) return { ok:false, code:'INVALID_TRUST_MODE' };
 
-  const url = new URL('/worldline/snapshot', baseUrl);
+  const trusted = trust === 'trusted';
+  const url = new URL(trusted ? '/worldline/v4/snapshot' : '/worldline/snapshot', baseUrl);
   url.searchParams.set('limit', String(limit));
 
   let response;
@@ -49,11 +60,18 @@ export async function fetchWorldlineSnapshot({ baseUrl, limit = 10, fetchImpl = 
     return { ok:false, code:'WORLDLINE_INVALID_JSON', error:String(error) };
   }
 
-  if (snapshot?.schema !== 'mondayid.worldline.snapshot.v0.3.0' || snapshot?.readOnly !== true || !Array.isArray(snapshot?.events)) {
-    return { ok:false, code:'WORLDLINE_SCHEMA_MISMATCH', snapshot };
+  const expectedSchema = trusted ? TRUSTED_SCHEMA : LEGACY_SCHEMA;
+  const trustedMarkerOk = !trusted || snapshot?.trust === 'AUTHENTICATED_MACHINE_WRITER';
+  if (
+    snapshot?.schema !== expectedSchema ||
+    snapshot?.readOnly !== true ||
+    !Array.isArray(snapshot?.events) ||
+    !trustedMarkerOk
+  ) {
+    return { ok:false, code:'WORLDLINE_SCHEMA_MISMATCH', trust, snapshot };
   }
 
-  return { ok:true, url:String(url), snapshot };
+  return { ok:true, trust, url:String(url), snapshot };
 }
 
 export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline()) {
@@ -70,6 +88,7 @@ export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline())
   }
 
   const conflicts = snapshot?.conflictProbe?.conflicts || [];
+  const trusted = snapshot?.schema === TRUSTED_SCHEMA && snapshot?.trust === 'AUTHENTICATED_MACHINE_WRITER';
   const receipt = worldline.append({
     id: 'remote-snapshot:' + (snapshot?.generatedAtIso || 'unknown'),
     kind: 'receipt',
@@ -78,10 +97,14 @@ export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline())
       schema: snapshot?.schema,
       generatedAtIso: snapshot?.generatedAtIso || null,
       imported,
+      trust: snapshot?.trust || 'LEGACY_UNAUTHENTICATED_STREAM',
+      trusted,
       conflictEventPresent: Boolean(snapshot?.conflictProbe?.event),
       conflictCount: conflicts.length
     },
-    evidence: { transport:'http-readonly' },
+    evidence: {
+      transport: trusted ? 'http-trusted-machine-read' : 'http-legacy-readonly'
+    },
     epistemic: 'verified'
   }, revision);
 
@@ -93,5 +116,10 @@ export async function recoverWorldline(options = {}) {
   const fetched = await fetchWorldlineSnapshot(options);
   if (!fetched.ok) return fetched;
   const seeded = seedWorldlineFromSnapshot(fetched.snapshot, options.worldline || new Worldline());
-  return { ...seeded, snapshot:fetched.snapshot, url:fetched.url };
+  return { ...seeded, trust:fetched.trust, snapshot:fetched.snapshot, url:fetched.url };
 }
+
+export const worldlineSchemas = Object.freeze({
+  trusted:TRUSTED_SCHEMA,
+  legacy:LEGACY_SCHEMA
+});
