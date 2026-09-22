@@ -1,3 +1,5 @@
+import { frameSignal } from './semantic-frame.mjs';
+
 const DOMAIN_HINTS = {
   vision: /vision|image|generator|render|visual/i,
   host: /host|vercel|runtime|computer|iphone|ios|web/i,
@@ -17,6 +19,7 @@ export function compileSignals(signals = []) {
     const text = String(signal.text ?? signal.intent ?? '');
     const domains = signal.domains || inferDomains(text);
     const completedDomains = Array.isArray(signal.completedDomains) ? signal.completedDomains : [];
+    const semanticFrame = frameSignal(signal);
     const rootId = signal.id || `signal:${nodes.length}`;
     nodes.push({
       id: rootId,
@@ -27,6 +30,7 @@ export function compileSignals(signals = []) {
       source: signal.source || 'human',
       priority: signal.priority ?? 50,
       status: signal.status || 'active',
+      semanticFrame,
       dependsOn: []
     });
     for (const domain of domains) {
@@ -39,6 +43,7 @@ export function compileSignals(signals = []) {
         sourceSignal: rootId,
         priority: signal.priority ?? 50,
         status: 'ready',
+        semanticFrame,
         dependsOn: [rootId],
         effect: signal.effect || text
       });
