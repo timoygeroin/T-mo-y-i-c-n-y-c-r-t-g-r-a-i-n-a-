@@ -65,7 +65,7 @@ export class CausalLineage {
   }
 
   forSubject(subject) {
-    return this.edges.filter(edge => edge.subject === subject).map(structuredClone);
+    return this.edges.filter(edge => edge.subject === subject).map(edge => structuredClone(edge));
   }
 
   ancestry(id) {
@@ -86,11 +86,11 @@ export class CausalLineage {
   corrections(subject) {
     return this.edges
       .filter(edge => edge.subject === subject && edge.kind === 'correction')
-      .map(structuredClone);
+      .map(edge => structuredClone(edge));
   }
 
   snapshot() {
-    return this.edges.map(structuredClone);
+    return this.edges.map(edge => structuredClone(edge));
   }
 }
 
