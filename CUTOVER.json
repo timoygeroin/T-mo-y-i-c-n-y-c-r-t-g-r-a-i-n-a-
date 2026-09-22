@@ -1,0 +1,52 @@
+{
+  "schema": "mondayid.cutover.v1",
+  "candidate_branch": "rewrite/mondayid-system-update",
+  "lineage_merge_commit": "49bc9797ff455d2d41f7b33b070de37bf6ee70d9",
+  "base_main_at_lineage_merge": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
+  "status": "BLOCKED",
+  "receipts": {
+    "system_proof_ci": {
+      "ok": true,
+      "run_id": 35736233295,
+      "head": "cc16722fa3ba3a7583df5ca3cb75374871a12d04"
+    },
+    "live_external_worldline_boot": {
+      "ok": true,
+      "run_id": 35735617867,
+      "endpoint": "https://adamant-raven-783.eu-west-1.convex.site"
+    },
+    "recursive_shared_state": {
+      "ok": true,
+      "proof": "tests/organism-cell.test.mjs"
+    },
+    "causal_archive_import": {
+      "ok": true,
+      "proof": "tests/legacy-causal-import.test.mjs"
+    },
+    "semantic_preservation": {
+      "ok": true,
+      "proof": "tests/semantic-frame.test.mjs"
+    },
+    "current_main_lineage_parent": {
+      "ok": true,
+      "commit": "49bc9797ff455d2d41f7b33b070de37bf6ee70d9"
+    },
+    "real_effect_receptor": {
+      "ok": false,
+      "reason": "rewrite still boots with local-proof receptor; no live external effect adapter bound"
+    },
+    "shared_worldline_write": {
+      "ok": false,
+      "reason": "current rewrite recovery transport is read-only HTTP snapshot"
+    },
+    "user_visible_effect": {
+      "ok": false,
+      "reason": "rewrite not yet serving the user-facing Monday surface"
+    },
+    "no_spend_boundary": {
+      "ok": true,
+      "source": "direct user instruction 2026-09-22"
+    }
+  },
+  "cutover_rule": "Do not merge PR #54 while evaluateCutover(receipts).ready !== true."
+}
