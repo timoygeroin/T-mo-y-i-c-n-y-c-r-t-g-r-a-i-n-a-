@@ -3,7 +3,7 @@
   "candidate_branch": "rewrite/mondayid-system-update",
   "lineage_merge_commit": "49bc9797ff455d2d41f7b33b070de37bf6ee70d9",
   "base_main_at_lineage_merge": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
-  "status": "READY_FOR_CODE_CUTOVER",
+  "status": "CUTOVER_COMPLETE",
   "receipts": {
     "system_proof_ci": {
       "ok": true,
@@ -94,5 +94,28 @@
     "vercel_production": "Existing mondayid-host production remains legacy/stale and is not evidence for this code cutover.",
     "preview_vs_production": "User-visible rewrite proof is currently Macaly preview bound to trusted v4, not a production-domain release."
   },
-  "cutover_rule": "Merge PR #54 only while evaluateCutover(receipts).ready === true and a rollback ref to the pre-rewrite main exists."
+  "cutover_rule": "Code cutover is complete. Future changes evolve generation 5 on main; rollback remains available at rollback/pre-rewrite-main-2026-09-22. Production-host promotion is a separate delivery concern and must not roll runtime architecture back to legacy.",
+  "code_cutover": {
+    "ok": true,
+    "merged_pr": 54,
+    "main": "fc5ad21de0a9402ca3a7e8ee59c3da67e6a9251c",
+    "merged_at": "2026-09-22T15:01:15Z",
+    "rollback_ref": "rollback/pre-rewrite-main-2026-09-22",
+    "pre_rewrite_main": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
+    "post_merge_system_proof": {
+      "ok": true,
+      "run_id": 35744397707,
+      "event": "push",
+      "conclusion": "success"
+    }
+  },
+  "external_receipt_after_cutover": {
+    "trusted_worldline_write_attempt": {
+      "ok": false,
+      "code": "WRITER_SECRET_NOT_EXPOSED_TO_MACALY_SHELL",
+      "interpretation": "expected secret-isolation boundary; no secret extraction attempted",
+      "nonblocking": true
+    },
+    "durable_reconciliation": "pending additional trusted-writer path; GitHub main + CI are current code authority"
+  }
 }
