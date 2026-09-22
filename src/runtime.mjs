@@ -2,12 +2,18 @@ import { compileSignals } from './compiler.mjs';
 import { buildFrontier } from './planner.mjs';
 import { Worldline } from './worldline.mjs';
 import { persistIntents, activeIntents, settleIntents } from './intent-field.mjs';
+import { PolicyField, defaultMetaInvariants } from './policy-field.mjs';
 
 export class MondayRuntime {
-  constructor({ worldline = new Worldline(), capabilities = {}, foundry = null } = {}) {
+  constructor({ worldline = new Worldline(), capabilities = {}, foundry = null, policyField = null } = {}) {
     this.worldline = worldline;
     this.capabilities = capabilities;
     this.foundry = foundry;
+    this.policyField = policyField || new PolicyField({ metaInvariants:defaultMetaInvariants });
+  }
+
+  mutatePolicy(mutation) {
+    return this.policyField.mutate(mutation);
   }
 
   observe(signals) {
@@ -62,7 +68,7 @@ export class MondayRuntime {
     const capabilities = Object.entries(this.capabilities)
       .map(([domain, receptor]) => [domain, receptor?.name || domain])
       .sort(([a], [b]) => a.localeCompare(b));
-    return JSON.stringify({ intents, capabilities });
+    return JSON.stringify({ intents, capabilities, policies:this.policyField.snapshot() });
   }
 
   async runPass(incomingSignals = [], { maxCycles = 8 } = {}) {
@@ -195,7 +201,8 @@ export class MondayRuntime {
       forged,
       results,
       intents: this.worldline.materialize().intents,
-      state: this.worldline.materialize()
+      state: this.worldline.materialize(),
+      policies: this.policyField.snapshot()
     };
   }
 }
