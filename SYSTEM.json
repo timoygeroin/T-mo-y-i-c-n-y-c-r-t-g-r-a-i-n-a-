@@ -95,10 +95,12 @@
     "receptor_failure": "continue_orthogonal_work_until_stable_blocker"
   },
   "continuity": {
-    "external_snapshot_schema": "mondayid.worldline.snapshot.v0.3.0",
+    "external_snapshot_schema": "mondayid.worldline.snapshot.v0.4.0",
     "boot_env": "MONDAYID_WORLDLINE_URL",
-    "current_transport": "read_only_http_snapshot",
-    "write_transport": "UNRESOLVED_DO_NOT_FAKE"
+    "current_transport": "authenticated_machine_writer_trusted_http_snapshot",
+    "write_transport": "authenticated_bearer_conflict_guarded_http",
+    "writer_secret_env": "MONDAYID_WORLDLINE_WRITER_TOKEN",
+    "legacy_transport": "explicit_migration_only"
   },
   "authority": {
     "default": "reversible_actions_allowed",
