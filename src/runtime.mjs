@@ -50,6 +50,77 @@ export class MondayRuntime {
     }));
   }
 
+  semanticProgress() {
+    const state = this.worldline.materialize();
+    const intents = Object.values(state.intents || {})
+      .map(intent => ({
+        id: intent.id,
+        status: intent.status,
+        completedDomains: [...(intent.completedDomains || [])].sort()
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id));
+    const capabilities = Object.entries(this.capabilities)
+      .map(([domain, receptor]) => [domain, receptor?.name || domain])
+      .sort(([a], [b]) => a.localeCompare(b));
+    return JSON.stringify({ intents, capabilities });
+  }
+
+  async runPass(incomingSignals = [], { maxCycles = 8 } = {}) {
+    const cycles = [];
+    let signals = incomingSignals;
+    let previous = this.semanticProgress();
+
+    for (let index = 0; index < maxCycles; index += 1) {
+      const cycle = await this.cycle(signals);
+      cycles.push(cycle);
+      if (!cycle?.ok) {
+        return {
+          ok: false,
+          state: 'UNRESOLVED',
+          reason: cycle?.code || 'CYCLE_FAILED',
+          cycles,
+          final: cycle
+        };
+      }
+
+      signals = [];
+      const intents = Object.values(cycle.intents || {});
+      const active = intents.filter(intent => intent?.status === 'active');
+      if (active.length === 0) {
+        return {
+          ok: true,
+          state: 'FULFILLED',
+          reason: 'ALL_INTENTS_FULFILLED',
+          cycles,
+          final: cycle
+        };
+      }
+
+      const current = this.semanticProgress();
+      if (current === previous) {
+        return {
+          ok: true,
+          state: 'BLOCKED',
+          reason: 'NO_SEMANTIC_PROGRESS',
+          cycles,
+          blockers: cycle.frontier?.blocked || [],
+          final: cycle
+        };
+      }
+      previous = current;
+    }
+
+    const final = cycles.at(-1);
+    return {
+      ok: true,
+      state: 'BLOCKED',
+      reason: 'PASS_BUDGET_EXHAUSTED',
+      cycles,
+      blockers: final?.frontier?.blocked || [],
+      final
+    };
+  }
+
   async cycle(incomingSignals = []) {
     const persisted = persistIntents(this.worldline, incomingSignals);
     if (!persisted.ok) return persisted;
