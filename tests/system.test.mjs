@@ -18,7 +18,7 @@ test('all domains compile into one graph, not separate universes', () => {
   assert.ok(domains.has('vision'));
   assert.ok(domains.has('research'));
   assert.ok(domains.has('continuity'));
-  assert.equal(g.schema, 'mondayid.intent-graph.v2');
+  assert.equal(g.schema, 'mondayid.intent-graph.v3');
 });
 
 test('planner exposes a parallel frontier across independent organs', () => {
