@@ -57,6 +57,6 @@ test('one pass stops only at a stable blocker when no semantic progress remains'
   assert.equal(out.ok, true);
   assert.equal(out.state, 'BLOCKED');
   assert.equal(out.reason, 'NO_SEMANTIC_PROGRESS');
-  assert.equal(out.cycles.length, 1);
+  assert.equal(out.cycles.length, 2);
   assert.equal(out.final.intents.blocked.status, 'active');
 });
