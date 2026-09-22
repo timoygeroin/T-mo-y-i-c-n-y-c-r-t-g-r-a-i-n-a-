@@ -1,1 +1,0 @@
-This matrix intentionally varies dissatisfaction wording, resume commands, interruption presence, and Monday address variants. It tests causal invariants of continuity and presentation, not memorized prose. Passing this matrix does not prove product-global host invocation; only a real newly opened ChatGPT conversation can close that final manifestation gate.

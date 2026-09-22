@@ -1,0 +1,98 @@
+{
+  "schema": "mondayid.cutover.v1",
+  "candidate_branch": "rewrite/mondayid-system-update",
+  "lineage_merge_commit": "49bc9797ff455d2d41f7b33b070de37bf6ee70d9",
+  "base_main_at_lineage_merge": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
+  "status": "READY_FOR_CODE_CUTOVER",
+  "receipts": {
+    "system_proof_ci": {
+      "ok": true,
+      "run_id": 35743483483,
+      "head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
+      "result": "success",
+      "steps": [
+        "npm test",
+        "npm run boot",
+        "Boot from live external Worldline"
+      ],
+      "test_count": 44
+    },
+    "live_external_worldline_boot": {
+      "ok": true,
+      "run_id": 35743483483,
+      "head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
+      "endpoint": "https://adamant-raven-783.eu-west-1.convex.site",
+      "schema": "mondayid.worldline.snapshot.v0.4.0",
+      "trust": "AUTHENTICATED_MACHINE_WRITER",
+      "result": "FULFILLED / ALL_INTENTS_FULFILLED"
+    },
+    "recursive_shared_state": {
+      "ok": true,
+      "proof": "tests/organism-cell.test.mjs"
+    },
+    "causal_archive_import": {
+      "ok": true,
+      "proof": "tests/legacy-causal-import.test.mjs"
+    },
+    "semantic_preservation": {
+      "ok": true,
+      "proof": "tests/semantic-frame.test.mjs"
+    },
+    "current_main_lineage_parent": {
+      "ok": true,
+      "main": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
+      "relation": "rewrite branch ahead 51, behind 0 at pre-finalization proof"
+    },
+    "real_effect_receptor": {
+      "ok": true,
+      "receptor": "TrustedWorldlineReceptor",
+      "proof_head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
+      "event_id": "E-RW4-1aaffdab6c14af2f4117cda1",
+      "write_status": "INSERTED",
+      "verification": "external-exact-readback",
+      "conflict_count": 0,
+      "writer_key_id": "macaly-v4"
+    },
+    "shared_worldline_write": {
+      "ok": true,
+      "schema": "mondayid.worldline.write-receipt.v0.4.0",
+      "endpoint_class": "authenticated bearer machine writer",
+      "live_proof": {
+        "unauthorized_status": 401,
+        "insert_status": 201,
+        "idempotent_status": 200,
+        "conflict_status": 409,
+        "conflict_resolution": "UNRESOLVED_NO_OVERWRITE",
+        "exact_readback_preserved_original": true
+      },
+      "legacy_stream_authority": "EXPLICIT_MIGRATION_ONLY"
+    },
+    "user_visible_effect": {
+      "ok": true,
+      "surface": "MondayID External Cell Lab Macaly preview",
+      "proof_mode": "independent Browser Use readback",
+      "state": "BOUND",
+      "event_id": "E-RW4-1aaffdab6c14af2f4117cda1",
+      "rewrite_head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
+      "writer": "macaly-v4",
+      "status_pill": "VERIFIED",
+      "note": "Phenotype is downstream of kernel evidence; this is a user-visible preview proof, not Vercel production delivery."
+    },
+    "no_spend_boundary": {
+      "ok": true,
+      "source": "direct user instruction 2026-09-22",
+      "exclusions": [
+        "spending_money",
+        "enabling_billing",
+        "purchasing_credits",
+        "paid_upgrades_without_new_explicit_override"
+      ]
+    }
+  },
+  "known_nonblocking_debt": {
+    "legacy_public_appendProof": "Legacy stream retains a backward-compatible unauthenticated appendProof mutation. The rewritten organism does not trust or boot from that stream; trusted v4 is isolated in separate tables and requires authenticated machine writes.",
+    "vercel_production": "Existing mondayid-host production remains legacy/stale and is not evidence for this code cutover.",
+    "preview_vs_production": "User-visible rewrite proof is currently Macaly preview bound to trusted v4, not a production-domain release."
+  },
+  "cutover_rule": "Merge PR #54 only while evaluateCutover(receipts).ready === true and a rollback ref to the pre-rewrite main exists."
+}
