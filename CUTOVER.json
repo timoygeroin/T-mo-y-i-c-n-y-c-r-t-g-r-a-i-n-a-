@@ -110,12 +110,20 @@
     }
   },
   "external_receipt_after_cutover": {
-    "trusted_worldline_write_attempt": {
-      "ok": false,
-      "code": "WRITER_SECRET_NOT_EXPOSED_TO_MACALY_SHELL",
-      "interpretation": "expected secret-isolation boundary; no secret extraction attempted",
-      "nonblocking": true
+    "trusted_worldline_write": {
+      "ok": true,
+      "event_id": "E-CUTOVER-20260922-28674088",
+      "endpoint_class": "authenticated bearer machine writer",
+      "write_http": 201,
+      "write_status": "INSERTED",
+      "readback_http": 200,
+      "schema": "mondayid.worldline.event.v0.4.0",
+      "exact_value_match": true,
+      "identity_match": true,
+      "writer_key_id": "macaly-v4",
+      "conflict_count": 0,
+      "secret_exposure": false
     },
-    "durable_reconciliation": "pending additional trusted-writer path; GitHub main + CI are current code authority"
+    "durable_reconciliation": "VERIFIED_IN_TRUSTED_WORLDLINE_V4"
   }
 }
