@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.system-state.v2",
-  "state_id": "mondayid-system:4:8711086092d6",
-  "generation": 4,
+  "state_id": "mondayid-system:5:20260922-no-spend",
+  "generation": 5,
   "active_track": "CONVERGE_EXISTING_PRODUCT_LINES_TO_ONE_DELIVERED_MONDAY",
   "release_status": "CONVERGING",
   "truth_laws": [
@@ -13,7 +13,8 @@
     "NO_NEW_ARCHITECTURE_WHILE_CONVERGENCE_IS_ACTIVE",
     "USER_VISIBLE_EFFECT_IS_THE_RELEASE_GATE",
     "REPOSITORY_HEAD_IS_NOT_COORDINATION_AUTHORITY",
-    "STATE_ID_PLUS_BLOB_SHA_IS_COORDINATION_CAS"
+    "STATE_ID_PLUS_BLOB_SHA_IS_COORDINATION_CAS",
+    "NO_SPEND_OR_BILLING_WITHOUT_NEW_EXPLICIT_OVERRIDE"
   ],
   "coordination": {
     "authority": "STATE_ID_PLUS_GITHUB_BLOB_SHA",
@@ -24,8 +25,8 @@
   },
   "repository_observation": {
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-    "observed_main_head": "36171873fe12713f3b43135d461cc09f7643e8c0",
-    "observed_reason": "Live transport fallback repair merged after exact Vercel Gateway 403 was reproduced; model/build/browser/route regression gates passed."
+    "observed_main_head": "0baf19e5e79d780f0924639c2b52325a0069ee42",
+    "observed_reason": "Canonical main includes live preview/provider gate receipt after OIDC transport integration and direct fallback repair; production is still stale."
   },
   "product_lines": {
     "organism_main": {
@@ -80,9 +81,11 @@
     "production": {
       "domain": "mondayid-host.vercel.app",
       "health_status": 404,
-      "homepage_status": 200,
-      "observed_last_modified": "2026-09-14T11:36:35Z",
-      "current_main_not_deployed": true
+      "observed_at": "2026-09-22T10:37:31Z",
+      "current_main_not_deployed": true,
+      "latest_production_deployment": "dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi",
+      "direct_deploy_tool_registry_status": "ADVERTISED_BUT_BACKEND_TOOL_NOT_FOUND",
+      "browser_dashboard_status": "CLOUD_BROWSER_NOT_AUTHENTICATED"
     }
   },
   "delivery_criteria": {
@@ -96,23 +99,27 @@
     "visible_user_effect_verified": false
   },
   "next_move": {
-    "id": "CONVERGENCE_003",
-    "action": "AUTHENTICATE_EXISTING_VERCEL_ACCOUNT_ONCE_THEN_DEPLOY_MAIN_36171873_AND_BIND_DIRECT_OPENAI_SECRET_OR_ENABLE_GATEWAY_BILLING_THEN_VERIFY_RESPONSE_ID_AND_PUBLIC_UI",
+    "id": "CONVERGENCE_004",
+    "action": "OBTAIN_EXISTING_VERCEL_DEPLOY_SURFACE_WITHOUT_SPEND_THEN_DEPLOY_CURRENT_CANONICAL_MAIN_AND_VERIFY_HEALTH_UI_PROVIDER_READBACK",
     "human_gate": {
-      "type": "VERCEL_ACCOUNT_AUTHENTICATION_OR_BILLING",
-      "minimum_user_action": "Complete Vercel/GitHub sign-in in the existing browser/session. Do not paste credentials into chat.",
+      "type": "VERCEL_AUTHENTICATED_DEPLOY_SURFACE",
+      "minimum_user_action": "If no connector deploy route becomes available, sign in to the existing Vercel account inside the Browser Use preview/session. Do not add a card, enable billing, buy credits, or paste credentials into chat.",
       "after_auth_automatic_work": [
-        "deploy or promote current main 36171873 to mondayid-host",
-        "prefer existing server-side OPENAI_API_KEY direct fallback if available",
-        "otherwise choose explicitly between setting the existing MondayID Host Runtime key as Vercel server secret or enabling Vercel Gateway billing",
+        "deploy current canonical main 0baf19e5e79d780f0924639c2b52325a0069ee42 to existing mondayid-host production",
         "verify /api/organism/health",
-        "submit one real UI prompt",
-        "capture response_id/provider receipt",
-        "promote only after readback"
+        "confirm Vercel OIDC availability",
+        "attempt one real UI/model request only through already-funded credentials/transport",
+        "if provider returns a billing/credit gate, record NO_SPEND_PROVIDER_GATE and stop before any paid action",
+        "capture deployment/provider/UI receipt and promote only after readback"
       ],
       "stable_gate_do_not_repeat_notification": true
     },
-    "forbidden_substitution": "DO_NOT_CREATE_NEW_HOST_DO_NOT_REINTEGRATE_TRANSPORT_DO_NOT_START_MONDAYVISION_TRAINING_BEFORE_LIVE_HOST_READBACK"
+    "alternate_route_watch": [
+      "Vercel MCP deploy_to_vercel backend becomes actually dispatchable",
+      "existing Vercel deploy hook or authenticated dashboard route becomes available",
+      "already-funded direct provider credential is discovered without purchasing credits"
+    ],
+    "forbidden_substitution": "DO_NOT_CREATE_NEW_HOST_DO_NOT_ENABLE_BILLING_DO_NOT_PURCHASE_API_CREDITS_DO_NOT_START_UNRELATED_ARCHITECTURE_TO_AVOID_DEPLOY_GATE"
   },
   "concurrency": {
     "model": "OPTIMISTIC_CELL_DELTAS_WITH_FILE_CAS",
@@ -140,6 +147,22 @@
       "kind": "LIVE_READBACK_AND_REPAIR",
       "effect": "Preview Vercel runtime reached live OIDC/Gateway and real UI request; exact Gateway 403 billing failure reproduced; controlled direct OpenAI fallback repaired and merged.",
       "receipt": "preview dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ health 200 OIDC=true; POST /api/organism/respond 403; main 36171873 merged after all regression gates passed."
+    },
+    {
+      "generation": 5,
+      "kind": "ACCOUNT_RECONFIG_AND_CAPABILITY_CORRECTION",
+      "effect": "Consolidated background monitors, corrected phantom Vercel deploy capability, and made Dima's no-spend boundary canonical.",
+      "receipt": "2026-09-22: public production /api/organism/health still 404; latest production deployment unchanged; deploy_to_vercel advertised by tool registry/docs but backend returned Tool not found; Browser Use Vercel dashboard unauthenticated; no billing or purchase attempted."
     }
-  ]
+  ],
+  "authority_boundary": {
+    "external_actions": "AUTHORIZED_EXCEPT_EXPLICIT_EXCLUSIONS",
+    "explicit_exclusions": [
+      "SPENDING_MONEY",
+      "ENABLING_BILLING",
+      "PURCHASING_CREDITS",
+      "PAID_UPGRADES_WITHOUT_NEW_EXPLICIT_OVERRIDE"
+    ],
+    "source": "Direct Dima instruction 2026-09-22: full account/platform access except spending money."
+  }
 }
