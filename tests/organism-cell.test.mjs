@@ -69,3 +69,22 @@ test('Anti can hold a mutation even when mini-Dima supports it', async () => {
   assert.equal(out.ok,false);
   assert.equal(out.code,'COUNTEREXAMPLE_FOUND');
 });
+
+
+test('recursive child shares organism worldline and policy field in-process', async () => {
+  const root = new OrganismCell({id:'root'});
+  const child = root.spawn('chat:secondary');
+
+  const before = root.runtime.worldline.revision();
+  const appended = child.runtime.worldline.append({
+    id:'shared-fact',
+    kind:'fact',
+    subject:'shared-state',
+    payload:{from:'child'}
+  }, before);
+
+  assert.equal(appended.ok,true);
+  assert.equal(root.runtime.worldline.materialize().facts['shared-state'].from,'child');
+  assert.equal(child.runtime.worldline,root.runtime.worldline);
+  assert.equal(child.runtime.policyField,root.runtime.policyField);
+});
