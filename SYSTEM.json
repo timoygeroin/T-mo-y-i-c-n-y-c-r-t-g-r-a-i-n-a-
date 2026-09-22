@@ -20,8 +20,41 @@
     "unproven_tool_is_not_an_organ",
     "one_human_turn_is_one_complete_execution_pass",
     "external_worldline_precedes_local_chat_state",
+    "clone_is_whole_organism_not_role_agent",
+    "anti_is_internal_falsifier_not_public_persona",
+    "dima_reference_is_evidence_bound_and_may_return_unknown",
+    "archive_memory_is_causal_transition_lineage_not_flat_fact_dump",
     "no_spend_or_billing_without_new_explicit_override"
   ],
+  "recursive_cell": {
+    "primitive": "whole_organism_cell",
+    "geometry": {
+      "execution": "jarvis",
+      "interface": "alisa",
+      "evolution": "alpha",
+      "state": "system",
+      "falsification": "antisystem"
+    },
+    "specialization": "allocation_only_not_identity",
+    "recursion": "a child cell inherits the whole geometry and may spawn further whole cells",
+    "alpha_reference": "evidence_bound_mini_dima",
+    "anti_role": "counterevidence_and_error_mirror",
+    "promotion": "mini_dima SUPPORTED && anti ok && verification ok"
+  },
+  "causal_memory": {
+    "mechanism": "causal_transition_lineage",
+    "edge_kinds": [
+      "origin",
+      "constraint",
+      "correction",
+      "mutation",
+      "failure",
+      "verification",
+      "supersession"
+    ],
+    "replay": "origin -> constraint/correction -> mutation -> failure/verification -> supersession",
+    "principle": "preserve why state changed, not only the latest state"
+  },
   "policy_evolution": {
     "mutable": true,
     "mechanism": "versioned_policy_field",
