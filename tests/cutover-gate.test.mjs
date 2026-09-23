@@ -74,3 +74,13 @@ test('unknown extra evidence cannot substitute for a required receipt', () => {
   assert.equal(out.ready,false);
   assert.ok(out.missing.includes('shared_worldline_write'));
 });
+
+
+test('current manifest keeps production delivery blocked until the live Vercel host passes readback', () => {
+  const manifest = JSON.parse(fs.readFileSync(new URL('../CUTOVER.json', import.meta.url),'utf8'));
+  assert.equal(manifest.code_cutover.ok,true);
+  assert.equal(manifest.delivery.status,'BLOCKED');
+  assert.match(manifest.delivery.evidence.production_api_health,/404/);
+  assert.match(manifest.delivery.evidence.production_api_boot,/404/);
+  assert.match(manifest.delivery.rule,/Do not claim production delivery/);
+});
