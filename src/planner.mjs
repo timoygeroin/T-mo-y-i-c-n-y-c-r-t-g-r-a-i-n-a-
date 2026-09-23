@@ -4,20 +4,43 @@ export function buildFrontier(graph, capabilities = {}) {
   const objectives = graph.nodes.filter(n => n.type === 'objective');
   const actions = objectives.map(o => {
     const receptor = capabilities[o.domain] || capabilities.general;
-    const executable = Boolean(receptor?.execute);
-    return {
+    const candidate = {
       id: `action:${o.id}`,
       objectiveId: o.id,
       sourceSignal: o.sourceSignal,
       domain: o.domain,
       effect: o.effect,
       receptor: receptor?.name || null,
-      executable,
-      status: executable ? 'ready' : 'blocked',
-      blocker: executable ? null : `NO_RECEPTOR:${o.domain}`,
       priority: o.priority,
       verifiable: Boolean(receptor?.verify),
       cost: receptor?.cost ?? 0
+    };
+
+    const executable = Boolean(receptor?.execute);
+    const verifiable = Boolean(receptor?.verify);
+    let supported = executable && verifiable;
+    if (supported && typeof receptor?.supports === 'function') {
+      try {
+        supported = receptor.supports(candidate) === true;
+      } catch {
+        supported = false;
+      }
+    }
+
+    const ready = executable && verifiable && supported;
+    const blocker = !executable
+      ? `NO_RECEPTOR:${o.domain}`
+      : !verifiable
+        ? `NO_VERIFIER:${o.domain}`
+        : !supported
+          ? `UNSUPPORTED_EFFECT:${o.domain}`
+          : null;
+
+    return {
+      ...candidate,
+      executable: ready,
+      status: ready ? 'ready' : 'blocked',
+      blocker
     };
   });
 

@@ -5,6 +5,43 @@ import { renderHumanSurface } from './interface.mjs';
 import { recoverWorldline } from './remote-worldline.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
+const HOST_PROOF_EFFECT = 'prove delivered generation 5 runtime';
+
+function createGeneration5HostProofReceptor({ identity, recovered }) {
+  return {
+    name: 'generation-5-host-proof-receptor',
+    supports: action =>
+      action?.domain === 'host' &&
+      action?.effect === HOST_PROOF_EFFECT,
+    execute: async action => ({
+      ok: true,
+      effect: action.effect,
+      evidence: {
+        generation: identity.generation,
+        kernel: identity.kernel,
+        runtime: identity.runtime,
+        cutover: identity.cutover,
+        trustedWorldline: recovered.trust === 'trusted',
+        worldlineSchema: recovered.snapshot?.schema || null,
+        importedEvents: recovered.imported ?? null
+      }
+    }),
+    verify: async (result, action) => ({
+      ok:
+        action?.domain === 'host' &&
+        action?.effect === HOST_PROOF_EFFECT &&
+        result?.ok === true &&
+        result?.effect === HOST_PROOF_EFFECT &&
+        result?.evidence?.generation === 5 &&
+        result?.evidence?.kernel === 'mondayid-generation-5' &&
+        result?.evidence?.runtime === 'vercel-node-function' &&
+        result?.evidence?.cutover === 'generation-5' &&
+        result?.evidence?.trustedWorldline === true &&
+        result?.evidence?.worldlineSchema === system.continuity?.external_snapshot_schema,
+      mode: 'host-proof-readback'
+    })
+  };
+}
 
 export function describeHost({ env = process.env } = {}) {
   return {
@@ -32,7 +69,7 @@ export function describeHost({ env = process.env } = {}) {
 export async function bootHost({
   env = process.env,
   fetchImpl = globalThis.fetch,
-  signal = { id:'host-boot', text:'boot MondayID generation 5 host', effect:'prove delivered generation 5 runtime' }
+  signal = { id:'host-boot', text:'boot MondayID generation 5 host', effect:HOST_PROOF_EFFECT }
 } = {}) {
   const identity = describeHost({ env });
   const baseUrl = env.MONDAYID_WORLDLINE_URL;
@@ -67,11 +104,7 @@ export async function bootHost({
   const runtime = new MondayRuntime({
     worldline: recovered.worldline,
     capabilities: {
-      general: {
-        name: 'generation-5-host-proof-receptor',
-        execute: async action => ({ accepted:true, effect:action.effect, domain:action.domain }),
-        verify: async result => ({ ok:result?.accepted === true, mode:'host-proof-readback' })
-      }
+      host: createGeneration5HostProofReceptor({ identity, recovered })
     }
   });
 
