@@ -169,9 +169,25 @@ export class MondayRuntime {
       const receptor = this.capabilities[action.domain] || this.capabilities.general;
       try {
         const result = await receptor.execute(action);
-        const verification = receptor.verify
-          ? await receptor.verify(result, action)
-          : { ok: true, mode: 'tool-result-only' };
+        if (result?.ok === false) {
+          return {
+            action,
+            result,
+            verification: { ok:false, code:'EXECUTION_REPORTED_FAILURE' },
+            ok: false
+          };
+        }
+
+        if (typeof receptor?.verify !== 'function') {
+          return {
+            action,
+            result,
+            verification: { ok:false, code:'VERIFICATION_RECEPTOR_MISSING' },
+            ok: false
+          };
+        }
+
+        const verification = await receptor.verify(result, action);
         return { action, result, verification, ok: verification?.ok === true };
       } catch (error) {
         return { action, ok: false, error: String(error) };
