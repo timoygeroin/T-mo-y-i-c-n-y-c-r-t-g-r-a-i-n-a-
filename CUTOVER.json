@@ -5,139 +5,32 @@
   "base_main_at_lineage_merge": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
   "status": "CUTOVER_COMPLETE",
   "receipts": {
-    "system_proof_ci": {
-      "ok": true,
-      "run_id": 35743483483,
-      "head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
-      "result": "success",
-      "steps": [
-        "npm test",
-        "npm run boot",
-        "Boot from live external Worldline"
-      ],
-      "test_count": 44
-    },
-    "live_external_worldline_boot": {
-      "ok": true,
-      "run_id": 35743483483,
-      "head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
-      "endpoint": "https://adamant-raven-783.eu-west-1.convex.site",
-      "schema": "mondayid.worldline.snapshot.v0.4.0",
-      "trust": "AUTHENTICATED_MACHINE_WRITER",
-      "result": "FULFILLED / ALL_INTENTS_FULFILLED"
-    },
-    "recursive_shared_state": {
-      "ok": true,
-      "proof": "tests/organism-cell.test.mjs"
-    },
-    "causal_archive_import": {
-      "ok": true,
-      "proof": "tests/legacy-causal-import.test.mjs"
-    },
-    "semantic_preservation": {
-      "ok": true,
-      "proof": "tests/semantic-frame.test.mjs"
-    },
-    "current_main_lineage_parent": {
-      "ok": true,
-      "main": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
-      "relation": "rewrite branch ahead 51, behind 0 at pre-finalization proof"
-    },
-    "real_effect_receptor": {
-      "ok": true,
-      "receptor": "TrustedWorldlineReceptor",
-      "proof_head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
-      "event_id": "E-RW4-1aaffdab6c14af2f4117cda1",
-      "write_status": "INSERTED",
-      "verification": "external-exact-readback",
-      "conflict_count": 0,
-      "writer_key_id": "macaly-v4"
-    },
-    "shared_worldline_write": {
-      "ok": true,
-      "schema": "mondayid.worldline.write-receipt.v0.4.0",
-      "endpoint_class": "authenticated bearer machine writer",
-      "live_proof": {
-        "unauthorized_status": 401,
-        "insert_status": 201,
-        "idempotent_status": 200,
-        "conflict_status": 409,
-        "conflict_resolution": "UNRESOLVED_NO_OVERWRITE",
-        "exact_readback_preserved_original": true
-      },
-      "legacy_stream_authority": "EXPLICIT_MIGRATION_ONLY"
-    },
-    "user_visible_effect": {
-      "ok": true,
-      "surface": "MondayID External Cell Lab Macaly preview",
-      "proof_mode": "independent Browser Use readback",
-      "state": "BOUND",
-      "event_id": "E-RW4-1aaffdab6c14af2f4117cda1",
-      "rewrite_head": "48592d6ad76a8e8c00c2cab62e2d513f1a1281c6",
-      "writer": "macaly-v4",
-      "status_pill": "VERIFIED",
-      "note": "Phenotype is downstream of kernel evidence; this is a user-visible preview proof, not Vercel production delivery."
-    },
-    "no_spend_boundary": {
-      "ok": true,
-      "source": "direct user instruction 2026-09-22",
-      "exclusions": [
-        "spending_money",
-        "enabling_billing",
-        "purchasing_credits",
-        "paid_upgrades_without_new_explicit_override"
-      ]
-    }
+    "system_proof_ci": {"ok":true,"run_id":35743483483,"head":"48592d6ad76a8e8c00c2cab62e2d513f1a1281c6","result":"success","steps":["npm test","npm run boot","Boot from live external Worldline"],"test_count":44},
+    "live_external_worldline_boot": {"ok":true,"run_id":35743483483,"head":"48592d6ad76a8e8c00c2cab62e2d513f1a1281c6","endpoint":"https://adamant-raven-783.eu-west-1.convex.site","schema":"mondayid.worldline.snapshot.v0.4.0","trust":"AUTHENTICATED_MACHINE_WRITER","result":"FULFILLED / ALL_INTENTS_FULFILLED"},
+    "recursive_shared_state": {"ok":true,"proof":"tests/organism-cell.test.mjs"},
+    "causal_archive_import": {"ok":true,"proof":"tests/legacy-causal-import.test.mjs"},
+    "semantic_preservation": {"ok":true,"proof":"tests/semantic-frame.test.mjs"},
+    "current_main_lineage_parent": {"ok":true,"main":"ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c","relation":"rewrite branch ahead 51, behind 0 at pre-finalization proof"},
+    "real_effect_receptor": {"ok":true,"receptor":"TrustedWorldlineReceptor","proof_head":"48592d6ad76a8e8c00c2cab62e2d513f1a1281c6","event_id":"E-RW4-1aaffdab6c14af2f4117cda1","write_status":"INSERTED","verification":"external-exact-readback","conflict_count":0,"writer_key_id":"macaly-v4"},
+    "shared_worldline_write": {"ok":true,"schema":"mondayid.worldline.write-receipt.v0.4.0","endpoint_class":"authenticated bearer machine writer","live_proof":{"unauthorized_status":401,"insert_status":201,"idempotent_status":200,"conflict_status":409,"conflict_resolution":"UNRESOLVED_NO_OVERWRITE","exact_readback_preserved_original":true},"legacy_stream_authority":"EXPLICIT_MIGRATION_ONLY"},
+    "user_visible_effect": {"ok":true,"surface":"MondayID External Cell Lab Macaly preview","proof_mode":"independent Browser Use readback","state":"BOUND","event_id":"E-RW4-1aaffdab6c14af2f4117cda1","rewrite_head":"48592d6ad76a8e8c00c2cab62e2d513f1a1281c6","writer":"macaly-v4","status_pill":"VERIFIED","note":"Phenotype is downstream of kernel evidence; this is a user-visible preview proof, not Vercel production delivery."},
+    "no_spend_boundary": {"ok":true,"source":"direct user instruction 2026-09-22","exclusions":["spending_money","enabling_billing","purchasing_credits","paid_upgrades_without_new_explicit_override"]}
   },
   "known_nonblocking_debt": {
-    "legacy_public_appendProof": "Legacy stream retains a backward-compatible unauthenticated appendProof mutation. The rewritten organism does not trust or boot from that stream; trusted v4 is isolated in separate tables and requires authenticated machine writes.",
-    "vercel_production": "BLOCKING DELIVERY DEBT: mondayid-host production alias still serves the stale 2026-09-14 application; /api/health and /api/boot return 404. Code cutover is complete, but production delivery is not verified.",
-    "preview_vs_production": "User-visible rewrite proof is currently Macaly preview bound to trusted v4, not a production-domain release."
+    "legacy_public_appendProof":"Legacy stream retains a backward-compatible unauthenticated appendProof mutation. The rewritten organism does not trust or boot from that stream; trusted v4 is isolated in separate tables and requires authenticated machine writes.",
+    "vercel_production":"BLOCKING DELIVERY DEBT: mondayid-host production alias still serves the stale 2026-09-14 application; /api/health and /api/boot return 404. Code cutover is complete, but production delivery is not verified.",
+    "preview_vs_production":"User-visible rewrite proof is currently Macaly preview bound to trusted v4, not a production-domain release."
   },
-  "cutover_rule": "Code cutover is complete. Future changes evolve generation 5 on main; rollback remains available at rollback/pre-rewrite-main-2026-09-22. Production-host promotion is a separate delivery concern and must not roll runtime architecture back to legacy.",
-  "code_cutover": {
-    "ok": true,
-    "merged_pr": 54,
-    "main": "fc5ad21de0a9402ca3a7e8ee59c3da67e6a9251c",
-    "merged_at": "2026-09-22T15:01:15Z",
-    "rollback_ref": "rollback/pre-rewrite-main-2026-09-22",
-    "pre_rewrite_main": "ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c",
-    "post_merge_system_proof": {
-      "ok": true,
-      "run_id": 35744397707,
-      "event": "push",
-      "conclusion": "success"
-    }
-  },
-  "external_receipt_after_cutover": {
-    "trusted_worldline_write": {
-      "ok": true,
-      "event_id": "E-CUTOVER-20260922-28674088",
-      "endpoint_class": "authenticated bearer machine writer",
-      "write_http": 201,
-      "write_status": "INSERTED",
-      "readback_http": 200,
-      "schema": "mondayid.worldline.event.v0.4.0",
-      "exact_value_match": true,
-      "identity_match": true,
-      "writer_key_id": "macaly-v4",
-      "conflict_count": 0,
-      "secret_exposure": false
-    },
-    "durable_reconciliation": "VERIFIED_IN_TRUSTED_WORLDLINE_V4"
-  },
+  "cutover_rule":"Code cutover is complete. Future changes evolve generation 5 on main; rollback remains available at rollback/pre-rewrite-main-2026-09-22. Production-host promotion is a separate delivery concern and must not roll runtime architecture back to legacy.",
+  "code_cutover":{"ok":true,"merged_pr":54,"main":"fc5ad21de0a9402ca3a7e8ee59c3da67e6a9251c","merged_at":"2026-09-22T15:01:15Z","rollback_ref":"rollback/pre-rewrite-main-2026-09-22","pre_rewrite_main":"ff75abc34cd0ed06eb8965d4c2ff242be6ba7c5c","post_merge_system_proof":{"ok":true,"run_id":35744397707,"event":"push","conclusion":"success"}},
+  "external_receipt_after_cutover":{"trusted_worldline_write":{"ok":true,"event_id":"E-CUTOVER-20260922-28674088","endpoint_class":"authenticated bearer machine writer","write_http":201,"write_status":"INSERTED","readback_http":200,"schema":"mondayid.worldline.event.v0.4.0","exact_value_match":true,"identity_match":true,"writer_key_id":"macaly-v4","conflict_count":0,"secret_exposure":false},"durable_reconciliation":"VERIFIED_IN_TRUSTED_WORLDLINE_V4"},
   "delivery": {
-    "status": "BLOCKED",
-    "checked_at": "2026-09-23T17:50:18Z",
-    "target": "mondayid-host production",
-    "required_main": "ab17e4b0a18ad8b79465fb2966a30a9fe893d4ff",
-    "evidence": {
-      "production_alias_root": "200 stale application; last-modified 2026-09-14",
-      "production_api_health": "404 NOT_FOUND",
-      "production_api_boot": "404 NOT_FOUND",
-      "latest_project_deployment_after_2026_09_23": "none"
-    },
-    "blocker": "Vercel dashboard authentication is required to reconnect/redeploy mondayid-host; no authenticated browser session was available.",
-    "rule": "Do not claim production delivery or organism-wide completion until current main is deployed and /api/health plus /api/boot pass live readback."
+    "status":"BLOCKED",
+    "checked_at":"2026-09-23T17:50:18Z",
+    "target":"mondayid-host production",
+    "required_code_provenance":"current generation-5 main at deployment time; deployment must be a descendant of the generation-5 cutover and include the current host contract",
+    "evidence":{"production_alias_root":"200 stale application; last-modified 2026-09-14","production_api_health":"404 NOT_FOUND","production_api_boot":"404 NOT_FOUND","latest_project_deployment_after_2026_09_23":"none"},
+    "blocker":"Vercel dashboard authentication is required to reconnect/redeploy mondayid-host; no authenticated browser session was available.",
+    "rule":"Do not claim production delivery or organism-wide completion until current generation-5 main is deployed and /api/health plus /api/boot pass live readback."
   }
 }
