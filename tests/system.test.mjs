@@ -30,7 +30,7 @@ test('planner exposes a parallel frontier across independent organs', () => {
 
 test('missing receptor blocks one objective without halting others', () => {
   const g = compileSignals([{ id:'u', text:'host vision', priority:50 }]);
-  const f = buildFrontier(g, { host:{name:'host',execute:async()=>({})} });
+  const f = buildFrontier(g, { host:{name:'host',execute:async()=>({ok:true}),verify:async()=>({ok:true})} });
   assert.equal(f.ready.length, 1);
   assert.equal(f.blocked.length, 1);
   assert.equal(f.blocked[0].domain, 'vision');
@@ -90,4 +90,44 @@ test('system manifest declares rewrite, stable meta-invariants, and evolvable po
   assert.ok(system.current_policies.includes('human_is_interface_not_scheduler'));
   assert.equal(system.policy_evolution.mutable,true);
   assert.equal(system.authority.explicit_exclusions.includes('spending_money'),true);
+});
+
+
+test('planner blocks receptors that can execute but cannot verify', () => {
+  const g = compileSignals([{ id:'u', text:'arbitrary objective', priority:50 }]);
+  const f = buildFrontier(g, {
+    general:{name:'write-only',execute:async()=>({ok:true})}
+  });
+  assert.equal(f.ready.length,0);
+  assert.equal(f.blocked.length,1);
+  assert.equal(f.blocked[0].blocker,'NO_VERIFIER:general');
+});
+
+test('runtime never fulfills an explicitly failed action even if a verifier would approve it', async () => {
+  const runtime = new MondayRuntime({ capabilities:{
+    general:{
+      name:'broken',
+      execute:async()=>({ok:false}),
+      verify:async()=>({ok:true})
+    }
+  }});
+  const out = await runtime.runPass([{id:'failed-action',text:'arbitrary objective'}], {maxCycles:3});
+  assert.equal(out.state,'BLOCKED');
+  assert.equal(out.final.intents['failed-action'].status,'active');
+  assert.equal(out.final.results.every(result=>result.ok===false),true);
+});
+
+test('human phenotype never says VERIFIED while a verified effect is still missing', async () => {
+  const runtime = new MondayRuntime({ capabilities:{
+    general:{
+      name:'unverified',
+      execute:async()=>({ok:true}),
+      verify:async()=>({ok:false,code:'NO_READBACK'})
+    }
+  }});
+  const cycle = await runtime.cycle([{id:'not-done',text:'arbitrary objective'}]);
+  const surface = renderHumanSurface(cycle);
+  assert.equal(surface.state,'UNRESOLVED');
+  assert.match(surface.message,/1 failed/);
+  assert.equal(cycle.intents['not-done'].status,'active');
 });
