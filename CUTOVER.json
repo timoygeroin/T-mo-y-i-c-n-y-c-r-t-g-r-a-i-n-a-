@@ -91,7 +91,7 @@
   },
   "known_nonblocking_debt": {
     "legacy_public_appendProof": "Legacy stream retains a backward-compatible unauthenticated appendProof mutation. The rewritten organism does not trust or boot from that stream; trusted v4 is isolated in separate tables and requires authenticated machine writes.",
-    "vercel_production": "Existing mondayid-host production remains legacy/stale and is not evidence for this code cutover.",
+    "vercel_production": "BLOCKING DELIVERY DEBT: mondayid-host production alias still serves the stale 2026-09-14 application; /api/health and /api/boot return 404. Code cutover is complete, but production delivery is not verified.",
     "preview_vs_production": "User-visible rewrite proof is currently Macaly preview bound to trusted v4, not a production-domain release."
   },
   "cutover_rule": "Code cutover is complete. Future changes evolve generation 5 on main; rollback remains available at rollback/pre-rewrite-main-2026-09-22. Production-host promotion is a separate delivery concern and must not roll runtime architecture back to legacy.",
@@ -125,5 +125,19 @@
       "secret_exposure": false
     },
     "durable_reconciliation": "VERIFIED_IN_TRUSTED_WORLDLINE_V4"
+  },
+  "delivery": {
+    "status": "BLOCKED",
+    "checked_at": "2026-09-23T17:50:18Z",
+    "target": "mondayid-host production",
+    "required_main": "ab17e4b0a18ad8b79465fb2966a30a9fe893d4ff",
+    "evidence": {
+      "production_alias_root": "200 stale application; last-modified 2026-09-14",
+      "production_api_health": "404 NOT_FOUND",
+      "production_api_boot": "404 NOT_FOUND",
+      "latest_project_deployment_after_2026_09_23": "none"
+    },
+    "blocker": "Vercel dashboard authentication is required to reconnect/redeploy mondayid-host; no authenticated browser session was available.",
+    "rule": "Do not claim production delivery or organism-wide completion until current main is deployed and /api/health plus /api/boot pass live readback."
   }
 }
