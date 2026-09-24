@@ -45,7 +45,7 @@ public struct OpenMondayIntent: AppIntent {
 
 public struct AskMondayIntent: AppIntent {
     public static let title: LocalizedStringResource = "Ask MondayID"
-    public static let description = IntentDescription("Send a question into the MondayID command path.")
+    public static let description = IntentDescription("Send a question into the canonical MondayID runtime.")
     public static let openAppWhenRun = true
 
     @Parameter(title: "Question")
@@ -70,7 +70,7 @@ public struct AskMondayIntent: AppIntent {
 
 public struct ContinueMondayIntent: AppIntent {
     public static let title: LocalizedStringResource = "Continue MondayID"
-    public static let description = IntentDescription("Continue the current MondayID active track.")
+    public static let description = IntentDescription("Continue the current MondayID active track from canonical state.")
     public static let openAppWhenRun = true
 
     public init() {}
@@ -78,7 +78,7 @@ public struct ContinueMondayIntent: AppIntent {
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         await MondayIDCommandBus.shared.record(.continueFlow)
         do {
-            let receipt = try await sendToMondayID("Continue the current active objective from canonical state")
+            let receipt = try await sendToMondayID("Continue the current active objective from canonical state without creating a new track or asking me to respecify completed context.")
             return .result(dialog: IntentDialog(stringLiteral: receipt.result ?? "Continued at state \(receipt.stateRevision)"))
         } catch MondayIDRuntimeError.notConfigured {
             return .result(dialog: "Open MondayID once to connect its runtime")
@@ -88,7 +88,7 @@ public struct ContinueMondayIntent: AppIntent {
 
 public struct RecallCapsuleIntent: AppIntent {
     public static let title: LocalizedStringResource = "Recall MondayID Capsule"
-    public static let description = IntentDescription("Request a named MondayID state or memory capsule.")
+    public static let description = IntentDescription("Recall a named state capsule through the canonical MondayID runtime.")
     public static let openAppWhenRun = true
 
     @Parameter(title: "Capsule")
@@ -102,16 +102,25 @@ public struct RecallCapsuleIntent: AppIntent {
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         await MondayIDCommandBus.shared.record(.recallCapsule(capsule))
-        return .result(dialog: "Capsule request handed to MondayID")
+        do {
+            let receipt = try await sendToMondayID(
+                "Recall the canonical MondayID capsule named “\(capsule)”. Use provenance and current Worldline state; if it is unavailable, say that it is unavailable rather than inventing it."
+            )
+            return .result(dialog: IntentDialog(stringLiteral: receipt.result ?? "Capsule request completed at state \(receipt.stateRevision)"))
+        } catch MondayIDRuntimeError.notConfigured {
+            return .result(dialog: "Open MondayID once to connect its runtime")
+        }
     }
 }
 
+// Compatibility intent only. It is deliberately not exposed as a shortcut because
+// Generation 5 does not treat mode/organ activation as a user-scheduled cognitive primitive.
 public struct ActivateModeIntent: AppIntent {
-    public static let title: LocalizedStringResource = "Activate MondayID Mode"
-    public static let description = IntentDescription("Activate a named MondayID mode without pretending the mode exists if the runtime rejects it.")
+    public static let title: LocalizedStringResource = "Legacy MondayID Operating Preference"
+    public static let description = IntentDescription("Compatibility entry for older shortcuts. MondayID interprets the phrase as a task-level preference, not as a separate identity or mode.")
     public static let openAppWhenRun = true
 
-    @Parameter(title: "Mode")
+    @Parameter(title: "Preference")
     public var mode: String
 
     public init() {}
@@ -122,20 +131,34 @@ public struct ActivateModeIntent: AppIntent {
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         await MondayIDCommandBus.shared.record(.activateMode(mode))
-        return .result(dialog: "Mode request handed to MondayID")
+        do {
+            let receipt = try await sendToMondayID(
+                "Interpret “\(mode)” as a task-level operating preference for the current objective. Do not create, activate, or switch to a separate identity or organ-mode; choose the required internal functions automatically."
+            )
+            return .result(dialog: IntentDialog(stringLiteral: receipt.result ?? "Preference applied at state \(receipt.stateRevision)"))
+        } catch MondayIDRuntimeError.notConfigured {
+            return .result(dialog: "Open MondayID once to connect its runtime")
+        }
     }
 }
 
 public struct RunFieldDigestIntent: AppIntent {
     public static let title: LocalizedStringResource = "Run MondayID Field Digest"
-    public static let description = IntentDescription("Request a digest of the current MondayID field/state.")
+    public static let description = IntentDescription("Read the current canonical MondayID state, active tasks, blockers and verified next actions.")
     public static let openAppWhenRun = true
 
     public init() {}
 
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         await MondayIDCommandBus.shared.record(.runFieldDigest)
-        return .result(dialog: "Field digest requested")
+        do {
+            let receipt = try await sendToMondayID(
+                "Read the current canonical MondayID field. Return active tasks, verified receipts, real blockers, unresolved material obligations, and the next admissible actions. Do not replace state with a generic summary."
+            )
+            return .result(dialog: IntentDialog(stringLiteral: receipt.result ?? "Field digest completed at state \(receipt.stateRevision)"))
+        } catch MondayIDRuntimeError.notConfigured {
+            return .result(dialog: "Open MondayID once to connect its runtime")
+        }
     }
 }
 
@@ -164,12 +187,6 @@ public struct MondayIDShortcuts: AppShortcutsProvider {
             phrases: ["Recall a capsule in \(.applicationName)"],
             shortTitle: "Recall Capsule",
             systemImageName: "archivebox"
-        )
-        AppShortcut(
-            intent: ActivateModeIntent(),
-            phrases: ["Activate a mode in \(.applicationName)"],
-            shortTitle: "Activate Mode",
-            systemImageName: "switch.2"
         )
         AppShortcut(
             intent: RunFieldDigestIntent(),
