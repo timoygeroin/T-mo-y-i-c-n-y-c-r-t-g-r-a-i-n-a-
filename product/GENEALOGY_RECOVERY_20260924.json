@@ -1,0 +1,94 @@
+{
+  "schema": "mondayid.genealogy-recovery.v1",
+  "date": "2026-09-24",
+  "rule": "recover proven compute before inventing new compute; historical artifacts are donor evidence and may be superseded without deletion",
+  "sources": [
+    {
+      "id": "drive:1ht2Oku0M-Bc-kkQ6c5VR6j-s_6TSITWL",
+      "title": "MONDAYID_UNIFIED_ORGANISM_v1.md",
+      "date": "2026-07-31",
+      "evidence": [
+        "Jarvis→Alisa/Alpha→Monday→MondayID/HumanOS→DimaID genealogy",
+        "structural inventory claimed 655 exported conversations / 119164 parsed events / 27 sources / zero parse errors",
+        "semantic genealogy explicitly remained incomplete",
+        "operational invariant included one organism / one canonical head / many replaceable organs"
+      ]
+    },
+    {
+      "id": "drive:1OO924LWGLC57QFdxvnlk3zm3bxUbMb8J",
+      "title": "LIBRARY_MAP.md",
+      "date": "2026-09-07",
+      "evidence": [
+        "earliest confirmed raw message 2024-08-03T20:19:43Z",
+        "MAXPACK v7 reported 650 chats / 124017 messages across P1-P5",
+        "2.61GB 2026-04-12 export remained a pointer requiring local unify tooling"
+      ]
+    },
+    {
+      "id": "drive:13b2af5wLk-jBZTkhLowTYJZmbk5Fffds",
+      "title": "TRANSFER_REPORT_0.3.0.md",
+      "date": "2026-09-17",
+      "evidence": [
+        "revision tokens over active Worldline heads",
+        "atomic concurrent append",
+        "stale proposals preserved as unresolved branches",
+        "guarded merge",
+        "event-id idempotency",
+        "Failure Gene FG-007 SILENT-MULTIWRITER-OVERWRITE",
+        "26/26 local regressions passed",
+        "live external multiwriter concurrency and cross-vendor portability remained unproved"
+      ]
+    },
+    {
+      "id": "github:98903584cdf5d809788c3d3c8629747a632cc649",
+      "title": "validated evolving lineage runtime",
+      "date": "2026-09-24",
+      "evidence": [
+        "lineage DAG with per-cell heads and materialized state views",
+        "typed read/write conflict detection",
+        "explicit branch reconciliation",
+        "transactional action ledger with leases/fencing/AMBIGUOUS state",
+        "root continuity contract for architectural evolution",
+        "post-merge system proof run 36040593106 passed"
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "historical": "one organism / one canonical head / many replaceable organs",
+      "status": "PARTIALLY_SUPERSEDED",
+      "current": "one organism / one validated lineage / potentially multiple concurrent heads / reconciled canonical projection",
+      "reason": "a single-head invariant cannot represent legitimate concurrent cells before reconciliation",
+      "preserved": "one organism; replaceable cells/organs; stale writers may not overwrite stronger state"
+    },
+    {
+      "historical": "concurrency breakthrough first discovered on 2026-09-24",
+      "status": "REJECTED_ATTRIBUTION",
+      "current": "2026-09-24 recovered and extended a mechanism already materially present in Omega 0.3.0 on 2026-09-17",
+      "reason": "proven earlier donor compute exists"
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "CORPUS_COUNT_RECONCILIATION",
+      "state": "OPEN",
+      "reason": "2026-07-31 and 2026-09-07 inventories report different chat/message/event counts and measurement scopes; do not blend them without raw receipt comparison"
+    },
+    {
+      "id": "RAW_EXPORT_2_61GB",
+      "state": "POINTER_ONLY",
+      "reason": "the 2026-04-12 2.61GB export was inventoried but not semantically replayed in the connected archaeology evidence"
+    },
+    {
+      "id": "LIVE_EXTERNAL_MULTIWRITER",
+      "state": "OPEN",
+      "reason": "local/shared-store concurrency is proved; distinct live external host cells against the same external Worldline remain unproved"
+    },
+    {
+      "id": "LIVE_CROSS_VENDOR_PORTABILITY",
+      "state": "OPEN",
+      "reason": "clean-host harness exists; live cross-vendor proof remains gated"
+    }
+  ],
+  "consequence": "Do not claim complete three-year semantic assimilation. The recovered corpus is now a provenance-backed migration source; unresolved raw coverage remains a hard blocker for semantic-GC claims that depend on unseen material."
+}
