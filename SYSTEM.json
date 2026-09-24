@@ -281,7 +281,8 @@
       "causal-task-controller",
       "durable-file-work-journal",
       "host-neutral-browser-computer-receptor",
-      "deterministic-computer-receptor-mux"
+      "deterministic-computer-receptor-mux",
+      "native-cdp-browser-driver"
     ],
     "execution_law": "no computer effect is fulfilled from process exit alone; an independent verification request must pass",
     "compute_failure_law": "quota/rate/capacity/provider failure reroutes compute without changing job identity",
@@ -289,7 +290,7 @@
     "current_boundaries": [
       "process workspace is cwd-bounded but not an OS sandbox",
       "file journal is durable on a shared filesystem but not a replicated state service",
-      "browser/computer contract and mux are owned; a live browser driver is not yet bound into Generation 5",
+      "owned native CDP browser driver is implemented; current bootstrap still depends on an available Chromium-family engine",
       "GitHub Actions bootstrap is operational only after the workflow is merged to main and one live request produces a persisted VERIFIED receipt"
     ],
     "donor_provenance": [
@@ -303,6 +304,29 @@
       "receipt_schema": "mondayid.computer-receipt.v1",
       "law": "external substrate may execute owned MondayID contracts but cannot define identity or completion",
       "completion": "distinct verification request passes explicit acceptance and a durable receipt is persisted"
+    },
+    "browser": {
+      "driver": "native-cdp-browser-driver",
+      "dependency_model": "Monday-owned CDP control plane over a replaceable Chromium-family engine",
+      "actions": [
+        "open",
+        "click",
+        "fill",
+        "press",
+        "evaluate",
+        "wait",
+        "screenshot"
+      ],
+      "observations": [
+        "url",
+        "title",
+        "text",
+        "value",
+        "exists",
+        "evaluate"
+      ],
+      "completion": "effect requires separate observe() readback through the browser receptor",
+      "security": "navigation scheme/domain admission is enforced before Page.navigate; browser profile is ephemeral"
     }
   }
 }
