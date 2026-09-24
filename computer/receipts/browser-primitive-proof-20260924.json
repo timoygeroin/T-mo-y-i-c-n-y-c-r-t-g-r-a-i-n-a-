@@ -2,7 +2,7 @@
   "schema": "mondayid.computer-receipt.v1",
   "id": "browser-primitive-proof-20260924",
   "requestPath": "computer/requests/browser-primitive-proof-20260924.json",
-  "requestFingerprint": "9ad367e98627acd22cd559a428906349b36724d7e8153bf9137e7a4da4a0c9cb",
+  "requestFingerprint": "87ce3e56545d0c486411a763b39a90c15d1976fae26ab0a34790ba0ee3b8860d",
   "effect": "prove a dependency-free owned browser driver can be built from native Node plus installed Chromium before adding browser code",
   "status": "UNRESOLVED",
   "supported": true,
@@ -13,17 +13,17 @@
       "mode": "bounded-process-workspace",
       "execution": {
         "status": "completed",
-        "command": "bash",
+        "command": "python3",
         "args": [
-          "-lc",
-          "node - <<'NODE'\nconst {spawn}=require('node:child_process');\nconst fs=require('node:fs');\nconst os=require('node:os');\nconst path=require('node:path');\nconst dir=fs.mkdtempSync(path.join(os.tmpdir(),'monday-cdp-'));\nconst port=9333;\nconst p=spawn('/usr/bin/chromium',['--headless=new','--no-sandbox','--disable-gpu','--remote-debugging-address=127.0.0.1',`--remote-debugging-port=${port}`,`--user-data-dir=${dir}`,'about:blank'],{stdio:'ignore',detached:true});\np.unref();\n(async()=>{\n let ok=false,version=null;\n for(let i=0;i<50;i++){\n   try{const r=await fetch(`http://127.0.0.1:${port}/json/version`); if(r.ok){version=await r.json();ok=true;break;}}catch{}\n   await new Promise(r=>setTimeout(r,100));\n }\n const out={node:process.version,webSocketType:typeof WebSocket,chromium:version?.Browser||null,cdp:ok};\n fs.writeFileSync('browser-primitive.json',JSON.stringify(out));\n try{process.kill(-p.pid,'SIGKILL')}catch{}\n process.exit(0);\n})();\nNODE"
+          "-c",
+          "import json,os,signal,subprocess,tempfile,time,urllib.request\nchrome='/usr/bin/google-chrome'\nprofile=tempfile.mkdtemp(prefix='monday-cdp-')\nport=9333\np=subprocess.Popen([chrome,'--headless=new','--no-sandbox','--disable-gpu','--remote-debugging-address=127.0.0.1',f'--remote-debugging-port={port}',f'--user-data-dir={profile}','about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True,start_new_session=True)\nok=False\nversion=None\nerror=None\nfor _ in range(80):\n    try:\n        with urllib.request.urlopen(f'http://127.0.0.1:{port}/json/version',timeout=.2) as r:\n            version=json.load(r); ok=True; break\n    except Exception as e:\n        error=str(e); time.sleep(.1)\ntry: os.killpg(p.pid,signal.SIGKILL)\nexcept Exception: pass\ntry: _,stderr=p.communicate(timeout=2)\nexcept Exception: stderr=''\nws=subprocess.check_output(['node','-p','typeof WebSocket'],text=True).strip()\nout={'cdp':ok,'chromium':(version or {}).get('Browser'),'webSocketType':ws,'error':error if not ok else None,'stderrTail':stderr[-1500:]}\nopen('browser-primitive.json','w').write(json.dumps(out,separators=(',',':')))\n"
         ],
         "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
         "exitCode": 0,
         "signal": null,
         "stdout": "",
         "stderr": "",
-        "durationMs": 5266
+        "durationMs": 8574
       },
       "verificationRequest": {
         "command": "python3",
@@ -36,7 +36,7 @@
         "stdoutIncludes": "\"cdp\":true",
         "stderrEmpty": true
       },
-      "executionFingerprint": "f9901ba4f3231b20",
+      "executionFingerprint": "58773820582b24b5",
       "verificationFingerprint": "eec7dda2a1aa719b"
     }
   },
@@ -44,7 +44,7 @@
     "ok": false,
     "code": "COMPUTER_READBACK_FAILED",
     "mode": "independent-process-readback",
-    "executionFingerprint": "f9901ba4f3231b20",
+    "executionFingerprint": "58773820582b24b5",
     "verificationFingerprint": "eec7dda2a1aa719b",
     "readback": {
       "status": "completed",
@@ -56,17 +56,17 @@
       "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
       "exitCode": 0,
       "signal": null,
-      "stdout": "{\"node\":\"v22.23.2\",\"webSocketType\":\"function\",\"chromium\":null,\"cdp\":false}",
+      "stdout": "{\"cdp\":false,\"chromium\":null,\"webSocketType\":\"function\",\"error\":\"timed out\",\"stderrTail\":\"[2279:2306:0924/163507.976905:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are \\\"tcp\\\" and on UNIX \\\"unix\\\")\\n[2279:2306:0924/163507.992697:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are \\\"tcp\\\" and on UNIX \\\"unix\\\")\\n[2279:2306:0924/163508.487464:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are \\\"tcp\\\" and on UNIX \\\"unix\\\")\\n[2279:2306:0924/163508.924211:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are \\\"tcp\\\" and on UNIX \\\"unix\\\")\\n\\nDevTools listening on ws://127.0.0.1:9333/devtools/browser/53f8efee-604f-4b53-9f8f-ea5c6e57a32b\\n\"}",
       "stderr": "",
-      "durationMs": 27
+      "durationMs": 30
     }
   },
   "runner": {
     "kind": "github-actions-bootstrap",
     "ownedContract": "mondayid-process-computer",
     "externalSubstrate": "github-actions",
-    "commit": "9c86efa2637ba9c2beedc54f57d9db5053096534",
-    "runId": "36028006171"
+    "commit": "ef1652eb9102edd800871ca848327eb913ba41f3",
+    "runId": "36028356272"
   },
-  "at": "2026-09-24T16:32:01.086Z"
+  "at": "2026-09-24T16:35:10.345Z"
 }
