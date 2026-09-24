@@ -79,3 +79,106 @@ test('one failed organ invention does not stop already executable organs', async
   assert.equal(out.results.some(r => r.action.domain === 'host' && r.ok), true);
   assert.equal(out.forged.some(f => f.domain === 'vision' && f.ok === false), true);
 });
+
+
+test('foundry reuses a proven donor before spending builder compute', async () => {
+  let builds = 0;
+  let recoveries = 0;
+  const donor = {
+    name:'recovered-vision',
+    execute:async action=>({ok:true,effect:action.effect,source:'recovered'}),
+    verify:async result=>({ok:result.ok === true,mode:'donor-readback'})
+  };
+  const foundry = new CapabilityFoundry({
+    recover: async contract => {
+      recoveries += 1;
+      return {
+        receptor:donor,
+        proof:{ok:true,mode:'historical-regression'},
+        provenance:{
+          source:'agent/mondayid-organism-physics-v1',
+          mechanism:'self-hosting-organism',
+          contract:contract.id
+        }
+      };
+    },
+    builder: async () => {
+      builds += 1;
+      return {
+        receptor:{name:'should-not-build',execute:async()=>({ok:true}),verify:async()=>({ok:true})},
+        proof:{ok:true}
+      };
+    }
+  });
+
+  const out = await foundry.forge({objectiveId:'vision',domain:'vision',effect:'render verified image'},{});
+  assert.equal(out.ok,true);
+  assert.equal(out.state,'REUSED');
+  assert.equal(out.receipt.mode,'REUSED');
+  assert.equal(recoveries,1);
+  assert.equal(builds,0);
+  assert.equal(out.receptor,donor);
+});
+
+test('unproven historical compute is not reused and only the residual path is built', async () => {
+  let builds = 0;
+  const foundry = new CapabilityFoundry({
+    recover: async () => ({
+      receptor:{
+        name:'stale-donor',
+        execute:async()=>({ok:true}),
+        verify:async()=>({ok:true})
+      },
+      proof:{ok:false,reason:'no current acceptance proof'},
+      provenance:{source:'legacy-branch'}
+    }),
+    builder: async (_contract,_available,context) => {
+      builds += 1;
+      assert.equal(context.recovery.attempted,true);
+      assert.equal(context.recovery.code,'RECOVERED_ORGAN_UNPROVEN');
+      return {
+        builder:'residual-builder',
+        receptor:{
+          name:'patched-current-organ',
+          execute:async()=>({ok:true}),
+          verify:async result=>({ok:result.ok === true})
+        },
+        proof:{ok:true,mode:'current-proof'},
+        provenance:{source:'current-main-residual-patch'}
+      };
+    }
+  });
+
+  const out = await foundry.forge({objectiveId:'host',domain:'host',effect:'verified host effect'},{});
+  assert.equal(out.ok,true);
+  assert.equal(out.state,'PROVEN');
+  assert.equal(out.receipt.mode,'PATCH_OR_NEW_AFTER_RECOVERY');
+  assert.equal(builds,1);
+});
+
+test('runtime can recover a proven missing organ and finish through it in the same cycle', async () => {
+  let builds = 0;
+  const foundry = new CapabilityFoundry({
+    recover: async contract => ({
+      receptor:{
+        name:`recovered-${contract.domain}`,
+        execute:async action=>({ok:true,effect:action.effect,reused:true}),
+        verify:async result=>({ok:result.ok === true && result.reused === true})
+      },
+      proof:{ok:true,mode:'proof-carrying-cache'},
+      provenance:{source:'verified-prior-compute',fingerprint:'proof-001'}
+    }),
+    builder:async()=>{ builds += 1; return null; }
+  });
+
+  const runtime = new MondayRuntime({capabilities:{},foundry});
+  const out = await runtime.cycle([{id:'reuse-now',text:'finish the vision generator',priority:90}]);
+
+  assert.equal(out.ok,true);
+  assert.equal(builds,0);
+  assert.equal(out.forged.length,1);
+  assert.equal(out.forged[0].state,'REUSED');
+  assert.equal(out.results.length,1);
+  assert.equal(out.results[0].ok,true);
+  assert.equal(runtime.capabilities.vision.name,'recovered-vision');
+});
