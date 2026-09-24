@@ -104,3 +104,31 @@ test('runtime rejects a generic candidate even when its receptor verifier would 
   assert.equal(out.final.results[0].verification.code,'MONDAY_ATTRACTOR_RELEASE_VETO');
   assert.equal(out.final.intents['steering-regression'].status,'active');
 });
+
+
+test('verified and failed runtime history automatically becomes contrastive steering data', () => {
+  const state = {
+    failures:{
+      f1:{
+        action:{effect:'continue current worldline'},
+        result:{text:'How can I help you?'},
+        verification:{code:'GENERIC_HELPDESK_RESET'}
+      }
+    },
+    receipts:{
+      r1:{
+        action:{effect:'continue current worldline'},
+        result:{text:'Continuing the active worldline from the unresolved task.'}
+      }
+    }
+  };
+
+  const contract = compileAttractorContract({
+    text:'continue current worldline',
+    domains:['continuity']
+  }, {domains:['continuity'],state});
+
+  assert.ok(contract.contrastiveExamples.some(x => x.label === 'reject' && x.provenance === 'worldline-failure'));
+  assert.ok(contract.contrastiveExamples.some(x => x.label === 'accept' && x.provenance === 'worldline-receipt'));
+  assert.ok(contract.knownFailureGenes.includes('GENERIC_HELPDESK_RESET'));
+});
