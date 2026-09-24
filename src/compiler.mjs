@@ -1,4 +1,5 @@
 import { frameSignal } from './semantic-frame.mjs';
+import { compileAttractorContract } from './attractor-field.mjs';
 
 const DOMAIN_HINTS = {
   vision: /vision|image|generator|render|visual/i,
@@ -13,13 +14,14 @@ export function inferDomains(text='') {
   return hits.length ? hits : ['general'];
 }
 
-export function compileSignals(signals = []) {
+export function compileSignals(signals = [], { state = {}, policies = {} } = {}) {
   const nodes = [];
   for (const signal of signals) {
     const text = String(signal.text ?? signal.intent ?? '');
     const domains = signal.domains || inferDomains(text);
     const completedDomains = Array.isArray(signal.completedDomains) ? signal.completedDomains : [];
     const semanticFrame = frameSignal(signal);
+    const attractorContract = compileAttractorContract(signal, { domains, state, policies });
     const rootId = signal.id || `signal:${nodes.length}`;
     nodes.push({
       id: rootId,
@@ -31,6 +33,7 @@ export function compileSignals(signals = []) {
       priority: signal.priority ?? 50,
       status: signal.status || 'active',
       semanticFrame,
+      attractorContract,
       dependsOn: []
     });
     for (const domain of domains) {
@@ -44,10 +47,11 @@ export function compileSignals(signals = []) {
         priority: signal.priority ?? 50,
         status: 'ready',
         semanticFrame,
+        attractorContract,
         dependsOn: [rootId],
-        effect: signal.effect || text
+        effect: signal.effect || signal.desiredEffect || text
       });
     }
   }
-  return { schema: 'mondayid.intent-graph.v3', nodes };
+  return { schema: 'mondayid.intent-graph.v4', nodes };
 }
