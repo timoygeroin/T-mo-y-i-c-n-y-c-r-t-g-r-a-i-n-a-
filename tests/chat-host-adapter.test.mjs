@@ -113,3 +113,22 @@ test('chat host refuses a generic-helpdesk candidate instead of leaking it to th
   assert.equal(out.state,'BLOCKED');
   assert.equal(out.surface.released,false);
 });
+
+
+test('fulfilled chat host returns a durable normalized receipt for native clients', async () => {
+  const provider={
+    async generate(){return {ok:true,text:'Bound native response',evidence:{provider:'mock-provider'}};}
+  };
+  const out=await runChatHost({
+    signal:{id:'native',text:'continue',computeTier:'LOW'},
+    env:liveEnv,
+    fetchImpl:worldlineFetch,
+    provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(out.receipt.id,'action:native:general');
+  assert.equal(typeof out.receipt.revision,'string');
+  assert.ok(out.receipt.revision.length>0);
+  assert.ok(out.receipt.provider);
+  assert.equal(out.surface.message,'Bound native response');
+});
