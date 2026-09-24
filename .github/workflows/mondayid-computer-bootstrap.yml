@@ -53,12 +53,17 @@ jobs:
       - name: Execute owned computer contracts
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          failed=0
           while IFS= read -r request; do
-            node src/execution/computer-task-runner.mjs "$request"
+            if ! node src/execution/computer-task-runner.mjs "$request"; then
+              failed=1
+            fi
           done < /tmp/mondayid-computer-requests.txt
+          printf '%s' "$failed" > /tmp/mondayid-computer-failed
 
       - name: Persist verification receipts
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
@@ -69,5 +74,16 @@ jobs:
           fi
           git config user.name "MondayID Computer"
           git config user.email "mondayid-computer@users.noreply.github.com"
-          git commit -m "computer: persist verified execution receipt"
+          git commit -m "computer: persist execution receipt"
           git push
+
+      - name: Fail closed after receipt persistence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed="$(cat /tmp/mondayid-computer-failed 2>/dev/null || printf '1')"
+          if [ "$failed" != "0" ]; then
+            echo "One or more computer requests remained unresolved; receipt was persisted."
+            exit 1
+          fi
