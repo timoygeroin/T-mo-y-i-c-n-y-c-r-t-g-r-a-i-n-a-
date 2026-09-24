@@ -1,0 +1,34 @@
+name: MondayID Apple build proof
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mondayid-apple-build-proof
+  cancel-in-progress: false
+
+jobs:
+  apple-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode toolchain
+        run: xcodebuild -version
+
+      - name: Test Apple runtime adapter
+        run: swift test --package-path platform/apple-adapter
+
+      - name: Compile MondayIDHost for iPhone Simulator without signing
+        run: |
+          set -euo pipefail
+          xcodebuild             -project platform/apple-host/MondayIDHost.xcodeproj             -target MondayIDHost             -sdk iphonesimulator             -configuration Debug             CODE_SIGNING_ALLOWED=NO             build
+
+      - name: Record proof boundary
+        run: |
+          echo "Swift package tests: PASS"
+          echo "iPhone Simulator compile: PASS"
+          echo "Physical iPhone signing/install: NOT PROVEN BY THIS WORKFLOW"
