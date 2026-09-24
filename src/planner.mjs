@@ -1,4 +1,11 @@
-const score = (n) => (n.priority ?? 0) + (n.blockingOthers ? 30 : 0) + (n.verifiable ? 10 : 0) - (n.cost ?? 0);
+const score = (n) => {
+  const computePressure = Number(n.inferenceContract?.compute?.score || 0);
+  return (n.priority ?? 0)
+    + (n.blockingOthers ? 30 : 0)
+    + (n.verifiable ? 10 : 0)
+    + Math.round(computePressure * 10)
+    - (n.cost ?? 0);
+};
 
 export function buildFrontier(graph, capabilities = {}) {
   const objectives = graph.nodes.filter(n => n.type === 'objective');
@@ -13,7 +20,8 @@ export function buildFrontier(graph, capabilities = {}) {
       receptor: receptor?.name || null,
       priority: o.priority,
       verifiable: Boolean(receptor?.verify),
-      cost: receptor?.cost ?? 0
+      cost: receptor?.cost ?? 0,
+      inferenceContract: o.attractorContract || null
     };
 
     const executable = Boolean(receptor?.execute);
