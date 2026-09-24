@@ -1,0 +1,72 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "capability-probe-20260924",
+  "requestPath": "computer/requests/capability-probe-20260924.json",
+  "requestFingerprint": "3f5b882d47a6366ea5f8a3b8f0222854dd769459071979e74dde7ffac426633d",
+  "effect": "discover browser and execution primitives already present on the fresh MondayID computer substrate before installing or rebuilding anything",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "evidence": {
+      "mode": "bounded-process-workspace",
+      "execution": {
+        "status": "completed",
+        "command": "bash",
+        "args": [
+          "-lc",
+          "python3 - <<'PY'\nimport json,shutil,platform\nbins=['google-chrome','google-chrome-stable','chromium','chromium-browser','firefox','node','npm','npx','python3','git','docker']\nout={'platform':platform.platform(),'binaries':{b:shutil.which(b) for b in bins}}\nopen('computer-capabilities.json','w').write(json.dumps(out,sort_keys=True))\nPY"
+        ],
+        "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+        "exitCode": 0,
+        "signal": null,
+        "stdout": "",
+        "stderr": "",
+        "durationMs": 199
+      },
+      "verificationRequest": {
+        "command": "python3",
+        "args": [
+          "-c",
+          "from pathlib import Path; print(Path('computer-capabilities.json').read_text(), end='')"
+        ]
+      },
+      "acceptance": {
+        "stdoutIncludes": "\"python3\"",
+        "stderrEmpty": true
+      },
+      "executionFingerprint": "54b69278c7f0fdba",
+      "verificationFingerprint": "f67d66f6e8bff181"
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "54b69278c7f0fdba",
+    "verificationFingerprint": "f67d66f6e8bff181",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "from pathlib import Path; print(Path('computer-capabilities.json').read_text(), end='')"
+      ],
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "{\"binaries\": {\"chromium\": \"/usr/bin/chromium\", \"chromium-browser\": \"/usr/bin/chromium-browser\", \"docker\": \"/usr/bin/docker\", \"firefox\": \"/usr/bin/firefox\", \"git\": \"/usr/bin/git\", \"google-chrome\": \"/usr/bin/google-chrome\", \"google-chrome-stable\": \"/usr/bin/google-chrome-stable\", \"node\": \"/usr/local/bin/node\", \"npm\": \"/usr/local/bin/npm\", \"npx\": \"/usr/local/bin/npx\", \"python3\": \"/usr/bin/python3\"}, \"platform\": \"Linux-6.17.0-1022-azure-x86_64-with-glibc2.39\"}",
+      "stderr": "",
+      "durationMs": 27
+    }
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-process-computer",
+    "externalSubstrate": "github-actions",
+    "commit": "388b60b688d4997d9a8d8f5e75db1715b458a45a",
+    "runId": "36027533586"
+  },
+  "at": "2026-09-24T16:27:56.865Z"
+}
