@@ -1,0 +1,37 @@
+{
+  "schema": "mondayid.apple-body.status.v1",
+  "date": "2026-09-24",
+  "source_lineage": {
+    "donor_pr": 39,
+    "donor_branch": "monday/continuum-runtime-integration-20260914",
+    "forward_port_mode": "exact subtree donor into Generation-5 main candidate"
+  },
+  "body": {
+    "xcode_project": "platform/apple-host/MondayIDHost.xcodeproj",
+    "swift_app": "platform/apple-host/MondayIDHost/MondayIDHostApp.swift",
+    "adapter": "platform/apple-adapter",
+    "bundle_id": "com.mondayid.host",
+    "surfaces": [
+      "Home",
+      "Chats",
+      "Create",
+      "Spaces",
+      "You",
+      "Search",
+      "Activity",
+      "Library"
+    ]
+  },
+  "current_evidence": [
+    "consumer product constitution is canonical on main",
+    "Apple host and adapter source are now carried by the Generation-5 lineage",
+    "static product-body contract regressions run in the normal Node proof"
+  ],
+  "not_yet_claimed": [
+    "fresh Swift compile on current main",
+    "code signing",
+    "physical iPhone installation",
+    "real-device runtime connection acceptance"
+  ],
+  "release_state": "SOURCE_PORTED_BUILD_AND_DEVICE_UNVERIFIED"
+}
