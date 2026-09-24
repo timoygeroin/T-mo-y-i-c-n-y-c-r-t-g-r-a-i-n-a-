@@ -38,6 +38,7 @@ export function compileSignals(signals = [], { state = {}, policies = {} } = {})
     });
     for (const domain of domains) {
       if (completedDomains.includes(domain)) continue;
+      const routeCandidates=(signal.routeCandidates || []).filter(route => !route?.domain || route.domain === domain);
       nodes.push({
         id: `${rootId}:${domain}`,
         type: 'objective',
@@ -48,6 +49,7 @@ export function compileSignals(signals = [], { state = {}, policies = {} } = {})
         status: 'ready',
         semanticFrame,
         attractorContract,
+        routeCandidates,
         dependsOn: [rootId],
         effect: signal.effect || signal.desiredEffect || text
       });
