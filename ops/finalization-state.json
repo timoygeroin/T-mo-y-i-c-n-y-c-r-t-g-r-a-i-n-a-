@@ -12,13 +12,24 @@
     "contrastive_worldline_steering",
     "gpt_5_6_provider_binding",
     "verified_candidate_surface",
-    "disabled_by_default_authenticated_respond_endpoint"
+    "disabled_by_default_authenticated_respond_endpoint",
+    "finalization_finish_line_frozen",
+    "historical_pr_authority_adjudicated",
+    "role_locked_lineage_genome_v2",
+    "consumer_product_constitution_forward_ported",
+    "live_inference_budget_membrane",
+    "raw_signal_material_obligations",
+    "durable_long_work_task_state",
+    "omega_decision_field",
+    "clean_host_transfer_harness",
+    "apple_consumer_body_source_forward_ported"
   ],
   "open": [
     {
       "id": "LINEAGE_ADJUDICATION",
       "type": "implementation",
-      "blocking": true
+      "blocking": false,
+      "status": "BASELINE_ADJUDICATED_PR39_REMAINS_ACTIVE_DONOR"
     },
     {
       "id": "PRODUCTION_PROMOTION",
@@ -39,7 +50,8 @@
       "id": "CONSUMER_PRODUCT_CONVERGENCE",
       "type": "implementation",
       "blocking": true,
-      "ref": "PR#39"
+      "ref": "PR#39",
+      "status": "CONSTITUTION_AND_APPLE_BODY_PORTED_RUNTIME_INTEGRATION_REMAINS"
     },
     {
       "id": "THREE_YEAR_GENEALOGY",
@@ -49,7 +61,8 @@
     {
       "id": "PHYSICAL_IPHONE_ACCEPTANCE",
       "type": "human_device_gate",
-      "blocking": true
+      "blocking": true,
+      "status": "SOURCE_PRESENT_BUILD_SIGN_INSTALL_UNVERIFIED"
     },
     {
       "id": "ADVERSARIAL_INTEGRATED_ACCEPTANCE",
@@ -60,6 +73,18 @@
       "id": "FINAL_SEAL",
       "type": "verification",
       "blocking": true
+    },
+    {
+      "id": "APPLE_BUILD_PROOF",
+      "type": "verification",
+      "blocking": true,
+      "status": "WORKFLOW_PREPARED_NOT_RUN"
+    },
+    {
+      "id": "CLEAN_HOST_TRANSFER_LIVE_PROOF",
+      "type": "verification_plus_secret",
+      "blocking": true,
+      "status": "HARNESS_READY_NEEDS_WORLDLINE_WRITER_SECRET_IN_CI"
     }
   ],
   "human_gates": [

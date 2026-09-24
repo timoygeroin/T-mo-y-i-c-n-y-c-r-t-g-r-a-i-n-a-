@@ -116,6 +116,85 @@
         "authenticated disabled-by-default response endpoint",
         "no-spend execution gate"
       ]
+    },
+    "finalization_program": {
+      "ok": true,
+      "merged_pr": 69,
+      "merge_commit": "8f95bf2acc83e6ae92d9892856f55d6400dbc5df",
+      "effects": [
+        "organism-wide finish criteria",
+        "machine-readable finalization state",
+        "deterministic production-promotion workflow",
+        "historical PR authority adjudication",
+        "role-locked lineage genome v2"
+      ]
+    },
+    "consumer_product_authority": {
+      "ok": true,
+      "merged_pr": 70,
+      "merge_commit": "bbaffc2ab2ac089d75956687d97bcf78ea26f459",
+      "effects": [
+        "consumer product constitution",
+        "known rejection gates",
+        "Continuum integration plan",
+        "product lineage adjudication"
+      ]
+    },
+    "live_inference_budget_membrane": {
+      "ok": true,
+      "merged_pr": 71,
+      "merge_commit": "a52ca661c39d513e56f2c91c9f53eb0f4b540ef4",
+      "effects": [
+        "separate spend authorization",
+        "input/output token caps",
+        "path and critic fanout caps",
+        "fail before network on missing budget authority"
+      ]
+    },
+    "signal_and_long_work": {
+      "ok": true,
+      "merged_pr": 72,
+      "merge_commit": "27f4c862c50a5b19bab3fa92350685703706abda",
+      "effects": [
+        "material signal obligations",
+        "durable task objects",
+        "continuation cursor",
+        "no human continue message required for partial internal progress"
+      ]
+    },
+    "omega_decision_field": {
+      "ok": true,
+      "merged_pr": 73,
+      "merge_commit": "67bf57b4d0737cfa40c867f1ec3c70f5c06abef4",
+      "effects": [
+        "information gain routing",
+        "future optionality routing",
+        "reversibility weighting",
+        "hard authority and evidence vetoes"
+      ]
+    },
+    "clean_host_transfer_harness": {
+      "ok": true,
+      "merged_pr": 74,
+      "merge_commit": "6130d05177c550e305ff919531caa5a295fbc3bb",
+      "effects": [
+        "current-host capability rediscovery",
+        "external write/readback harness",
+        "next-fresh-cell evidence inheritance proof path"
+      ],
+      "live_proof": "PENDING_CI_WRITER_SECRET"
+    },
+    "apple_consumer_body": {
+      "ok": true,
+      "merged_pr": 75,
+      "merge_commit": "e34b41c1548d51f80e9913d87d6913269622e35f",
+      "effects": [
+        "SwiftUI consumer host source",
+        "Apple runtime adapter",
+        "five-surface Home/Chats/Create/Spaces/You body",
+        "Search/Activity/Library/local continuity source"
+      ],
+      "boundary": "SOURCE_PORTED_BUILD_SIGN_INSTALL_UNVERIFIED"
     }
   },
   "known_nonblocking_debt": {
@@ -157,15 +236,15 @@
   },
   "delivery": {
     "status": "BLOCKED",
-    "checked_at": "2026-09-24T06:59:51Z",
+    "checked_at": "2026-09-24",
     "target": "mondayid-host production",
     "required_code_provenance": "current generation-5 main at deployment time; must include Monday Weighting PR #66 and provider binding PR #67 and remain a descendant of generation-5 cutover",
     "evidence": {
-      "production_api_health": "404 NOT_FOUND at 2026-09-24T06:59:49Z",
-      "production_api_boot": "404 NOT_FOUND at 2026-09-24T06:59:51Z",
-      "newest_visible_project_deployment": "dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ READY preview created 2026-09-15T23:47:52Z; protected by Vercel SSO",
-      "newest_visible_production_deployment": "dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi READY production created 2026-09-14T11:35:29Z",
-      "deployment_after_weighting_merges": "none observed"
+      "production_api_health": "404 NOT_FOUND on fresh 2026-09-24 readback",
+      "production_api_boot": "404 NOT_FOUND on fresh 2026-09-24 readback",
+      "newest_visible_project_deployment": "dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ READY preview; /api/health 404; /api/boot redirects through Vercel SSO",
+      "newest_visible_production_deployment": "dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi READY production created 2026-09-14; alias still points here",
+      "deployment_after_weighting_merges": "none observed through latest Vercel readback"
     },
     "blocker": "No deployment path with an explicit project target and authenticated production promotion is exposed in the current Vercel connector; browser automation would incur an external Browser Use cost and is disallowed by the no-spend boundary. Do not guess-deploy an ambiguous 'current project'.",
     "rule": "Do not claim production delivery or organism-wide completion until current generation-5 main is deployed to mondayid-host and /api/health plus /api/boot pass live readback. /api/respond must remain disabled unless model execution is explicitly enabled with required secrets and spending authority."
