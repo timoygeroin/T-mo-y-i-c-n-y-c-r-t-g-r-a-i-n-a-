@@ -107,3 +107,20 @@ test('all generic outputs fail closed instead of falling back to the default ass
   assert.equal(result.ok,false);
   assert.equal(result.code,'NO_MONDAY_CANDIDATE_SURVIVED');
 });
+
+
+test('live receptor caps path and critic fanout below the abstract MAX topology', async () => {
+  let generated=0;
+  let critiques=0;
+  const provider={
+    async generate({pathIndex}){generated+=1; return {text:`candidate ${pathIndex}`};},
+    async critique(){critiques+=1; return {ok:true,score:1};}
+  };
+  const receptor=createModelReceptor({provider,maxParallelPaths:2,maxCritics:1});
+  const result=await receptor.execute(actionFor({computeTier:'MAX'}));
+  assert.equal(result.ok,true);
+  assert.equal(result.evidence.pathCount,2);
+  assert.equal(result.evidence.criticCount,1);
+  assert.equal(generated,2);
+  assert.equal(critiques,2);
+});
