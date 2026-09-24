@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const source=fs.readFileSync(new URL('../platform/apple-host/MondayIDHost/MondayIDHostApp.swift',import.meta.url),'utf8');
 const project=fs.readFileSync(new URL('../platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj',import.meta.url),'utf8');
 const adapter=fs.readFileSync(new URL('../platform/apple-adapter/Package.swift',import.meta.url),'utf8');
+const intents=fs.readFileSync(new URL('../platform/apple-adapter/Sources/MondayIDAppleAdapter/MondayIDIntents.swift',import.meta.url),'utf8');
 
 test('canonical repository contains the five-surface Monday consumer iPhone body',()=>{
   for(const label of ['Home','Chats','Create','Spaces','You']){
