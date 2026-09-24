@@ -16,3 +16,15 @@ Request schema:
 - explicit `acceptance`
 
 The bootstrap workflow persists receipts under `computer/receipts/`. A failed or unsupported request fails closed and does not produce a verified claim.
+
+
+## First-class routes
+
+The durable request surface now routes through the owned `mondayid-computer-fabric` mux.
+
+- Legacy/request-level `executionRequest + verificationRequest + acceptance` is normalized to `kind: workspace-exec`.
+- Browser work uses `routeCandidate.kind = browser`, browser-native `steps[]`, and a separate `verification.probe + acceptance`.
+- `browserPolicy.allowedDomains` can constrain navigation. `data:` URLs are denied unless `browserPolicy.allowData = true`.
+- Ambiguous or unsupported organ routing fails closed.
+
+This means callers do not need to wrap browser behavior inside a shell/Node script. The request names the desired computer route; the fabric selects exactly one owned organ and preserves which organ actually executed the effect in the receipt.
