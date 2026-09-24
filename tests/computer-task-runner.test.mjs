@@ -77,3 +77,35 @@ test('computer task runner fails closed when verification cannot prove the effec
     await rm(root,{recursive:true,force:true});
   }
 });
+
+
+test('computer request fingerprint changes when nested execution semantics change', async () => {
+  const root=await mkdtemp(join(tmpdir(),'mondayid-task-fingerprint-'));
+  try {
+    await mkdir(join(root,'computer','requests'),{recursive:true});
+    const base={
+      schema:'mondayid.computer-task.v1',
+      id:'fingerprint-proof',
+      effect:'prove nested task semantics are fingerprinted',
+      domain:'code',
+      executionRequest:{command:'python3',args:['-c',"print('A')"]},
+      verificationRequest:{command:'python3',args:['-c',"print('A')"]},
+      acceptance:{stdoutEquals:'A\\n'}
+    };
+    const requestPath=join(root,'computer','requests','fingerprint-proof.json');
+    await writeFile(requestPath,JSON.stringify(base),'utf8');
+    let out=await run(['computer/requests/fingerprint-proof.json'],{cwd:root});
+    assert.equal(out.code,0,out.stderr);
+    let receipt=JSON.parse(await readFile(join(root,'computer','receipts','fingerprint-proof.json'),'utf8'));
+    const first=receipt.requestFingerprint;
+
+    const changed={...base,executionRequest:{...base.executionRequest,args:['-c',"print('B')"]}};
+    await writeFile(requestPath,JSON.stringify(changed),'utf8');
+    out=await run(['computer/requests/fingerprint-proof.json'],{cwd:root});
+    assert.notEqual(out.code,0);
+    receipt=JSON.parse(await readFile(join(root,'computer','receipts','fingerprint-proof.json'),'utf8'));
+    assert.notEqual(receipt.requestFingerprint,first);
+  } finally {
+    await rm(root,{recursive:true,force:true});
+  }
+});
