@@ -34,9 +34,22 @@ export const GENERIC_GPT_PATTERNS = Object.freeze([
   }
 ]);
 
+const pickText = value => String(
+  value?.text ??
+  value?.message ??
+  value?.output ??
+  value?.result?.text ??
+  value?.result?.message ??
+  value?.result?.output ??
+  ''
+);
+
 function inferComplexity(signal = {}, domains = [], state = {}) {
   const c = signal.complexity || {};
-  const activeHistory = Object.keys(state?.intents || {}).length + Object.keys(state?.failures || {}).length;
+  const activeHistory =
+    Object.keys(state?.intents || {}).length +
+    Object.keys(state?.failures || {}).length +
+    Object.keys(state?.receipts || {}).length;
   const historicalDepth = c.historicalDepth ?? signal.historicalDepth ?? Math.min(1, activeHistory / 12);
   const crossDomain = c.crossDomain ?? Math.min(1, Math.max(0, domains.length - 1) / 3);
   const novelty = c.novelty ?? signal.novelty ?? (domains.length > 1 ? 0.7 : 0.35);
@@ -94,16 +107,70 @@ export function estimateComputeProfile(signal = {}, { domains = [], state = {} }
   });
 }
 
-function normalizeContrastiveExamples(signal = {}) {
+function normalizeExplicitExamples(signal = {}) {
   return (signal.contrastiveExamples || signal.examples || [])
     .slice(0, 12)
-    .map((entry, index) => Object.freeze({
-      id:String(entry.id || `example:${index + 1}`),
+    .map((entry, index) => ({
+      id:String(entry.id || `explicit:${index + 1}`),
       label:entry.label === 'reject' ? 'reject' : 'accept',
       input:String(entry.input || ''),
       output:String(entry.output || ''),
-      reason:String(entry.reason || '')
+      reason:String(entry.reason || ''),
+      provenance:'current-signal'
     }));
+}
+
+function deriveHistoricalExamples(state = {}) {
+  const out = [];
+
+  for (const [id, entry] of Object.entries(state?.failures || {})) {
+    const output = pickText(entry);
+    if (!output) continue;
+    out.push({
+      id:`history:reject:${id}`,
+      label:'reject',
+      input:String(entry?.action?.effect || entry?.action?.objectiveId || ''),
+      output,
+      reason:String(
+        entry?.verification?.code ||
+        entry?.code ||
+        entry?.error ||
+        'historical runtime failure'
+      ),
+      provenance:'worldline-failure'
+    });
+  }
+
+  for (const [id, entry] of Object.entries(state?.receipts || {})) {
+    const output = pickText(entry);
+    if (!output) continue;
+    out.push({
+      id:`history:accept:${id}`,
+      label:'accept',
+      input:String(entry?.action?.effect || entry?.action?.objectiveId || ''),
+      output,
+      reason:'historical verified receipt',
+      provenance:'worldline-receipt'
+    });
+  }
+
+  const rejects = out.filter(x => x.label === 'reject').slice(-6);
+  const accepts = out.filter(x => x.label === 'accept').slice(-6);
+  return [...rejects, ...accepts];
+}
+
+function compileContrastiveExamples(signal = {}, state = {}) {
+  const combined = [...normalizeExplicitExamples(signal), ...deriveHistoricalExamples(state)];
+  const seen = new Set();
+  return combined
+    .filter(entry => {
+      const key = `${entry.label}|${entry.input}|${entry.output}|${entry.reason}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 12)
+    .map(entry => Object.freeze(entry));
 }
 
 export function compileAttractorContract(signal = {}, { domains = [], state = {}, policies = {} } = {}) {
@@ -131,7 +198,7 @@ export function compileAttractorContract(signal = {}, { domains = [], state = {}
     knownFailureGenes:Object.freeze(unique([...(signal.failureGenes || []), ...failures]).slice(0, 24)),
     genericVetoes:Object.freeze(genericVetoes),
     allowDecisionDelegation:signal.allowDecisionDelegation === true,
-    contrastiveExamples:Object.freeze(normalizeContrastiveExamples(signal)),
+    contrastiveExamples:Object.freeze(compileContrastiveExamples(signal, state)),
     compute:estimateComputeProfile(signal, { domains, state }),
     weights:DEFAULT_STEERING_WEIGHTS,
     policyGeneration:Array.isArray(policies?.history) ? policies.history.length : 0
@@ -141,7 +208,7 @@ export function compileAttractorContract(signal = {}, { domains = [], state = {}
 export function evaluateCandidateOutput(result = {}, contract = null) {
   if (!contract?.strictMonday) return Object.freeze({ ok:true, hits:[] });
 
-  const text = String(result?.text ?? result?.message ?? result?.output ?? '');
+  const text = pickText(result);
   if (!text) return Object.freeze({ ok:true, hits:[] });
 
   const hits = [];
