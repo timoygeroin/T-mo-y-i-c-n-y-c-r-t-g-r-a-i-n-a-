@@ -44,7 +44,12 @@
       "class": "archive_statistics_and_synthesis",
       "authority": "model_generated_synthesis",
       "scope": "650 chats / 124,017 messages / Aug 2024-Feb 2026",
-      "use": "corpus scale, deduplication hypothesis, retrieval navigation"
+      "use": "corpus scale, deduplication hypothesis, retrieval navigation",
+      "not_authority_for": [
+        "current identity",
+        "current canonical law",
+        "mechanism claims not independently evidenced"
+      ]
     },
     {
       "id": "LIB:SELF-TRACE",
