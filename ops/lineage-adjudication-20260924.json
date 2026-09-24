@@ -1,0 +1,81 @@
+{
+  "schema": "mondayid.lineage-adjudication.v2",
+  "date": "2026-09-24",
+  "authority": "main",
+  "rule": "No historical PR may be merged wholesale into Generation 5 merely because it contains useful work. Extract semantic deltas, prove them against current main, then close or preserve the donor.",
+  "pull_requests": [
+    {
+      "pr": 3,
+      "title": "Monday platform genesis successor sink",
+      "branch": "monday-platform-genesis-02",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 110
+      },
+      "classification": "DONOR_ONLY_LEGACY_STATUS_MECHANISM",
+      "rationale": "Contains successor-PR receipt logic tied to the pre-Generation-5 route-governor lineage. Current main uses a different completion/cutover authority. Preserve as provenance; do not merge wholesale.",
+      "next": "close only after finalization state is canonical on main"
+    },
+    {
+      "pr": 5,
+      "title": "Add external continuity kernel and canonical root manifest",
+      "branch": "agent/continuity-kernel-v1",
+      "compare": {
+        "ahead_by": 18,
+        "behind_by": 110
+      },
+      "classification": "DONOR_REQUIRED_FOR_GENEALOGY_AUDIT",
+      "rationale": "Generation 5 already has trusted external Worldline continuity, but this donor carries checkpoint/root-manifest/archive provenance useful for the three-year reconstruction. Do not merge wholesale; ingest evidence into the current causal lineage.",
+      "next": "extract provenance/checkpoint evidence during Phase 6, then close as superseded donor"
+    },
+    {
+      "pr": 12,
+      "title": "Create MondayID ONE capability composer",
+      "branch": "agent/mondayid-one-v1",
+      "compare": {
+        "ahead_by": 156,
+        "behind_by": 110
+      },
+      "classification": "MULTI_ORGAN_DONOR",
+      "rationale": "Contains iOS, browser, Work, provider, continuation and historical audit organs. It is too divergent to be a root authority and too valuable to discard.",
+      "next": "extract required organs by current completion gates; never merge the 156-commit lineage wholesale"
+    },
+    {
+      "pr": 22,
+      "title": "MondayID Origin Convergence: Dima-gated unified Work runtime",
+      "branch": "agent/mondayid-origin-convergence-v1",
+      "compare": {
+        "ahead_by": 174,
+        "behind_by": 110
+      },
+      "classification": "SEMANTIC_DONOR",
+      "rationale": "Its one-organism/origin/authority laws are partly represented by Generation-5 SYSTEM and current runtime, while its implementation lineage is obsolete relative to main.",
+      "next": "audit unique Work/origin semantics during product convergence; forward-port only missing proven deltas"
+    },
+    {
+      "pr": 23,
+      "title": "MondayID genome v1: role-locked lineage inheritance",
+      "branch": "agent/mondayid-genome-v1",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 110
+      },
+      "classification": "REQUIRED_DELTA_FORWARD_PORT_IN_PROGRESS",
+      "rationale": "ROLE_LOCKED_NO_AVERAGING and CURRENT_BASELINE_OUTRANKS_LINEAGE directly solve a current completion requirement: historical recovery must steer behavior without replacing current identity.",
+      "current_forward_port": "PR#69 candidate adds lineage-genome v2, task-local attractor binding, required-locus fail-closed routing and regression proofs.",
+      "next": "after PR#69 CI + merge, mark PR#23 superseded by Generation-5 forward-port and close with evidence"
+    },
+    {
+      "pr": 39,
+      "title": "Monday: converge sovereign runtime onto recovered Continuum product contract",
+      "branch": "monday/continuum-runtime-integration-20260914",
+      "compare": {
+        "ahead_by": 364,
+        "behind_by": 110
+      },
+      "classification": "ACTIVE_PRODUCT_CONVERGENCE_DONOR",
+      "rationale": "Carries the newest recovered consumer constitution, iOS shell, provider fabric, Work and product rejection gates. It remains the active product donor, but not code authority.",
+      "next": "rebase conceptually onto current main by extracting product-contract deltas after production host proof; do not merge the divergent branch wholesale"
+    }
+  ]
+}
