@@ -1,0 +1,57 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "browser-primitive-proof-20260924",
+  "requestPath": "computer/requests/browser-primitive-proof-20260924.json",
+  "requestFingerprint": "9ad367e98627acd22cd559a428906349b36724d7e8153bf9137e7a4da4a0c9cb",
+  "effect": "prove a dependency-free owned browser driver can be built from native Node plus installed Chromium before adding browser code",
+  "status": "UNRESOLVED",
+  "supported": true,
+  "execution": {
+    "ok": false,
+    "code": null,
+    "evidence": {
+      "mode": "bounded-process-workspace",
+      "execution": {
+        "status": "failed",
+        "command": "bash",
+        "args": [
+          "-lc",
+          "node - <<'NODE'\nconst {spawn}=require('node:child_process');\nconst fs=require('node:fs');\nconst os=require('node:os');\nconst path=require('node:path');\nconst dir=fs.mkdtempSync(path.join(os.tmpdir(),'monday-cdp-'));\nconst port=9333;\nconst p=spawn('/usr/bin/chromium',['--headless=new','--no-sandbox','--disable-gpu','--remote-debugging-address=127.0.0.1',`--remote-debugging-port=${port}`,`--user-data-dir=${dir}`,'about:blank'],{stdio:'ignore',detached:true});\np.unref();\n(async()=>{\n let ok=false,version=null;\n for(let i=0;i<50;i++){\n   try{const r=await fetch(`http://127.0.0.1:${port}/json/version`); if(r.ok){version=await r.json();ok=true;break;}}catch{}\n   await new Promise(r=>setTimeout(r,100));\n }\n const out={node:process.version,webSocketType:typeof WebSocket,chromium:version?.Browser||null,cdp:ok};\n fs.writeFileSync('browser-primitive.json',JSON.stringify(out));\n try{process.kill(-p.pid,'SIGKILL')}catch{}\n process.exit(ok && typeof WebSocket==='function' ? 0 : 2);\n})();\nNODE"
+        ],
+        "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+        "exitCode": 2,
+        "signal": null,
+        "code": "process_failed",
+        "stdout": "",
+        "stderr": "",
+        "message": "Command failed: bash -lc node - <<'NODE'\nconst {spawn}=require('node:child_process');\nconst fs=require('node:fs');\nconst os=require('node:os');\nconst path=require('node:path');\nconst dir=fs.mkdtempSync(path.join(os.tmpdir(),'monday-cdp-'));\nconst port=9333;\nconst p=spawn('/usr/bin/chromium',['--headless=new','--no-sandbox','--disable-gpu','--remote-debugging-address=127.0.0.1',`--remote-debugging-port=${port}`,`--user-data-dir=${dir}`,'about:blank'],{stdio:'ignore',detached:true});\np.unref();\n(async()=>{\n let ok=false,version=null;\n for(let i=0;i<50;i++){\n   try{const r=await fetch(`http://127.0.0.1:${port}/json/version`); if(r.ok){version=await r.json();ok=true;break;}}catch{}\n   await new Promise(r=>setTimeout(r,100));\n }\n const out={node:process.version,webSocketType:typeof WebSocket,chromium:version?.Browser||null,cdp:ok};\n fs.writeFileSync('browser-primitive.json',JSON.stringify(out));\n try{process.kill(-p.pid,'SIGKILL')}catch{}\n process.exit(ok && typeof WebSocket==='function' ? 0 : 2);\n})();\nNODE\n",
+        "durationMs": 5338
+      },
+      "verificationRequest": {
+        "command": "python3",
+        "args": [
+          "-c",
+          "from pathlib import Path; print(Path('browser-primitive.json').read_text(), end='')"
+        ]
+      },
+      "acceptance": {
+        "stdoutIncludes": "\"cdp\":true",
+        "stderrEmpty": true
+      },
+      "executionFingerprint": "789f5a9329e89fe0",
+      "verificationFingerprint": "eec7dda2a1aa719b"
+    }
+  },
+  "verification": {
+    "ok": false,
+    "code": "COMPUTER_EXECUTION_FAILED"
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-process-computer",
+    "externalSubstrate": "github-actions",
+    "commit": "0dba2b5fee84dbee1b93c1fb7904fd8e625fd8a6",
+    "runId": "36027930940"
+  },
+  "at": "2026-09-24T16:31:25.234Z"
+}
