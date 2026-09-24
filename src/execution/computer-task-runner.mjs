@@ -50,7 +50,11 @@ if (supported) {
   verification=await receptor.verify(result,action);
 }
 
-const stable=value=>JSON.stringify(value,Object.keys(value || {}).sort());
+const stable=value => Array.isArray(value)
+  ? `[${value.map(stable).join(',')}]`
+  : value && typeof value === 'object'
+    ? `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`
+    : JSON.stringify(value);
 const digest=value=>crypto.createHash('sha256').update(stable(value)).digest('hex');
 const receipt={
   schema:'mondayid.computer-receipt.v1',
