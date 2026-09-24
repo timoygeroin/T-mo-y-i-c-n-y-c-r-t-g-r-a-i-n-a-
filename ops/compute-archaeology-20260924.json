@@ -1,0 +1,101 @@
+{
+  "schema": "mondayid.compute-archaeology.v1",
+  "generated_at": "2026-09-24",
+  "purpose": "Prevent re-spending model/tool compute on mechanisms already produced in the three-year lineage.",
+  "canonical_authority": "main",
+  "conservation_law": "RECOVER -> VALIDATE -> REUSE/MERGE/PATCH -> NEW",
+  "release_rule": "No historical result satisfies a current objective without provenance, proof, and compatibility; no new build starts before recovery adjudication.",
+  "donors": [
+    {
+      "ref": "agent/mondayid-organism-physics-v1",
+      "divergence": {
+        "ahead_by": 12,
+        "behind_by": 122
+      },
+      "recovered": [
+        "self-hosting organism growth loop",
+        "missing capability -> growth event -> proved extension -> install -> reroute",
+        "verification/writeback admission",
+        "unchanged retry blocking"
+      ],
+      "disposition": "SEMANTIC_DONOR_ALREADY_PARTLY_FORWARD_PORTED",
+      "current_equivalent": [
+        "src/foundry.mjs",
+        "src/runtime.mjs",
+        "SYSTEM.json"
+      ],
+      "next": "reuse semantics; do not merge branch wholesale"
+    },
+    {
+      "ref": "agent/mondayid-sovereign-computer-v1",
+      "divergence": {
+        "ahead_by": 274,
+        "behind_by": 122
+      },
+      "recovered": [
+        "host-independent runtime",
+        "container/process workspace executors",
+        "browser organ",
+        "GitHub work journal",
+        "MCP work adapter",
+        "portable runtime"
+      ],
+      "disposition": "MULTI_ORGAN_DONOR",
+      "next": "forward-port only organs that close a current Generation-5 acceptance gate"
+    },
+    {
+      "ref": "agent/mondayid-workless-runtime-v2",
+      "divergence": {
+        "ahead_by": 273,
+        "behind_by": 122
+      },
+      "recovered": [
+        "stable job identity across provider changes",
+        "typed quota/rate/capacity rerouting",
+        "steering survival",
+        "durable journal/recovery",
+        "semantic failure causal replan"
+      ],
+      "disposition": "EXECUTION_CONTINUITY_DONOR",
+      "next": "reuse when Generation-5 task runtime needs provider-independent execution continuity"
+    },
+    {
+      "ref": "mondayid-self-compile-01",
+      "divergence": {
+        "ahead_by": 83,
+        "behind_by": 123
+      },
+      "recovered": [
+        "cognitive compiler",
+        "continuation genome",
+        "manifestation engine",
+        "post-resolution workload gate",
+        "duplicate/non-progress workload rejection"
+      ],
+      "disposition": "COMPUTE_GOVERNANCE_DONOR",
+      "next": "reuse its non-progress rejection semantics instead of rebuilding anti-repeat logic"
+    }
+  ],
+  "current_gap_closed_by_pr82": {
+    "problem": "Generation-5 CapabilityFoundry always invoked its builder for a missing capability even when a compatible proof-carrying donor could already exist.",
+    "mechanism": "foundry recovery gate",
+    "behavior": [
+      "attempt recovery before builder",
+      "require executable receptor",
+      "require verifier",
+      "require proof.ok === true",
+      "require provenance",
+      "honor receptor compatibility veto",
+      "skip builder on valid reuse",
+      "pass recovery result to builder so only residual work is built"
+    ]
+  },
+  "accounting": {
+    "corpus_baseline": {
+      "unique_conversations": 655,
+      "structured_events": 119164,
+      "note": "Structural baseline only; exact historical model-token usage remains unobservable without provider usage logs."
+    },
+    "rule": "Token estimates are planning ranges, never fake exact accounting."
+  }
+}
