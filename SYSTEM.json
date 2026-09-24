@@ -346,7 +346,7 @@
   },
   "lineage_runtime": {
     "schema": "mondayid.lineage-runtime.v1",
-    "status": "CANDIDATE_UNTIL_CONFORMANCE",
+    "status": "CONFORMANCE_VERIFIED",
     "organism": "rooted validated evolving causal lineage of cognitive computation",
     "event_minimum": [
       "parents",
@@ -366,7 +366,10 @@
       "CONFLICT"
     ],
     "canonical_state": "materialized view of the selected accepted lineage head",
-    "concurrency_law": "independent stale writes may rebase; conflicting writes become separate heads until explicit reconciliation"
+    "concurrency_law": "independent stale writes may rebase; conflicting writes become separate heads until explicit reconciliation",
+    "conformance_receipt": "ops/distributed-lineage-conformance-20260924.json",
+    "conformance_run_id": 36040276987,
+    "canonical_only_after_merge": true
   },
   "worldline_graph": {
     "schema": "mondayid.worldline-dag.v1",
