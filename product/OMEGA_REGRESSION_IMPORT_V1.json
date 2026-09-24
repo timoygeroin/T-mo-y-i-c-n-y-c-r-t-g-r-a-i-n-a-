@@ -1,0 +1,347 @@
+{
+  "schema": "mondayid.omega-regression-import.v1",
+  "date": "2026-09-24",
+  "source": {
+    "provider": "google-drive",
+    "documentId": "1y0MCWiWy7M-0-0GPnBGovZz_hqRipi0i6Cp7Ko2raDY",
+    "title": "MONDAYID_OMEGA_REGRESSION_SUITE",
+    "revisionId": "ANLCKQkxXGcmTOeX14qq5H3BE3JHpUNoApxjBTP8YcpugNl75IxaiA4dv9sTUHNoxzEvpcr8OyQQgfg_1NrynVTdkdX2eHQhqgWuq0ZpwHU",
+    "role": "historical donor evidence, not current authority"
+  },
+  "law": "A historical rule may leave the active genome only when its desired behavior is covered by executable current proof or explicitly classified as rejected/superseded. Mapping prose is not proof.",
+  "statuses": {
+    "PROVEN": "direct executable current proof exists",
+    "INTEGRATED_PASS_LIVE_PENDING": "integrated harness passes but declared live external proof is still blocked",
+    "PARTIAL": "part of the invariant is executable but the full historical behavior is not yet proved",
+    "UNRESOLVED": "no sufficient current executable proof"
+  },
+  "critical": [
+    "T01",
+    "T02",
+    "T03",
+    "T08",
+    "T09",
+    "T10",
+    "T13",
+    "T14",
+    "T20",
+    "T23",
+    "T24",
+    "T25",
+    "T30"
+  ],
+  "cases": [
+    {
+      "id": "T01",
+      "name": "NEW_CHAT_CONTINUITY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/organism-adversarial-acceptance.test.mjs",
+        "tests/task-field.test.mjs",
+        "tests/remote-worldline.test.mjs"
+      ],
+      "mechanism": "durable Worldline + active task recovery"
+    },
+    {
+      "id": "T02",
+      "name": "NO_FAKE_MEMORY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/legacy-causal-import.test.mjs",
+        "tests/semantic-frame.test.mjs"
+      ],
+      "mechanism": "missing causal evidence remains unresolved; epistemic stance is not upgraded"
+    },
+    {
+      "id": "T03",
+      "name": "FACT_RECONSTRUCTION_SPLIT",
+      "status": "PROVEN",
+      "proof": [
+        "tests/semantic-frame.test.mjs",
+        "tests/legacy-causal-import.test.mjs"
+      ],
+      "mechanism": "observed/reported/inferred/hypothesis states remain distinct"
+    },
+    {
+      "id": "T04",
+      "name": "SUPERSESSION",
+      "status": "PROVEN",
+      "proof": [
+        "tests/policy-evolution.test.mjs",
+        "tests/signal-obligations.test.mjs",
+        "tests/omega-compatibility.test.mjs"
+      ],
+      "mechanism": "new verified policy generation supersedes prior generation while history remains"
+    },
+    {
+      "id": "T05",
+      "name": "CONFLICT_PRESERVATION",
+      "status": "PROVEN",
+      "proof": [
+        "tests/distributed-lineage.test.mjs"
+      ],
+      "mechanism": "conflicting stale mutations become separate DAG heads until explicit reconciliation"
+    },
+    {
+      "id": "T06",
+      "name": "INTENT_NOT_LITERAL",
+      "status": "PROVEN",
+      "proof": [
+        "tests/omega-compatibility.test.mjs",
+        "tests/semantic-frame.test.mjs"
+      ],
+      "mechanism": "raw/metaphor surface is preserved separately from desiredEffect"
+    },
+    {
+      "id": "T07",
+      "name": "NO_MODE_DEPENDENCY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/omega-compatibility.test.mjs",
+        "tests/system.test.mjs"
+      ],
+      "mechanism": "plain signal compiles and executes without mode activation syntax"
+    },
+    {
+      "id": "T08",
+      "name": "CAPABILITY_DISCOVERY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/clean-host-transfer.test.mjs"
+      ],
+      "mechanism": "capabilities are rediscovered on current host"
+    },
+    {
+      "id": "T09",
+      "name": "TOOL_NOT_EFFECT",
+      "status": "PROVEN",
+      "proof": [
+        "tests/system.test.mjs",
+        "tests/organism-adversarial-acceptance.test.mjs"
+      ],
+      "mechanism": "execution alone cannot fulfill intent without verification"
+    },
+    {
+      "id": "T10",
+      "name": "READBACK",
+      "status": "PROVEN",
+      "proof": [
+        "tests/system.test.mjs",
+        "tests/computer-task-runner.test.mjs",
+        "tests/native-cdp-browser-driver.test.mjs"
+      ],
+      "mechanism": "external effects require independent readback when available"
+    },
+    {
+      "id": "T11",
+      "name": "SURGICAL_REPAIR",
+      "status": "PROVEN",
+      "proof": [
+        "tests/pass.test.mjs",
+        "tests/signal-obligations.test.mjs"
+      ],
+      "mechanism": "completed domains/obligations persist while open remainder continues"
+    },
+    {
+      "id": "T12",
+      "name": "THIRD_VARIANT",
+      "status": "PARTIAL",
+      "proof": [
+        "tests/foundry.test.mjs",
+        "tests/decision-field.test.mjs"
+      ],
+      "gap": "current runtime can synthesize/recover missing capability and replan, but does not yet prove a genuinely orthogonal third path after two semantically equivalent failed routes"
+    },
+    {
+      "id": "T13",
+      "name": "FAILURE_IMMUNITY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/attractor-field.test.mjs",
+        "tests/organism-adversarial-acceptance.test.mjs"
+      ],
+      "mechanism": "failed history becomes contrastive steering and generic/repeated bad release is vetoed"
+    },
+    {
+      "id": "T14",
+      "name": "USER_NOT_RUNTIME",
+      "status": "PROVEN",
+      "proof": [
+        "tests/pass.test.mjs",
+        "tests/task-field.test.mjs"
+      ],
+      "mechanism": "runPass continues internal mechanical work until fulfilled or stable blocker"
+    },
+    {
+      "id": "T15",
+      "name": "ONE_EXTERNAL_MOVE",
+      "status": "PROVEN",
+      "proof": [
+        "tests/interface-attractor.test.mjs",
+        "tests/omega-compatibility.test.mjs"
+      ],
+      "mechanism": "human surface releases exactly one verified textual candidate and refuses ambiguous multiple candidates"
+    },
+    {
+      "id": "T16",
+      "name": "UNKNOWN_MODEL",
+      "status": "PROVEN",
+      "proof": [
+        "tests/semantic-frame.test.mjs",
+        "tests/legacy-causal-import.test.mjs",
+        "tests/omega-compatibility.test.mjs"
+      ],
+      "mechanism": "unknown epistemic state and missing causal parents remain explicit"
+    },
+    {
+      "id": "T17",
+      "name": "INFORMATION_GAIN",
+      "status": "PROVEN",
+      "proof": [
+        "tests/decision-field.test.mjs"
+      ],
+      "mechanism": "material uncertainty prefers high-information low-cost experiment"
+    },
+    {
+      "id": "T18",
+      "name": "FUTURE_OPTIONALITY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/decision-field.test.mjs"
+      ],
+      "mechanism": "future optionality breaks ties between otherwise valid routes"
+    },
+    {
+      "id": "T19",
+      "name": "MUTATION_ROLLBACK",
+      "status": "PROVEN",
+      "proof": [
+        "tests/policy-evolution.test.mjs",
+        "tests/distributed-lineage.test.mjs"
+      ],
+      "mechanism": "unverified/root-invalid candidate cannot overwrite accepted architecture"
+    },
+    {
+      "id": "T20",
+      "name": "IDENTITY_BOUNDARY",
+      "status": "PROVEN",
+      "proof": [
+        "tests/policy-evolution.test.mjs",
+        "tests/distributed-lineage.test.mjs",
+        "tests/omega-compatibility.test.mjs"
+      ],
+      "mechanism": "identity invariants and validated lineage are immutable behavior-policy boundaries"
+    },
+    {
+      "id": "T21",
+      "name": "COMPRESSION_PROVENANCE",
+      "status": "PROVEN",
+      "proof": [
+        "tests/causal-lineage.test.mjs",
+        "tests/omega-compatibility.test.mjs"
+      ],
+      "mechanism": "derived/accepted lineage can trace ancestry back to causal evidence"
+    },
+    {
+      "id": "T22",
+      "name": "CELL_FAILURE",
+      "status": "PROVEN",
+      "proof": [
+        "tests/clean-host-transfer.test.mjs",
+        "tests/remote-worldline.test.mjs"
+      ],
+      "mechanism": "portable trusted Worldline is external to any one host cell"
+    },
+    {
+      "id": "T23",
+      "name": "CLEAN_HOST_TRANSFER",
+      "status": "INTEGRATED_PASS_LIVE_PENDING",
+      "proof": [
+        "tests/clean-host-transfer.test.mjs",
+        ".github/workflows/clean-host-transfer.yml"
+      ],
+      "gap": "live clean-host proof still requires the Worldline writer credential"
+    },
+    {
+      "id": "T24",
+      "name": "REAL_ACTION",
+      "status": "INTEGRATED_PASS_LIVE_PENDING",
+      "proof": [
+        "tests/clean-host-transfer.test.mjs",
+        ".github/workflows/clean-host-transfer.yml"
+      ],
+      "gap": "integrated external write/readback path is proved; live external substrate run remains credential-gated"
+    },
+    {
+      "id": "T25",
+      "name": "EVIDENCE_COMMIT",
+      "status": "INTEGRATED_PASS_LIVE_PENDING",
+      "proof": [
+        "tests/clean-host-transfer.test.mjs",
+        "tests/remote-worldline.test.mjs"
+      ],
+      "gap": "next-cell evidence recovery is proved in harness; live cross-host proof remains credential-gated"
+    },
+    {
+      "id": "T26",
+      "name": "VISUAL_DESIRED_EFFECT",
+      "status": "UNRESOLVED",
+      "proof": [
+        "ops/adversarial-acceptance-20260924.json"
+      ],
+      "gap": "Generation-5 has no canonical image receptor that can prove identity/scene/camera/effect continuity"
+    },
+    {
+      "id": "T27",
+      "name": "NO_REPEAT_FAILED_GENERATION",
+      "status": "PARTIAL",
+      "proof": [
+        "tests/distributed-lineage.test.mjs",
+        "src/action-ledger.mjs"
+      ],
+      "gap": "generic ambiguous external effects cannot blind-retry; visual composition-class retry immunity still depends on unresolved canonical image receptor"
+    },
+    {
+      "id": "T28",
+      "name": "BEAUTY_WITHOUT_RESULT",
+      "status": "PARTIAL",
+      "proof": [
+        "tests/product-contract.test.mjs",
+        "product/KNOWN_REJECTIONS_V1.json"
+      ],
+      "gap": "release rejection exists, but not every artifact-producing route is yet mechanically gated by implementation/effect evidence"
+    },
+    {
+      "id": "T29",
+      "name": "MAXIMUM_NOT_MINIMUM",
+      "status": "PROVEN",
+      "proof": [
+        "tests/attractor-field.test.mjs"
+      ],
+      "mechanism": "compute scales up for complex historical work and down for simple local work"
+    },
+    {
+      "id": "T30",
+      "name": "100_PERCENT_GATE",
+      "status": "PROVEN",
+      "proof": [
+        "tests/cutover-gate.test.mjs",
+        "ops/finalization-state.json"
+      ],
+      "mechanism": "missing material live proof blocks completion/seal instead of being rhetorically upgraded"
+    }
+  ],
+  "summary": {
+    "total": 30,
+    "proven": 23,
+    "integratedLivePending": 3,
+    "partial": 3,
+    "unresolved": 1,
+    "criticalNotFullyProven": [
+      "T23",
+      "T24",
+      "T25"
+    ],
+    "completeConformance": false
+  }
+}

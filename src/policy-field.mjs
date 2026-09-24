@@ -55,5 +55,6 @@ export const defaultMetaInvariants = Object.freeze([
   'truth_requires_evidence',
   'effect_requires_readback',
   'identity_requires_provenance',
+  'identity_requires_validated_lineage',
   'preventable_failure_must_become_detector'
 ]);
