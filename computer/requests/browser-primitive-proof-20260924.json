@@ -1,0 +1,24 @@
+{
+  "schema": "mondayid.computer-task.v1",
+  "id": "browser-primitive-proof-20260924",
+  "effect": "prove a dependency-free owned browser driver can be built from native Node plus installed Chromium before adding browser code",
+  "domain": "code",
+  "executionRequest": {
+    "command": "bash",
+    "args": [
+      "-lc",
+      "node - <<'NODE'\nconst {spawn}=require('node:child_process');\nconst fs=require('node:fs');\nconst os=require('node:os');\nconst path=require('node:path');\nconst dir=fs.mkdtempSync(path.join(os.tmpdir(),'monday-cdp-'));\nconst port=9333;\nconst p=spawn('/usr/bin/chromium',['--headless=new','--no-sandbox','--disable-gpu',`--remote-debugging-port=${port}`,`--user-data-dir=${dir}`,'about:blank'],{stdio:'ignore'});\n(async()=>{let ok=false,version=null; for(let i=0;i<40;i++){try{const r=await fetch(`http://127.0.0.1:${port}/json/version`); if(r.ok){version=await r.json();ok=true;break;}}catch{} await new Promise(r=>setTimeout(r,100));}\n const out={node:process.version,webSocketType:typeof WebSocket,chromium:version?.Browser||null,cdp:ok}; fs.writeFileSync('browser-primitive.json',JSON.stringify(out)); p.kill('SIGTERM'); if(!ok||typeof WebSocket!=='function') process.exitCode=2;})();\nNODE"
+    ]
+  },
+  "verificationRequest": {
+    "command": "python3",
+    "args": [
+      "-c",
+      "from pathlib import Path; print(Path('browser-primitive.json').read_text(), end='')"
+    ]
+  },
+  "acceptance": {
+    "stdoutIncludes": "\"cdp\":true",
+    "stderrEmpty": true
+  }
+}
