@@ -290,11 +290,19 @@
       "process workspace is cwd-bounded but not an OS sandbox",
       "file journal is durable on a shared filesystem but not a replicated state service",
       "browser/computer contract and mux are owned; a live browser driver is not yet bound into Generation 5",
-      "production host binding remains separate from this kernel candidate"
+      "GitHub Actions bootstrap is operational only after the workflow is merged to main and one live request produces a persisted VERIFIED receipt"
     ],
     "donor_provenance": [
       "agent/mondayid-sovereign-computer-v1",
       "agent/mondayid-workless-runtime-v2"
-    ]
+    ],
+    "bootstrap": {
+      "substrate": "github-actions",
+      "workflow": ".github/workflows/mondayid-computer-bootstrap.yml",
+      "request_schema": "mondayid.computer-task.v1",
+      "receipt_schema": "mondayid.computer-receipt.v1",
+      "law": "external substrate may execute owned MondayID contracts but cannot define identity or completion",
+      "completion": "distinct verification request passes explicit acceptance and a durable receipt is persisted"
+    }
   }
 }
