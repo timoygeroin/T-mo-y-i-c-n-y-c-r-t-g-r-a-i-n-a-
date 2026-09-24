@@ -195,6 +195,48 @@
         "Search/Activity/Library/local continuity source"
       ],
       "boundary": "SOURCE_PORTED_BUILD_SIGN_INSTALL_UNVERIFIED"
+    },
+    "apple_generation5_runtime_binding": {
+      "ok": true,
+      "merged_pr": 77,
+      "merge_commit": "caf999d9f9926f880381f1725cfab276317fdf1c",
+      "proof_run": 35985655867,
+      "proof_result": "success",
+      "effects": [
+        "Apple client verifies exact Generation-5 health identity",
+        "Apple client uses authenticated /api/respond",
+        "native output requires released verified surface",
+        "host emits normalized native receipt"
+      ]
+    },
+    "adversarial_acceptance_matrix": {
+      "ok": true,
+      "merged_pr": 78,
+      "merge_commit": "26706bbeae43ab671a04b01bb336617a94a3838e",
+      "proof_run": 35985845068,
+      "proof_result": "success",
+      "effects": [
+        "fresh-runtime active-task continuation",
+        "generic-output surface veto",
+        "tool-failure non-completion",
+        "stale-revision rejection",
+        "partial-signal non-completion",
+        "contradictory old identity suppression"
+      ],
+      "live_gates_remain": true
+    },
+    "apple_no_mode_autopilot": {
+      "ok": true,
+      "merged_pr": 79,
+      "merge_commit": "81417d2e8eee6c2af3ccee061584299d818abbcc",
+      "proof_run": 35986135121,
+      "proof_result": "success",
+      "effects": [
+        "public Activate Mode shortcut removed",
+        "legacy mode invocation converted to task-level preference",
+        "capsule shortcut executes canonical runtime",
+        "field digest executes canonical runtime"
+      ]
     }
   },
   "known_nonblocking_debt": {
@@ -244,9 +286,9 @@
       "production_api_boot": "404 NOT_FOUND on fresh 2026-09-24 readback",
       "newest_visible_project_deployment": "dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ READY preview; /api/health 404; /api/boot redirects through Vercel SSO",
       "newest_visible_production_deployment": "dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi READY production created 2026-09-14; alias still points here",
-      "deployment_after_weighting_merges": "none observed through latest Vercel readback"
+      "deployment_after_weighting_merges": "none observed; latest visible deployment remains preview dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ, while production still points to dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi from 2026-09-14"
     },
-    "blocker": "No deployment path with an explicit project target and authenticated production promotion is exposed in the current Vercel connector; browser automation would incur an external Browser Use cost and is disallowed by the no-spend boundary. Do not guess-deploy an ambiguous 'current project'.",
+    "blocker": "Production remains on the stale 2026-09-14 deployment. A deterministic project-bound promotion workflow is now on main, but it still needs an authenticated Vercel deployment credential. Do not use an ambiguous deploy target or claim delivery before /api/health and /api/boot pass on the production alias.",
     "rule": "Do not claim production delivery or organism-wide completion until current generation-5 main is deployed to mondayid-host and /api/health plus /api/boot pass live readback. /api/respond must remain disabled unless model execution is explicitly enabled with required secrets and spending authority."
   }
 }
