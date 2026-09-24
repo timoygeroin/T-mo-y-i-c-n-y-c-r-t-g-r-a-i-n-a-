@@ -4,10 +4,10 @@
   "effect": "prove a dependency-free owned browser driver can be built from native Node plus installed Chromium before adding browser code",
   "domain": "code",
   "executionRequest": {
-    "command": "bash",
+    "command": "python3",
     "args": [
-      "-lc",
-      "node - <<'NODE'\nconst {spawn}=require('node:child_process');\nconst fs=require('node:fs');\nconst os=require('node:os');\nconst path=require('node:path');\nconst dir=fs.mkdtempSync(path.join(os.tmpdir(),'monday-cdp-'));\nconst port=9333;\nconst p=spawn('/usr/bin/chromium',['--headless=new','--no-sandbox','--disable-gpu','--remote-debugging-address=127.0.0.1',`--remote-debugging-port=${port}`,`--user-data-dir=${dir}`,'about:blank'],{stdio:'ignore',detached:true});\np.unref();\n(async()=>{\n let ok=false,version=null;\n for(let i=0;i<50;i++){\n   try{const r=await fetch(`http://127.0.0.1:${port}/json/version`); if(r.ok){version=await r.json();ok=true;break;}}catch{}\n   await new Promise(r=>setTimeout(r,100));\n }\n const out={node:process.version,webSocketType:typeof WebSocket,chromium:version?.Browser||null,cdp:ok};\n fs.writeFileSync('browser-primitive.json',JSON.stringify(out));\n try{process.kill(-p.pid,'SIGKILL')}catch{}\n process.exit(0);\n})();\nNODE"
+      "-c",
+      "import json,os,signal,subprocess,tempfile,time,urllib.request\nchrome='/usr/bin/google-chrome'\nprofile=tempfile.mkdtemp(prefix='monday-cdp-')\nport=9333\np=subprocess.Popen([chrome,'--headless=new','--no-sandbox','--disable-gpu','--remote-debugging-address=127.0.0.1',f'--remote-debugging-port={port}',f'--user-data-dir={profile}','about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True,start_new_session=True)\nok=False\nversion=None\nerror=None\nfor _ in range(80):\n    try:\n        with urllib.request.urlopen(f'http://127.0.0.1:{port}/json/version',timeout=.2) as r:\n            version=json.load(r); ok=True; break\n    except Exception as e:\n        error=str(e); time.sleep(.1)\ntry: os.killpg(p.pid,signal.SIGKILL)\nexcept Exception: pass\ntry: _,stderr=p.communicate(timeout=2)\nexcept Exception: stderr=''\nws=subprocess.check_output(['node','-p','typeof WebSocket'],text=True).strip()\nout={'cdp':ok,'chromium':(version or {}).get('Browser'),'webSocketType':ws,'error':error if not ok else None,'stderrTail':stderr[-1500:]}\nopen('browser-primitive.json','w').write(json.dumps(out,separators=(',',':')))\n"
     ]
   },
   "verificationRequest": {
