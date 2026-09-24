@@ -1,0 +1,73 @@
+name: MondayID Computer Bootstrap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'computer/requests/**.json'
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: 'Existing computer request path'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mondayid-computer-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request files
+        id: requests
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_PATH: ${{ inputs.request_path }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            printf '%s\n' "$DISPATCH_PATH" > /tmp/mondayid-computer-requests.txt
+          else
+            if [ -n "${BEFORE_SHA:-}" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+              git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- 'computer/requests/*.json' > /tmp/mondayid-computer-requests.txt
+            else
+              git show --pretty='' --name-only "$CURRENT_SHA" -- 'computer/requests/*.json' > /tmp/mondayid-computer-requests.txt
+            fi
+          fi
+          sed -i '/^[[:space:]]*$/d' /tmp/mondayid-computer-requests.txt
+          test -s /tmp/mondayid-computer-requests.txt
+          cat /tmp/mondayid-computer-requests.txt
+
+      - name: Execute owned computer contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r request; do
+            node src/execution/computer-task-runner.mjs "$request"
+          done < /tmp/mondayid-computer-requests.txt
+
+      - name: Persist verification receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add computer/receipts
+          if git diff --cached --quiet; then
+            echo "No receipt delta"
+            exit 0
+          fi
+          git config user.name "MondayID Computer"
+          git config user.email "mondayid-computer@users.noreply.github.com"
+          git commit -m "computer: persist verified execution receipt"
+          git push
