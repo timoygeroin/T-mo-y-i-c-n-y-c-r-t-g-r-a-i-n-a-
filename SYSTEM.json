@@ -44,7 +44,8 @@
     "uncertainty_prefers_cheap_disambiguating_experiment_when_material",
     "capabilities_are_rediscovered_per_host",
     "clean_host_transfer_requires_external_effect_readback_and_next_cell_inheritance",
-    "writer_credential_is_human_gate_not_fake_capability"
+    "writer_credential_is_human_gate_not_fake_capability",
+    "recover_proven_compute_before_new_compute"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -117,7 +118,9 @@
     "enabled": true,
     "mechanism": "capability_foundry",
     "promotion_gate": "proof.ok === true",
-    "principle": "derive reusable organs from desired effects and available primitives"
+    "principle": "derive reusable organs from desired effects and available primitives",
+    "prebuild_gate": "recover proven compatible organs before invoking the builder; REUSE -> MERGE -> PATCH -> NEW",
+    "builder_input": "residual capability gap after recovery adjudication"
   },
   "pass_semantics": {
     "entry": "user_turn",
@@ -250,5 +253,20 @@
     "pass": "external write/readback verified AND next fresh host inherits the exact effect evidence",
     "fail_closed": "missing writer credential -> HUMAN_GATE",
     "workflow": ".github/workflows/clean-host-transfer.yml"
+  },
+  "compute_conservation": {
+    "schema": "mondayid.compute-conservation.v1",
+    "law": "never recompute what can be recovered with current proof",
+    "order": [
+      "REUSE",
+      "MERGE",
+      "PATCH",
+      "NEW"
+    ],
+    "admission": "a recovered mechanism is reusable only when executable, independently verifiable, proof.ok === true, provenance is present, and current compatibility is not vetoed",
+    "residual_compute": "new compute receives only the gap not already covered by valid recovered proof",
+    "invalidation": "stale, unproven, provenance-free, or incompatible prior work cannot satisfy the current objective",
+    "external_effect_rule": "a historical receipt may prove a mechanism but never substitutes for a fresh external effect when the requested world state can change",
+    "objective": "minimize total lifetime compute while preserving truth and future optionality"
   }
 }
