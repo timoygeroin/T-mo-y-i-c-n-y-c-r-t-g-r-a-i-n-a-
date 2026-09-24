@@ -41,7 +41,10 @@
     "task_progress_requires_receipts_not_prose",
     "decision_routes_optimize_information_gain_and_future_optionality",
     "hard_authority_veto_beats_route_score",
-    "uncertainty_prefers_cheap_disambiguating_experiment_when_material"
+    "uncertainty_prefers_cheap_disambiguating_experiment_when_material",
+    "capabilities_are_rediscovered_per_host",
+    "clean_host_transfer_requires_external_effect_readback_and_next_cell_inheritance",
+    "writer_credential_is_human_gate_not_fake_capability"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -232,5 +235,20 @@
       "minus_irreversible_downside"
     ],
     "planner_binding": "candidate routes are scored before receptor dispatch; the strongest admissible route per domain wins"
+  },
+  "clean_host_transfer": {
+    "schema": "mondayid.clean-host-transfer.v1",
+    "entry": "fresh host + trusted Worldline pointer + current authorized receptor credentials",
+    "proof": [
+      "recover trusted external Worldline",
+      "rediscover current-host capabilities",
+      "instantiate fresh whole-organism cell",
+      "perform one real external effect",
+      "independently read back the effect",
+      "recover the resulting evidence from a second fresh host"
+    ],
+    "pass": "external write/readback verified AND next fresh host inherits the exact effect evidence",
+    "fail_closed": "missing writer credential -> HUMAN_GATE",
+    "workflow": ".github/workflows/clean-host-transfer.yml"
   }
 }
