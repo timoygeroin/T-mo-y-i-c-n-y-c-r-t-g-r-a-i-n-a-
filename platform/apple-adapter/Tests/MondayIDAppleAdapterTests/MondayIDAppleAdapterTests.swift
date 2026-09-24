@@ -39,6 +39,21 @@ private func runtimeSession() -> URLSession {
     return URLSession(configuration: configuration)
 }
 
+private let healthy = MondayIDRuntimeHealth(
+    ok: true,
+    product: "MondayID",
+    generation: 5,
+    kernel: "mondayid-generation-5",
+    runtime: "vercel-node-function",
+    continuity: MondayIDRuntimeContinuity(
+        trustedWorldlineConfigured: true,
+        trustedWriterConfigured: false,
+        schema: "mondayid.worldline.snapshot.v0.4.0",
+        transport: "authenticated_machine_writer_trusted_http_snapshot"
+    ),
+    cutover: "generation-5"
+)
+
 @Test func commandBusPreservesOrderedCommands() async throws {
     let bus = MondayIDCommandBus()
     await bus.record(.open)
@@ -81,23 +96,35 @@ private func runtimeSession() -> URLSession {
 
 @Suite(.serialized)
 struct RuntimeClientTests {
-    @Test func runtimeHealthRequiresMondayIDAndDurableState() async throws {
+    @Test func runtimeHealthRequiresCanonicalGeneration5IdentityAndWorldline() async throws {
         RuntimeURLProtocol.handler = { request in
-            #expect(request.url?.path == "/health")
+            #expect(request.url?.path == "/api/health")
             #expect(request.httpMethod == "GET")
             let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
-            let health = MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true)
-            return (response, try JSONEncoder().encode(health))
+            return (response, try JSONEncoder().encode(healthy))
         }
         let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
-        #expect(try await client.health() == MondayIDRuntimeHealth(status: "ok", runtime: "MondayID", durable: true))
+        #expect(try await client.health() == healthy)
     }
 
-    @Test func runtimeHealthRejectsLookalikeEndpoint() async throws {
+    @Test func runtimeHealthRejectsLookalikeOrUnboundEndpoint() async throws {
         RuntimeURLProtocol.handler = { request in
             let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
-            let health = MondayIDRuntimeHealth(status: "ok", runtime: "OtherRuntime", durable: true)
-            return (response, try JSONEncoder().encode(health))
+            let lookalike = MondayIDRuntimeHealth(
+                ok: true,
+                product: "MondayID",
+                generation: 5,
+                kernel: "mondayid-generation-5",
+                runtime: "vercel-node-function",
+                continuity: MondayIDRuntimeContinuity(
+                    trustedWorldlineConfigured: false,
+                    trustedWriterConfigured: false,
+                    schema: "mondayid.worldline.snapshot.v0.4.0",
+                    transport: nil
+                ),
+                cutover: "generation-5"
+            )
+            return (response, try JSONEncoder().encode(lookalike))
         }
         let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
         var rejected = false
@@ -109,19 +136,61 @@ struct RuntimeClientTests {
         #expect(rejected)
     }
 
-    @Test func runtimeClientSendsAuthenticatedSignalAndDecodesReceipt() async throws {
+    @Test func runtimeClientSendsAuthenticatedSignalToGeneration5AndDecodesVerifiedReceipt() async throws {
         RuntimeURLProtocol.handler = { request in
-            #expect(request.url?.path == "/v1/tasks")
+            #expect(request.url?.path == "/api/respond")
             #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer control")
             let body = try requestBody(request)
-            #expect(try JSONDecoder().decode([String: String].self, from: body)["signal"] == "continue")
+            #expect(try JSONDecoder().decode([String: String].self, from: body)["text"] == "continue")
             let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
-            let receipt = MondayIDRuntimeReceipt(status: "verified", result: "continued", receiptId: "r-1", providerId: "openai-mondayid", stateRevision: 7)
-            return (response, try JSONEncoder().encode(receipt))
+            let payload = """
+            {
+              "ok": true,
+              "state": "FULFILLED",
+              "surface": {
+                "released": true,
+                "message": "continued"
+              },
+              "receipt": {
+                "id": "action:u:general",
+                "provider": "gpt-5.6-sol",
+                "revision": "abc123"
+              }
+            }
+            """
+            return (response, Data(payload.utf8))
         }
         let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
         let receipt = try await client.submit(signal: "continue")
         #expect(receipt.result == "continued")
-        #expect(receipt.stateRevision == 7)
+        #expect(receipt.receiptId == "action:u:general")
+        #expect(receipt.providerId == "gpt-5.6-sol")
+        #expect(receipt.stateRevision == "abc123")
+    }
+
+    @Test func runtimeClientRejectsUnreleasedSurface() async throws {
+        RuntimeURLProtocol.handler = { request in
+            let response = try #require(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil))
+            let payload = """
+            {
+              "ok": false,
+              "state": "BLOCKED",
+              "surface": {
+                "released": false,
+                "message": "blocked"
+              },
+              "receipt": null
+            }
+            """
+            return (response, Data(payload.utf8))
+        }
+        let client = MondayIDRuntimeClient(endpoint: URL(string: "https://runtime.example")!, controlToken: "control", session: runtimeSession())
+        var rejected = false
+        do {
+            _ = try await client.submit(signal: "continue")
+        } catch let error as MondayIDRuntimeError {
+            rejected = error == .unreleasedSurface
+        }
+        #expect(rejected)
     }
 }
