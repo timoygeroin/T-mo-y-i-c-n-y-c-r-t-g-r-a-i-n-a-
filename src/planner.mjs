@@ -26,7 +26,13 @@ export function buildFrontier(graph, capabilities = {}) {
 
     const executable = Boolean(receptor?.execute);
     const verifiable = Boolean(receptor?.verify);
-    let supported = executable && verifiable;
+    const lineageBlocked = Boolean(
+      candidate.inferenceContract?.lineage && (
+        candidate.inferenceContract.lineage.genome?.state !== 'ACTIVE' ||
+        candidate.inferenceContract.lineage.move?.ok === false
+      )
+    );
+    let supported = executable && verifiable && !lineageBlocked;
     if (supported && typeof receptor?.supports === 'function') {
       try {
         supported = receptor.supports(candidate) === true;
@@ -35,14 +41,16 @@ export function buildFrontier(graph, capabilities = {}) {
       }
     }
 
-    const ready = executable && verifiable && supported;
-    const blocker = !executable
-      ? `NO_RECEPTOR:${o.domain}`
-      : !verifiable
-        ? `NO_VERIFIER:${o.domain}`
-        : !supported
-          ? `UNSUPPORTED_EFFECT:${o.domain}`
-          : null;
+    const ready = executable && verifiable && supported && !lineageBlocked;
+    const blocker = lineageBlocked
+      ? `LINEAGE_CONTRACT_BLOCKED:${o.domain}`
+      : !executable
+        ? `NO_RECEPTOR:${o.domain}`
+        : !verifiable
+          ? `NO_VERIFIER:${o.domain}`
+          : !supported
+            ? `UNSUPPORTED_EFFECT:${o.domain}`
+            : null;
 
     return {
       ...candidate,

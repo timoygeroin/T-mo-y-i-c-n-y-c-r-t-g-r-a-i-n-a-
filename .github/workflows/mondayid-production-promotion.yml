@@ -1,0 +1,110 @@
+name: MondayID Production Promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_main_sha:
+        description: Exact main SHA approved for production
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mondayid-production
+  cancel-in-progress: false
+
+env:
+  VERCEL_ORG_ID: team_FwRqJf7aaU68ASUeOCJ2vgXq
+  VERCEL_PROJECT_ID: prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC
+  MONDAYID_WORLDLINE_URL: https://adamant-raven-783.eu-west-1.convex.site
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    environment: mondayid-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Bind promotion to exact canonical main
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "${{ inputs.expected_main_sha }}"
+          echo "Promoting exact main SHA: $actual"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Prove canonical runtime before deploy
+        run: npm test
+
+      - name: Prove trusted Worldline boot before deploy
+        env:
+          MONDAYID_WORLDLINE_URL: ${{ env.MONDAYID_WORLDLINE_URL }}
+        run: npm run boot
+
+      - name: Require Vercel deployment credential
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+
+      - name: Deploy exact main to mondayid-host with model execution disabled
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+          url="$(npx --yes vercel@latest deploy --prod --token="$VERCEL_TOKEN"             --env MONDAYID_WORLDLINE_URL="$MONDAYID_WORLDLINE_URL"             --env MONDAYID_MODEL_EXECUTION_ENABLED=false | tail -n 1)"
+          test -n "$url"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployment URL: $url"
+
+      - name: Read back deployment health and boot
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "$DEPLOYMENT_URL/api/health" -o /tmp/deployment-health.json
+          curl --fail --silent --show-error "$DEPLOYMENT_URL/api/boot" -o /tmp/deployment-boot.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const health=JSON.parse(fs.readFileSync('/tmp/deployment-health.json','utf8'));
+          const boot=JSON.parse(fs.readFileSync('/tmp/deployment-boot.json','utf8'));
+          if (health.generation !== 5) throw new Error('DEPLOYMENT_NOT_GENERATION_5');
+          if (health.authority?.no_spend !== true) throw new Error('NO_SPEND_BOUNDARY_MISSING');
+          if (boot.ok !== true || boot.state !== 'FULFILLED') throw new Error('DEPLOYMENT_BOOT_NOT_FULFILLED');
+          NODE
+
+      - name: Read back production alias
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error https://mondayid-host.vercel.app/api/health -o /tmp/alias-health.json
+          curl --fail --silent --show-error https://mondayid-host.vercel.app/api/boot -o /tmp/alias-boot.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const health=JSON.parse(fs.readFileSync('/tmp/alias-health.json','utf8'));
+          const boot=JSON.parse(fs.readFileSync('/tmp/alias-boot.json','utf8'));
+          if (health.generation !== 5) throw new Error('PRODUCTION_ALIAS_NOT_GENERATION_5');
+          if (boot.ok !== true || boot.state !== 'FULFILLED') throw new Error('PRODUCTION_ALIAS_BOOT_NOT_FULFILLED');
+          console.log(JSON.stringify({
+            status:'PASS',
+            generation:health.generation,
+            kernel:health.kernel,
+            boot:boot.state,
+            model_execution:'disabled_by_promotion_workflow'
+          },null,2));
+          NODE

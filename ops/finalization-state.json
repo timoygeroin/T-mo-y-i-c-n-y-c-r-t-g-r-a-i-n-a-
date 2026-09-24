@@ -1,0 +1,70 @@
+{
+  "schema": "mondayid.finalization-state.v1",
+  "date": "2026-09-24",
+  "status": "ACTIVE_NOT_COMPLETE",
+  "canonical_branch": "main",
+  "completed": [
+    "generation_5_code_cutover",
+    "trusted_worldline_v0_4",
+    "effect_truth_gate",
+    "monday_attractor_v1",
+    "adaptive_compute_governor",
+    "contrastive_worldline_steering",
+    "gpt_5_6_provider_binding",
+    "verified_candidate_surface",
+    "disabled_by_default_authenticated_respond_endpoint"
+  ],
+  "open": [
+    {
+      "id": "LINEAGE_ADJUDICATION",
+      "type": "implementation",
+      "blocking": true
+    },
+    {
+      "id": "PRODUCTION_PROMOTION",
+      "type": "human_credential_plus_execution",
+      "blocking": true
+    },
+    {
+      "id": "LIVE_MODEL_INFERENCE",
+      "type": "human_spend_authority_plus_execution",
+      "blocking": true
+    },
+    {
+      "id": "REAL_CLOSED_LOOP_TASK",
+      "type": "execution",
+      "blocking": true
+    },
+    {
+      "id": "CONSUMER_PRODUCT_CONVERGENCE",
+      "type": "implementation",
+      "blocking": true,
+      "ref": "PR#39"
+    },
+    {
+      "id": "THREE_YEAR_GENEALOGY",
+      "type": "reconstruction",
+      "blocking": true
+    },
+    {
+      "id": "PHYSICAL_IPHONE_ACCEPTANCE",
+      "type": "human_device_gate",
+      "blocking": true
+    },
+    {
+      "id": "ADVERSARIAL_INTEGRATED_ACCEPTANCE",
+      "type": "verification",
+      "blocking": true
+    },
+    {
+      "id": "FINAL_SEAL",
+      "type": "verification",
+      "blocking": true
+    }
+  ],
+  "human_gates": [
+    "vercel_production_deploy_credential_or_explicit_authenticated_deploy_path",
+    "explicit_api_spend_authorization_before_live_paid_inference",
+    "apple_physical_device_signing_or_distribution_approval"
+  ]
+}

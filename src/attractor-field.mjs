@@ -1,3 +1,5 @@
+import { compileLineageForSignal } from './lineage-genome.mjs';
+
 const clamp01 = value => Math.max(0, Math.min(1, Number.isFinite(Number(value)) ? Number(value) : 0));
 const unique = values => [...new Set((values || []).filter(Boolean).map(String))];
 
@@ -182,6 +184,7 @@ export function compileAttractorContract(signal = {}, { domains = [], state = {}
     .filter(Boolean)
     .map(String);
 
+  const lineage = compileLineageForSignal(signal, state);
   const strictMonday = signal.strictMonday !== false;
   const genericVetoes = strictMonday
     ? GENERIC_GPT_PATTERNS.map(pattern => pattern.id)
@@ -199,6 +202,7 @@ export function compileAttractorContract(signal = {}, { domains = [], state = {}
     genericVetoes:Object.freeze(genericVetoes),
     allowDecisionDelegation:signal.allowDecisionDelegation === true,
     contrastiveExamples:Object.freeze(compileContrastiveExamples(signal, state)),
+    lineage,
     compute:estimateComputeProfile(signal, { domains, state }),
     weights:DEFAULT_STEERING_WEIGHTS,
     policyGeneration:Array.isArray(policies?.history) ? policies.history.length : 0
