@@ -1,0 +1,29 @@
+{
+  "schema": "monday.continuum.integration.v1",
+  "source_branch": "agent/mondayid-sovereign-computer-v1",
+  "product_authority": "product/MONDAY_PRODUCT_CONSTITUTION_V1.md",
+  "invariants": [
+    "HOST_IS_CELL_NOT_GENOME",
+    "RAW_SIGNAL_LOSSLESS",
+    "GENERATED_NE_EXECUTED_NE_READBACK_NE_VERIFIED",
+    "NO_BACKGROUND_CLAIM_WITHOUT_PERSISTENT_EXECUTOR",
+    "MANUAL_PATH_FOR_IMPORTANT_CAPABILITIES",
+    "KNOWN_REJECTION_BLOCKS_RELEASE"
+  ],
+  "release_gates": [
+    {"id":"consumer_shell","requires":["home","chats","create","spaces","you","search","activity","library"]},
+    {"id":"continuity","requires":["raw_signal","provenance","corrections","open_loops","transplant"]},
+    {"id":"execution","requires":["durable_task","checkpoint","receipt","readback","human_gate"]},
+    {"id":"provider_fabric","requires":["capability","health","cost","privacy","reliability","fallback"]},
+    {"id":"field_acceptance","requires":["iphone_body","real_task","session_reentry","truthful_status"]}
+  ],
+  "anti_release": [
+    "dashboard_home",
+    "chatgpt_clone",
+    "developer_telemetry_home",
+    "fake_execution",
+    "fake_verification",
+    "fake_memory",
+    "progress_theater"
+  ]
+}

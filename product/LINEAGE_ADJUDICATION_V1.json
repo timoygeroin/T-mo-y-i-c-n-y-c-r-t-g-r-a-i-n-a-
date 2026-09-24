@@ -1,0 +1,93 @@
+{
+  "schema": "monday.lineage-adjudication.v1",
+  "authority_order": [
+    "direct_user_correction",
+    "later_user_accepted_product_constitution",
+    "verified_executed_evidence",
+    "earlier_user_intent",
+    "assistant_proposal_or_donor_artifact"
+  ],
+  "release_rule": "Any contradiction with authority=high and status!=RESOLVED blocks release.",
+  "sources": [
+    "MONDAY_APP_MASTER_PRODUCT_BIBLE_2026-08-27.docx",
+    "MONDAY_APP_MASTER_BUILD_ORDER_2026-08-27.docx",
+    "MONDAYID_CROSS_CHAT_RECONCILIATION_2026-08-06.md",
+    "MONDAYID_Report_2026-09-14.html",
+    "product/MONDAY_PRODUCT_CONSTITUTION_V1.md",
+    "product/KNOWN_REJECTIONS_V1.json"
+  ],
+  "contradictions": [
+    {
+      "id": "consumer-name-vs-runtime-name",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["Monday", "MondayID", "WonderID"],
+      "decision": "MONDAY is the consumer product/brand. MondayID is the continuity/runtime organism under it. WonderID remains historical experimental naming and has no release authority.",
+      "basis": "The Aug 27 FINAL PRODUCT PACKAGE brands the product MONDAY and defines MondayID as the behavior/runtime beneath the familiar consumer application; the Aug 06 reconciliation explicitly left the older MondayID/WonderID conflict unresolved pending lineage evidence."
+    },
+    {
+      "id": "dashboard-vs-consumer-home",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["developer/status dashboard Home", "stable familiar consumer Home"],
+      "decision": "Consumer Home is stable Continue/Today/Recent/Pinned/widgets geometry. Developer telemetry is excluded from Home and may exist only in diagnostic/Labs surfaces.",
+      "basis": "Aug 27 Product Bible sections 1-2 and AntiMonday release board; known rejection dashboard-home."
+    },
+    {
+      "id": "showcase-site-vs-execution-home",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["site that showcases MondayID architecture", "Monday app as execution home"],
+      "decision": "A showcase/architecture site cannot satisfy the product. Monday is the execution home; architecture/evidence belongs in Library/Labs/receipts.",
+      "basis": "Direct user rejection preserved as site-showcase in KNOWN_REJECTIONS_V1 and final product definition."
+    },
+    {
+      "id": "host-as-identity-vs-one-organism",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["model/chat/host is Monday", "host/model/chat is a replaceable cell"],
+      "decision": "MondayID is one organism across bodies. ChatGPT, Grok, Claude, Gemini, local runtime and future hosts are replaceable cells/providers, never the genome owner.",
+      "basis": "One-organism causal correction, Aug 27 lineage gene MondayID, and host-independent sovereign runtime evidence."
+    },
+    {
+      "id": "progress-prose-vs-persistent-work",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["long chat/progress updates imply work", "durable task/checkpoint/receipt execution"],
+      "decision": "Long Work exists only as persistent executable state. Progress prose cannot create Running/Completed/Verified truth states.",
+      "basis": "Aug 27 Monday Work contract, truth-state constitution, and execution-contract proofs."
+    },
+    {
+      "id": "generated-vs-verified",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["model/API success can be Verified", "Verified requires readback/test/acceptance"],
+      "decision": "Generated != Executed != Read back != Verified. Verification is gated by suitable evidence and independent readback where the effect is external.",
+      "basis": "Aug 27 Product Bible truth/receipts law and current execution/runtime truth proofs."
+    },
+    {
+      "id": "jailbreak-root-vs-runtime-substrate",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["gpt-root prompt project as system substrate", "verified runtime/code/evidence as substrate"],
+      "decision": "gpt-root is retained as historical prompt-layer experimentation only. It does not establish operating-system root, model modification or durable MondayID runtime authority.",
+      "basis": "Aug 06 cross-chat reconciliation direct repository audit."
+    },
+    {
+      "id": "iphone-first-vs-multibody",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["iPhone-first/no-computer user reality", "multi-device product"],
+      "decision": "iPhone is the primary acceptance body and must work independently for the user. Desktop/iPad/Watch/web are additional bodies, not prerequisites for ordinary operation.",
+      "basis": "Aug 06 iPhone-first constraint plus Aug 27 Device bodies section."
+    },
+    {
+      "id": "persona-plurality-vs-one-monday",
+      "authority": "high",
+      "status": "RESOLVED",
+      "sides": ["Jarvis/Alpha/Alisa/System as competing personas", "one Monday phenotype with retained lineage genes"],
+      "decision": "Jarvis, Alpha, Alisa, System and AntiSystem are lineage genes/internal functions, not competing consumer identities. One Monday phenotype is released.",
+      "basis": "Aug 27 lineage translation table and one-organism correction."
+    }
+  ]
+}
