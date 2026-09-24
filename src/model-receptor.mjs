@@ -4,7 +4,7 @@ const effortForTier = Object.freeze({
   LOW:'low',
   MEDIUM:'medium',
   HIGH:'high',
-  MAX:'high'
+  MAX:'max'
 });
 
 const textOf = value => String(value?.text ?? value?.output ?? value?.message ?? '');
