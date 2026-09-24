@@ -14,6 +14,7 @@ test('computer receptor requires a distinct readback before it can satisfy an ef
     const executor=createProcessWorkspaceExecutor({root,allowedCommands:['python3']});
     const receptor=createProcessComputerReceptor({executor});
     const routeCandidate={
+      kind:'workspace-exec',
       domain:'code',
       effect:'persist verified artifact',
       executionRequest:{
@@ -48,6 +49,7 @@ test('computer receptor blocks execution-only routes with no independent verific
       domain:'code',
       effect:'unverified write',
       routeCandidate:{
+        kind:'workspace-exec',
         domain:'code',
         executionRequest:{command:'python3',args:['-c',"print('write')"]},
         acceptance:{stdoutEquals:'write\n'}
@@ -66,6 +68,7 @@ test('Generation-5 runtime can execute and independently read back through the c
     const receptor=createProcessComputerReceptor({executor});
     const runtime=new MondayRuntime({capabilities:{code:receptor}});
     const routeCandidate={
+      kind:'workspace-exec',
       domain:'code',
       effect:'create computer proof',
       executionRequest:{
