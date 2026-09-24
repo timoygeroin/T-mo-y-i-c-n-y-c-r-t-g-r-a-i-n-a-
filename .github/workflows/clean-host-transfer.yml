@@ -1,0 +1,23 @@
+name: MondayID clean-host transfer proof
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    environment: mondayid-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - name: Prove clean-host transfer against trusted external Worldline
+        env:
+          MONDAYID_WORLDLINE_URL: https://adamant-raven-783.eu-west-1.convex.site
+          MONDAYID_WORLDLINE_WRITER_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
+        run: npm run transfer:proof
