@@ -38,7 +38,10 @@
     "raw_signal_material_obligations_are_lossless",
     "material_signal_right_to_release",
     "long_work_is_durable_task_not_chat_session",
-    "task_progress_requires_receipts_not_prose"
+    "task_progress_requires_receipts_not_prose",
+    "decision_routes_optimize_information_gain_and_future_optionality",
+    "hard_authority_veto_beats_route_score",
+    "uncertainty_prefers_cheap_disambiguating_experiment_when_material"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -207,5 +210,27 @@
     ],
     "completion": "ALL_MATERIAL_OBLIGATIONS_CLOSED_AND_DESIRED_EFFECT_VERIFIED",
     "human_scheduler_required": false
+  },
+  "decision_field": {
+    "schema": "mondayid.decision-field.v1",
+    "objective": "select the route that preserves exact object + desired effect while maximizing truth, information gain, future optionality, system improvement and reversibility under cost/risk",
+    "hard_vetoes": [
+      "unauthorized_route",
+      "unsatisfied_evidence_gate",
+      "irreversible_action_without_explicit_authority"
+    ],
+    "ranking": [
+      "exact_object_match",
+      "desired_effect_fidelity",
+      "truth",
+      "information_gain",
+      "future_optionality",
+      "system_improvement",
+      "reversibility",
+      "minus_cost",
+      "minus_risk",
+      "minus_irreversible_downside"
+    ],
+    "planner_binding": "candidate routes are scored before receptor dispatch; the strongest admissible route per domain wins"
   }
 }

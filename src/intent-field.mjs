@@ -43,6 +43,7 @@ export function normalizeIntent(signal = {}, revision = 'root', index = 0) {
     rejectedSubstitutions: Array.isArray(signal.rejectedSubstitutions) ? [...signal.rejectedSubstitutions] : [],
     failureGenes: Array.isArray(signal.failureGenes) ? [...signal.failureGenes] : [],
     contrastiveExamples: Array.isArray(signal.contrastiveExamples) ? structuredClone(signal.contrastiveExamples) : [],
+    routeCandidates: Array.isArray(signal.routeCandidates) ? structuredClone(signal.routeCandidates) : [],
     lineageGenomeId: signal.lineageGenomeId || null,
     currentBaselineRef: signal.currentBaselineRef || null,
     lineageContributions: Array.isArray(signal.lineageContributions) ? structuredClone(signal.lineageContributions) : [],
