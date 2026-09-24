@@ -39,6 +39,7 @@ export function createProcessComputerReceptor({ executor, name = 'mondayid-proce
       const acceptance = acceptanceOf(action);
       return Boolean(
         ['code','host','general'].includes(action?.domain) &&
+        action?.routeCandidate?.kind === 'workspace-exec' &&
         executionRequest &&
         verificationRequest &&
         acceptance &&
