@@ -1,0 +1,72 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "bootstrap-proof-20260924",
+  "requestPath": "computer/requests/bootstrap-proof-20260924.json",
+  "requestFingerprint": "cf39a65a1de739dc4822300bd36aff997a9a0f48f08df1983238aded0e9d7249",
+  "effect": "prove the owned MondayID computer can execute workspace work and independently read back the result on a fresh external compute substrate",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "evidence": {
+      "mode": "bounded-process-workspace",
+      "execution": {
+        "status": "completed",
+        "command": "python3",
+        "args": [
+          "-c",
+          "from pathlib import Path; Path('computer-proof.txt').write_text(str(73*97), encoding='utf-8')"
+        ],
+        "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+        "exitCode": 0,
+        "signal": null,
+        "stdout": "",
+        "stderr": "",
+        "durationMs": 21
+      },
+      "verificationRequest": {
+        "command": "python3",
+        "args": [
+          "-c",
+          "from pathlib import Path; print(Path('computer-proof.txt').read_text(encoding='utf-8'), end='')"
+        ]
+      },
+      "acceptance": {
+        "stdoutEquals": "7081",
+        "stderrEmpty": true
+      },
+      "executionFingerprint": "27da857d7109ff9c",
+      "verificationFingerprint": "1e69048ae92c51a6"
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "27da857d7109ff9c",
+    "verificationFingerprint": "1e69048ae92c51a6",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "from pathlib import Path; print(Path('computer-proof.txt').read_text(encoding='utf-8'), end='')"
+      ],
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "7081",
+      "stderr": "",
+      "durationMs": 18
+    }
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-process-computer",
+    "externalSubstrate": "github-actions",
+    "commit": "fbdbd4cf28249ba4010586f5fd3b595a8880cddc",
+    "runId": "36027474133"
+  },
+  "at": "2026-09-24T16:27:24.690Z"
+}
