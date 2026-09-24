@@ -9,6 +9,17 @@ const effortForTier = Object.freeze({
 
 const textOf = value => String(value?.text ?? value?.output ?? value?.message ?? '');
 
+function lineageBlock(lineage = null) {
+  const alleles = lineage?.move?.alleles?.length
+    ? lineage.move.alleles
+    : lineage?.genome?.active_alleles || [];
+  if (!alleles.length) return '';
+  return [
+    'ROLE-LOCKED LINEAGE ALLELES',
+    ...alleles.map(allele => `[${allele.role}:${allele.locus}] <= ${allele.ancestor}\n${allele.value}`)
+  ].join('\n\n');
+}
+
 function contrastiveBlock(examples = []) {
   if (!examples.length) return '';
   return examples.map((example, index) => {
@@ -37,6 +48,7 @@ export function buildSteeringEnvelope(action = {}) {
     contract.knownFailureGenes?.length
       ? `KNOWN FAILURE GENES: ${contract.knownFailureGenes.join(' | ')}`
       : '',
+    lineageBlock(contract.lineage),
     'Do not treat a persona label as sufficient. Solve the exact object.',
     'Generate the best route inside these constraints; do not delegate routine route choice back to the human.',
     contrastiveBlock(contract.contrastiveExamples)
