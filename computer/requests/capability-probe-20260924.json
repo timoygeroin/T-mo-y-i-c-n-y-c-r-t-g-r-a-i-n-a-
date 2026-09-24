@@ -1,0 +1,24 @@
+{
+  "schema": "mondayid.computer-task.v1",
+  "id": "capability-probe-20260924",
+  "effect": "discover browser and execution primitives already present on the fresh MondayID computer substrate before installing or rebuilding anything",
+  "domain": "code",
+  "executionRequest": {
+    "command": "bash",
+    "args": [
+      "-lc",
+      "python3 - <<'PY'\nimport json,shutil,platform\nbins=['google-chrome','google-chrome-stable','chromium','chromium-browser','firefox','node','npm','npx','python3','git','docker']\nout={'platform':platform.platform(),'binaries':{b:shutil.which(b) for b in bins}}\nopen('computer-capabilities.json','w').write(json.dumps(out,sort_keys=True))\nPY"
+    ]
+  },
+  "verificationRequest": {
+    "command": "python3",
+    "args": [
+      "-c",
+      "from pathlib import Path; print(Path('computer-capabilities.json').read_text(), end='')"
+    ]
+  },
+  "acceptance": {
+    "stdoutIncludes": "\"python3\"",
+    "stderrEmpty": true
+  }
+}
