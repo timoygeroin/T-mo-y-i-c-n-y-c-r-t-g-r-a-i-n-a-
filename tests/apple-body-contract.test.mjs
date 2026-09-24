@@ -32,3 +32,20 @@ test('Xcode host binds to the local Apple adapter package and declares a real iO
   assert.match(adapter,/library\(name: "MondayIDAppleAdapter"/);
   assert.match(adapter,/testTarget\(name: "MondayIDAppleAdapterTests"/);
 });
+
+
+test('consumer shortcuts do not expose legacy mode selection as a cognitive primitive',()=>{
+  assert.doesNotMatch(source,/AppShortcut\(intent: ActivateModeIntent\(\)/);
+  assert.doesNotMatch(intents,/AppShortcut\([\s\S]*?ActivateModeIntent\(\)/);
+  assert.match(intents,/Compatibility intent only/);
+  assert.match(intents,/choose the required internal functions automatically/);
+});
+
+test('capsule and field digest shortcuts execute through the canonical runtime instead of acknowledgement theater',()=>{
+  const recall=intents.slice(intents.indexOf('public struct RecallCapsuleIntent'),intents.indexOf('public struct ActivateModeIntent'));
+  const digest=intents.slice(intents.indexOf('public struct RunFieldDigestIntent'),intents.indexOf('public struct MondayIDShortcuts'));
+  assert.match(recall,/sendToMondayID/);
+  assert.match(digest,/sendToMondayID/);
+  assert.doesNotMatch(recall,/Capsule request handed to MondayID/);
+  assert.doesNotMatch(digest,/Field digest requested/);
+});
