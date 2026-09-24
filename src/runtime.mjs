@@ -4,6 +4,7 @@ import { Worldline } from './worldline.mjs';
 import { persistIntents, activeIntents, settleIntents } from './intent-field.mjs';
 import { PolicyField, defaultMetaInvariants } from './policy-field.mjs';
 import { evaluateCandidateOutput } from './attractor-field.mjs';
+import { ensureTasks, updateTasks } from './task-field.mjs';
 
 export class MondayRuntime {
   constructor({ worldline = new Worldline(), capabilities = {}, foundry = null, policyField = null } = {}) {
@@ -68,10 +69,18 @@ export class MondayRuntime {
         completedDomains: [...(intent.completedDomains || [])].sort()
       }))
       .sort((a, b) => a.id.localeCompare(b));
+    const tasks = Object.values(state.tasks || {})
+      .map(task => ({
+        taskId:task.taskId,
+        status:task.status,
+        openRemainder:[...(task.openRemainder || [])].sort(),
+        blockers:[...(task.blockers || [])].sort()
+      }))
+      .sort((a,b)=>String(a.taskId).localeCompare(String(b.taskId)));
     const capabilities = Object.entries(this.capabilities)
       .map(([domain, receptor]) => [domain, receptor?.name || domain])
       .sort(([a], [b]) => a.localeCompare(b));
-    return JSON.stringify({ intents, capabilities, policies:this.policyField.snapshot() });
+    return JSON.stringify({ intents, tasks, capabilities, policies:this.policyField.snapshot() });
   }
 
   async runPass(incomingSignals = [], { maxCycles = 8 } = {}) {
@@ -133,6 +142,8 @@ export class MondayRuntime {
   async cycle(incomingSignals = []) {
     const persisted = persistIntents(this.worldline, incomingSignals);
     if (!persisted.ok) return persisted;
+    const tasksCreated = ensureTasks(this.worldline, persisted.persisted || []);
+    if (!tasksCreated.ok) return tasksCreated;
 
     const field = activeIntents(this.worldline);
     const { graph } = this.observe(field);
@@ -228,6 +239,9 @@ export class MondayRuntime {
 
     const settled = settleIntents(this.worldline, graph, results);
     if (!settled.ok) return settled;
+
+    const tasksUpdated = updateTasks(this.worldline,{graph,frontier,results});
+    if (!tasksUpdated.ok) return tasksUpdated;
 
     return {
       ok: true,
