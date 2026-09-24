@@ -31,7 +31,10 @@
     "adaptive_compute_before_inference",
     "contrastive_history_over_persona_prompt",
     "generic_output_requires_monday_release_gate",
-    "minimize_total_cost_not_initial_compute"
+    "minimize_total_cost_not_initial_compute",
+    "role_locked_no_averaging",
+    "current_baseline_outranks_lineage",
+    "whole_identity_inheritance_from_ancestors_blocked"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -152,5 +155,21 @@
       "translation_must_not_upgrade_epistemic_stance",
       "multiple_interpretations_may_coexist_until_evidence_collapses_them"
     ]
+  },
+  "lineage_genome": {
+    "schema": "mondayid.lineage-genome.v2",
+    "inheritance_mode": "ROLE_LOCKED_NO_AVERAGING",
+    "baseline_rule": "CURRENT_BASELINE_OUTRANKS_LINEAGE",
+    "source_authority": [
+      "direct_current_instruction",
+      "dima_authored_archive",
+      "raw_archive_residue",
+      "direct_archive",
+      "archive_derived",
+      "memory",
+      "model_summary"
+    ],
+    "rule": "history contributes scoped laws, traits, capabilities, organs, antibodies, episodic memory, or provenance; historical whole-identity replacement is blocked",
+    "runtime_binding": "resolved alleles enter the task-local attractor contract; unresolved required loci block dispatch"
   }
 }
