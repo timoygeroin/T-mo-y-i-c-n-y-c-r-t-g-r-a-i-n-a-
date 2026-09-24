@@ -1,3 +1,5 @@
+import { rankDecisionRoutes } from './decision-field.mjs';
+
 const score = (n) => {
   const computePressure = Number(n.inferenceContract?.compute?.score || 0);
   return (n.priority ?? 0)
@@ -9,7 +11,21 @@ const score = (n) => {
 
 export function buildFrontier(graph, capabilities = {}) {
   const objectives = graph.nodes.filter(n => n.type === 'objective');
-  const actions = objectives.map(o => {
+  const expandedObjectives = objectives.flatMap(o => {
+    if (!Array.isArray(o.routeCandidates) || o.routeCandidates.length === 0) {
+      return [{...o, routeCandidate:null, routeDecision:null}];
+    }
+    const ranked=rankDecisionRoutes(o.routeCandidates);
+    return ranked.map(({route,decision})=>({
+      ...o,
+      routeCandidate:route,
+      routeDecision:decision,
+      effect:route.effect || o.effect,
+      cost:Number.isFinite(Number(route.cost)) ? Number(route.cost) : o.cost
+    }));
+  });
+
+  const actions = expandedObjectives.map(o => {
     const receptor = capabilities[o.domain] || capabilities.general;
     const candidate = {
       id: `action:${o.id}`,
@@ -20,8 +36,10 @@ export function buildFrontier(graph, capabilities = {}) {
       receptor: receptor?.name || null,
       priority: o.priority,
       verifiable: Boolean(receptor?.verify),
-      cost: receptor?.cost ?? 0,
-      inferenceContract: o.attractorContract || null
+      cost: Number.isFinite(Number(o.cost)) ? Number(o.cost) : (receptor?.cost ?? 0),
+      inferenceContract: o.attractorContract || null,
+      routeCandidate: o.routeCandidate || null,
+      routeDecision: o.routeDecision || null
     };
 
     const executable = Boolean(receptor?.execute);
@@ -32,7 +50,8 @@ export function buildFrontier(graph, capabilities = {}) {
         candidate.inferenceContract.lineage.move?.ok === false
       )
     );
-    let supported = executable && verifiable && !lineageBlocked;
+    const routeBlocked = Boolean(candidate.routeDecision && candidate.routeDecision.admissible === false);
+    let supported = executable && verifiable && !lineageBlocked && !routeBlocked;
     if (supported && typeof receptor?.supports === 'function') {
       try {
         supported = receptor.supports(candidate) === true;
@@ -41,8 +60,10 @@ export function buildFrontier(graph, capabilities = {}) {
       }
     }
 
-    const ready = executable && verifiable && supported && !lineageBlocked;
-    const blocker = lineageBlocked
+    const ready = executable && verifiable && supported && !lineageBlocked && !routeBlocked;
+    const blocker = routeBlocked
+      ? `ROUTE_HARD_VETO:${o.domain}:${candidate.routeDecision.hardVetoes.join(',')}`
+      : lineageBlocked
       ? `LINEAGE_CONTRACT_BLOCKED:${o.domain}`
       : !executable
         ? `NO_RECEPTOR:${o.domain}`
@@ -60,7 +81,12 @@ export function buildFrontier(graph, capabilities = {}) {
     };
   });
 
-  const ready = actions.filter(a => a.executable).sort((a,b) => score(b) - score(a));
+  const ready = actions.filter(a => a.executable).sort((a,b) => {
+    const aDecision=a.routeDecision?.score ?? -Infinity;
+    const bDecision=b.routeDecision?.score ?? -Infinity;
+    if (aDecision !== bDecision) return bDecision - aDecision;
+    return score(b) - score(a);
+  });
   const blocked = actions.filter(a => !a.executable);
   return {
     ready,
