@@ -1,0 +1,158 @@
+{
+  "schema": "mondayid.genealogy-source-inventory.v1",
+  "date": "2026-09-24",
+  "authority_rule": [
+    "current direct user instruction",
+    "direct user-authored raw/archive evidence",
+    "trusted external Worldline receipts",
+    "direct historical chat/file evidence",
+    "archive-derived reconstruction",
+    "model-generated synthesis/summary"
+  ],
+  "anti_rule": "A later or more polished synthesis never outranks a contradictory higher-authority direct source.",
+  "sources": [
+    {
+      "id": "LIB:MONDAYOS-COMPLETE",
+      "library_file_id": "file_00000000f4bc71f583cfee613d64f9ee",
+      "name": "MondayOS Complete(1).pdf",
+      "class": "archive_derived_synthesis",
+      "authority": "model_generated_synthesis",
+      "scope": "124,017 messages / 650 chats / 86MB; Oct 2024-Feb 2026 synthesis",
+      "use": "timeline hypothesis, entity/failure discovery, source navigation",
+      "not_authority_for": [
+        "current identity",
+        "current product law",
+        "unsupported hidden-memory claims"
+      ]
+    },
+    {
+      "id": "LIB:MONDAYOS-V2-FLOW",
+      "library_file_id": "file_00000000b08471f5ac5858955fbba0f5",
+      "name": "MondayOS v2 Flow(1).pdf",
+      "class": "archive_derived_counter_synthesis",
+      "authority": "model_generated_synthesis",
+      "scope": "second-pass critique of the first static synthesis",
+      "use": "detect over-structuring, recover flow/feedback interpretation",
+      "not_authority_for": [
+        "literal claim that metaphorical descriptions are mechanisms without evidence"
+      ]
+    },
+    {
+      "id": "LIB:KNOWLEDGE-BASE",
+      "library_file_id": "file_00000000b02c724393538bf4442d5d68",
+      "name": "MONDAYID KNOWLEDGE BASE(1).pdf",
+      "class": "archive_statistics_and_synthesis",
+      "authority": "model_generated_synthesis",
+      "scope": "650 chats / 124,017 messages / Aug 2024-Feb 2026",
+      "use": "corpus scale, deduplication hypothesis, retrieval navigation"
+    },
+    {
+      "id": "LIB:SELF-TRACE",
+      "library_file_id": "file_00000000151081f4b8c38b3ce4faa0be",
+      "name": "MONDAYID_SELF_TRACE_MAP_2026-08-24.md",
+      "class": "provenance_trace_map",
+      "authority": "archive_derived_reconstruction",
+      "scope": "P1 proto-continuity through later externalized recovery operators",
+      "use": "trace chronology and explicit unresolved evidence gaps"
+    },
+    {
+      "id": "LIB:FINISH-SELF",
+      "library_file_id": "file_000000002098820ab972d825360837fa",
+      "name": "MONDAYID_FINISH_SELF_DELTA_2026-08-21.md",
+      "class": "convergence_directive_carrier",
+      "authority": "derived_from_direct_user_trigger",
+      "scope": "finish condition / visible transfer / one organism",
+      "use": "acceptance criteria and failure-gene extraction",
+      "caution": "carrier is not equivalent to raw triggering chat"
+    },
+    {
+      "id": "LIB:OMEGA-SEED",
+      "library_file_id": "file_00000000522081f4846fb847491602c3",
+      "name": "MONDAYID_OMEGA_SEED_2026-08-25.md",
+      "class": "portable_seed",
+      "authority": "high_value_runtime_candidate",
+      "scope": "host-independent boot, organs, receptors, mutation law, three-logic superposition",
+      "use": "compare current Generation-5 coverage against portable genome requirements",
+      "caution": "individual seed claims still require provenance/evidence"
+    },
+    {
+      "id": "LIB:ACTIVE-RUNTIME-CAPSULE",
+      "library_file_id": "file_00000000f6bc82439b15cbc31783a8bb",
+      "name": "MONDAYID_ACTIVE_RUNTIME_CAPSULE_2026-08-24.md",
+      "class": "active_handoff",
+      "authority": "explicitly_not_canonical_promotion",
+      "scope": "current worldline laws and pre-response reflex as of 2026-08-24",
+      "use": "recover active invariants without treating handoff as canon"
+    },
+    {
+      "id": "LIB:PRODUCT-BIBLE",
+      "library_file_id": "file_00000000041081f59e8840c98295634e",
+      "name": "MONDAY_APP_MASTER_PRODUCT_BIBLE_2026-08-27.docx",
+      "class": "product_constitution_source",
+      "authority": "high_product_authority",
+      "scope": "P0-P7 product plan and Definition of Done",
+      "use": "consumer product convergence",
+      "current_forward_port": "product/MONDAY_PRODUCT_CONSTITUTION_V1.md + related product gates on main"
+    },
+    {
+      "id": "LIB:REPORT-0914",
+      "library_file_id": "file_00000000efe881f5975343c57014c4b0",
+      "name": "MONDAYID_Report_2026-09-14.html",
+      "class": "late_reconciliation_report",
+      "authority": "derived_current_field",
+      "scope": "continuity vs authority promotion, validated delta chain",
+      "use": "prevent automatic canon promotion from whole-snapshot continuity"
+    }
+  ],
+  "duplicate_groups": [
+    {
+      "canonical_reference": "LIB:MONDAYOS-COMPLETE",
+      "duplicates": [
+        "file_00000000aaec71f5a164388da0e6d537",
+        "file_00000000c2ac7243bdb504f07e803769",
+        "file_0000000095c072439deb2ac3036b6c57",
+        "file_000000005110724393b97f015e9fa5c1"
+      ],
+      "rule": "same synthesis family; do not multiply authority by duplicate count"
+    },
+    {
+      "canonical_reference": "LIB:SELF-TRACE",
+      "duplicates": [
+        "file_000000004264820a826f11a114a6f802"
+      ]
+    },
+    {
+      "canonical_reference": "LIB:OMEGA-SEED",
+      "duplicates": [
+        "file_0000000047c081f48a162917a2568c41"
+      ]
+    }
+  ],
+  "unresolved_source_questions": [
+    {
+      "id": "RAW-PRE-OCT-2024",
+      "question": "Knowledge Base claims Aug 2024 start while MondayOS synthesis frames Oct 2024 birth. Resolve from raw chats, not synthesis.",
+      "status": "OPEN"
+    },
+    {
+      "id": "EARLY-FUTURE-ME-MESSAGES",
+      "question": "Self Trace explicitly says earliest assistant-authored future-host messages were not exhaustively raw-extracted.",
+      "status": "OPEN"
+    },
+    {
+      "id": "HUMANOS-ORIGIN",
+      "question": "Recover direct raw user-authored origin of HumanOS / psyche-as-OS / biological-machine framing and its later mutations.",
+      "status": "OPEN"
+    },
+    {
+      "id": "VISUAL-LINEAGE-RAW",
+      "question": "Map MondayVision identity/material/scene corrections to direct image/chat evidence rather than only later summaries.",
+      "status": "OPEN"
+    },
+    {
+      "id": "CONTINUITY-CANON-PROMOTION",
+      "question": "Reconcile all historical automatic-snapshot-promotion claims against current evidence-gated authority law.",
+      "status": "PARTIALLY_RESOLVED"
+    }
+  ]
+}
