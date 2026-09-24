@@ -1,0 +1,78 @@
+{
+  "schema": "mondayid.token-accounting.v1",
+  "date": "2026-09-24",
+  "status": "EVIDENCE_BOUNDED_ESTIMATE_NOT_PROVIDER_USAGE_LOG",
+  "source_corpus": {
+    "files": [
+      "RAW_CHATS_SHARD_01_OF_06(1).jsonl",
+      "RAW_CHATS_SHARD_02_OF_06(1).jsonl",
+      "RAW_CHATS_SHARD_03_OF_06(1).jsonl",
+      "RAW_CHATS_SHARD_04_OF_06(1).jsonl",
+      "RAW_CHATS_SHARD_05_OF_06(1).jsonl",
+      "RAW_CHATS_SHARD_06_OF_06(1).jsonl"
+    ],
+    "bytes": 303998660,
+    "date_range_utc": [
+      "2024-08-03T20:19:43.861424Z",
+      "2026-02-08T13:26:32.400621Z"
+    ],
+    "conversations": 650,
+    "unique_messages": 123325,
+    "messages_by_role": {
+      "system": 10771,
+      "user": 40632,
+      "assistant": 60037,
+      "tool": 11885
+    },
+    "text_chars_by_role": {
+      "system": 0,
+      "user": 13830236,
+      "assistant": 60027440,
+      "tool": 9418137
+    },
+    "total_visible_text_chars": 83275813,
+    "total_visible_text_utf8_bytes": 131581581,
+    "assistant_generation_nodes": 60312
+  },
+  "repeated_visible_context_exposure_chars": {
+    "uncapped": 28656738246,
+    "capped_per_generation": {
+      "32000": 1665355183,
+      "64000": 3124505177,
+      "128000": 5701729260,
+      "256000": 9907516194,
+      "512000": 15426583165,
+      "1000000": 20668660695
+    }
+  },
+  "token_sensitivity": {
+    "note": "No provider tokenizer/usage log is exposed. Values below divide visible character exposure by 2-4 chars/token only to bound order of magnitude; they are not billed-token claims.",
+    "unique_visible_content_tokens_if_2_to_4_chars_per_token": [
+      20818953,
+      41637907
+    ],
+    "visible_context_tokens_at_128k_char_cap_if_2_to_4_chars_per_token": [
+      1425432315,
+      2850864630
+    ],
+    "visible_context_tokens_at_512k_char_cap_if_2_to_4_chars_per_token": [
+      3856645791,
+      7713291583
+    ],
+    "uncapped_visible_context_tokens_if_2_to_4_chars_per_token": [
+      7164184562,
+      14328369123
+    ]
+  },
+  "not_observed": [
+    "hidden system/developer instructions",
+    "tool schemas not present in export text",
+    "provider-side compaction/summarization",
+    "prompt caching and cached-token accounting",
+    "reasoning/internal tokens",
+    "conversations after 2026-02-08",
+    "exact tokenizer differences by model",
+    "provider usage/billing logs"
+  ],
+  "law": "Treat historical compute as an asset. Reuse proof-carrying results; never claim an exact lifetime token total without usage logs."
+}
