@@ -31,10 +31,12 @@ test('Omega T04 supersession preserves provenance while newer verified policy be
 
   const snapshot=field.snapshot();
   assert.equal(snapshot.policies.find(x=>x.id==='tone-policy').statement,'new');
-  const old=snapshot.history.find(x=>x.id==='tone-policy' && x.generation===1);
-  assert.equal(old.status,'superseded');
-  assert.equal(old.supersededBy,'tone-policy@2');
-  assert.deepEqual(old.evidence,['dima:old']);
+  const generationOne=snapshot.history.filter(x=>x.id==='tone-policy' && x.generation===1);
+  assert.ok(generationOne.some(x=>x.status==='active'));
+  const superseded=generationOne.find(x=>x.status==='superseded');
+  assert.ok(superseded);
+  assert.equal(superseded.supersededBy,'tone-policy@2');
+  assert.deepEqual(superseded.evidence,['dima:old']);
 });
 
 test('Omega T06 intent surface is not treated as literal programming syntax', () => {
