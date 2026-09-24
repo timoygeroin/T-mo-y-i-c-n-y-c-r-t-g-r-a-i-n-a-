@@ -7,6 +7,10 @@ on:
         description: Exact main SHA approved for production
         required: true
         type: string
+  push:
+    branches: [main]
+    paths:
+      - 'ops/production-promotion-request.json'
 
 permissions:
   contents: read
@@ -35,7 +39,12 @@ jobs:
         run: |
           set -euo pipefail
           actual="$(git rev-parse HEAD)"
-          test "$actual" = "${{ inputs.expected_main_sha }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            expected="${{ inputs.expected_main_sha }}"
+          else
+            expected="${{ github.sha }}"
+          fi
+          test "$actual" = "$expected"
           echo "Promoting exact main SHA: $actual"
 
       - uses: actions/setup-node@v4
