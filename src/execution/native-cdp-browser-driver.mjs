@@ -2,8 +2,26 @@ import { spawn } from 'node:child_process';
 import { access, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { createServer } from 'node:net';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function reserveTcpPort() {
+  return new Promise((resolve, reject) => {
+    const server = createServer();
+    server.unref();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      const port = typeof address === 'object' && address ? address.port : null;
+      server.close(error => {
+        if (error) reject(error);
+        else if (!port) reject(new Error('NATIVE_CDP_PORT_ALLOCATION_FAILED'));
+        else resolve(port);
+      });
+    });
+  });
+}
 
 async function firstExecutable(candidates) {
   for (const candidate of candidates) {
@@ -38,7 +56,7 @@ export class NativeCdpBrowserDriver {
     ],
     allowedDomains = [],
     allowData = true,
-    launchTimeoutMs = 12_000,
+    launchTimeoutMs = 30_000,
     rpcTimeoutMs = 8_000,
     headless = true
   } = {}) {
@@ -71,12 +89,21 @@ export class NativeCdpBrowserDriver {
     this.executable = executable;
     this.profileDir = await mkdtemp(join(tmpdir(), 'mondayid-cdp-'));
 
+    const debugPort = await reserveTcpPort();
     const args = [
       this.headless ? '--headless=new' : '',
       '--no-sandbox',
       '--disable-gpu',
       '--disable-dev-shm-usage',
-      '--remote-debugging-port=0',
+      '--disable-background-networking',
+      '--disable-default-apps',
+      '--disable-extensions',
+      '--disable-sync',
+      '--metrics-recording-only',
+      '--no-first-run',
+      '--no-default-browser-check',
+      '--remote-debugging-address=127.0.0.1',
+      '--remote-debugging-port=' + debugPort,
       '--user-data-dir=' + this.profileDir,
       'about:blank'
     ].filter(Boolean);
@@ -88,28 +115,35 @@ export class NativeCdpBrowserDriver {
     child.unref();
     this.process = child;
 
-    const browserWs = await new Promise((resolve, reject) => {
-      let stderr = '';
-      const timer = setTimeout(() => reject(new Error('NATIVE_CDP_LAUNCH_TIMEOUT:' + stderr.slice(-1200))), this.launchTimeoutMs);
-      child.once('error', error => {
-        clearTimeout(timer);
-        reject(error);
-      });
-      child.stderr.on('data', chunk => {
-        stderr += chunk.toString();
-        const match = stderr.match(/DevTools listening on (ws:\/\/[^\s]+)/);
-        if (match) {
-          clearTimeout(timer);
-          resolve(match[1]);
+    let stderr = '';
+    let exitCode = null;
+    let launchError = null;
+    child.stderr.on('data', chunk => { stderr += chunk.toString(); });
+    child.once('error', error => { launchError = error; });
+    child.once('exit', code => { exitCode = code; });
+
+    const versionUrl = `http://127.0.0.1:${debugPort}/json/version`;
+    const deadline = Date.now() + this.launchTimeoutMs;
+    let browserWs = null;
+
+    while (Date.now() < deadline && !browserWs) {
+      if (launchError) throw launchError;
+      if (exitCode !== null) {
+        throw new Error('NATIVE_CDP_BROWSER_EXITED:' + exitCode + ':' + stderr.slice(-1200));
+      }
+      try {
+        const response = await fetch(versionUrl,{cache:'no-store'});
+        if (response.ok) {
+          const version = await response.json();
+          if (version?.webSocketDebuggerUrl) browserWs = version.webSocketDebuggerUrl;
         }
-      });
-      child.once('exit', code => {
-        if (!this.browserWebSocketUrl) {
-          clearTimeout(timer);
-          reject(new Error('NATIVE_CDP_BROWSER_EXITED:' + code + ':' + stderr.slice(-1200)));
-        }
-      });
-    });
+      } catch {}
+      if (!browserWs) await sleep(75);
+    }
+
+    if (!browserWs) {
+      throw new Error('NATIVE_CDP_LAUNCH_TIMEOUT:' + stderr.slice(-1200));
+    }
 
     this.browserWebSocketUrl = browserWs;
     await this.connect(browserWs);
