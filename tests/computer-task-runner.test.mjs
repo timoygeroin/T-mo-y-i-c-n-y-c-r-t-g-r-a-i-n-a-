@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,6 +105,60 @@ test('computer request fingerprint changes when nested execution semantics chang
     assert.equal(out.code,0,out.stderr);
     receipt=JSON.parse(await readFile(join(root,'computer','receipts','fingerprint-proof.json'),'utf8'));
     assert.notEqual(receipt.requestFingerprint,first);
+  } finally {
+    await rm(root,{recursive:true,force:true});
+  }
+});
+
+
+async function nativeBrowserAvailable() {
+  for (const candidate of ['/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium','/usr/bin/chromium-browser']) {
+    try { await access(candidate); return typeof WebSocket === 'function'; } catch {}
+  }
+  return false;
+}
+
+test('computer task runner accepts browser work as a first-class route without shell-wrapping browser code', async (t) => {
+  if (!(await nativeBrowserAvailable())) {
+    t.skip('native browser primitive unavailable on this host');
+    return;
+  }
+
+  const root=await mkdtemp(join(tmpdir(),'mondayid-browser-task-'));
+  try {
+    await mkdir(join(root,'computer','requests'),{recursive:true});
+    const html='<title>Fabric</title><div id="state">initial</div>';
+    const request={
+      schema:'mondayid.computer-task.v1',
+      id:'browser-first-class',
+      effect:'perform and independently verify a browser-native task',
+      domain:'host',
+      browserPolicy:{allowData:true},
+      routeCandidate:{
+        kind:'browser',
+        domain:'host',
+        steps:[
+          {type:'open',url:'data:text/html,'+encodeURIComponent(html)},
+          {type:'evaluate',expression:'document.querySelector("#state").textContent="fabric-ok"'}
+        ],
+        verification:{
+          probe:{type:'text',selector:'#state'},
+          acceptance:{equals:'fabric-ok',ok:true}
+        }
+      }
+    };
+    await writeFile(join(root,'computer','requests','browser-first-class.json'),JSON.stringify(request),'utf8');
+
+    const out=await run(['computer/requests/browser-first-class.json'],{cwd:root});
+    assert.equal(out.code,0,out.stderr);
+    const receipt=JSON.parse(await readFile(join(root,'computer','receipts','browser-first-class.json'),'utf8'));
+    assert.equal(receipt.status,'VERIFIED');
+    assert.equal(receipt.routeKind,'browser');
+    assert.equal(receipt.execution.receptor,'mondayid-native-browser');
+    assert.equal(receipt.verification.ok,true);
+    assert.equal(receipt.verification.mode,'independent-browser-readback');
+    assert.equal(receipt.verification.observation.value,'fabric-ok');
+    assert.equal(receipt.runner.ownedContract,'mondayid-computer-fabric');
   } finally {
     await rm(root,{recursive:true,force:true});
   }
