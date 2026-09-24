@@ -253,15 +253,14 @@ export class MondayRuntime {
           },
           ok:false
         };
-        this.actionLedger.ambiguous(
+        this.actionLedger.fail(
           prepared.actionKey,
           token,
-          outcome,
-          'EXECUTED_BUT_RELEASE_VETOED'
+          outcome
         );
         return {
           ...outcome,
-          ledger:{ actionKey:prepared.actionKey, state:'AMBIGUOUS' }
+          ledger:{ actionKey:prepared.actionKey, state:'FAILED' }
         };
       }
 
