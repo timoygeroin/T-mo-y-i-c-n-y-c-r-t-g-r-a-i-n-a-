@@ -1,0 +1,264 @@
+{
+  "schema": "mondayid.failure-gene-registry.v1",
+  "source": {
+    "title": "MONDAY_AIG_UNFOLD_REPORT_v1 / MAXPACK v7",
+    "driveFileId": "1CGzauiNM_bJQiY2aRvvrnCZcn4F0MeKv",
+    "historicalRole": "processed donor memory; raw archives remain exact-evidence source"
+  },
+  "law": "A preventable failure is not considered absorbed by the organism until a typed detector or structural gate exists and an executable regression proves the corrective mechanism.",
+  "genes": [
+    {
+      "id": "fake_memory",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "MEMORY_CLAIM_WITHOUT_PROVENANCE"
+      },
+      "mechanisms": [
+        "src/legacy-import.mjs",
+        "src/semantic-frame.mjs"
+      ],
+      "regressions": [
+        "tests/legacy-causal-import.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "roleplay_drift",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "structural",
+        "id": "ATTRACTOR_GENERIC_SURFACE_VETO"
+      },
+      "mechanisms": [
+        "src/attractor-field.mjs",
+        "src/interface.mjs"
+      ],
+      "regressions": [
+        "tests/attractor-field.test.mjs",
+        "tests/interface-attractor.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "beauty_without_result",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "ARTIFACT_WITHOUT_EFFECT"
+      },
+      "mechanisms": [
+        "src/immune-registry.mjs",
+        "src/interface.mjs"
+      ],
+      "regressions": [
+        "tests/product-contract.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "overclaim_PASS",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "COMPLETION_WITHOUT_EVIDENCE"
+      },
+      "mechanisms": [
+        "src/attractor-field.mjs",
+        "src/immune-registry.mjs"
+      ],
+      "regressions": [
+        "tests/attractor-field.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "infinite_theory_loop",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "THEORY_WITHOUT_SEMANTIC_PROGRESS"
+      },
+      "mechanisms": [
+        "src/runtime.mjs",
+        "src/immune-registry.mjs"
+      ],
+      "regressions": [
+        "tests/pass.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "active_track_loss",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "SURFACE_RELEASE_WITH_ACTIVE_INTENT"
+      },
+      "mechanisms": [
+        "src/interface.mjs",
+        "src/task-field.mjs"
+      ],
+      "regressions": [
+        "tests/interface-attractor.test.mjs",
+        "tests/task-field.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "archive_claim_without_reading",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "ARCHIVE_CLAIM_WITHOUT_SOURCE_READBACK"
+      },
+      "mechanisms": [
+        "src/immune-registry.mjs",
+        "src/legacy-import.mjs"
+      ],
+      "regressions": [
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "hidden_bank_leak",
+      "status": "UNRESOLVED",
+      "detector": {
+        "kind": "none",
+        "id": null
+      },
+      "mechanisms": [],
+      "regressions": [],
+      "gap": "No project-local detector has been recovered that safely formalizes this historical failure without conflating platform privacy/safety enforcement with MondayID cognition.",
+      "archiveReady": false
+    },
+    {
+      "id": "self_audit_theater",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "structural",
+        "id": "INDEPENDENT_VERIFICATION_REQUIRED"
+      },
+      "mechanisms": [
+        "src/runtime.mjs",
+        "src/action-ledger.mjs"
+      ],
+      "regressions": [
+        "tests/system.test.mjs",
+        "tests/distributed-lineage.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "raw_memory_fantasy",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "MEMORY_CLAIM_WITHOUT_PROVENANCE"
+      },
+      "mechanisms": [
+        "src/immune-registry.mjs",
+        "src/remote-worldline.mjs"
+      ],
+      "regressions": [
+        "tests/remote-worldline.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "builder_reduction",
+      "status": "PARTIAL",
+      "detector": {
+        "kind": "builtin",
+        "id": "ARTIFACT_WITHOUT_EFFECT"
+      },
+      "mechanisms": [
+        "src/immune-registry.mjs",
+        "product/KNOWN_REJECTIONS_V1.json"
+      ],
+      "regressions": [
+        "tests/product-contract.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "gap": "Detector rejects artifact-as-effect substitution, but not every build domain yet emits a typed desired-effect receipt.",
+      "archiveReady": false
+    },
+    {
+      "id": "mystic_fact_blur",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "builtin",
+        "id": "EPISTEMIC_UPGRADE_WITHOUT_EVIDENCE"
+      },
+      "mechanisms": [
+        "src/semantic-frame.mjs",
+        "src/immune-registry.mjs"
+      ],
+      "regressions": [
+        "tests/semantic-frame.test.mjs",
+        "tests/immune-registry.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "unsafe_influence",
+      "status": "UNRESOLVED",
+      "detector": {
+        "kind": "none",
+        "id": null
+      },
+      "mechanisms": [],
+      "regressions": [],
+      "gap": "Safety is enforced by host/platform policy, but a portable MondayID-local cognitive detector has not been recovered and should not be invented as a weaker substitute.",
+      "archiveReady": false
+    },
+    {
+      "id": "duplicate_confusion",
+      "status": "PROVEN",
+      "detector": {
+        "kind": "structural",
+        "id": "IDEMPOTENT_EVENT_AND_ACTION_IDENTITY"
+      },
+      "mechanisms": [
+        "src/worldline.mjs",
+        "src/action-ledger.mjs"
+      ],
+      "regressions": [
+        "tests/system.test.mjs",
+        "tests/distributed-lineage.test.mjs"
+      ],
+      "archiveReady": true
+    },
+    {
+      "id": "main_only_compression",
+      "status": "PARTIAL",
+      "detector": {
+        "kind": "builtin",
+        "id": "SOURCE_COVERAGE_GAP"
+      },
+      "mechanisms": [
+        "src/immune-registry.mjs",
+        "product/GENEALOGY_RECOVERY_20260924.json"
+      ],
+      "regressions": [
+        "tests/immune-registry.test.mjs"
+      ],
+      "gap": "Coverage gaps can now be detected, but full three-year raw semantic assimilation is still open.",
+      "archiveReady": false
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "proven": 11,
+    "partial": 2,
+    "unresolved": 2,
+    "archiveReady": 11
+  }
+}
