@@ -1,0 +1,24 @@
+{
+  "schema": "mondayid.computer-task.v1",
+  "id": "bootstrap-proof-20260924",
+  "effect": "prove the owned MondayID computer can execute workspace work and independently read back the result on a fresh external compute substrate",
+  "domain": "code",
+  "executionRequest": {
+    "command": "python3",
+    "args": [
+      "-c",
+      "from pathlib import Path; Path('computer-proof.txt').write_text(str(73*97), encoding='utf-8')"
+    ]
+  },
+  "verificationRequest": {
+    "command": "python3",
+    "args": [
+      "-c",
+      "from pathlib import Path; print(Path('computer-proof.txt').read_text(encoding='utf-8'), end='')"
+    ]
+  },
+  "acceptance": {
+    "stdoutEquals": "7081",
+    "stderrEmpty": true
+  }
+}
