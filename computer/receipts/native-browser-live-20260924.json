@@ -1,0 +1,73 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "native-browser-live-20260924",
+  "requestPath": "computer/requests/native-browser-live-20260924.json",
+  "requestFingerprint": "1cf0bf0036ad84765a18442959bada7bc3d009acafff4c93b0444e8869ce32de",
+  "effect": "prove the Monday-owned native CDP browser organ executes and independently reads back a browser effect on a fresh computer substrate",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "evidence": {
+      "mode": "bounded-process-workspace",
+      "execution": {
+        "status": "completed",
+        "command": "node",
+        "args": [
+          "--input-type=module",
+          "-e",
+          "import fs from 'node:fs/promises';\nimport { createNativeCdpBrowserDriver } from './src/execution/native-cdp-browser-driver.mjs';\nimport { createBrowserComputerReceptor } from './src/execution/browser-computer-receptor.mjs';\n\nconst driver=createNativeCdpBrowserDriver();\nconst receptor=createBrowserComputerReceptor({driver,name:'mondayid-native-browser-live'});\nconst html='<title>Monday Live</title><input id=\"seed\"><div id=\"receipt\">initial</div>';\nconst action={\n  domain:'host',\n  effect:'execute and independently verify a real browser effect through the Monday-owned CDP driver',\n  routeCandidate:{\n    kind:'browser',\n    steps:[\n      {type:'open',url:'data:text/html,'+encodeURIComponent(html)},\n      {type:'fill',selector:'#seed',value:'Monday'},\n      {type:'evaluate',expression:'document.querySelector(\"#receipt\").textContent=document.querySelector(\"#seed\").value+\"-browser-live-ok\"'}\n    ],\n    verification:{\n      probe:{type:'text',selector:'#receipt'},\n      acceptance:{equals:'Monday-browser-live-ok',ok:true}\n    }\n  }\n};\ntry {\n  const result=await receptor.execute(action);\n  const verification=await receptor.verify(result,action);\n  const proof={resultOk:result.ok===true,verification};\n  await fs.writeFile('native-browser-live.json',JSON.stringify(proof));\n  if (!verification.ok) process.exitCode=2;\n} finally {\n  await driver.close();\n}"
+        ],
+        "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+        "exitCode": 0,
+        "signal": null,
+        "stdout": "",
+        "stderr": "",
+        "durationMs": 15214
+      },
+      "verificationRequest": {
+        "command": "python3",
+        "args": [
+          "-c",
+          "from pathlib import Path; print(Path('native-browser-live.json').read_text(), end='')"
+        ]
+      },
+      "acceptance": {
+        "stdoutIncludes": "Monday-browser-live-ok",
+        "stderrEmpty": true
+      },
+      "executionFingerprint": "a376b3d9859add08",
+      "verificationFingerprint": "c95c3c9b4452e9d3"
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "a376b3d9859add08",
+    "verificationFingerprint": "c95c3c9b4452e9d3",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "from pathlib import Path; print(Path('native-browser-live.json').read_text(), end='')"
+      ],
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "{\"resultOk\":true,\"verification\":{\"ok\":true,\"code\":null,\"mode\":\"independent-browser-readback\",\"observation\":{\"ok\":true,\"type\":\"text\",\"selector\":\"#receipt\",\"value\":\"Monday-browser-live-ok\"}}}",
+      "stderr": "",
+      "durationMs": 27
+    }
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-process-computer",
+    "externalSubstrate": "github-actions",
+    "commit": "271b214e4544c3b9a96ba74c635b288217b9888e",
+    "runId": "36039186692"
+  },
+  "at": "2026-09-24T18:09:02.906Z"
+}
