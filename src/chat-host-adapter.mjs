@@ -126,6 +126,15 @@ export async function runChatHost({
   const pass = await runtime.runPass([incoming], {maxCycles:2});
   const surface = renderVerifiedCandidateSurface(pass.final || pass);
 
+  const providerEvidence=surface?.evidence?.provider || {};
+  const revision=pass.final?.revision || null;
+  const receipt=surface.released === true ? {
+    id:surface?.evidence?.actionId || (revision ? `revision:${revision}` : 'mondayid:surface'),
+    provider:providerEvidence.model || providerEvidence.provider || 'mondayid',
+    revision:revision || 'unknown',
+    verification:surface?.evidence?.verification?.mode || null
+  } : null;
+
   return {
     ok:pass.ok === true && pass.state === 'FULFILLED' && surface.released === true,
     state:pass.state,
@@ -138,6 +147,7 @@ export async function runChatHost({
     compute:pass.final?.graph?.nodes?.find(node => node.type === 'signal')?.attractorContract?.compute || null,
     budget:{maxOutputTokens,maxInputChars,maxParallelPaths,maxCritics},
     surface,
+    receipt,
     status:surface.released ? 200 : 503
   };
 }
