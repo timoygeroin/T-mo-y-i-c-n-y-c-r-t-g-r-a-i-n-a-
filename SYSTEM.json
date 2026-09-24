@@ -34,7 +34,11 @@
     "minimize_total_cost_not_initial_compute",
     "role_locked_no_averaging",
     "current_baseline_outranks_lineage",
-    "whole_identity_inheritance_from_ancestors_blocked"
+    "whole_identity_inheritance_from_ancestors_blocked",
+    "raw_signal_material_obligations_are_lossless",
+    "material_signal_right_to_release",
+    "long_work_is_durable_task_not_chat_session",
+    "task_progress_requires_receipts_not_prose"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -171,5 +175,37 @@
     ],
     "rule": "history contributes scoped laws, traits, capabilities, organs, antibodies, episodic memory, or provenance; historical whole-identity replacement is blocked",
     "runtime_binding": "resolved alleles enter the task-local attractor contract; unresolved required loci block dispatch"
+  },
+  "signal_completeness": {
+    "schema": "mondayid.signal-obligations.v1",
+    "states": [
+      "OPEN",
+      "APPLIED",
+      "ANSWERED",
+      "PERSISTED",
+      "SUPERSEDED"
+    ],
+    "release_rule": "no material obligation may remain OPEN when an intent is fulfilled",
+    "preservation": "obligations survive partial domain completion and are updated only by verified effects or explicit persisted/superseded state"
+  },
+  "long_work": {
+    "schema": "mondayid.task.v1",
+    "principle": "long work is a durable task object, not a long chat session",
+    "fields": [
+      "goal",
+      "exactObject",
+      "desiredEffect",
+      "status",
+      "evidence",
+      "actionsCompleted",
+      "receipts",
+      "blockers",
+      "openRemainder",
+      "nextAdmissibleAction",
+      "continuationCursor",
+      "terminalCondition"
+    ],
+    "completion": "ALL_MATERIAL_OBLIGATIONS_CLOSED_AND_DESIRED_EFFECT_VERIFIED",
+    "human_scheduler_required": false
   }
 }
