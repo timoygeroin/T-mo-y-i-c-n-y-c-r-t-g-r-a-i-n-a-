@@ -3,6 +3,7 @@ import { buildFrontier } from './planner.mjs';
 import { Worldline } from './worldline.mjs';
 import { persistIntents, activeIntents, settleIntents } from './intent-field.mjs';
 import { PolicyField, defaultMetaInvariants } from './policy-field.mjs';
+import { evaluateCandidateOutput } from './attractor-field.mjs';
 
 export class MondayRuntime {
   constructor({ worldline = new Worldline(), capabilities = {}, foundry = null, policyField = null } = {}) {
@@ -17,7 +18,9 @@ export class MondayRuntime {
   }
 
   observe(signals) {
-    const graph = compileSignals(signals);
+    const state = this.worldline.materialize();
+    const policies = this.policyField.snapshot();
+    const graph = compileSignals(signals, { state, policies });
     const frontier = buildFrontier(graph, this.capabilities);
     return { graph, frontier };
   }
@@ -64,7 +67,7 @@ export class MondayRuntime {
         status: intent.status,
         completedDomains: [...(intent.completedDomains || [])].sort()
       }))
-      .sort((a, b) => a.id.localeCompare(b.id));
+      .sort((a, b) => a.id.localeCompare(b));
     const capabilities = Object.entries(this.capabilities)
       .map(([domain, receptor]) => [domain, receptor?.name || domain])
       .sort(([a], [b]) => a.localeCompare(b));
@@ -173,8 +176,24 @@ export class MondayRuntime {
           return {
             action,
             result,
+            steering: { ok:true, hits:[] },
             verification: { ok:false, code:'EXECUTION_REPORTED_FAILURE' },
             ok: false
+          };
+        }
+
+        const steering = evaluateCandidateOutput(result, action.inferenceContract);
+        if (!steering.ok) {
+          return {
+            action,
+            result,
+            steering,
+            verification: {
+              ok:false,
+              code:'MONDAY_ATTRACTOR_RELEASE_VETO',
+              hits:[...steering.hits]
+            },
+            ok:false
           };
         }
 
@@ -182,13 +201,14 @@ export class MondayRuntime {
           return {
             action,
             result,
+            steering,
             verification: { ok:false, code:'VERIFICATION_RECEPTOR_MISSING' },
             ok: false
           };
         }
 
         const verification = await receptor.verify(result, action);
-        return { action, result, verification, ok: verification?.ok === true };
+        return { action, result, steering, verification, ok: verification?.ok === true };
       } catch (error) {
         return { action, ok: false, error: String(error) };
       }
