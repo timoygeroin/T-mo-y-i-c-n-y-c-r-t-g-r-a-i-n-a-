@@ -1,10 +1,36 @@
 import { hash } from './worldline.mjs';
 import { inferDomains } from './compiler.mjs';
 
+const CLOSED_OBLIGATION_STATES = new Set(['APPLIED','ANSWERED','PERSISTED','SUPERSEDED']);
+
+function normalizeObligations(signal,id,domains){
+  const explicit=Array.isArray(signal.obligations) && signal.obligations.length
+    ? signal.obligations
+    : domains.map(domain => ({
+        id:`${id}:${domain}`,
+        domain,
+        text:signal.effect || signal.desiredEffect || signal.text || signal.intent || domain,
+        material:true,
+        status:(signal.completedDomains || []).includes(domain) ? 'APPLIED' : 'OPEN'
+      }));
+
+  return explicit.map((item,index)=>({
+    id:String(item.id || `${id}:obligation:${index + 1}`),
+    domain:item.domain || null,
+    text:String(item.text || item.effect || ''),
+    material:item.material !== false,
+    status:CLOSED_OBLIGATION_STATES.has(String(item.status || '').toUpperCase())
+      ? String(item.status).toUpperCase()
+      : 'OPEN',
+    evidence:Array.isArray(item.evidence) ? [...item.evidence] : []
+  }));
+}
+
 export function normalizeIntent(signal = {}, revision = 'root', index = 0) {
   const text = String(signal.text ?? signal.intent ?? '');
   const domains = signal.domains || inferDomains(text);
   const id = signal.id || `intent:${hash({ revision, index, text, effect: signal.effect || null }).slice(0, 16)}`;
+  const obligations=normalizeObligations(signal,id,domains);
   return {
     id,
     text,
@@ -35,6 +61,7 @@ export function normalizeIntent(signal = {}, revision = 'root', index = 0) {
     priority: signal.priority ?? 50,
     domains,
     completedDomains: Array.isArray(signal.completedDomains) ? signal.completedDomains : [],
+    obligations,
     status: signal.status || 'active'
   };
 }
@@ -78,17 +105,41 @@ export function settleIntents(worldline, graph, results = []) {
 
     const completedDomains = [...new Set([...(prior.completedDomains || []), ...successfulDomains])];
     const allDomains = prior.domains || signal.domains || [];
-    const status = allDomains.length > 0 && allDomains.every(domain => completedDomains.includes(domain))
-      ? 'fulfilled'
-      : 'active';
+    const obligations=(prior.obligations || []).map(obligation => {
+      if(
+        obligation.status === 'OPEN' &&
+        obligation.domain &&
+        successfulDomains.includes(obligation.domain)
+      ){
+        return {
+          ...obligation,
+          status:'APPLIED',
+          evidence:[...new Set([
+            ...(obligation.evidence || []),
+            ...results
+              .filter(result => result.ok && result.action?.sourceSignal === signal.id && result.action?.domain === obligation.domain)
+              .map(result => result.action?.id)
+          ])]
+        };
+      }
+      return obligation;
+    });
+    const openMaterial=obligations.filter(obligation => obligation.material !== false && obligation.status === 'OPEN');
+    const status =
+      allDomains.length > 0 &&
+      allDomains.every(domain => completedDomains.includes(domain)) &&
+      openMaterial.length === 0
+        ? 'fulfilled'
+        : 'active';
 
     const changed =
       status !== prior.status ||
-      completedDomains.length !== (prior.completedDomains || []).length;
+      completedDomains.length !== (prior.completedDomains || []).length ||
+      JSON.stringify(obligations) !== JSON.stringify(prior.obligations || []);
 
     if (!changed) continue;
 
-    const next = { ...prior, completedDomains, status };
+    const next = { ...prior, completedDomains, obligations, status };
     const out = worldline.append({
       kind: 'intent',
       subject: signal.id,
