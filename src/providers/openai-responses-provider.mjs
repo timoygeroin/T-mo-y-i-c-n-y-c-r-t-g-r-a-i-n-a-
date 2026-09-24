@@ -26,7 +26,10 @@ export class OpenAIResponsesProvider {
     defaultModel = 'gpt-5.6-sol',
     reasoningMode = 'standard',
     reasoningContext = 'all_turns',
-    store = false
+    store = false,
+    maxOutputTokens = 512,
+    criticOutputTokens = 256,
+    maxInputChars = 12000
   } = {}) {
     this.apiKey = apiKey;
     this.baseUrl = String(baseUrl || DEFAULT_BASE_URL).replace(/\/$/,'');
@@ -35,6 +38,18 @@ export class OpenAIResponsesProvider {
     this.reasoningMode = reasoningMode;
     this.reasoningContext = reasoningContext;
     this.store = store;
+    this.maxOutputTokens = Number(maxOutputTokens);
+    this.criticOutputTokens = Number(criticOutputTokens);
+    this.maxInputChars = Number(maxInputChars);
+    if (!Number.isInteger(this.maxOutputTokens) || this.maxOutputTokens < 1) throw new Error('OPENAI_MAX_OUTPUT_TOKENS_REQUIRED');
+    if (!Number.isInteger(this.criticOutputTokens) || this.criticOutputTokens < 1) throw new Error('OPENAI_CRITIC_OUTPUT_TOKENS_REQUIRED');
+    if (!Number.isInteger(this.maxInputChars) || this.maxInputChars < 1) throw new Error('OPENAI_MAX_INPUT_CHARS_REQUIRED');
+  }
+
+  #assertInputBudget(instructions, input) {
+    const chars = String(instructions || '').length + String(input || '').length;
+    if (chars > this.maxInputChars) throw new Error(`OPENAI_INPUT_BUDGET_EXCEEDED:${chars}>${this.maxInputChars}`);
+    return chars;
   }
 
   async #request(body) {
@@ -74,11 +89,13 @@ export class OpenAIResponsesProvider {
     };
     if (this.reasoningMode) reasoning.mode = this.reasoningMode;
 
+    const inputChars = this.#assertInputBudget(instructions, input);
     const payload = await this.#request({
       model,
       instructions,
       input,
       reasoning,
+      max_output_tokens:this.maxOutputTokens,
       store:this.store,
       metadata:{
         monday_contract:String(contract?.schema || 'none'),
@@ -97,7 +114,8 @@ export class OpenAIResponsesProvider {
         reasoning:payload.reasoning || reasoning,
         usage:payload.usage || null,
         pathIndex,
-        pathCount
+        pathCount,
+        budget:{maxOutputTokens:this.maxOutputTokens,maxInputChars:this.maxInputChars,inputChars}
       },
       raw:payload
     };
@@ -119,9 +137,22 @@ export class OpenAIResponsesProvider {
       knownFailureGenes:contract?.knownFailureGenes || []
     };
 
+    const criticInstructions=[
+        'You are an adversarial verifier inside MondayID.',
+        'Evaluate the candidate against the exact object and desired effect.',
+        'Reject convenient substitutions, known failure genes, unsupported completion, and user-retraining leakage.',
+        'Return ONLY compact JSON: {"ok":boolean,"score":number 0..1,"reasons":[string]}.'
+      ].join('\n');
+    const criticInput=JSON.stringify({
+        rubric,
+        candidate:candidateText,
+        critic:`${criticIndex + 1}/${criticCount}`
+      });
+    this.#assertInputBudget(criticInstructions, criticInput);
+
     const payload = await this.#request({
       model,
-      instructions:[
+      instructions:criticInstructions,
         'You are an adversarial verifier inside MondayID.',
         'Evaluate the candidate against the exact object and desired effect.',
         'Reject convenient substitutions, known failure genes, unsupported completion, and user-retraining leakage.',
@@ -137,6 +168,7 @@ export class OpenAIResponsesProvider {
         context:'current_turn',
         mode:this.reasoningMode || 'standard'
       },
+      max_output_tokens:this.criticOutputTokens,
       store:this.store,
       metadata:{
         monday_contract:String(contract?.schema || 'none'),
