@@ -19,6 +19,33 @@ export async function runChatHost({
     };
   }
 
+  if (env.MONDAYID_API_SPEND_ENABLED !== 'true') {
+    return {
+      ok:false,
+      state:'BLOCKED',
+      code:'API_SPEND_NOT_AUTHORIZED',
+      status:503
+    };
+  }
+
+  const maxOutputTokens=Number(env.MONDAYID_MAX_OUTPUT_TOKENS);
+  const maxInputChars=Number(env.MONDAYID_MAX_INPUT_CHARS);
+  const maxParallelPaths=Number(env.MONDAYID_MAX_PARALLEL_PATHS);
+  const maxCritics=Number(env.MONDAYID_MAX_CRITICS);
+  const budgetValid =
+    Number.isInteger(maxOutputTokens) && maxOutputTokens > 0 &&
+    Number.isInteger(maxInputChars) && maxInputChars > 0 &&
+    Number.isInteger(maxParallelPaths) && maxParallelPaths >= 1 && maxParallelPaths <= 6 &&
+    Number.isInteger(maxCritics) && maxCritics >= 0 && maxCritics <= 2;
+  if (!budgetValid) {
+    return {
+      ok:false,
+      state:'BLOCKED',
+      code:'MODEL_BUDGET_CONFIG_REQUIRED',
+      status:503
+    };
+  }
+
   if (!env.MONDAYID_WORLDLINE_URL) {
     return {
       ok:false,
@@ -59,13 +86,18 @@ export async function runChatHost({
     defaultModel:env.MONDAYID_OPENAI_MODEL || 'gpt-5.6-sol',
     reasoningMode:env.MONDAYID_REASONING_MODE || 'standard',
     reasoningContext:'all_turns',
-    store:false
+    store:false,
+    maxOutputTokens,
+    criticOutputTokens:Math.min(256,maxOutputTokens),
+    maxInputChars
   });
 
   const modelReceptor = createModelReceptor({
     provider:modelProvider,
     model:env.MONDAYID_OPENAI_MODEL || 'gpt-5.6-sol',
-    name:'monday-openai-attractor-receptor'
+    name:'monday-openai-attractor-receptor',
+    maxParallelPaths,
+    maxCritics
   });
 
   const runtime = new MondayRuntime({
@@ -104,6 +136,7 @@ export async function runChatHost({
       imported:recovered.imported ?? null
     },
     compute:pass.final?.graph?.nodes?.find(node => node.type === 'signal')?.attractorContract?.compute || null,
+    budget:{maxOutputTokens,maxInputChars,maxParallelPaths,maxCritics},
     surface,
     status:surface.released ? 200 : 503
   };

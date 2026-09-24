@@ -77,7 +77,8 @@ export function createModelReceptor({
   provider,
   model = 'host-selected',
   name = 'monday-attractor-model',
-  maxParallelPaths = 6
+  maxParallelPaths = 6,
+  maxCritics = 2
 } = {}) {
   if (!provider || typeof provider.generate !== 'function') {
     throw new Error('MODEL_PROVIDER_GENERATE_REQUIRED');
@@ -146,7 +147,7 @@ export function createModelReceptor({
         };
       }
 
-      const criticCount = contract?.compute?.topology?.critics || 0;
+      const criticCount = Math.max(0, Math.min(maxCritics, contract?.compute?.topology?.critics || 0));
       if (criticCount > 0 && typeof provider.critique === 'function') {
         await Promise.all(survivors.map(async attempt => {
           const verdicts = [];

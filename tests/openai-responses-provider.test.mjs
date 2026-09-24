@@ -9,10 +9,12 @@ const fakeResponse = payload => ({
   async text(){ return JSON.stringify(payload); }
 });
 
-test('Responses provider sends nested reasoning.effort and never flat reasoning_effort', async () => {
+test('Responses provider sends nested reasoning.effort, token budget, and never flat reasoning_effort', async () => {
   const calls=[];
   const provider=new OpenAIResponsesProvider({
     apiKey:'test-key',
+    maxOutputTokens:321,
+    maxInputChars:2000,
     fetchImpl:async (url,init)=>{
       calls.push({url,body:JSON.parse(init.body),headers:init.headers});
       return fakeResponse({
@@ -41,8 +43,11 @@ test('Responses provider sends nested reasoning.effort and never flat reasoning_
   assert.equal(calls[0].body.reasoning.context,'all_turns');
   assert.equal(calls[0].body.reasoning.mode,'standard');
   assert.equal('reasoning_effort' in calls[0].body,false);
+  assert.equal(calls[0].body.max_output_tokens,321);
   assert.equal(calls[0].body.store,false);
   assert.equal(calls[0].body.metadata.monday_path,'1/6');
+  assert.equal(result.evidence.budget.maxOutputTokens,321);
+  assert.ok(result.evidence.budget.inputChars>0);
 });
 
 test('provider fails closed without an API key instead of pretending model execution', async () => {
@@ -53,10 +58,25 @@ test('provider fails closed without an API key instead of pretending model execu
   );
 });
 
-test('critic uses MAX effort for a MAX Monday contract and parses the verdict', async () => {
+test('provider refuses prompts larger than the configured input budget before network execution', async () => {
+  let called=false;
+  const provider=new OpenAIResponsesProvider({
+    apiKey:'test-key',
+    maxInputChars:10,
+    fetchImpl:async()=>{called=true; return fakeResponse({});}
+  });
+  await assert.rejects(
+    () => provider.generate({input:'1234567890',instructions:'extra'}),
+    /OPENAI_INPUT_BUDGET_EXCEEDED/
+  );
+  assert.equal(called,false);
+});
+
+test('critic uses MAX effort for a MAX Monday contract and has a separate output cap', async () => {
   const calls=[];
   const provider=new OpenAIResponsesProvider({
     apiKey:'test-key',
+    criticOutputTokens:77,
     fetchImpl:async (url,init)=>{
       calls.push(JSON.parse(init.body));
       return fakeResponse({
@@ -82,6 +102,7 @@ test('critic uses MAX effort for a MAX Monday contract and parses the verdict', 
   assert.equal(verdict.score,0.94);
   assert.equal(calls[0].reasoning.effort,'max');
   assert.equal(calls[0].reasoning.context,'current_turn');
+  assert.equal(calls[0].max_output_tokens,77);
 });
 
 test('HTTP errors remain blockers with the upstream reason intact', async () => {
