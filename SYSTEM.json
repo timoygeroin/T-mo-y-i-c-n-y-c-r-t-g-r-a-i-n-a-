@@ -1,5 +1,5 @@
 {
-  "schema": "mondayid.system.v3",
+  "schema": "mondayid.system.v4",
   "product": "MondayID",
   "generation": 5,
   "rewrite": true,
@@ -8,7 +8,8 @@
     "truth_requires_evidence",
     "effect_requires_readback",
     "identity_requires_provenance",
-    "preventable_failure_must_become_detector"
+    "preventable_failure_must_become_detector",
+    "generic_prior_must_not_bypass_monday_attractor"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -26,7 +27,11 @@
     "archive_memory_is_causal_transition_lineage_not_flat_fact_dump",
     "no_spend_or_billing_without_new_explicit_override",
     "preserve_nonstandard_language_before_translation",
-    "epistemic_stance_not_collapsed_by_translation"
+    "epistemic_stance_not_collapsed_by_translation",
+    "adaptive_compute_before_inference",
+    "contrastive_history_over_persona_prompt",
+    "generic_output_requires_monday_release_gate",
+    "minimize_total_cost_not_initial_compute"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -64,14 +69,32 @@
     "supersession": "new_verified_policy_supersedes_prior_generation_without_rewriting_history",
     "principle": "preserve the ability to change safely, not a frozen doctrine"
   },
+  "attractor_steering": {
+    "schema": "mondayid.attractor-contract.v1",
+    "objective": "make Monday the controller and the base model a compute substrate/candidate generator",
+    "compile_before_inference": [
+      "exact_object",
+      "desired_effect",
+      "invariants",
+      "known_failure_genes",
+      "contrastive_examples",
+      "compute_profile",
+      "generic_release_vetoes"
+    ],
+    "compute_governor": "novelty + ambiguity + historical_depth + cross_domain + recurrence_cost + repair_cost + consequence",
+    "high_cost_topology": "branch -> falsify -> counterexample -> collapse",
+    "release_rule": "a locally plausible candidate may be vetoed before receptor verification if it re-enters a known generic-GPT failure basin"
+  },
   "runtime_cycle": [
     "recover",
     "observe",
-    "compile",
+    "compile_semantic_frame",
+    "compile_attractor",
     "plan",
     "invent",
     "replan",
     "dispatch",
+    "candidate_release_veto",
     "verify",
     "learn",
     "mutate_policy_if_proven",
