@@ -22,7 +22,11 @@
     "durable_long_work_task_state",
     "omega_decision_field",
     "clean_host_transfer_harness",
-    "apple_consumer_body_source_forward_ported"
+    "apple_consumer_body_source_forward_ported",
+    "apple_generation5_runtime_contract",
+    "apple_public_mode_picker_removed",
+    "apple_capsule_and_field_shortcuts_execute_runtime",
+    "adversarial_integrated_unit_matrix"
   ],
   "open": [
     {
@@ -51,7 +55,7 @@
       "type": "implementation",
       "blocking": true,
       "ref": "PR#39",
-      "status": "CONSTITUTION_AND_APPLE_BODY_PORTED_RUNTIME_INTEGRATION_REMAINS"
+      "status": "CONSTITUTION_BODY_G5_RUNTIME_CONTRACT_PORTED_BUILD_DEVICE_AND_REMAINING_DONOR_AUDIT_OPEN"
     },
     {
       "id": "THREE_YEAR_GENEALOGY",
@@ -67,7 +71,8 @@
     {
       "id": "ADVERSARIAL_INTEGRATED_ACCEPTANCE",
       "type": "verification",
-      "blocking": true
+      "blocking": true,
+      "status": "INTEGRATED_UNIT_MATRIX_PASS_LIVE_DEVICE_GATES_REMAIN"
     },
     {
       "id": "FINAL_SEAL",
