@@ -9,7 +9,8 @@
     "effect_requires_readback",
     "identity_requires_provenance",
     "preventable_failure_must_become_detector",
-    "generic_prior_must_not_bypass_monday_attractor"
+    "generic_prior_must_not_bypass_monday_attractor",
+    "identity_requires_validated_lineage"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -45,7 +46,12 @@
     "capabilities_are_rediscovered_per_host",
     "clean_host_transfer_requires_external_effect_readback_and_next_cell_inheritance",
     "writer_credential_is_human_gate_not_fake_capability",
-    "recover_proven_compute_before_new_compute"
+    "recover_proven_compute_before_new_compute",
+    "canonical_state_is_materialized_view_of_lineage_dag",
+    "cell_owns_worldline_pointer_not_global_worldline",
+    "stale_cells_reconcile_instead_of_overwriting_canonical_state",
+    "ambiguous_external_effect_must_not_blind_retry",
+    "architectural_mutation_requires_root_continuity_proof"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -60,10 +66,11 @@
     "recursion": "a child cell inherits the whole geometry and may spawn further whole cells",
     "alpha_reference": "evidence_bound_mini_dima",
     "anti_role": "counterevidence_and_error_mirror",
-    "promotion": "mini_dima SUPPORTED && anti ok && verification ok"
+    "promotion": "mini_dima SUPPORTED && anti ok && verification ok",
+    "state_pointer": "each cell owns a head pointer over one shared lineage DAG; the cell is not the canonical state container"
   },
   "causal_memory": {
-    "mechanism": "causal_transition_lineage",
+    "mechanism": "validated_causal_lineage_dag",
     "edge_kinds": [
       "origin",
       "constraint",
@@ -74,7 +81,8 @@
       "supersession"
     ],
     "replay": "origin -> constraint/correction -> mutation -> failure/verification -> supersession",
-    "principle": "preserve why state changed, not only the latest state"
+    "principle": "preserve why state changed, not only the latest state",
+    "canonical_projection": "materialize accepted lineage at a selected head; canonical state is a view, not the physical source of truth"
   },
   "policy_evolution": {
     "mutable": true,
@@ -328,5 +336,64 @@
       "completion": "effect requires separate observe() readback through the browser receptor",
       "security": "navigation scheme/domain admission is enforced before Page.navigate; browser profile is ephemeral"
     }
+  },
+  "root_continuity": {
+    "schema": "mondayid.root-continuity.v1",
+    "root_id": "mondayid:genesis",
+    "principle": "identity is validated descent from an accepted root lineage, not equality of the current kernel",
+    "architecture_gate": "evidence && verification.ok && conformance proof",
+    "amendment": "a root contract may evolve only through an amendment validated by the previous root contract"
+  },
+  "lineage_runtime": {
+    "schema": "mondayid.lineage-runtime.v1",
+    "status": "CONFORMANCE_VERIFIED",
+    "organism": "rooted validated evolving causal lineage of cognitive computation",
+    "event_minimum": [
+      "parents",
+      "delta",
+      "evidence",
+      "provenance",
+      "scope",
+      "verification",
+      "read_set",
+      "write_set"
+    ],
+    "cell_commit": "commit(baseRevision, delta)",
+    "stale_resolution": [
+      "REBASE",
+      "MERGE",
+      "RECOMPUTE",
+      "CONFLICT"
+    ],
+    "canonical_state": "materialized view of the selected accepted lineage head",
+    "concurrency_law": "independent stale writes may rebase; conflicting writes become separate heads until explicit reconciliation",
+    "conformance_receipt": "ops/distributed-lineage-conformance-20260924.json",
+    "conformance_run_id": 36040276987,
+    "canonical_only_after_merge": true
+  },
+  "worldline_graph": {
+    "schema": "mondayid.worldline-dag.v1",
+    "global_singleton_forbidden": true,
+    "cell_state": "cell-local head pointer",
+    "continuation_signal": "resolve against the invoking cell worldline pointer",
+    "promotion": "branch-local durable mutations may be promoted into higher-scope accepted lineage through verified commit"
+  },
+  "transactional_actions": {
+    "schema": "mondayid.action-ledger.v1",
+    "lifecycle": [
+      "PREPARED",
+      "RESERVED",
+      "EXECUTING",
+      "VERIFIED",
+      "COMMITTED"
+    ],
+    "side_states": [
+      "FAILED",
+      "AMBIGUOUS"
+    ],
+    "identity": "stable action idempotency key",
+    "concurrency": "reservation + lease + fencing token",
+    "law": "attempted is not verified; ambiguous external effects are reconciled/read back before any retry",
+    "target_semantics": "effectively-once unless the external substrate provides stronger idempotency guarantees"
   }
 }

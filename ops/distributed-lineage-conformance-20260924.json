@@ -1,0 +1,44 @@
+{
+  "schema": "mondayid.conformance-receipt.v1",
+  "id": "distributed-lineage-conformance-20260924",
+  "subject": "validated-lineage-dag-and-transactional-action-runtime",
+  "candidateBranch": "mondayid-lineage-runtime-v6-20260924",
+  "testedCommit": "68532c5e2a617f6a5f49392e9bd8f5ea2e1c5536",
+  "pullRequest": 90,
+  "workflow": {
+    "name": "MondayID system proof",
+    "runId": 36040276987,
+    "jobId": 107770442691,
+    "conclusion": "success",
+    "gates": [
+      {
+        "name": "npm test",
+        "conclusion": "success"
+      },
+      {
+        "name": "npm run boot",
+        "conclusion": "success"
+      },
+      {
+        "name": "Boot from live external Worldline",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "proven": [
+    "independent stale cell commits can reconcile without lost update",
+    "conflicting stale mutations remain separate heads until explicit reconciliation",
+    "cells carry independent worldline head pointers over one shared graph",
+    "shared action ledger fences duplicate execution",
+    "ambiguous external effects do not blind retry",
+    "verified action outcome can be reused without duplicate execution",
+    "architectural mutation requires rooted conformance proof",
+    "legacy regression suite remains green",
+    "native CDP readiness is verified through the actual debug endpoint rather than stderr text"
+  ],
+  "epistemicStatus": "VERIFIED",
+  "promotion": {
+    "currentState": "CONFORMANCE_VERIFIED",
+    "canonicalOnlyAfterMergeToMain": true
+  }
+}
