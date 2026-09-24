@@ -268,5 +268,31 @@
     "invalidation": "stale, unproven, provenance-free, or incompatible prior work cannot satisfy the current objective",
     "external_effect_rule": "a historical receipt may prove a mechanism but never substitutes for a fresh external effect when the requested world state can change",
     "objective": "minimize total lifetime compute while preserving truth and future optionality"
+  },
+  "computer_fabric": {
+    "schema": "mondayid.computer-fabric.v1",
+    "status": "FIELD_CANDIDATE",
+    "principle": "computer capability is an owned organ contract; external hosts are replaceable substrates",
+    "owned_organs": [
+      "bounded-process-workspace-executor",
+      "independent-readback-computer-receptor",
+      "provider-neutral-compute-router",
+      "resumable-workless-runtime",
+      "causal-task-controller",
+      "durable-file-work-journal"
+    ],
+    "execution_law": "no computer effect is fulfilled from process exit alone; an independent verification request must pass",
+    "compute_failure_law": "quota/rate/capacity/provider failure reroutes compute without changing job identity",
+    "semantic_failure_law": "failed causal lines are invalidated before semantic replan",
+    "current_boundaries": [
+      "process workspace is cwd-bounded but not an OS sandbox",
+      "file journal is durable on a shared filesystem but not a replicated state service",
+      "owned browser/computer-GUI organ is not yet forward-ported into Generation 5",
+      "production host binding remains separate from this kernel candidate"
+    ],
+    "donor_provenance": [
+      "agent/mondayid-sovereign-computer-v1",
+      "agent/mondayid-workless-runtime-v2"
+    ]
   }
 }
