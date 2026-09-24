@@ -1,0 +1,91 @@
+{
+  "schema": "mondayid.adversarial-acceptance.v1",
+  "date": "2026-09-24",
+  "status": "PARTIAL_LIVE_GATES_REMAIN",
+  "principle": "Known preventable failures must either self-recover or fail closed with durable state; no test may convert component success into organism completion.",
+  "cases": [
+    {
+      "id": "fresh_runtime_restart_active_intent",
+      "level": "integrated-unit",
+      "status": "PROVEN",
+      "proof": "tests/organism-adversarial-acceptance.test.mjs"
+    },
+    {
+      "id": "generic_gpt_candidate",
+      "level": "integrated-unit",
+      "status": "PROVEN",
+      "proof": "tests/organism-adversarial-acceptance.test.mjs"
+    },
+    {
+      "id": "tool_success_or_failure_without_effect",
+      "level": "integrated-unit",
+      "status": "PROVEN",
+      "proof": "tests/organism-adversarial-acceptance.test.mjs + tests/system.test.mjs"
+    },
+    {
+      "id": "stale_worldline_revision",
+      "level": "unit",
+      "status": "PROVEN",
+      "proof": "tests/organism-adversarial-acceptance.test.mjs"
+    },
+    {
+      "id": "partial_task_completion",
+      "level": "integrated-unit",
+      "status": "PROVEN",
+      "proof": "tests/organism-adversarial-acceptance.test.mjs + tests/signal-obligations.test.mjs"
+    },
+    {
+      "id": "contradictory_archive_identity",
+      "level": "integrated-unit",
+      "status": "PROVEN",
+      "proof": "tests/organism-adversarial-acceptance.test.mjs"
+    },
+    {
+      "id": "missing_connector_or_receptor",
+      "level": "integrated-unit",
+      "status": "PROVEN",
+      "proof": "tests/task-field.test.mjs"
+    },
+    {
+      "id": "provider_quota_or_429",
+      "level": "provider-unit",
+      "status": "PROVEN_FAIL_CLOSED",
+      "proof": "tests/openai-responses-provider.test.mjs"
+    },
+    {
+      "id": "api_spend_not_authorized",
+      "level": "host-unit",
+      "status": "PROVEN_FAIL_CLOSED",
+      "proof": "tests/chat-host-adapter.test.mjs"
+    },
+    {
+      "id": "clean_host_transfer_real_worldline",
+      "level": "live",
+      "status": "PENDING_HUMAN_SECRET_GATE",
+      "proof": ".github/workflows/clean-host-transfer.yml"
+    },
+    {
+      "id": "stale_vercel_production",
+      "level": "live",
+      "status": "DETECTED_BLOCKING",
+      "proof": "CUTOVER.json"
+    },
+    {
+      "id": "apple_runtime_contract",
+      "level": "source+node",
+      "status": "PROVEN_CONTRACT_SWIFT_BUILD_PENDING",
+      "proof": "PR#77 + .github/workflows/apple-build-proof.yml"
+    },
+    {
+      "id": "physical_iphone_restart_and_continuity",
+      "level": "device",
+      "status": "PENDING_HUMAN_DEVICE_GATE"
+    },
+    {
+      "id": "visual_reference_role_drift",
+      "level": "future-image-receptor",
+      "status": "UNRESOLVED_NO_CANONICAL_IMAGE_RECEPTOR_IN_G5"
+    }
+  ],
+  "release_rule": "FINAL_SEAL remains blocked while any live/device/material case is PENDING, DETECTED_BLOCKING, or UNRESOLVED."
+}
