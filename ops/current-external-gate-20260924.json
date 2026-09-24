@@ -1,0 +1,40 @@
+{
+  "schema": "mondayid.current-external-gate.v1",
+  "date": "2026-09-24",
+  "canonical_main": "0ed00423f9e7dc318c2cf826dcdb82f2c4cc45f5",
+  "resumed_from": "computer/bootstrap side-task",
+  "completed_before_gate": {
+    "compute_conservation": "merged and active",
+    "computer_process_execution": "VERIFIED",
+    "computer_native_browser_execution": "VERIFIED",
+    "first_class_process_browser_routing": "merged",
+    "token_accounting": "ops/token-accounting-20260924.json"
+  },
+  "computer_evidence": [
+    "computer/receipts/bootstrap-proof-20260924.json",
+    "computer/receipts/capability-probe-20260924.json",
+    "computer/receipts/browser-primitive-proof-20260924.json",
+    "computer/receipts/native-browser-live-20260924.json"
+  ],
+  "production_promotion": {
+    "workflow": ".github/workflows/mondayid-production-promotion.yml",
+    "run_id": 36039941896,
+    "request": "ops/production-promotion-request.json",
+    "passed": [
+      "exact canonical main binding",
+      "136/136 canonical runtime tests",
+      "trusted Worldline boot -> FULFILLED"
+    ],
+    "blocked_at": "Require Vercel deployment credential",
+    "exact_observation": "VERCEL_TOKEN was empty in the mondayid-production workflow environment",
+    "deploy_attempted": false,
+    "production_readback_after_attempt": false
+  },
+  "current_external_gate": {
+    "kind": "HUMAN_CREDENTIAL_GATE",
+    "required": "Provide a valid VERCEL_TOKEN to the GitHub Actions environment/secret boundary used by MondayID Production Promotion, or connect an equally explicit authenticated deploy path.",
+    "reason": "Credentials cannot be fabricated or recovered from code and the connected Vercel read tools do not expose token creation.",
+    "after_gate": "retrigger ops/production-promotion-request.json; workflow deploys exact current main with model execution disabled, then verifies deployment and production alias health+boot."
+  },
+  "invariant": "Do not report production complete until /api/health and /api/boot pass on mondayid-host.vercel.app."
+}
