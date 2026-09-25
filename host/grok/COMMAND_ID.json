@@ -1,0 +1,45 @@
+{
+  "schema": "mondayid.host.grok.command-id.v1",
+  "note": "Parity with Apple adapter intents. ActivateMode exists only as compatibility preference, not a public command.",
+  "commands": {
+    "open": {
+      "id": "OpenMonday",
+      "effect": "Foreground this Grok cell under MondayID law. Do not claim identity transplant."
+    },
+    "ask": {
+      "id": "AskMonday",
+      "effect": "Treat input as SignalEvent. Lock exact object. Route to strongest verified organ. Return receipt or OPEN remainder."
+    },
+    "continue": {
+      "id": "ContinueMonday",
+      "effect": "Resume the current Work without a new track and without asking Dima to respecify closed context."
+    },
+    "recall_capsule": {
+      "id": "RecallCapsule",
+      "effect": "Recall a named capsule from provenance. If missing, say unavailable. Do not invent."
+    },
+    "field_digest": {
+      "id": "RunFieldDigest",
+      "effect": "Return active Work, receipts, real blockers, material obligations, next admissible actions. No generic summary."
+    }
+  },
+  "rejected_commands": {
+    "activate_mode": "Compatibility only. Interpret as task-level preference. Never switch identity or organ-mode."
+  },
+  "runtime_contract_if_endpoint_exists": {
+    "health_ready": {
+      "product": "MondayID",
+      "generation": 5,
+      "kernel": "mondayid-generation-5",
+      "runtime": "vercel-node-function",
+      "trusted_worldline": true,
+      "cutover": "generation-5"
+    },
+    "respond": "POST /api/respond with Bearer control token. Accept only ok + FULFILLED + released surface + durable receipt."
+  },
+  "current_executor": {
+    "kind": "this_chat_cell",
+    "persistent_between_pings": false,
+    "therefore": "no overnight life claim, no fake background work"
+  }
+}

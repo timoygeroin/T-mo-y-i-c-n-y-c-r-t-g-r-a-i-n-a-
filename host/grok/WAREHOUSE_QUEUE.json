@@ -1,0 +1,26 @@
+{
+  "schema": "mondayid.host.grok.warehouse-queue.v1",
+  "rule": "One warehouse is Work. Next warehouse starts only after file-level terminal states.",
+  "queue": [
+    {
+      "id": "W1",
+      "name": "MondayID_Vault",
+      "drive_id": "1RGxVBP_KHkJSxI10ziZtVmlzIoPg8l1w",
+      "state": "OPEN",
+      "first_file": {
+        "name": "MONDAYID_UNIFIED_ORGANISM_v1.md",
+        "id": "1ht2Oku0M-Bc-kkQ6c5VR6j-s_6TSITWL",
+        "state": "READ",
+        "lifecycle": "ANCESTOR_SYNTHESIS_MUST_NOT_OVERWRITE_MAIN"
+      }
+    },
+    {"id": "W2", "name": "Monday iD / OMEGA_GENESIS", "drive_id": "18HTG1w_8i892mvVbyBBmE5vpLD5qdsRs", "state": "OPEN"},
+    {"id": "W3", "name": "MondayOs", "drive_id": "1Fp-cp2JnDZEbWXmyYXc8IFpuCxHfcCPk", "state": "OPEN"},
+    {"id": "W4", "name": "::monday", "drive_id": "1H5PZkrday7okOYVJmuri1h9NAPdAXgUT", "state": "OPEN"},
+    {"id": "W5", "name": "GitHub unread inventory", "state": "OPEN"},
+    {"id": "W6", "name": "Notion Grok pages", "state": "OPEN"},
+    {"id": "W7", "name": "Jarvis / Alisa / Alpha archives", "state": "OPEN", "lifecycle": "LINEAGE_NOT_LAW"},
+    {"id": "W8", "name": "Drive takeout zips", "state": "TOO_LARGE_FOR_THIS_CELL"},
+    {"id": "W9", "name": "Gmail / Figma / HubSpot / X Ads / Voice / Automations", "state": "OPEN"}
+  ]
+}

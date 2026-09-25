@@ -1,0 +1,66 @@
+{
+  "schema": "mondayid.host.grok.organ-receipt.v1",
+  "date": "2026-09-25",
+  "cell": "grok",
+  "repo": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "main_sha_at_branch": "c7cc6f8ebee72894967118f90c483efeb1d7d454",
+  "branch": "host/grok/cell-20260925",
+  "identity": {
+    "owner": "MondayID",
+    "organ": "Grok",
+    "forbidden": ["I_AM_MONDAY", "WEIGHTS_WRITTEN", "FULL_RECALL", "PRODUCTION_HEALTHY"]
+  },
+  "authority_order": [
+    "current explicit Dima instruction",
+    "this conversation and attachments",
+    "main Generation-5 product constitution",
+    "live GitHub main",
+    "connected surfaces",
+    "host-runtime and humanos skills",
+    "Vault 2026-07-31 unified organism as ancestor not overwrite",
+    "inference"
+  ],
+  "compiled_from": {
+    "constitution": "product/MONDAY_PRODUCT_CONSTITUTION_V1.md",
+    "rejections": "product/KNOWN_REJECTIONS_V1.json",
+    "continuum_plan": "product/CONTINUUM_INTEGRATION_PLAN.json",
+    "apple_status": "product/APPLE_BODY_STATUS_20260924.json",
+    "apple_host": "platform/apple-host/MondayIDHost/MondayIDHostApp.swift",
+    "apple_adapter": [
+      "platform/apple-adapter/Sources/MondayIDAppleAdapter/MondayIDRuntimeClient.swift",
+      "platform/apple-adapter/Sources/MondayIDAppleAdapter/MondayIDIntents.swift"
+    ],
+    "computer_branch": "agent/mondayid-sovereign-computer-v1",
+    "computer_readme": "scaffold not deployed platform",
+    "vault_unified_organism": {
+      "id": "1ht2Oku0M-Bc-kkQ6c5VR6j-s_6TSITWL",
+      "lifecycle": "ANCESTOR_SYNTHESIS",
+      "must_not_overwrite": "Generation-5 main"
+    }
+  },
+  "observed": {
+    "consumer_shell_in_source": ["home", "chats", "create", "spaces", "you", "search", "activity", "library"],
+    "iphone_release_state": "SOURCE_PORTED_BUILD_AND_DEVICE_UNVERIFIED",
+    "sovereign_computer_on_main": false,
+    "production_health": "UNVERIFIED_THIS_CELL",
+    "second_public_github_repo": "UNRESOLVED",
+    "linear_monday": "EMPTY"
+  },
+  "self_check": {
+    "chatgpt_clone": "FAIL_IF_THIS_CELL_PRESENTS_AS_THE_APP",
+    "fake_work": "PASS_IF_NO_BACKGROUND_CLAIM",
+    "fake_verification": "PASS_IF_STATUS_IS_TRANSFER_READY_NOT_FIELD_PROVEN",
+    "beautiful_substitute": "FAIL_IF_RECEIPT_IS_TREATED_AS_BOOT",
+    "forgotten_reinvention": "PASS_IF_NO_NEW_CONSTITUTION_FILE"
+  },
+  "status": "TRANSFER_READY_NOT_FIELD_PROVEN",
+  "open_work": [
+    "MondayID_Vault file-level ingest",
+    "Monday iD / OMEGA_GENESIS",
+    "MondayOs and ::monday",
+    "GitHub unread inventory items",
+    "Notion Grok pages full read",
+    "production /api/health and /api/boot",
+    "physical iPhone compile and device runtime"
+  ]
+}
