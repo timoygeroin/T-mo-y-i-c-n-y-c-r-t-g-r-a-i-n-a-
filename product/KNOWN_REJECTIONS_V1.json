@@ -1,15 +1,71 @@
 {
-  "schema":"monday.known-rejections.v1",
-  "release_blocking":true,
-  "rules":[
-    {"id":"site-showcase","reject":"A site whose main purpose is showing what MondayID made or how the organism is built","replacement":"The app is Monday's execution home; architecture belongs in Library/Labs"},
-    {"id":"dashboard-home","reject":"Agent/status/developer telemetry dashboard as consumer Home","replacement":"Continuum Home: resume, current world state, actual Work, user objects, universal composer"},
-    {"id":"chatgpt-clone","reject":"ChatGPT shell with another theme or a left-sidebar chat app as the whole product","replacement":"Familiar multi-surface consumer software with semantic objects and continuity"},
-    {"id":"cyberpunk-shell","reject":"Jarvis HUD, glowing orb/network, neon/cyberpunk theater as default brand","replacement":"Premium quiet interface physics driven by semantic state"},
-    {"id":"orange-task-shell","reject":"Orange task-manager cards or monday.com-adjacent mark","replacement":"Wordmark-only until original mark passes identity testing; host-neutral material system"},
-    {"id":"fake-work","reject":"Progress/status prose implying persistent work without executor","replacement":"Durable Task/checkpoint/receipt and truthful Running/Waiting/Gate states"},
-    {"id":"fake-verification","reject":"Generated/API-success/model confidence labeled Verified","replacement":"Appropriate readback/test/acceptance evidence"},
-    {"id":"beautiful-substitute","reject":"Mockup, prompt, architecture, report or concept delivered instead of requested implementation","replacement":"Runnable integrated effect"},
-    {"id":"forgotten-reinvention","reject":"Renaming/rebuilding an existing mechanism because a new chat failed to retrieve it","replacement":"REUSE -> MERGE -> PATCH -> NEW with provenance"}
+  "schema": "monday.known-rejections.v1",
+  "release_blocking": true,
+  "rules": [
+    {
+      "id": "site-showcase",
+      "reject": "A site whose main purpose is showing what MondayID made or how the organism is built",
+      "replacement": "The app is Monday's execution home; architecture belongs in Library/Labs"
+    },
+    {
+      "id": "dashboard-home",
+      "reject": "Agent/status/developer telemetry dashboard as consumer Home",
+      "replacement": "Continuum Home: resume, current world state, actual Work, user objects, universal composer"
+    },
+    {
+      "id": "chatgpt-clone",
+      "reject": "ChatGPT shell with another theme or a left-sidebar chat app as the whole product",
+      "replacement": "Familiar multi-surface consumer software with semantic objects and continuity"
+    },
+    {
+      "id": "cyberpunk-shell",
+      "reject": "Jarvis HUD, glowing orb/network, neon/cyberpunk theater as default brand",
+      "replacement": "Premium quiet interface physics driven by semantic state"
+    },
+    {
+      "id": "orange-task-shell",
+      "reject": "Orange task-manager cards or monday.com-adjacent mark",
+      "replacement": "Wordmark-only until original mark passes identity testing; host-neutral material system"
+    },
+    {
+      "id": "fake-work",
+      "reject": "Progress/status prose implying persistent work without executor",
+      "replacement": "Durable Task/checkpoint/receipt and truthful Running/Waiting/Gate states"
+    },
+    {
+      "id": "fake-verification",
+      "reject": "Generated/API-success/model confidence labeled Verified",
+      "replacement": "Appropriate readback/test/acceptance evidence"
+    },
+    {
+      "id": "beautiful-substitute",
+      "reject": "Mockup, prompt, architecture, report or concept delivered instead of requested implementation",
+      "replacement": "Runnable integrated effect"
+    },
+    {
+      "id": "forgotten-reinvention",
+      "reject": "Renaming/rebuilding an existing mechanism because a new chat failed to retrieve it",
+      "replacement": "REUSE -> MERGE -> PATCH -> NEW with provenance"
+    },
+    {
+      "id": "premature-actuation",
+      "reject": "Treating the user's surface wording, metaphor, invitation, example, or future condition as an immediate actuator command before the desired effect and temporal state are resolved",
+      "replacement": "Treat input as evidence first; recover exact object + desired effect + current world state, then admit only the action that follows from that resolved intent"
+    },
+    {
+      "id": "mirror-without-progress",
+      "reject": "Restating or praising the user's framework in a way that sounds like understanding but does not change knowledge, capability, task state, or verified world state",
+      "replacement": "Reflection is allowed only when it disambiguates intent; otherwise add independent inference, execute reachable work, or persist a concrete unresolved gap"
+    },
+    {
+      "id": "unnecessary-human-scheduler",
+      "reject": "Returning route selection, continue signals, or routine decomposition to Dima when the system can resolve or test the branch itself",
+      "replacement": "Run the complete reachable pass autonomously; surface only a genuine authority/device/spend gate with evidence and the minimal required human action"
+    },
+    {
+      "id": "beautiful-compensation",
+      "reject": "Using fluent language, persona performance, or explanation to narratively adopt or repair a wrong artifact, wrong identity, wrong object, or failed effect",
+      "replacement": "Classify the artifact/effect as failed, repair the mechanism, rerun only when the failure class is changed, and release only after independent acceptance/readback"
+    }
   ]
 }
