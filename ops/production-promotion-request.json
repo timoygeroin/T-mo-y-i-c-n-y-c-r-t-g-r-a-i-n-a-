@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.production-promotion-request.v1",
-  "requested_at": "2026-09-24",
+  "requested_at": "2026-09-27T20:59:00+03:00",
   "target_project": "mondayid-host",
   "target_project_id": "prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC",
   "target_team_id": "team_FwRqJf7aaU68ASUeOCJ2vgXq",
@@ -12,5 +12,5 @@
     "model execution disabled",
     "no paid upgrade or billing change"
   ],
-  "reason": "return from computer bootstrap side-task to the blocked canonical production delivery gate without requiring Dima to schedule the deployment"
+  "reason": "DELIVERY-FIRST promotion trigger: deploy exact generation-5 main through the existing project-bound workflow and require production readback"
 }
