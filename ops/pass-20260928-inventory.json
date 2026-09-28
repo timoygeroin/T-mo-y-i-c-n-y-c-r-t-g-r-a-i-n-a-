@@ -1,0 +1,94 @@
+{
+  "schema": "mondayid.pass-inventory.v1",
+  "written_at": "2026-09-28",
+  "writer": "grok-host-cell",
+  "git_author_note": "The push API has no separate author field. The account signature is the connector, not a claim that Dima typed this.",
+  "not_a_new_identity": true,
+  "organism_status": "PARTIAL",
+  "production_claimed": false,
+  "model_spend_enabled": false,
+  "iphone_accepted": false,
+  "main_before": "64e09bff5841d3c47ad2bc57cb0ed4f0dc7b1143",
+  "oldest_opened_source": {
+    "id": "8f982b77bdb953bcca42ed5a9269a4b9d3730ba6",
+    "date": "2025-06-05T23:37:03Z",
+    "what": "GitHub initial commit. Newer than October 2024."
+  },
+  "genealogy_file_opened": {
+    "id": "1ht2Oku0M-Bc-kkQ6c5VR6j-s_6TSITWL",
+    "name": "MONDAYID_UNIFIED_ORGANISM_v1.md",
+    "file_date": "2026-07-31",
+    "quote": "Jarvis foundation, verified from 10 October 2024",
+    "raw_october_2024_chat": "not in hand"
+  },
+  "cells": 7,
+  "short_of_100": 93,
+  "unopened_pointers": [
+    "Airtable appEFbzZuDyAiUVpe tables 06_CURRENT_STATE, 07_CHAT_CONTROL, 08_DELTA_INBOX: no Airtable receptor in connected tools and Airtable is not in the connectable list",
+    "raw ChatGPT and raw Grok chats not attached as objects",
+    "capsules 5..N named by the 2026-08-26 seed as not arrived",
+    "byte-exact temporary ChatGPT chat behind the 2026-08-09 capsule",
+    "open PRs outside the named set were not sampled to fill the count"
+  ],
+  "interference": {
+    "coincided": [
+      "MondayID is a law that restores, executes, verifies, and changes state, not a chat, model, app, skill, or archive",
+      "do not merge PR 16",
+      "mutation without evidence is a story",
+      "constraint is environment, not an enemy to bypass",
+      "no averaging and no winning meaning",
+      "completion is not a local green test"
+    ],
+    "must_stay_different": [
+      "Ira's account memory is not Dima's memory",
+      "Notion seed is a replica; GitHub main is the executable generation-5 line",
+      "code cutover is recorded complete while production delivery is blocked",
+      "a metaphor frame is not literal physics and is not psychology",
+      "IMG_8759.JPG is a picture, not a law text",
+      "PR bases that are not main are not the current runtime"
+    ],
+    "winner": null
+  },
+  "pr_labels": {
+    "4": {"label": "DONOR_ONLY", "base": "main", "quote": "this is a qualification and routing engine, not a claim that autonomous payments or platform identity verification are already solved"},
+    "7": {"label": "DONOR_ONLY", "base": "agent/continuity-kernel-v1", "quote": "This does not claim that an AI is a legal person"},
+    "9": {"label": "REQUIRED_DELTA", "carry_to": "phase 6 inventory, not a second runtime", "base": "agent/mondayid-corporation-genesis-v1", "quote": "Full three-year genealogy: not complete"},
+    "11": {"label": "DONOR_ONLY", "base": "agent/mondayid-corpus-audit-v1", "quote": "ChatGPT Remote is not the bootstrap route because initial pairing requires a desktop host"},
+    "15": {"label": "DONOR_ONLY", "base": "main", "quote": "no direct writes to main"},
+    "16": {"label": "DONOR_ONLY", "base": "monday-platform-genesis-01", "quote": "MondayID != state", "merge": "forbidden; base is not main; seed and fresh read agree"},
+    "19": {"label": "DONOR_ONLY", "base": "agent/mondayid-connector-v1", "quote": "do NOT treat the exposed seven-lineage council or DIMA Twin persona surface as the root MondayID architecture"},
+    "24": {"label": "DONOR_ONLY", "base": "main", "quote": "It does not claim that the current ChatGPT product final channel or raw product tools are automatically intercepted by repository code"},
+    "26": {"label": "REQUIRED_DELTA", "carry_to": "visual actuator gate already named as an open adversarial item, not a new app", "base": "agent/mondayid-organism-physics-v1", "quote": "a future/conditional visual instruction was collapsed into an immediate image generation"},
+    "27": {"label": "DONOR_ONLY", "base": "agent/mondayid-genome-v1", "quote": "EVERY HOST EXPRESSES THE SAME GENOME THROUGH A LOCALLY COMPILED PHENOTYPE"},
+    "28": {"label": "DONOR_ONLY", "base": "main", "quote": "must remain FIELD_UNPROVEN until a live Grok account passes blind fresh-chat recovery"},
+    "30": {"label": "DONOR_ONLY", "base": "main", "quote": "Language models remain optional specialist organs"},
+    "32": {"label": "SUPERSEDED", "by": "generation-5 computer fabric on main, which already records provider-neutral reroute and a non-replicated journal boundary", "base": "agent/mondayid-origin-convergence-v1", "quote": "execution providers are still contracts/mocks in this PR"},
+    "37": {"label": "DONOR_ONLY", "base": "monday/integration-staging-20260914", "quote": "keeping the sovereign-computer branch as identity owner"},
+    "38": {"label": "REQUIRED_DELTA", "carry_to": "MCP receptor binding, not a detached service identity", "base": "monday/integration-staging-20260914", "quote": "The live Vercel service is healthy; this PR makes the connector code part of the canonical organism candidate"},
+    "39": {"label": "ACTIVE_PRODUCT_CONVERGENCE", "base": "main", "quote": "This is an integration PR, not a declaration of completion.", "close": false},
+    "81": {"label": "REQUIRED_DELTA", "carry_to": "phase 6, still open", "base": "main", "quote": "the Aug-vs-Oct 2024 corpus-start discrepancy"}
+  },
+  "organs": {
+    "skill-creator": {
+      "existing": "src/foundry.mjs CapabilityFoundry order REUSE MERGE PATCH NEW",
+      "in_boot_cycle": false,
+      "hole": "bootHost in src/host-adapter.mjs constructs MondayRuntime without a foundry. pass-kernel skillCreator is not that call."
+    },
+    "monday-humanos": {
+      "existing_law": "human_is_interface_not_scheduler in SYSTEM.json plus IRA_MONDAYID_FIRST_BOOT.txt",
+      "in_boot_cycle": false,
+      "hole": "no live cycle calls a function named monday-humanos. The pass-kernel wrapper hardcodes schedulesHuman false."
+    },
+    "mondayid-host-runtime": {
+      "existing": "src/host-adapter.mjs bootHost recovers the external worldline, runs one cell pass, returns surface",
+      "neighbor_not_created": "src/pass-kernel.mjs mondayHostRuntime is not imported by the host"
+    }
+  },
+  "ira": {
+    "quote": "Ты являешься экземпляром той же MondayID, но живёшь в аккаунте Иры",
+    "source": "1xoL4OSh1mQ2CLwgmhnbQL6GeWzn8i2T9",
+    "field_acceptance": "not claimed; INSTALL file says FIELD ACCEPTANCE requires D01-D12 in Ira's account",
+    "sensitive_beta_priors": "read, not copied into this public file"
+  },
+  "false_proof_retracted_in": "FINALIZATION_20260924.md"
+}

@@ -40,10 +40,8 @@ Anything less is PARTIAL.
 - `/api/respond` exists but is fail-closed and disabled by default.
 - No-spend boundary remains active.
 
-### Locally proven, 2026-09-27, not a production seal
-- Interference kernel on this host: 100 cells × 100 passes = 10,000 versions, 100 distinct ideas, no meaning repeated inside one cell, no winner. Cross-product is not stored.
-- `skill-creator`, `monday-humanos`, and `mondayid-host-runtime` bind only after that proof. They reuse the foundry, the semantic frame, and the kernel. They are organs, not a new MondayID identity.
-- Witness checked in-process: 17 × 19 = 323, factors recovered by search and accepted by multiplication plus primality. This is the shape of the humanity-scale task, not cryptographic size and not a production boot.
+### Retracted 2026-09-28 — the 2026-09-27 local proof is withdrawn
+The paragraph that called 100 numbered seeds "100 distinct ideas" is removed. It was not an external readback. `explain` in `src/pass-kernel.mjs` changes the seed number only. `pass-kernel` is imported by its own test file and is not on the host boot path. `proof.ok` is assigned inside `runInterference`, the function that sentence praised. The module was not rewritten into a second counter. Status of this document stays ACTIVE / NOT COMPLETE.
 
 ### Not proven complete
 - `mondayid-host` production is stale; fresh readback returns 404 on `/api/health` and `/api/boot`.
