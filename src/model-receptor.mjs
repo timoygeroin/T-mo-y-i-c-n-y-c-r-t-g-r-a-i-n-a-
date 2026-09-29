@@ -69,7 +69,26 @@ function normalizeCritique(value = {}) {
   return {
     ok:value.ok !== false,
     score:Number.isFinite(Number(value.score)) ? Number(value.score) : 0,
-    reasons:Array.isArray(value.reasons) ? value.reasons.map(String) : []
+    reasons:Array.isArray(value.reasons) ? value.reasons.map(String) : [],
+    usage:value.usage || null
+  };
+}
+
+function summarizeUsage(attempts) {
+  const calls = attempts.flatMap(attempt => [
+    {kind:'generation',path:attempt.index,usage:attempt.candidate?.evidence?.usage || null},
+    ...(attempt.critique?.verdicts || []).map((verdict, index) => ({
+      kind:'critique',path:attempt.index,index,usage:verdict.usage || null
+    }))
+  ]);
+  const observed = calls.filter(call => Number.isFinite(call.usage?.total_tokens));
+  const observedTokens = observed.reduce((total, call) => total + call.usage.total_tokens, 0);
+  return {
+    calls:calls.length,
+    observedCalls:observed.length,
+    observedTokens,
+    complete:observed.length === calls.length,
+    totalTokens:observed.length === calls.length ? observedTokens : null
   };
 }
 
@@ -142,7 +161,8 @@ export function createModelReceptor({
             model,
             computeTier:contract?.compute?.tier || null,
             pathCount,
-            reasoningEffort
+            reasoningEffort,
+            usage:summarizeUsage(attempts)
           }
         };
       }
@@ -189,7 +209,8 @@ export function createModelReceptor({
             computeTier:contract?.compute?.tier || null,
             pathCount,
             reasoningEffort,
-            criticCount
+            criticCount,
+            usage:summarizeUsage(attempts)
           }
         };
       }
@@ -214,7 +235,8 @@ export function createModelReceptor({
           criticCount,
           selectedPath:selected.index,
           releaseVerdict:selected.release,
-          critique:selected.critique
+          critique:selected.critique,
+          usage:summarizeUsage(attempts)
         },
         attempts
       };

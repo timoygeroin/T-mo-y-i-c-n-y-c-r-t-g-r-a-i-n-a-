@@ -81,6 +81,7 @@ test('critic uses MAX effort for a MAX Monday contract and has a separate output
       calls.push(JSON.parse(init.body));
       return fakeResponse({
         id:'resp_critic',
+        usage:{total_tokens:17},
         output:[{type:'message',content:[{type:'output_text',text:'{"ok":true,"score":0.94,"reasons":[]}'}]}]
       });
     }
@@ -100,6 +101,7 @@ test('critic uses MAX effort for a MAX Monday contract and has a separate output
 
   assert.equal(verdict.ok,true);
   assert.equal(verdict.score,0.94);
+  assert.equal(verdict.usage.total_tokens,17);
   assert.equal(calls[0].reasoning.effort,'max');
   assert.equal(calls[0].reasoning.context,'current_turn');
   assert.equal(calls[0].max_output_tokens,77);

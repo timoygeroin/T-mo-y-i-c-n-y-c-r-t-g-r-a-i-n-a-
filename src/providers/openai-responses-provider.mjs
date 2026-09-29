@@ -179,14 +179,15 @@ export class OpenAIResponsesProvider {
 
     const parsed = safeJson(extractOutputText(payload));
     if (!parsed || typeof parsed.ok !== 'boolean') {
-      return {ok:false,score:-1,reasons:['CRITIC_OUTPUT_UNPARSEABLE']};
+      return {ok:false,score:-1,reasons:['CRITIC_OUTPUT_UNPARSEABLE'],usage:payload.usage || null};
     }
     return {
       ok:parsed.ok,
       score:Number.isFinite(Number(parsed.score))
         ? Math.max(0,Math.min(1,Number(parsed.score)))
         : 0,
-      reasons:Array.isArray(parsed.reasons) ? parsed.reasons.map(String) : []
+      reasons:Array.isArray(parsed.reasons) ? parsed.reasons.map(String) : [],
+      usage:payload.usage || null
     };
   }
 }
