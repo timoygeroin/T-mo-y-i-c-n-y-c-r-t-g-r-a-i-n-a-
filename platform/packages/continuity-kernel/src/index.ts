@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
 
+export { createRecoveryService } from "./recover.js";
+export type { RecoveryRequest, RecoveryReceipt, RecoveryDependencies } from "./recover.js";
+
 export type ContinuitySourceTier =
   | "direct_current_instruction"
   | "dima_authored_archive"
