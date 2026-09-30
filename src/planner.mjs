@@ -31,6 +31,8 @@ export function buildFrontier(graph, capabilities = {}) {
       id: `action:${o.id}`,
       objectiveId: o.id,
       sourceSignal: o.sourceSignal,
+      obligationId: o.obligationId || null,
+      requiredVerificationMode: o.requiredVerificationMode || null,
       domain: o.domain,
       effect: o.effect,
       receptor: receptor?.name || null,
