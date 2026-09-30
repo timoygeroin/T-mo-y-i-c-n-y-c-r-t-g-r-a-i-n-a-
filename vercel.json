@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "env": {
+    "MONDAYID_WORLDLINE_URL": "https://adamant-raven-783.eu-west-1.convex.site"
+  },
   "headers": [
     {
       "source": "/api/(.*)",
