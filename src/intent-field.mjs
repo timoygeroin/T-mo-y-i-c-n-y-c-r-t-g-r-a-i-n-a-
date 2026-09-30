@@ -10,6 +10,7 @@ function normalizeObligations(signal,id,domains){
         id:`${id}:${domain}`,
         domain,
         text:signal.effect || signal.desiredEffect || signal.text || signal.intent || domain,
+        binding:'domain',
         material:true,
         status:(signal.completedDomains || []).includes(domain) ? 'APPLIED' : 'OPEN'
       }));
@@ -18,6 +19,9 @@ function normalizeObligations(signal,id,domains){
     id:String(item.id || `${id}:obligation:${index + 1}`),
     domain:item.domain || null,
     text:String(item.text || item.effect || ''),
+    effect:String(item.effect || item.text || ''),
+    binding:item.binding === 'domain' ? 'domain' : 'obligation',
+    requiredVerificationMode:item.requiredVerificationMode || null,
     material:item.material !== false,
     status:CLOSED_OBLIGATION_STATES.has(String(item.status || '').toUpperCase())
       ? String(item.status).toUpperCase()
@@ -104,13 +108,16 @@ export function settleIntents(worldline, graph, results = []) {
       .filter(result => result.ok && result.action?.sourceSignal === signal.id)
       .map(result => result.action.domain);
 
-    const completedDomains = [...new Set([...(prior.completedDomains || []), ...successfulDomains])];
     const allDomains = prior.domains || signal.domains || [];
     const obligations=(prior.obligations || []).map(obligation => {
       if(
         obligation.status === 'OPEN' &&
         obligation.domain &&
-        successfulDomains.includes(obligation.domain)
+        results.some(result => result.ok && result.action?.sourceSignal === signal.id &&
+          result.action?.domain === obligation.domain &&
+          (obligation.binding === 'domain'
+            ? successfulDomains.includes(obligation.domain)
+            : result.action?.obligationId === obligation.id))
       ){
         return {
           ...obligation,
@@ -118,13 +125,16 @@ export function settleIntents(worldline, graph, results = []) {
           evidence:[...new Set([
             ...(obligation.evidence || []),
             ...results
-              .filter(result => result.ok && result.action?.sourceSignal === signal.id && result.action?.domain === obligation.domain)
+              .filter(result => result.ok && result.action?.sourceSignal === signal.id && result.action?.domain === obligation.domain &&
+                (obligation.binding === 'domain' || result.action?.obligationId === obligation.id))
               .map(result => result.action?.id)
           ])]
         };
       }
       return obligation;
     });
+    const completedDomains = [...new Set([...(prior.completedDomains || []), ...successfulDomains])]
+      .filter(domain => !obligations.some(item => item.domain === domain && item.material !== false && item.status === 'OPEN'));
     const openMaterial=obligations.filter(obligation => obligation.material !== false && obligation.status === 'OPEN');
     const status =
       allDomains.length > 0 &&
