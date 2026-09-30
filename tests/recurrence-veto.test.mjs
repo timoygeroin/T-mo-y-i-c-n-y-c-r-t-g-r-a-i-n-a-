@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {compileRecurrenceContext,evaluateRecurrenceVeto} from '../src/recurrence-veto.mjs';\nimport {compileAttractorContract,evaluateCandidateOutput} from '../src/attractor-field.mjs';
+import {compileRecurrenceContext,evaluateRecurrenceVeto} from '../src/recurrence-veto.mjs';
+import {compileAttractorContract,evaluateCandidateOutput} from '../src/attractor-field.mjs';
 
 test('an ordinary open train scene cannot push Dima out of the shared scene',()=>{
   const context=compileRecurrenceContext({text:'Я в ракевете, побудь со мной'});
@@ -32,4 +33,12 @@ test('natural companionship survives the detector',()=>{
   assert.equal(verdict.ok,true);
   assert.deepEqual([...verdict.hits],[]);
 });
-\n\ntest('attractor release gate applies recurrence veto before outward release',()=>{\n  const contract=compileAttractorContract({text:'Я в ракевете, побудь со мной и сама выбери ход'});\n  const verdict=evaluateCandidateOutput({text:'Выбери тему или посмотри в окно и напиши, когда вернёшься.'},contract);\n  assert.equal(verdict.ok,false);\n  assert.ok(verdict.hits.includes('PUSH_USER_OUT_OF_OPEN_SCENE'));\n  assert.ok(verdict.hits.includes('AUTONOMY_RETURNED_TO_USER'));\n});\n
+
+
+test('attractor release gate applies recurrence veto before outward release',()=>{
+  const contract=compileAttractorContract({text:'Я в ракевете, побудь со мной и сама выбери ход'});
+  const verdict=evaluateCandidateOutput({text:'Выбери тему или посмотри в окно и напиши, когда вернёшься.'},contract);
+  assert.equal(verdict.ok,false);
+  assert.ok(verdict.hits.includes('PUSH_USER_OUT_OF_OPEN_SCENE'));
+  assert.ok(verdict.hits.includes('AUTONOMY_RETURNED_TO_USER'));
+});
