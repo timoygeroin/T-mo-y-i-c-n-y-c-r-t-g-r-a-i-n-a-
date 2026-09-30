@@ -111,6 +111,7 @@ export async function runChatHost({
     effect:signal?.desiredEffect || signal?.effect || String(signal?.text || ''),
     exactObject:signal?.exactObject || null,
     desiredEffect:signal?.desiredEffect || null,
+    obligations:Array.isArray(signal?.obligations) ? structuredClone(signal.obligations) : [],
     invariants:Array.isArray(signal?.invariants) ? signal.invariants : [],
     rejectedSubstitutions:Array.isArray(signal?.rejectedSubstitutions) ? signal.rejectedSubstitutions : [],
     failureGenes:Array.isArray(signal?.failureGenes) ? signal.failureGenes : [],
