@@ -284,7 +284,17 @@ export class MondayRuntime {
         };
       }
 
-      const verification = await receptor.verify(result, action);
+      let verification = await receptor.verify(result, action);
+      if (verification?.ok === true && action.requiredVerificationMode &&
+          (verification.mode !== action.requiredVerificationMode ||
+           typeof verification.evidenceRef !== 'string' || !verification.evidenceRef.trim())) {
+        verification = {
+          ok:false,
+          code:'REQUIRED_EFFECT_READBACK_MISSING',
+          requiredMode:action.requiredVerificationMode,
+          observedMode:verification?.mode || null
+        };
+      }
       const outcome = {
         action,
         result,
