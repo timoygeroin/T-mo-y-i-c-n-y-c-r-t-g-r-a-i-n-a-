@@ -37,22 +37,30 @@ export function compileSignals(signals = [], { state = {}, policies = {} } = {})
       dependsOn: []
     });
     for (const domain of domains) {
-      if (completedDomains.includes(domain)) continue;
+      const boundObligations=(signal.obligations || []).filter(item =>
+        item.binding === 'obligation' && item.domain === domain);
+      const openObligations=boundObligations.filter(item => item.status === 'OPEN');
+      if (boundObligations.length && !openObligations.length) continue;
+      if (!boundObligations.length && completedDomains.includes(domain)) continue;
       const routeCandidates=(signal.routeCandidates || []).filter(route => !route?.domain || route.domain === domain);
-      nodes.push({
-        id: `${rootId}:${domain}`,
-        type: 'objective',
-        domain,
-        text,
-        sourceSignal: rootId,
-        priority: signal.priority ?? 50,
-        status: 'ready',
-        semanticFrame,
-        attractorContract,
-        routeCandidates,
-        dependsOn: [rootId],
-        effect: signal.effect || signal.desiredEffect || text
-      });
+      for (const obligation of openObligations.length ? openObligations : [null]) {
+        nodes.push({
+          id: obligation ? `${rootId}:${domain}:obligation:${obligation.id}` : `${rootId}:${domain}`,
+          type: 'objective',
+          domain,
+          text,
+          sourceSignal: rootId,
+          priority: signal.priority ?? 50,
+          status: 'ready',
+          semanticFrame,
+          attractorContract,
+          routeCandidates,
+          obligationId:obligation?.id || null,
+          requiredVerificationMode:obligation?.requiredVerificationMode || null,
+          dependsOn: [rootId],
+          effect: obligation ? (obligation.effect || obligation.text) : (signal.effect || signal.desiredEffect || text)
+        });
+      }
     }
   }
   return { schema: 'mondayid.intent-graph.v4', nodes };
