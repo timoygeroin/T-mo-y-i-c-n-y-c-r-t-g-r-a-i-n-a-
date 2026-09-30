@@ -1,10 +1,11 @@
 {
   "schema": "mondayid.production-promotion-request.v1",
-  "requested_at": "2026-09-27T20:59:00+03:00",
+  "requested_at": "2026-09-30T03:05:00+03:00",
   "target_project": "mondayid-host",
   "target_project_id": "prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC",
   "target_team_id": "team_FwRqJf7aaU68ASUeOCJ2vgXq",
   "source": "exact current main at push time",
+  "requested_base_main_sha": "2ec325a26507915f43d4c73ab845a6a2af96e026",
   "requirements": [
     "Generation 5 health readback",
     "fulfilled boot from trusted external Worldline",
@@ -12,5 +13,5 @@
     "model execution disabled",
     "no paid upgrade or billing change"
   ],
-  "reason": "DELIVERY-FIRST promotion trigger: deploy exact generation-5 main through the existing project-bound workflow and require production readback"
+  "reason": "DELIVERY-FIRST retrigger after main advanced and branch-preview was proven non-canonical: deploy the new exact generation-5 main through the existing project-bound workflow and require production readback"
 }
