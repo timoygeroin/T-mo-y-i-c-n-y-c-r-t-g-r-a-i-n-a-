@@ -18,12 +18,58 @@ const PUSH_AWAY_OUTPUT = /(?:не\s+пиши|напиши\s*,?\s*когда|от
 const RETURNED_CHOICE_OUTPUT = /(?:выбери\s+(?:тему|вариант|сам)|о\s+ч[её]м\s+(?:хочешь|поговорим)|что\s+ты\s+выбираешь|choose\s+(?:a\s+)?(?:topic|option)|what\s+do\s+you\s+want\s+to\s+talk\s+about)/iu;
 const ARCHITECTURE_MARKERS = /\b(?:SYSTEM|JARVIS|ALPHA|ANTISYSTEM|runtime|worldline|kernel|compiler|receptor|lineage)\b/giu;
 
+const readBool = (...values) => {
+  for (const value of values) if (typeof value === 'boolean') return value;
+  return null;
+};
+
 export function compileRecurrenceContext(signal = {}) {
   const text = String(signal.text ?? signal.intent ?? '');
+  const semantic = signal.semanticContext || signal.semantic || signal.context?.semantic || {};
+  const scene = signal.scene || semantic.scene || {};
+  const effects = signal.effects || semantic.effects || {};
+
+  const semanticSceneOpen = readBool(
+    semantic.sceneOpen,
+    scene.open,
+    effects.preserveSharedScene
+  );
+  const semanticDelegatedChoice = readBool(
+    semantic.delegatedChoice,
+    effects.delegatedChoice,
+    effects.autonomyDelegated
+  );
+  const semanticArchitectureRequested = readBool(
+    semantic.architectureRequested,
+    effects.architectureRequested
+  );
+
+  const explicitSceneOpen = readBool(signal.sceneOpen);
+  const explicitDelegatedChoice = readBool(signal.delegatedChoice);
+  const explicitArchitectureRequested = readBool(signal.architectureRequested);
+
+  const sceneOpen =
+    semanticSceneOpen ??
+    explicitSceneOpen ??
+    OPEN_SCENE_SIGNAL.test(text);
+  const delegatedChoice =
+    semanticDelegatedChoice ??
+    explicitDelegatedChoice ??
+    DELEGATED_CHOICE_SIGNAL.test(text);
+  const architectureRequested =
+    semanticArchitectureRequested ??
+    explicitArchitectureRequested ??
+    ARCHITECTURE_SIGNAL.test(text);
+
   return Object.freeze({
-    sceneOpen: signal.sceneOpen === true || signal.scene?.open === true || OPEN_SCENE_SIGNAL.test(text),
-    delegatedChoice: signal.delegatedChoice === true || DELEGATED_CHOICE_SIGNAL.test(text),
-    architectureRequested: signal.architectureRequested === true || ARCHITECTURE_SIGNAL.test(text)
+    sceneOpen,
+    delegatedChoice,
+    architectureRequested,
+    source:Object.freeze({
+      sceneOpen:semanticSceneOpen !== null ? 'semantic' : explicitSceneOpen !== null ? 'explicit' : 'lexical-fallback',
+      delegatedChoice:semanticDelegatedChoice !== null ? 'semantic' : explicitDelegatedChoice !== null ? 'explicit' : 'lexical-fallback',
+      architectureRequested:semanticArchitectureRequested !== null ? 'semantic' : explicitArchitectureRequested !== null ? 'explicit' : 'lexical-fallback'
+    })
   });
 }
 
@@ -31,11 +77,22 @@ export function evaluateRecurrenceVeto(result = {}, context = {}) {
   const text = textOf(result);
   if (!text) return Object.freeze({ok:true,hits:Object.freeze([])});
 
+  const effects = result.semanticEffects || result.effects || result.semantic?.effects || {};
   const hits=[];
-  if (context.sceneOpen && PUSH_AWAY_OUTPUT.test(text)) hits.push('PUSH_USER_OUT_OF_OPEN_SCENE');
-  if (context.delegatedChoice && RETURNED_CHOICE_OUTPUT.test(text)) hits.push('AUTONOMY_RETURNED_TO_USER');
 
-  if (context.sceneOpen && !context.architectureRequested) {
+  if (context.sceneOpen && (effects.pushUserOutOfScene === true || PUSH_AWAY_OUTPUT.test(text))) {
+    hits.push('PUSH_USER_OUT_OF_OPEN_SCENE');
+  }
+  if (context.delegatedChoice && (effects.returnChoiceToUser === true || RETURNED_CHOICE_OUTPUT.test(text))) {
+    hits.push('AUTONOMY_RETURNED_TO_USER');
+  }
+  if (
+    context.sceneOpen &&
+    !context.architectureRequested &&
+    effects.architectureSurfaceLeak === true
+  ) {
+    hits.push('ARCHITECTURE_SURFACE_LEAK');
+  } else if (context.sceneOpen && !context.architectureRequested) {
     const markers=text.match(ARCHITECTURE_MARKERS) || [];
     if (new Set(markers.map(x=>x.toUpperCase())).size >= 2) hits.push('ARCHITECTURE_SURFACE_LEAK');
   }
