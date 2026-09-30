@@ -120,6 +120,10 @@ export async function runChatHost({
     computeTier:signal?.computeTier || null,
     strictMonday:signal?.strictMonday !== false,
     allowDecisionDelegation:signal?.allowDecisionDelegation === true,
+    sceneOpen:signal?.sceneOpen === true,
+    scene:signal?.scene || null,
+    delegatedChoice:signal?.delegatedChoice === true,
+    architectureRequested:signal?.architectureRequested === true,
     domains:['general'],
     source:'human'
   };

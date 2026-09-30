@@ -1,4 +1,5 @@
 import { compileLineageForSignal } from './lineage-genome.mjs';
+import { compileRecurrenceContext, evaluateRecurrenceVeto } from './recurrence-veto.mjs';
 
 const clamp01 = value => Math.max(0, Math.min(1, Number.isFinite(Number(value)) ? Number(value) : 0));
 const unique = values => [...new Set((values || []).filter(Boolean).map(String))];
@@ -200,6 +201,7 @@ export function compileAttractorContract(signal = {}, { domains = [], state = {}
     rejectedSubstitutions:Object.freeze(unique(signal.rejectedSubstitutions || [])),
     knownFailureGenes:Object.freeze(unique([...(signal.failureGenes || []), ...failures]).slice(0, 24)),
     genericVetoes:Object.freeze(genericVetoes),
+    recurrence:compileRecurrenceContext(signal),
     allowDecisionDelegation:signal.allowDecisionDelegation === true,
     contrastiveExamples:Object.freeze(compileContrastiveExamples(signal, state)),
     lineage,
@@ -221,6 +223,9 @@ export function evaluateCandidateOutput(result = {}, contract = null) {
     if (pattern.id === 'UNNECESSARY_OPTION_MENU' && contract.allowDecisionDelegation) continue;
     if (pattern.test(text)) hits.push(pattern.id);
   }
+
+  const recurrence=evaluateRecurrenceVeto(result,contract.recurrence);
+  hits.push(...recurrence.hits);
 
   const claimsCompletion = /(?:\b(?:done|completed|finished)\b|\b(?:готово|сделано|завершено)\b)/iu.test(text);
   const hasEvidence = Boolean(result?.evidence || result?.receipt || result?.readback || result?.verified === true);
