@@ -1,0 +1,121 @@
+{
+  "schema": "mondayid.chat-protocol-replay-receipt.v1",
+  "receipt_id": "REPLAY-20260825-LIVE-CHAT-001",
+  "scope": "current live chat only",
+  "source_authority": "direct_user_interaction_plus_verified_runtime_actions",
+  "prime_observation": "The recurring failure is not lack of organs; it is the existence of paths that can bypass resident knowledge, routing, verification, learning, or manifestation integrity.",
+  "successful_moves": [
+    {
+      "id": "MOVE-UNIVERSAL-ORGANISM-PHYSICS",
+      "lesson": "Generalize recurrent cross-domain bugs into invariants rather than domain-specific patches."
+    },
+    {
+      "id": "MOVE-FINAL-RESPONSE-BOUNDARY",
+      "lesson": "A completed action must reach the user as the completed result, not be replaced by architecture commentary."
+    },
+    {
+      "id": "MOVE-SELF-HOSTING-CLOSURE",
+      "lesson": "Missing capability should become an organism-growth event, then be verified, persisted, installed, and the original event retried automatically."
+    },
+    {
+      "id": "MOVE-MINIMAL-SEED",
+      "lesson": "The irreducible organism is smaller than the accumulated architecture: sentinel + extension builder + extension verifier + registry persistence; domain organs are growth."
+    },
+    {
+      "id": "MOVE-VISUAL-EXECUTION",
+      "lesson": "When the user asks for an image action and a usable image target exists, execute the image move instead of returning another explanation."
+    }
+  ],
+  "failure_genes": [
+    {
+      "failure_class": "RESULT_REPLACED_BY_EXPLANATION",
+      "locus": "manifestation.final-response",
+      "violated_invariant": "verified result must be manifested as the result",
+      "antibody": "final-response admission bound to exact outcome fingerprint"
+    },
+    {
+      "failure_class": "REPEATED_UNCHANGED_RETRY",
+      "locus": "action.retry",
+      "violated_invariant": "known failure must mutate mechanism before retry",
+      "antibody": "retry admission requires mutation receipt and proof"
+    },
+    {
+      "failure_class": "REACTIVE_ORGAN_ACTIVATION",
+      "locus": "routing.preflight",
+      "violated_invariant": "relevant organs must activate before the preventable failure, not after it",
+      "antibody": "resident sentinel + relevance routing before actuator admission"
+    },
+    {
+      "failure_class": "LOCAL_FIX_MISTAKEN_FOR_GLOBAL_PHYSICS",
+      "locus": "architecture.scope",
+      "violated_invariant": "cross-domain invariants must live above domain subsystems",
+      "antibody": "host-independent organism kernel"
+    },
+    {
+      "failure_class": "ACTUATOR_BYPASS",
+      "locus": "host.capability-membrane",
+      "violated_invariant": "no actuator may be reachable outside the single dispatch boundary",
+      "antibody": "host adapters must expose tools and credentials only behind dispatch"
+    },
+    {
+      "failure_class": "REFERENCE_ROLE_DRIFT",
+      "locus": "visual.reference-binding",
+      "violated_invariant": "subject identity, environment, wardrobe/material, and pose instructions keep separate roles and may not silently replace one another",
+      "antibody": "role-locked visual preflight before generation"
+    },
+    {
+      "failure_class": "MATERIAL_DRIFT",
+      "locus": "visual.wardrobe-material",
+      "violated_invariant": "requested garment lineage must not silently collapse into a generic latex/plastic look",
+      "antibody": "post-render material verification and repair before release"
+    },
+    {
+      "failure_class": "ANATOMY_EXAGGERATION_DRIFT",
+      "locus": "visual.body-geometry",
+      "violated_invariant": "pose and garment edits must preserve plausible body geometry unless transformation is explicitly requested",
+      "antibody": "post-render anatomy/pose verification before release"
+    }
+  ],
+  "protocol_delta": {
+    "before_every_action": [
+      "RECOVER",
+      "PARSE",
+      "GRAVITY_LOCK",
+      "CONTINUITY_DNA_CHECK",
+      "DRIFT_FAILURE_CHECK",
+      "ROUTE_RELEVANT_ORGANS",
+      "PREFLIGHT",
+      "ACT",
+      "VERIFY",
+      "LEARN",
+      "PERSIST",
+      "MANIFESTATION_GATE",
+      "OUTPUT"
+    ],
+    "forbidden_shortcut": "INPUT_TO_TOOL_OR_ANSWER",
+    "resident_rule": "ORGANS_ARE_RESIDENT_COMPUTE_IS_CONDITIONAL",
+    "growth_rule": "MISSING_CAPABILITY_BECOMES_ROUTED_GROWTH_EVENT",
+    "persistence_rule": "A learned failure or capability may not return to dead history."
+  },
+  "visual_replay_findings": {
+    "photo_subject_rule": "When the user asks to dress the woman from a supplied photo, that woman is the identity source; Monday supplies the requested garment lineage, not the person's identity unless explicitly requested.",
+    "scene_rule": "Keep the source environment unless the user explicitly requests a new background; after a background request, environment becomes an intentional free variable while identity and garment remain locked.",
+    "garment_rule": "'Imagine you took yours off and gave it to her' means inherit the current Monday garment itself as the wardrobe source, including color/material identity, not merely a similar tight dress.",
+    "pose_rule": "A pose change is an explicit free variable, but anatomy, identity, garment, and scene constraints remain separately locked.",
+    "release_checks": [
+      "identity continuity",
+      "role-locked reference use",
+      "pose plausibility",
+      "body geometry plausibility",
+      "garment color continuity",
+      "garment material continuity",
+      "scene coherence",
+      "lighting/contact coherence"
+    ]
+  },
+  "unresolved_hard_boundary": {
+    "id": "HOST_BYPASS_REMAINS_POSSIBLE",
+    "statement": "Repository code cannot make the current ChatGPT product tools physically unreachable outside MondayID. True no-other-path enforcement requires each host to bind real response emitters, renderers, connector mutations, credentials, deployment, schedules, and future actuators behind the single dispatch/capability membrane.",
+    "next_highest_leverage_move": "Build the first real host actuator adapter and require a MondayID dispatch receipt before it can invoke the underlying actuator."
+  }
+}

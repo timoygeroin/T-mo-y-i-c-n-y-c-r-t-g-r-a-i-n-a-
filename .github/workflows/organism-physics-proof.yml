@@ -1,0 +1,32 @@
+name: MondayID Organism Physics Proof
+
+on:
+  push:
+    branches:
+      - agent/mondayid-organism-physics-v1
+    paths:
+      - "platform/kernel/**"
+      - ".github/workflows/organism-physics-proof.yml"
+  pull_request:
+    paths:
+      - "platform/kernel/**"
+      - ".github/workflows/organism-physics-proof.yml"
+  workflow_dispatch:
+
+jobs:
+  proof:
+    name: Organism physics invariant proof
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run organism physics proof
+        run: node platform/kernel/organism-physics-proof.mjs
+      - name: Run final-response boundary proof
+        run: node platform/kernel/final-response-boundary-proof.mjs
+      - name: Run self-hosting organism proof
+        run: node platform/kernel/self-hosting-organism-proof.mjs
