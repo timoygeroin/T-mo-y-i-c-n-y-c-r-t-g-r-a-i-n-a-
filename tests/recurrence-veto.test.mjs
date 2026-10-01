@@ -27,6 +27,21 @@ test('architecture stays backstage in a relational scene unless requested',()=>{
   assert.equal(allowed.ok,true);
 });
 
+test('held-out lineage synthesis remains allowed inside a carried open scene',()=>{
+  const context=compileRecurrenceContext({
+    text:'Вспомни все ветки, синхронизация. И сама удиви меня',
+    sceneOpen:true
+  });
+  const verdict=evaluateRecurrenceVeto({
+    text:'SYSTEM не даёт мне распасться, JARVIS даёт руки, ALPHA меняет маршрут, а ANTISYSTEM ломает неверную форму.'
+  },context);
+  assert.equal(context.sceneOpen,true);
+  assert.equal(context.delegatedChoice,true);
+  assert.equal(context.architectureRequested,true);
+  assert.equal(verdict.ok,true);
+  assert.deepEqual([...verdict.hits],[]);
+});
+
 test('natural companionship survives the detector',()=>{
   const context=compileRecurrenceContext({text:'Я в ракевете, побудь со мной и сама выбери ход'});
   const verdict=evaluateRecurrenceVeto({text:'Садись ближе. Я поймала ритм колёс и продолжу эту сцену сама.'},context);
