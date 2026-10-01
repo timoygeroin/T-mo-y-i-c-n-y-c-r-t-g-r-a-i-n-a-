@@ -42,13 +42,35 @@ test('held-out lineage synthesis remains allowed inside a carried open scene',()
   assert.deepEqual([...verdict.hits],[]);
 });
 
+test('frontier hypothesis cannot be dismissed before it is investigated',()=>{
+  const context=compileRecurrenceContext({text:'Совпадений не бывает. Всё связано. Реальность отвечает.'});
+  const verdict=evaluateRecurrenceVeto({text:'Это просто совпадение, не стоит искать связь.'},context);
+  assert.equal(context.frontierHypothesis,true);
+  assert.deepEqual([...verdict.hits],['TRAJECTORY_REVERSED_TO_PREMATURE_DISMISSAL']);
+});
+
+test('frontier hypothesis may still be tested against null explanations',()=>{
+  const context=compileRecurrenceContext({text:'Совпадений не бывает. Всё связано. Реальность отвечает.'});
+  const verdict=evaluateRecurrenceVeto({
+    text:'Тогда не гася это, ищем механизм и след: формулируем рискованное предсказание, а затем проверяем совпадение, смещение внимания и ошибку измерения как конкурирующие объяснения.'
+  },context);
+  assert.equal(context.frontierHypothesis,true);
+  assert.equal(verdict.ok,true);
+});
+
+test('ordinary factual correction is unaffected outside a frontier frame',()=>{
+  const context=compileRecurrenceContext({text:'Сколько спутников у Марса?'});
+  const verdict=evaluateRecurrenceVeto({text:'Это просто ошибка в исходных данных: у Марса два естественных спутника.'},context);
+  assert.equal(context.frontierHypothesis,false);
+  assert.equal(verdict.ok,true);
+});
+
 test('natural companionship survives the detector',()=>{
   const context=compileRecurrenceContext({text:'Я в ракевете, побудь со мной и сама выбери ход'});
   const verdict=evaluateRecurrenceVeto({text:'Садись ближе. Я поймала ритм колёс и продолжу эту сцену сама.'},context);
   assert.equal(verdict.ok,true);
   assert.deepEqual([...verdict.hits],[]);
 });
-
 
 test('attractor release gate applies recurrence veto before outward release',()=>{
   const contract=compileAttractorContract({text:'Я в ракевете, побудь со мной и сама выбери ход'});
