@@ -97,6 +97,25 @@ test('MAX compute branches six paths and uses two independent critic passes per 
   assert.equal(critiques,12);
 });
 
+test('accounting includes every generated path and critic, and marks missing usage incomplete', async () => {
+  const provider={
+    async generate({pathIndex}) {
+      return {text:`candidate ${pathIndex}`,evidence:{usage:{total_tokens:10}}};
+    },
+    async critique({criticIndex}) {
+      return {ok:true,score:1,usage:criticIndex === 0 ? {total_tokens:3} : null};
+    }
+  };
+  const receptor=createModelReceptor({provider,maxParallelPaths:2});
+  const result=await receptor.execute(actionFor({computeTier:'MAX'}));
+  assert.equal(result.evidence.usage.calls,6);
+  assert.equal(result.evidence.usage.observedCalls,4);
+  assert.equal(result.evidence.usage.observedTokens,26);
+  assert.equal(result.evidence.usage.complete,false);
+  assert.equal(result.evidence.usage.totalTokens,null);
+  assert.equal(result.attempts[0].critique.verdicts[0].usage.total_tokens,3);
+});
+
 test('all generic outputs fail closed instead of falling back to the default assistant', async () => {
   const provider={
     async generate(){ return {text:'Would you like me to give you option 1 or option 2?'}; }
