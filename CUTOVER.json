@@ -237,12 +237,39 @@
         "capsule shortcut executes canonical runtime",
         "field digest executes canonical runtime"
       ]
+    },
+    "production_delivery_readback": {
+      "ok": true,
+      "observed_at": "2026-10-03T23:39:40Z",
+      "deployment_id": "dpl_Ddcn59MPWaJjfNfEXWE9zdotkJ4y",
+      "deployed_main_sha": "4b9677ae20ac0e1f7011e75dcb6faa8ed3c78790",
+      "target": "production",
+      "state": "READY",
+      "alias": "mondayid-host.vercel.app",
+      "health": {
+        "http_status": 200,
+        "product": "MondayID",
+        "generation": 5,
+        "runtime_dependency_on_legacy": false,
+        "no_spend": true,
+        "trusted_worldline_configured": true,
+        "trusted_writer_configured": false
+      },
+      "boot": {
+        "http_status": 200,
+        "state": "FULFILLED",
+        "reason": "ALL_INTENTS_FULFILLED",
+        "worldline_schema": "mondayid.worldline.snapshot.v0.4.0",
+        "worldline_revision": "a2786eff1fc3e5e8a3bb9ba7",
+        "cell_head": "f5d718826d58f8b34055c5d6"
+      },
+      "proof_mode": "authenticated Vercel deployment metadata plus direct production-alias HTTP readback"
     }
   },
   "known_nonblocking_debt": {
     "legacy_public_appendProof": "Legacy stream retains a backward-compatible unauthenticated appendProof mutation. The rewritten organism does not trust or boot from that stream; trusted v4 is isolated in separate tables and requires authenticated machine writes.",
-    "vercel_production": "BLOCKING DELIVERY DEBT: mondayid-host production alias still serves the stale 2026-09-14 application; /api/health and /api/boot return 404. Code cutover is complete, but production delivery is not verified.",
-    "preview_vs_production": "User-visible rewrite proof is currently Macaly preview bound to trusted v4, not a production-domain release."
+    "vercel_production": "RESOLVED 2026-10-03: exact-main Generation-5 production returned HTTP 200 from /api/health and /api/boot.",
+    "preview_vs_production": "RESOLVED FOR READ-ONLY HOST BOOT: production alias now serves Generation 5 with trusted Worldline readback. The historical Macaly preview remains provenance only."
   },
   "cutover_rule": "Code cutover is complete. Future changes evolve generation 5 on main; rollback remains available at rollback/pre-rewrite-main-2026-09-22. Production-host promotion is a separate delivery concern and must not roll runtime architecture back to legacy.",
   "code_cutover": {
@@ -277,18 +304,23 @@
     "durable_reconciliation": "VERIFIED_IN_TRUSTED_WORLDLINE_V4"
   },
   "delivery": {
-    "status": "BLOCKED",
-    "checked_at": "2026-09-24",
+    "status": "DELIVERED_READ_ONLY_HOST",
+    "checked_at": "2026-10-03T23:39:40Z",
     "target": "mondayid-host production",
-    "required_code_provenance": "current generation-5 main at deployment time; must include Monday Weighting PR #66 and provider binding PR #67 and remain a descendant of generation-5 cutover",
+    "deployed_main_sha": "4b9677ae20ac0e1f7011e75dcb6faa8ed3c78790",
+    "deployment_id": "dpl_Ddcn59MPWaJjfNfEXWE9zdotkJ4y",
     "evidence": {
-      "production_api_health": "404 NOT_FOUND on fresh 2026-09-24 readback",
-      "production_api_boot": "404 NOT_FOUND on fresh 2026-09-24 readback",
-      "newest_visible_project_deployment": "dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ READY preview; /api/health 404; /api/boot redirects through Vercel SSO",
-      "newest_visible_production_deployment": "dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi READY production created 2026-09-14; alias still points here",
-      "deployment_after_weighting_merges": "none observed; latest visible deployment remains preview dpl_EHsYVdt8GJksdFfPo7UmwEuTaWBJ, while production still points to dpl_6UGMaSLv9opHm8hDudtGWiN1kXHi from 2026-09-14"
+      "production_api_health": "HTTP 200; Generation 5; runtime_dependency_on_legacy=false; no_spend=true; trusted_worldline_configured=true",
+      "production_api_boot": "HTTP 200; FULFILLED / ALL_INTENTS_FULFILLED; trusted Worldline schema v0.4.0",
+      "production_alias": "mondayid-host.vercel.app",
+      "alias_error": null
     },
-    "blocker": "Production remains on the stale 2026-09-14 deployment. A deterministic project-bound promotion workflow is now on main, but it still needs an authenticated Vercel deployment credential. Do not use an ambiguous deploy target or claim delivery before /api/health and /api/boot pass on the production alias.",
-    "rule": "Do not claim production delivery or organism-wide completion until current generation-5 main is deployed to mondayid-host and /api/health plus /api/boot pass live readback. /api/respond must remain disabled unless model execution is explicitly enabled with required secrets and spending authority."
+    "delivered_scope": "Generation-5 read-only host identity and trusted Worldline boot on production.",
+    "remaining_boundaries": [
+      "trusted_writer_configured=false",
+      "native ChatGPT global pre-response interception unproven",
+      "/api/respond remains disabled unless model execution and spending are explicitly authorized with required secrets"
+    ],
+    "rule": "Do not expand DELIVERED_READ_ONLY_HOST into native-Chat control, trusted-write delivery, or paid model execution without separate live proof and authority."
   }
 }
