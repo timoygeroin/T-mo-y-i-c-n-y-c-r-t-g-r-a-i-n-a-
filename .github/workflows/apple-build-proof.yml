@@ -36,7 +36,13 @@ jobs:
       - name: Compile MondayIDHost for iPhone Simulator without signing
         run: |
           set -euo pipefail
-          xcodebuild             -project platform/apple-host/MondayIDHost.xcodeproj             -target MondayIDHost             -sdk iphonesimulator             -configuration Debug             CODE_SIGNING_ALLOWED=NO             build
+          xcodebuild \
+            -project platform/apple-host/MondayIDHost.xcodeproj \
+            -scheme MondayIDHost \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
       - name: Record proof boundary
         run: |
