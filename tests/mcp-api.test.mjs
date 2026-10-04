@@ -27,13 +27,13 @@ test('MCP initialize returns protocol and server info',async()=>{
   assert.equal(res.body.result.protocolVersion,'2025-03-26');
 });
 
-test('MCP tools/list exposes health capability_manifest and get_state',async()=>{
+test('MCP tools/list exposes health capability_manifest compile_history and get_state',async()=>{
   const req={method:'POST',body:{jsonrpc:'2.0',id:2,method:'tools/list',params:{}}};
   const res=response();
   await mcpHandler(req,res);
   assert.equal(res.statusCode,200);
   const names=res.body.result.tools.map(tool=>tool.name);
-  assert.deepEqual(names,['health','capability_manifest','get_state']);
+  assert.deepEqual(names,['health','capability_manifest','compile_history','get_state']);
 });
 
 test('MCP tools/call health returns structured host readback',async()=>{
@@ -64,4 +64,19 @@ test('MCP capability_manifest exposes canonical release seal',async()=>{
   assert.equal(manifest.releaseState.status,'INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN');
   assert.equal(manifest.releaseState.seal,'ops/final-seal-20261004.json');
   assert.ok(manifest.metaInvariants.includes('platform_mode_is_not_capability_owner'));
+});
+
+
+test('MCP compile_history collapses project shells into active capability state',async()=>{
+  const req={method:'POST',body:{jsonrpc:'2.0',id:5,method:'tools/call',params:{name:'compile_history',arguments:{}}}};
+  const res=response();
+  await mcpHandler(req,res);
+  assert.equal(res.statusCode,200);
+  const value=res.body.result.structuredContent;
+  assert.equal(value.ok,true);
+  assert.equal(value.compiled.projectRuntimeAuthority,false);
+  assert.equal(value.compiled.invalid.length,0);
+  assert.ok(value.compiled.activeOrgans.some(x=>x.organ==='MONDAY_WORK'));
+  assert.ok(value.compiled.activeRoles.some(x=>x.role==='JARVIS'));
+  assert.ok(value.delta.activeOrgans.includes('capability_foundry'));
 });
