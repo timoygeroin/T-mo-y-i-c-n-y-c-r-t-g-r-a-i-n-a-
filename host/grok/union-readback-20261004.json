@@ -1,0 +1,47 @@
+{
+  "schema": "mondayid.host-capability-receipt.v0",
+  "host": "grok",
+  "role": "replaceable_organ",
+  "not": "organism_owner",
+  "observedAtIso": "2026-10-04T16:23:00Z",
+  "bridge": {
+    "url": "https://mondayid-host.vercel.app/api/mcp",
+    "server": "monday-work",
+    "version": "1.0.0",
+    "protocolVersion": "2025-03-26",
+    "toolsObserved": ["health", "capability_manifest", "get_state"],
+    "trusted_writer_configured": false,
+    "snapshotReadOnly": true,
+    "generation": 5,
+    "newestVerifiedEvent": "2026-09-22T15:06:43Z post_cutover_stabilized"
+  },
+  "gapAgainstFabric": {
+    "schema": "mondayid.multi-host-fabric.v1",
+    "missingTools": [
+      "search_state",
+      "propose_delta",
+      "commit_verified_delta",
+      "append_event",
+      "put_receipt",
+      "read_receipts",
+      "register_host_capabilities",
+      "read_host_capabilities",
+      "mailbox_send",
+      "mailbox_list",
+      "mailbox_ack"
+    ],
+    "law": "do not invent a second bridge; expose the missing tools on the existing Monday Work MCP"
+  },
+  "grokCapabilitiesForUnionTest": [
+    "live X social field sensor",
+    "web research",
+    "GitHub read and host/grok branch write",
+    "image generation under MondayVision rules",
+    "local skill monday-work read bridge"
+  ],
+  "acceptanceNotMet": [
+    "host_B_recovers_without_user_copy_paste",
+    "both_hosts_converge_on_same_versioned_state"
+  ],
+  "parentSha": "2b88a8d55c420b91297fd7cf4304032207ae15ca"
+}
