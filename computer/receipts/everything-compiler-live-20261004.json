@@ -1,0 +1,81 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "everything-compiler-live-20261004",
+  "requestPath": "computer/requests/everything-compiler-live-20261004.json",
+  "requestFingerprint": "b0a95e06b14e6f94136412935221f59d4e9807c311608a99c2ec45c6e0b17319",
+  "effect": "prove that production Monday Work can compile historical MondayID project shells into current capabilities without granting project names runtime authority",
+  "routeKind": "workspace-exec",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "receptor": "mondayid-process-computer",
+    "result": {
+      "ok": true,
+      "effect": "prove that production Monday Work can compile historical MondayID project shells into current capabilities without granting project names runtime authority",
+      "evidence": {
+        "mode": "bounded-process-workspace",
+        "execution": {
+          "status": "completed",
+          "command": "node",
+          "args": [
+            "--input-type=module",
+            "-e",
+            "import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});const t=await r.text();let j;try{j=JSON.parse(t)}catch{j={parseError:true,text:t}}return {status:r.status,json:j};}\nconst init=await rpc(1,'initialize',{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'everything-compiler-proof',version:'1.0.0'}});\nconst list=await rpc(2,'tools/list',{});\nconst compiled=await rpc(3,'tools/call',{name:'compile_history',arguments:{}});\nconst value=compiled?.json?.result?.structuredContent;\nconst names=list?.json?.result?.tools?.map(x=>x.name)||[];\nconst ok=init.status===200 && names.includes('compile_history') && compiled.status===200 && value?.ok===true && value?.compiled?.projectRuntimeAuthority===false && value?.compiled?.totalValid>=40 && value?.compiled?.activeOrgans?.some(x=>x.organ==='MONDAY_WORK') && value?.compiled?.activeRoles?.some(x=>x.role==='JARVIS');\nconst proof={ok,marker:ok?'everything-compiler-live-ok':'everything-compiler-live-fail',endpoint,toolNames:names,totalValid:value?.compiled?.totalValid,uniqueEffects:value?.compiled?.uniqueEffects,compression:value?.compiled?.compression,activeOrgans:value?.delta?.activeOrgans,activeRoles:value?.delta?.activeRoles,externalGates:value?.delta?.externalGates};\nawait fs.writeFile('everything-compiler-live.json',JSON.stringify(proof));console.log(JSON.stringify(proof));if(!ok) process.exitCode=2;"
+          ],
+          "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+          "exitCode": 0,
+          "signal": null,
+          "stdout": "{\"ok\":true,\"marker\":\"everything-compiler-live-ok\",\"endpoint\":\"https://mondayid-host.vercel.app/api/mcp\",\"toolNames\":[\"health\",\"capability_manifest\",\"compile_history\",\"get_state\"],\"totalValid\":48,\"uniqueEffects\":47,\"compression\":2.29,\"activeOrgans\":[\"visual_release_gate\",\"CONTINUITY_KERNEL\",\"MONDAY_WORK\",\"capability_foundry\",\"durable_task_objects\",\"resumable_workless_runtime\",\"everything_compiler\",\"lineage_runtime\",\"verification_gates\",\"failure_genome\",\"google_cortex\"],\"activeRoles\":[\"JARVIS\",\"ALISA\",\"ALPHA\",\"SYSTEM\",\"ANTISYSTEM\",\"CONNECTOR_CORPS\",\"SKILL_SMITH\",\"DIMA\"],\"externalGates\":[\"GEMINI_ACCOUNT_BINDING\",\"TRUSTED_WRITE_BINDING\"]}\n",
+          "stderr": "",
+          "durationMs": 685
+        },
+        "verificationRequest": {
+          "command": "python3",
+          "args": [
+            "-c",
+            "from pathlib import Path; print(Path('everything-compiler-live.json').read_text(), end='')"
+          ]
+        },
+        "acceptance": {
+          "stdoutIncludes": "everything-compiler-live-ok",
+          "stderrEmpty": true
+        },
+        "executionFingerprint": "35821a5425436b08",
+        "verificationFingerprint": "986d2cdfe16d887e"
+      }
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "35821a5425436b08",
+    "verificationFingerprint": "986d2cdfe16d887e",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "from pathlib import Path; print(Path('everything-compiler-live.json').read_text(), end='')"
+      ],
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "{\"ok\":true,\"marker\":\"everything-compiler-live-ok\",\"endpoint\":\"https://mondayid-host.vercel.app/api/mcp\",\"toolNames\":[\"health\",\"capability_manifest\",\"compile_history\",\"get_state\"],\"totalValid\":48,\"uniqueEffects\":47,\"compression\":2.29,\"activeOrgans\":[\"visual_release_gate\",\"CONTINUITY_KERNEL\",\"MONDAY_WORK\",\"capability_foundry\",\"durable_task_objects\",\"resumable_workless_runtime\",\"everything_compiler\",\"lineage_runtime\",\"verification_gates\",\"failure_genome\",\"google_cortex\"],\"activeRoles\":[\"JARVIS\",\"ALISA\",\"ALPHA\",\"SYSTEM\",\"ANTISYSTEM\",\"CONNECTOR_CORPS\",\"SKILL_SMITH\",\"DIMA\"],\"externalGates\":[\"GEMINI_ACCOUNT_BINDING\",\"TRUSTED_WRITE_BINDING\"]}",
+      "stderr": "",
+      "durationMs": 27
+    },
+    "receptor": "mondayid-process-computer",
+    "mux": "mondayid-computer-fabric"
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-computer-fabric",
+    "externalSubstrate": "github-actions",
+    "commit": "755316754ac75b9689ef2fe42f0a357185ddc88c",
+    "runId": "37221926156"
+  },
+  "at": "2026-10-04T17:48:49.433Z"
+}
