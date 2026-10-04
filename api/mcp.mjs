@@ -70,7 +70,11 @@ async function callTool(name, args = {}) {
       currentPolicies:system.current_policies || [],
       continuity:system.continuity || null,
       everythingCompiler:system.everything_compiler || null,
-      physiology:system.physiology || null
+      physiology:system.physiology || null,
+      organismPhysics:system.organism_physics || null,
+      organismSynapse:system.organism_synapse || null,
+      reentryAndResponse:system.reentry_and_response || null,
+      visualPhenotype:system.visual_phenotype || null
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
   }
