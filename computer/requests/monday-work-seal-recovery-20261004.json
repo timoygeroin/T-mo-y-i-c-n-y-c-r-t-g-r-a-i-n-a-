@@ -1,0 +1,23 @@
+{
+  "schema": "mondayid.computer-task.v1",
+  "id": "monday-work-seal-recovery-20261004",
+  "effect": "prove a fresh independent computer can recover the sealed MondayID release state and trusted worldline through the production Monday Work MCP without local chat memory",
+  "domain": "host",
+  "executionRequest": {
+    "command": "node",
+    "args": [
+      "--input-type=module",
+      "-e",
+      "import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});const json=await r.json();return {status:r.status,json};}\nconst init=await rpc(1,'initialize',{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'fresh-seal-recovery',version:'1.0.0'}});\nconst manifest=await rpc(2,'tools/call',{name:'capability_manifest',arguments:{}});\nconst state=await rpc(3,'tools/call',{name:'get_state',arguments:{limit:5}});\nconst m=manifest?.json?.result?.structuredContent||{};\nconst s=state?.json?.result?.structuredContent||{};\nconst ok=init.status===200 && m?.releaseState?.status==='INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN' && m?.releaseState?.seal==='ops/final-seal-20261004.json' && m?.metaInvariants?.includes('platform_mode_is_not_capability_owner') && s?.ok===true && s?.snapshot?.schema==='mondayid.worldline.snapshot.v0.4.0';\nconst proof={ok,marker:ok?'monday-work-seal-recovery-ok':'monday-work-seal-recovery-fail',endpoint,releaseState:m.releaseState||null,worldlineSchema:s?.snapshot?.schema||null,manifest,state};\nawait fs.writeFile('monday-work-seal-recovery.json',JSON.stringify(proof));\nconsole.log(JSON.stringify(proof));\nif(!ok) process.exitCode=2;"
+    ],
+    "timeoutMs": 30000
+  },
+  "verificationRequest": {
+    "command": "python3",
+    "args": ["-c","from pathlib import Path; print(Path('monday-work-seal-recovery.json').read_text(), end='')"]
+  },
+  "acceptance": {
+    "stdoutIncludes": "monday-work-seal-recovery-ok",
+    "stderrEmpty": true
+  }
+}
