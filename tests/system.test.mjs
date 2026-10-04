@@ -143,3 +143,22 @@ test('system manifest treats physiology as regulation, not identity or another a
   assert.ok(system.physiology.forbidden_inferences.includes('invent_energy_without_telemetry'));
   assert.ok(system.current_policies.includes('internal_state_modulates_routes_before_failure'));
 });
+
+
+test('system manifest canonizes visual phenotype, reference locks, temporal gate and failure containment', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  const visual=system.visual_phenotype;
+  assert.equal(visual.schema,'mondayid.visual-phenotype-contract.v1');
+  assert.equal(visual.identity_owner,false);
+  assert.equal(visual.reference_governance.fusion,'ROLE_LOCKED_NO_AVERAGING');
+  assert.equal(visual.reference_governance.baseline_precedence,'CURRENT_BASELINE_OUTRANKS_LINEAGE');
+  assert.equal(visual.actuator_gate.renderer_role,'actuator_not_decision_maker');
+  assert.equal(visual.actuator_gate.unresolved_result,'HOLD');
+  assert.equal(visual.failure_containment.fail_closed,true);
+  assert.equal(visual.failure_containment.same_refusal_family_retry_without_material_change,'BLOCKED');
+  assert.equal(visual.recurrence_and_variation.identical_scene_pose_background_as_default,'FORBIDDEN');
+  assert.equal(visual.constraint_gradient.blocked_dimension,'transmute_not_bypass');
+  assert.equal(visual.truth_boundary.visual_release_requires_post_render_readback,true);
+  assert.ok(system.current_policies.includes('whole_visual_phenotype_outranks_component_novelty'));
+  assert.ok(system.current_policies.includes('preventable_visual_recurrence_is_vetoed'));
+});
