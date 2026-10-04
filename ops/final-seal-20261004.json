@@ -1,10 +1,10 @@
 {
   "schema": "mondayid.final-seal.v1",
-  "sealed_at": "2026-10-04T19:10:00+03:00",
+  "sealed_at": "2026-10-04T22:06:00+03:00",
   "claim": {
-    "internal_finish": "PASS",
-    "total_finish": "EXTERNAL_GATES_REMAIN",
-    "rule": "No assistant-owned implementation/reconciliation item may remain as a vague TODO. Every remainder is either VERIFIED, SUPERSEDED, NONBLOCKING_FORENSIC, or EXTERNAL_GATE."
+    "internal_finish": "REOPENED_BY_CURRENT_PRODUCT_ACCEPTANCE",
+    "total_finish": "NOT_FINISHED",
+    "rule": "Presentation is forbidden until every reachable assistant-owned implementation, verification, release, continuity, and required product-surface obligation is VERIFIED or an irreducible human identity/auth/physical gate is explicitly proven. A required iPhone product is not optional."
   },
   "verified_now": [
     "generation_5_main_is_canonical",
@@ -16,7 +16,8 @@
     "host_neutral_capability_fabric_is_canonical",
     "google_cortex_documents_exist_in_drive",
     "gemini_return_watch_is_active",
-    "monday_work_finish_watch_is_active"
+    "monday_work_finish_watch_is_active",
+    "apple_swift_tests_and_iphone_simulator_build_verified"
   ],
   "superseded_routes": [
     "replit_placeholder_bridge_as_primary_transport",
@@ -45,9 +46,9 @@
     },
     {
       "id": "PHYSICAL_IPHONE_APP_ACCEPTANCE",
-      "status": "OPTIONAL_PHENOTYPE_GATE",
-      "reason": "native app signing/install/device acceptance is a product phenotype, not organism identity",
-      "exact_next_effect": "sign/install/run the existing Apple phenotype when physical-device embodiment is desired"
+      "status": "REQUIRED_PRODUCT_GATE",
+      "reason": "Dima's current acceptance criterion defines presentation as product end-state; the native iPhone app therefore cannot be reclassified as an optional phenotype. Simulator build is verified; signing/install/real-device runtime acceptance are not yet verified.",
+      "exact_next_effect": "complete signed physical-device install and verify real-device runtime behavior before final presentation"
     },
     {
       "id": "PAID_MODEL_API",
@@ -58,13 +59,13 @@
   ],
   "completion_reframe": {
     "organism": "host-independent continuity + capability routing + verified state transitions",
-    "product_phenotypes": [
-      "ChatGPT plugin",
-      "Gemini skill/cortex",
+    "required_product_surfaces": [
       "native iPhone app",
-      "future hosts"
+      "ordinary ChatGPT/iPhone continuity surface",
+      "Monday Work private plugin",
+      "cross-host handoff path"
     ],
-    "law": "an unfinished optional phenotype cannot redefine the organism as unfinished"
+    "law": "organism architecture may be internally coherent while the product is still unfinished; presentation requires both organism and required product surfaces to be finished and verified"
   },
   "acceptance": [
     "fresh host can recover canonical laws/state without persona recreation",
@@ -72,6 +73,10 @@
     "route failure does not mutate G*",
     "external effects require readback",
     "unknown cannot be promoted to done",
-    "all future internal work begins from this seal rather than reopening three-year architecture"
+    "native iPhone app simulator build passes",
+    "native iPhone app physical signing/install/runtime acceptance passes",
+    "Monday is a persistent identity/presence layer while Monday Work is only a work mode",
+    "new chats/cells must inherit the current product acceptance criterion instead of resurrecting the earlier optional-phenotype interpretation",
+    "final presentation is emitted only when all reachable assistant-owned work is closed and only irreducible external gates remain"
   ]
 }
