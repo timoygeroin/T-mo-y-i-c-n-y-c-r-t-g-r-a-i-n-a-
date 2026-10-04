@@ -118,3 +118,58 @@ export function regulatePhysiology(snapshot = {}) {
     principle:'regulate_internal_state_before_failure_not_after_it'
   });
 }
+
+
+const computeRank=Object.freeze({LOW:0,MEDIUM:1,HIGH:2,MAX:3});
+const normalizeCompute=tier => Object.hasOwn(computeRank,String(tier)) ? String(tier) : 'LOW';
+
+function rejectHost(host, desiredEffect){
+  if (host?.available === false) return 'HOST_UNAVAILABLE';
+  if (String(host?.health||'UNKNOWN') !== 'HEALTHY') return 'HOST_UNHEALTHY';
+  if (String(host?.auth||'MISSING') !== 'AVAILABLE') return 'AUTHORITY_UNAVAILABLE';
+  if (Number.isFinite(Number(host?.quotaRemaining)) && Number(host.quotaRemaining) <= 0) return 'QUOTA_EXHAUSTED';
+  if (!Array.isArray(host?.capabilities) || !host.capabilities.includes(desiredEffect)) return 'CAPABILITY_MISSING';
+  return null;
+}
+
+function hostScore(host){
+  const reliability=clamp01(host?.reliability ?? 0.5);
+  const cost=Math.max(0,Number(host?.cost)||0);
+  const latency=Math.max(0,Number(host?.latency)||0);
+  const quota=Number.isFinite(Number(host?.quotaRemaining)) ? Math.max(0,Number(host.quotaRemaining)) : 1;
+  return reliability*100 + Math.min(quota,20) - cost*4 - latency*2;
+}
+
+export function allocateMetabolism({
+  desiredEffect,
+  regulation = {},
+  hosts = [],
+  task = {}
+} = {}) {
+  const rejected=[];
+  const viable=[];
+
+  for (const host of hosts) {
+    const reason=rejectHost(host,desiredEffect);
+    if (reason) rejected.push(Object.freeze({id:String(host?.id||'unknown'),reason}));
+    else viable.push(host);
+  }
+
+  viable.sort((a,b)=>hostScore(b)-hostScore(a));
+  const selected=viable[0] || null;
+  const computeTier=normalizeCompute(regulation?.computeFloor);
+
+  return Object.freeze({
+    schema:'mondayid.metabolism.v1',
+    state:selected ? 'ROUTED' : 'BLOCKED_PRESERVED',
+    desiredEffect:String(desiredEffect||''),
+    taskId:task?.id ? String(task.id) : null,
+    preserveTaskIdentity:true,
+    selectedHost:selected?.id ? String(selected.id) : null,
+    computeTier,
+    verificationStrictness:String(regulation?.verificationStrictness||'NORMAL'),
+    rejected:Object.freeze(rejected),
+    viableHosts:Object.freeze(viable.map(host=>String(host.id))),
+    law:'allocate_by_capability_health_authority_quota_cost_latency_reliability_without_losing_task_identity'
+  });
+}
