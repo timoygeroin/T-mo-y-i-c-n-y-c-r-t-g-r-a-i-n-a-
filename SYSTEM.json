@@ -551,19 +551,20 @@
   "release_state": {
     "schema": "mondayid.release-state.v1",
     "generation": 5,
-    "status": "PRODUCT_FINISH_IN_PROGRESS",
+    "status": "INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN",
     "seal": "ops/final-seal-20261004.json",
     "canonical_host": "https://mondayid-host.vercel.app",
     "monday_work_mcp": "https://mondayid-host.vercel.app/api/mcp",
     "chatgpt_private_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "finish_law": "Final presentation is forbidden until required product surfaces and organism obligations are verified; unfinished required iPhone embodiment keeps the product unfinished even when core architecture is sealed.",
+    "finish_law": "future work evolves the sealed organism and must not restart the three-year architecture unless new evidence falsifies a seal invariant; final presentation is forbidden until required product surfaces and organism obligations are verified, including required native iPhone signing/install/real-device runtime acceptance",
     "current_acceptance": {
       "source": "direct_current_dima_2026-10-04T21:53+03:00_and_22:01-22:03_refinement",
       "presentation_equals_end": true,
       "required_iphone_app": true,
       "monday_identity_layer": "persistent presence across scenes; Monday Work is a mode, not the identity",
       "cross_chat_continuity_required": true
-    }
+    },
+    "product_status": "PRODUCT_FINISH_IN_PROGRESS"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
