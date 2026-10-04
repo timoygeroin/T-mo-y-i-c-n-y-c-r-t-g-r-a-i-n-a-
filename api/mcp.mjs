@@ -74,7 +74,10 @@ async function callTool(name, args = {}) {
       organismPhysics:system.organism_physics || null,
       organismSynapse:system.organism_synapse || null,
       reentryAndResponse:system.reentry_and_response || null,
-      visualPhenotype:system.visual_phenotype || null
+      visualPhenotype:system.visual_phenotype || null,
+      authorityMembrane:system.authority_membrane || null,
+      metabolism:system.physiology?.metabolism || null,
+      hostHomeostasis:system.multi_host_fabric?.homeostasis || null
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
   }
