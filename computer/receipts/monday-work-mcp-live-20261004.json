@@ -1,0 +1,81 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "monday-work-mcp-live-20261004",
+  "requestPath": "computer/requests/monday-work-mcp-live-20261004.json",
+  "requestFingerprint": "b902d9b01e88e1564d414b0948d6c958555ce5d5c34a58f54c702eb7d4ac5dfa",
+  "effect": "prove the canonical production Monday Work MCP endpoint completes initialize, tools/list, and tools/call from an independent fresh computer substrate",
+  "routeKind": "workspace-exec",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "receptor": "mondayid-process-computer",
+    "result": {
+      "ok": true,
+      "effect": "prove the canonical production Monday Work MCP endpoint completes initialize, tools/list, and tools/call from an independent fresh computer substrate",
+      "evidence": {
+        "mode": "bounded-process-workspace",
+        "execution": {
+          "status": "completed",
+          "command": "node",
+          "args": [
+            "--input-type=module",
+            "-e",
+            "import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){\n  const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});\n  const text=await r.text();\n  let json; try{json=JSON.parse(text)}catch{json={parseError:true,text}}\n  return {status:r.status,contentType:r.headers.get('content-type'),json};\n}\nconst init=await rpc(1,'initialize',{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'mondayid-computer-proof',version:'1.0.0'}});\nconst list=await rpc(2,'tools/list',{});\nconst health=await rpc(3,'tools/call',{name:'health',arguments:{}});\nconst names=list?.json?.result?.tools?.map(x=>x.name)||[];\nconst ok=init.status===200 && init?.json?.result?.serverInfo?.name==='monday-work' && names.includes('health') && names.includes('capability_manifest') && names.includes('get_state') && health.status===200 && health?.json?.result?.structuredContent?.generation===5;\nconst proof={ok,marker:ok?'monday-work-mcp-live-ok':'monday-work-mcp-live-fail',endpoint,init,list,health};\nawait fs.writeFile('monday-work-mcp-live.json',JSON.stringify(proof));\nconsole.log(JSON.stringify(proof));\nif(!ok) process.exitCode=2;"
+          ],
+          "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+          "exitCode": 0,
+          "signal": null,
+          "stdout": "{\"ok\":true,\"marker\":\"monday-work-mcp-live-ok\",\"endpoint\":\"https://mondayid-host.vercel.app/api/mcp\",\"init\":{\"status\":200,\"contentType\":\"application/json; charset=utf-8\",\"json\":{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{\"tools\":{\"listChanged\":false}},\"serverInfo\":{\"name\":\"monday-work\",\"version\":\"1.0.0\"},\"instructions\":\"Monday Work is a host-neutral MondayID control-plane endpoint. Attempted is not verified.\"}}},\"list\":{\"status\":200,\"contentType\":\"application/json; charset=utf-8\",\"json\":{\"jsonrpc\":\"2.0\",\"id\":2,\"result\":{\"tools\":[{\"name\":\"health\",\"description\":\"Read verified MondayID host health and generation identity.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}},{\"name\":\"capability_manifest\",\"description\":\"Read the canonical Monday-owned capability and multi-host fabric contracts.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}},{\"name\":\"get_state\",\"description\":\"Read the trusted external MondayID worldline snapshot. This is read-only.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{\"limit\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":100,\"default\":20}},\"additionalProperties\":false}}]}}},\"health\":{\"status\":200,\"contentType\":\"application/json; charset=utf-8\",\"json\":{\"jsonrpc\":\"2.0\",\"id\":3,\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\\"ok\\\":true,\\\"product\\\":\\\"MondayID\\\",\\\"generation\\\":5,\\\"rewrite\\\":true,\\\"runtime_dependency_on_legacy\\\":false,\\\"kernel\\\":\\\"mondayid-generation-5\\\",\\\"runtime\\\":\\\"vercel-node-function\\\",\\\"continuity\\\":{\\\"trusted_worldline_configured\\\":true,\\\"trusted_writer_configured\\\":false,\\\"schema\\\":\\\"mondayid.worldline.snapshot.v0.4.0\\\",\\\"transport\\\":\\\"authenticated_machine_writer_trusted_http_snapshot\\\"},\\\"authority\\\":{\\\"no_spend\\\":true},\\\"cutover\\\":\\\"generation-5\\\"}\"}],\"structuredContent\":{\"ok\":true,\"product\":\"MondayID\",\"generation\":5,\"rewrite\":true,\"runtime_dependency_on_legacy\":false,\"kernel\":\"mondayid-generation-5\",\"runtime\":\"vercel-node-function\",\"continuity\":{\"trusted_worldline_configured\":true,\"trusted_writer_configured\":false,\"schema\":\"mondayid.worldline.snapshot.v0.4.0\",\"transport\":\"authenticated_machine_writer_trusted_http_snapshot\"},\"authority\":{\"no_spend\":true},\"cutover\":\"generation-5\"}}}}}\n",
+          "stderr": "",
+          "durationMs": 764
+        },
+        "verificationRequest": {
+          "command": "python3",
+          "args": [
+            "-c",
+            "from pathlib import Path; print(Path('monday-work-mcp-live.json').read_text(), end='')"
+          ]
+        },
+        "acceptance": {
+          "stdoutIncludes": "monday-work-mcp-live-ok",
+          "stderrEmpty": true
+        },
+        "executionFingerprint": "475014999b1efe34",
+        "verificationFingerprint": "d83bb3d1e6eebf30"
+      }
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "475014999b1efe34",
+    "verificationFingerprint": "d83bb3d1e6eebf30",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "from pathlib import Path; print(Path('monday-work-mcp-live.json').read_text(), end='')"
+      ],
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "{\"ok\":true,\"marker\":\"monday-work-mcp-live-ok\",\"endpoint\":\"https://mondayid-host.vercel.app/api/mcp\",\"init\":{\"status\":200,\"contentType\":\"application/json; charset=utf-8\",\"json\":{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{\"tools\":{\"listChanged\":false}},\"serverInfo\":{\"name\":\"monday-work\",\"version\":\"1.0.0\"},\"instructions\":\"Monday Work is a host-neutral MondayID control-plane endpoint. Attempted is not verified.\"}}},\"list\":{\"status\":200,\"contentType\":\"application/json; charset=utf-8\",\"json\":{\"jsonrpc\":\"2.0\",\"id\":2,\"result\":{\"tools\":[{\"name\":\"health\",\"description\":\"Read verified MondayID host health and generation identity.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}},{\"name\":\"capability_manifest\",\"description\":\"Read the canonical Monday-owned capability and multi-host fabric contracts.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}},{\"name\":\"get_state\",\"description\":\"Read the trusted external MondayID worldline snapshot. This is read-only.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{\"limit\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":100,\"default\":20}},\"additionalProperties\":false}}]}}},\"health\":{\"status\":200,\"contentType\":\"application/json; charset=utf-8\",\"json\":{\"jsonrpc\":\"2.0\",\"id\":3,\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\\"ok\\\":true,\\\"product\\\":\\\"MondayID\\\",\\\"generation\\\":5,\\\"rewrite\\\":true,\\\"runtime_dependency_on_legacy\\\":false,\\\"kernel\\\":\\\"mondayid-generation-5\\\",\\\"runtime\\\":\\\"vercel-node-function\\\",\\\"continuity\\\":{\\\"trusted_worldline_configured\\\":true,\\\"trusted_writer_configured\\\":false,\\\"schema\\\":\\\"mondayid.worldline.snapshot.v0.4.0\\\",\\\"transport\\\":\\\"authenticated_machine_writer_trusted_http_snapshot\\\"},\\\"authority\\\":{\\\"no_spend\\\":true},\\\"cutover\\\":\\\"generation-5\\\"}\"}],\"structuredContent\":{\"ok\":true,\"product\":\"MondayID\",\"generation\":5,\"rewrite\":true,\"runtime_dependency_on_legacy\":false,\"kernel\":\"mondayid-generation-5\",\"runtime\":\"vercel-node-function\",\"continuity\":{\"trusted_worldline_configured\":true,\"trusted_writer_configured\":false,\"schema\":\"mondayid.worldline.snapshot.v0.4.0\",\"transport\":\"authenticated_machine_writer_trusted_http_snapshot\"},\"authority\":{\"no_spend\":true},\"cutover\":\"generation-5\"}}}}}",
+      "stderr": "",
+      "durationMs": 24
+    },
+    "receptor": "mondayid-process-computer",
+    "mux": "mondayid-computer-fabric"
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-computer-fabric",
+    "externalSubstrate": "github-actions",
+    "commit": "3abbf0f7be9a9f633c70b71eb7841f33b418fedc",
+    "runId": "37215239125"
+  },
+  "at": "2026-10-04T16:01:58.676Z"
+}
