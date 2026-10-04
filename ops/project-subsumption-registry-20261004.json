@@ -769,6 +769,24 @@
       "evidence": [
         "authority-ranked genealogy inventory and live capability discovery now exist on main"
       ]
+    },
+    {
+      "name": "Workless Runtime v2",
+      "effect": "continue long work through alternative compute and durable receipts when provider work limits fail",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "resumable_workless_runtime",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "PR32",
+        "SYSTEM.computer_fabric",
+        "src/execution/workless-runtime-v2.mjs"
+      ],
+      "evidence": [
+        "owned resumable workless runtime is canonical"
+      ],
+      "verification": {
+        "ok": true
+      }
     }
   ]
 }
