@@ -1,0 +1,23 @@
+{
+  "schema": "mondayid.computer-task.v1",
+  "id": "everything-compiler-live-20261004",
+  "effect": "prove that production Monday Work can compile historical MondayID project shells into current capabilities without granting project names runtime authority",
+  "domain": "host",
+  "executionRequest": {
+    "command": "node",
+    "args": [
+      "--input-type=module",
+      "-e",
+      "import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});const t=await r.text();let j;try{j=JSON.parse(t)}catch{j={parseError:true,text:t}}return {status:r.status,json:j};}\nconst init=await rpc(1,'initialize',{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'everything-compiler-proof',version:'1.0.0'}});\nconst list=await rpc(2,'tools/list',{});\nconst compiled=await rpc(3,'tools/call',{name:'compile_history',arguments:{}});\nconst value=compiled?.json?.result?.structuredContent;\nconst names=list?.json?.result?.tools?.map(x=>x.name)||[];\nconst ok=init.status===200 && names.includes('compile_history') && compiled.status===200 && value?.ok===true && value?.compiled?.projectRuntimeAuthority===false && value?.compiled?.totalValid>=40 && value?.compiled?.activeOrgans?.some(x=>x.organ==='MONDAY_WORK') && value?.compiled?.activeRoles?.some(x=>x.role==='JARVIS');\nconst proof={ok,marker:ok?'everything-compiler-live-ok':'everything-compiler-live-fail',endpoint,toolNames:names,totalValid:value?.compiled?.totalValid,uniqueEffects:value?.compiled?.uniqueEffects,compression:value?.compiled?.compression,activeOrgans:value?.delta?.activeOrgans,activeRoles:value?.delta?.activeRoles,externalGates:value?.delta?.externalGates};\nawait fs.writeFile('everything-compiler-live.json',JSON.stringify(proof));console.log(JSON.stringify(proof));if(!ok) process.exitCode=2;"
+    ],
+    "timeoutMs": 30000
+  },
+  "verificationRequest": {
+    "command": "python3",
+    "args": ["-c","from pathlib import Path; print(Path('everything-compiler-live.json').read_text(), end='')"]
+  },
+  "acceptance": {
+    "stdoutIncludes": "everything-compiler-live-ok",
+    "stderrEmpty": true
+  }
+}
