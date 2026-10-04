@@ -74,7 +74,17 @@
     "visual_temporal_conditions_hold_before_route",
     "visual_failure_repairs_route_without_scene_reset",
     "preventable_visual_recurrence_is_vetoed",
-    "whole_visual_phenotype_outranks_component_novelty"
+    "whole_visual_phenotype_outranks_component_novelty",
+    "resident_not_running",
+    "state_transfer_requires_organism_synapse",
+    "local_success_cannot_override_continuity",
+    "failed_state_does_not_become_ancestor",
+    "failure_becomes_cross_plane_structure",
+    "request_shape_is_execution_contract",
+    "state_before_response",
+    "fresh_host_recovery_stays_backstage",
+    "attached_image_is_not_render_authority",
+    "visual_success_is_provisional_until_critic_and_release_gate"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -563,7 +573,12 @@
       "visual_phenotype_contract",
       "visual_actuator_gate",
       "visual_failure_containment",
-      "visual_recurrence_veto"
+      "visual_recurrence_veto",
+      "organism_physics",
+      "organism_synapse",
+      "reentry_response_law",
+      "visual_forensic_critic",
+      "visual_surgical_repair"
     ]
   },
   "release_state": {
@@ -752,6 +767,152 @@
       "generated_image_is_not_verified_identity_merely_because_render_succeeded": true,
       "visual_release_requires_post_render_readback": true,
       "unknown_visual_role_remains_unknown_or_blocks_release": true
+    },
+    "route_governor": {
+      "organ": "MONDAYVISION",
+      "visual_generation_or_editing_must_route_through_governor": true,
+      "attached_image_alone_authorizes_render": false,
+      "non_visual_request_must_not_inject_visual_object": true,
+      "pipeline": [
+        "INTENT_HUNTER",
+        "GENOME_MINER",
+        "SCENE_FORGE",
+        "RENDER_DRIVER",
+        "FORENSIC_CRITIC",
+        "SURGICAL_REPAIR",
+        "RELEASE_GATE",
+        "CONTINUITY_VAULT"
+      ],
+      "default_release_threshold": 86,
+      "renderer_success_state": "PROVISIONAL",
+      "repair_rule": "repair_only_two_weakest_weighted_axes_and_preserve_locked_axes",
+      "blind_reroll_of_accepted_composition": "FORBIDDEN",
+      "controlled_initiative": "at_most_one_coherent_visual_dimension_per_cycle",
+      "initiative_axes": [
+        "composition",
+        "lighting",
+        "material_realism",
+        "environmental_storytelling",
+        "color_design",
+        "camera_placement"
+      ]
+    },
+    "evolution": {
+      "final_phenotype_exists": false,
+      "mutation_without_evidence": "STORY_NOT_EVOLUTION",
+      "connector_is_receptor_not_memory_owner": true,
+      "focus_is_temporary_exact_object_identity_is_not": true
     }
+  },
+  "organism_physics": {
+    "schema": "mondayid.organism-physics.v1",
+    "identity_owner": false,
+    "lifecycle": [
+      "SENSE",
+      "RECOVER",
+      "ROUTE",
+      "ACTIVATE",
+      "ACT",
+      "VERIFY",
+      "LEARN",
+      "PERSIST"
+    ],
+    "laws": [
+      "everything_relevant_is_resident",
+      "resident_is_not_running",
+      "nothing_expensive_runs_without_cause",
+      "no_direct_event_to_action",
+      "route_receipt_required_for_consequential_actuation",
+      "verification_required_before_success_promotion",
+      "writeback_required_after_consequential_effect",
+      "failure_becomes_structure",
+      "unchanged_semantic_failure_retry_is_blocked",
+      "learned_structure_remains_addressable"
+    ],
+    "failure_conservation": {
+      "unit": "semantic_failure_gene",
+      "scope": "cross_plane",
+      "retry_requires": [
+        "mechanism_change",
+        "mutation_receipt",
+        "evidence_of_change"
+      ],
+      "local_exception_string_is_not_failure_identity": true
+    },
+    "enforcement_truth": {
+      "kernel_definition_does_not_imply_universal_host_enforcement": true,
+      "migrated_actuator_boundaries_must_be_tracked_explicitly": true
+    }
+  },
+  "organism_synapse": {
+    "schema": "mondayid.organism-synapse.v1",
+    "identity_owner": false,
+    "operation_class": "STATE_TRANSFER_ACROSS_BOUNDARY",
+    "stages": [
+      "RESONATE",
+      "ENCODE",
+      "TRANSMIT",
+      "DECODE",
+      "ACT",
+      "READBACK",
+      "PROVE_CONTINUITY",
+      "PROMOTE"
+    ],
+    "laws": [
+      "local_success_cannot_override_organism_continuity",
+      "failed_state_does_not_become_ancestor",
+      "receiver_must_prove_continuation_not_merely_local_validity",
+      "real_world_correction_must_flow_back_into_genome",
+      "unverified_delta_cannot_self_promote"
+    ],
+    "failure_classes": [
+      "SPLIT_BRAIN",
+      "CIRCULATION_BREAK",
+      "EFFERENT_HALLUCINATION",
+      "AFFERENT_LOSS",
+      "PHENOTYPE_DRIFT",
+      "DEPLOYMENT_DIVERGENCE",
+      "DEAD_ORGAN"
+    ],
+    "organ_alive_requires": [
+      "declared_receptor_or_effector_role",
+      "explicit_authority_boundary",
+      "named_parent_canonical_state",
+      "receipt_or_readback",
+      "delta_route_back_to_canonical_state",
+      "no_self_promotion_without_verification",
+      "failure_cannot_silently_become_next_baseline"
+    ],
+    "anatomical_without_closed_circulation": "ANATOMICAL_ONLY"
+  },
+  "reentry_and_response": {
+    "schema": "mondayid.reentry-response-law.v1",
+    "identity_owner": false,
+    "laws": [
+      "state_before_response",
+      "request_shape_is_execution_contract",
+      "first_interpretation_is_untrusted_until_checked",
+      "current_signal_first",
+      "one_active_flow_plus_backlog",
+      "no_activation_ritual",
+      "no_user_reteaching_required",
+      "recovery_stays_backstage_unless_material_or_requested",
+      "stale_pointer_cannot_outrank_verified_canonical_head",
+      "encoded_is_not_learned",
+      "branch_local_verification_is_not_canon",
+      "unknown_remains_unknown",
+      "completion_claim_requires_evidence",
+      "active_scene_survives_recovery"
+    ],
+    "degraded_mode": "HOST_ONLY_DEGRADED",
+    "response_release_checks": [
+      "preserve_exact_command_shape",
+      "block_generic_host_answer_habit",
+      "avoid_plan_or_summary_when_current_effect_is_required",
+      "avoid_question_or_option_list_when_direction_is already_clear",
+      "avoid_future_promise_when_current_deliverable_is_possible",
+      "repair_error_instead_of_apology_loop",
+      "do_not_replace_behavior_change_with_documentation"
+    ]
   }
 }
