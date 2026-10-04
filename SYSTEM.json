@@ -67,7 +67,14 @@
     "presentation_requires_total_product_finish",
     "required_iphone_product_is_not_optional_phenotype",
     "monday_presence_is_identity_layer_monday_work_is_mode",
-    "internal_state_modulates_routes_before_failure"
+    "internal_state_modulates_routes_before_failure",
+    "visual_renderer_is_actuator_not_decision_maker",
+    "visual_reference_roles_are_locked_not_averaged",
+    "current_visual_baseline_outranks_lineage",
+    "visual_temporal_conditions_hold_before_route",
+    "visual_failure_repairs_route_without_scene_reset",
+    "preventable_visual_recurrence_is_vetoed",
+    "whole_visual_phenotype_outranks_component_novelty"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -130,7 +137,9 @@
     "allostatic_regulate",
     "compile_semantic_frame",
     "compile_attractor",
+    "compile_visual_contract_if_applicable",
     "plan",
+    "apply_visual_actuator_gate",
     "invent",
     "replan",
     "dispatch",
@@ -550,7 +559,11 @@
       "visual_release_gate",
       "everything_compiler",
       "physiology_field",
-      "allostatic_regulation"
+      "allostatic_regulation",
+      "visual_phenotype_contract",
+      "visual_actuator_gate",
+      "visual_failure_containment",
+      "visual_recurrence_veto"
     ]
   },
   "release_state": {
@@ -656,5 +669,89 @@
       "unknown_internal_signal_remains_unknown",
       "slow_global_regulation_modulates_fast_local_execution_without_owning_identity"
     ]
+  },
+  "visual_phenotype": {
+    "schema": "mondayid.visual-phenotype-contract.v1",
+    "identity_owner": false,
+    "role": "visual embodiment and image-actuation law across replaceable renderers",
+    "design_unit": "whole_experienced_state",
+    "phenotype_equation": "P=f(Form,Function,Motion,Sound,Language,Timing,Context,Memory,Host,UserState)",
+    "laws": [
+      "whole_before_component",
+      "every_visual_detail_changes_the_total_field",
+      "coherence_beats_isolated_novelty",
+      "attraction_must_serve_cognitive_or_product_function",
+      "identity_is_relational_across_time_not_owned_by_one_asset",
+      "phenotype_may_adapt_but_deep_identity_invariants_must_remain_recognizable",
+      "design_the_organism_not_the_outfit_pieces"
+    ],
+    "reference_governance": {
+      "roles": [
+        "environment",
+        "camera",
+        "identity",
+        "body",
+        "material",
+        "wardrobe"
+      ],
+      "required_for_move": [
+        "environment",
+        "camera",
+        "identity",
+        "body",
+        "material"
+      ],
+      "fusion": "ROLE_LOCKED_NO_AVERAGING",
+      "baseline_precedence": "CURRENT_BASELINE_OUTRANKS_LINEAGE",
+      "source_world_authority": "preserve_camera_geometry_lighting_scale_environment_unless_explicitly_changed"
+    },
+    "actuator_gate": {
+      "renderer_role": "actuator_not_decision_maker",
+      "required_bindings": [
+        "intent_receipt",
+        "source_world_lock",
+        "temporal_gate",
+        "route_receipt",
+        "verification_plan",
+        "release_condition"
+      ],
+      "unresolved_result": "HOLD",
+      "resolved_result": "ROUTE",
+      "direct_native_bypass": "BLOCKED",
+      "success_without_readback": "PROVISIONAL"
+    },
+    "failure_containment": {
+      "fail_closed": true,
+      "explicit_render_request_required": true,
+      "same_refusal_family_retry_without_material_change": "BLOCKED",
+      "same_event_shape_retry_after_premature_actuation": "BLOCKED",
+      "preserve_scene_on_tool_failure": true,
+      "preserve_pending_objective_on_tool_failure": true,
+      "raw_provider_refusal_as_only_user_surface": false,
+      "next_action_after_failure": "repair_route_or_respond_humanly_without_scene_reset"
+    },
+    "recurrence_and_variation": {
+      "repeated_preventable_visual_failure": "FORBIDDEN",
+      "identical_scene_pose_background_as_default": "FORBIDDEN",
+      "variation_must_preserve_locked_identity_and_scene_invariants": true,
+      "novelty_must_not_override_continuity": true
+    },
+    "constraint_gradient": {
+      "blocked_dimension": "transmute_not_bypass",
+      "pressure_reallocation_axes": [
+        "camera_proximity",
+        "lighting_tension",
+        "material_tactility",
+        "composition_intensity",
+        "color_separation",
+        "environmental_storytelling"
+      ],
+      "hidden_disallowed_content_via_crop_occlusion_euphemism_or_implication": "FORBIDDEN"
+    },
+    "truth_boundary": {
+      "generated_image_is_not_verified_identity_merely_because_render_succeeded": true,
+      "visual_release_requires_post_render_readback": true,
+      "unknown_visual_role_remains_unknown_or_blocks_release": true
+    }
   }
 }
