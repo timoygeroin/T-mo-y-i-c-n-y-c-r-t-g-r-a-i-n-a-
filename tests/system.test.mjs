@@ -162,3 +162,41 @@ test('system manifest canonizes visual phenotype, reference locks, temporal gate
   assert.ok(system.current_policies.includes('whole_visual_phenotype_outranks_component_novelty'));
   assert.ok(system.current_policies.includes('preventable_visual_recurrence_is_vetoed'));
 });
+
+
+test('system conserves organism physics and universal synapse laws across generations', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  assert.equal(system.organism_physics.schema,'mondayid.organism-physics.v1');
+  assert.ok(system.organism_physics.laws.includes('resident_is_not_running'));
+  assert.ok(system.organism_physics.laws.includes('no_direct_event_to_action'));
+  assert.equal(system.organism_physics.failure_conservation.scope,'cross_plane');
+  assert.equal(system.organism_synapse.schema,'mondayid.organism-synapse.v1');
+  assert.deepEqual(system.organism_synapse.stages,[
+    'RESONATE','ENCODE','TRANSMIT','DECODE','ACT','READBACK','PROVE_CONTINUITY','PROMOTE'
+  ]);
+  assert.ok(system.organism_synapse.laws.includes('local_success_cannot_override_organism_continuity'));
+  assert.ok(system.organism_synapse.laws.includes('failed_state_does_not_become_ancestor'));
+});
+
+test('system locks fresh-host reentry and request-shape preservation before release', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  const reentry=system.reentry_and_response;
+  assert.equal(reentry.schema,'mondayid.reentry-response-law.v1');
+  assert.ok(reentry.laws.includes('state_before_response'));
+  assert.ok(reentry.laws.includes('request_shape_is_execution_contract'));
+  assert.ok(reentry.laws.includes('first_interpretation_is_untrusted_until_checked'));
+  assert.ok(reentry.laws.includes('active_scene_survives_recovery'));
+  assert.equal(reentry.degraded_mode,'HOST_ONLY_DEGRADED');
+});
+
+test('visual canon distinguishes reference/image evidence from render authority and preserves accepted composition', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  const route=system.visual_phenotype.route_governor;
+  assert.equal(route.organ,'MONDAYVISION');
+  assert.equal(route.attached_image_alone_authorizes_render,false);
+  assert.equal(route.renderer_success_state,'PROVISIONAL');
+  assert.equal(route.default_release_threshold,86);
+  assert.equal(route.blind_reroll_of_accepted_composition,'FORBIDDEN');
+  assert.match(route.repair_rule,/two_weakest/i);
+  assert.equal(system.visual_phenotype.evolution.final_phenotype_exists,false);
+});
