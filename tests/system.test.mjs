@@ -200,3 +200,18 @@ test('visual canon distinguishes reference/image evidence from render authority 
   assert.match(route.repair_rule,/two_weakest/i);
   assert.equal(system.visual_phenotype.evolution.final_phenotype_exists,false);
 });
+
+
+test('system canonizes authority membrane metabolism and host homeostasis without creating identity owners', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  assert.equal(system.authority_membrane.schema,'mondayid.authority-membrane-contract.v1');
+  assert.equal(system.authority_membrane.identity_owner,false);
+  assert.equal(system.authority_membrane.lease_scope,'cell + domain + exact_effect + expiry + one_shot');
+  assert.equal(system.physiology.metabolism.schema,'mondayid.metabolism-contract.v1');
+  assert.equal(system.physiology.metabolism.identity_owner,false);
+  assert.ok(system.physiology.metabolism.host_selection.includes('quota'));
+  assert.equal(system.multi_host_fabric.homeostasis.preserve_task_identity_on_host_failure,true);
+  assert.equal(system.multi_host_fabric.homeostasis.provider_is_replaceable_tissue,true);
+  assert.ok(system.current_policies.includes('authority_is_leased_per_effect_not_inherited_by_host'));
+  assert.ok(system.current_policies.includes('host_failure_reroutes_effect_without_resetting_task_identity'));
+});
