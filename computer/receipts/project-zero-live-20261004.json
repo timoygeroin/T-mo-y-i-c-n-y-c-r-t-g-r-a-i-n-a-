@@ -1,0 +1,81 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "project-zero-live-20261004",
+  "requestPath": "computer/requests/project-zero-live-20261004.json",
+  "requestFingerprint": "16add33b631d07b30cc5c97379f5d21ba12ba40f9360cf4e316c19c9b9e34909",
+  "effect": "independently prove that historical MondayID project shells have zero open PR authority and production Everything Compiler still exposes their compiled effects",
+  "routeKind": "workspace-exec",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "receptor": "mondayid-process-computer",
+    "result": {
+      "ok": true,
+      "effect": "independently prove that historical MondayID project shells have zero open PR authority and production Everything Compiler still exposes their compiled effects",
+      "evidence": {
+        "mode": "bounded-process-workspace",
+        "execution": {
+          "status": "completed",
+          "command": "node",
+          "args": [
+            "--input-type=module",
+            "-e",
+            "import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});return {status:r.status,json:await r.json()};}\nconst compiled=await rpc(1,'tools/call',{name:'compile_history',arguments:{}});\nconst prsRes=await fetch('https://api.github.com/repos/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/pulls?state=open&per_page=100',{headers:{'user-agent':'mondayid-project-zero-proof'}});\nconst prs=await prsRes.json();\nconst v=compiled?.json?.result?.structuredContent;\nconst ok=compiled.status===200 && v?.ok===true && v?.compiled?.projectRuntimeAuthority===false && v?.compiled?.totalValid>=55 && Array.isArray(prs) && prs.length===0;\nconst proof={ok,marker:ok?'project-zero-live-ok':'project-zero-live-fail',totalValid:v?.compiled?.totalValid,uniqueEffects:v?.compiled?.uniqueEffects,compression:v?.compiled?.compression,openPullRequests:Array.isArray(prs)?prs.length:null,activeOrgans:v?.delta?.activeOrgans,activeRoles:v?.delta?.activeRoles,externalGates:v?.delta?.externalGates};\nawait fs.writeFile('project-zero-live.json',JSON.stringify(proof));console.log(JSON.stringify(proof));if(!ok) process.exitCode=2;"
+          ],
+          "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+          "exitCode": 0,
+          "signal": null,
+          "stdout": "{\"ok\":true,\"marker\":\"project-zero-live-ok\",\"totalValid\":56,\"uniqueEffects\":54,\"compression\":2.67,\"openPullRequests\":0,\"activeOrgans\":[\"visual_release_gate\",\"CONTINUITY_KERNEL\",\"MONDAY_WORK\",\"capability_foundry\",\"durable_task_objects\",\"resumable_workless_runtime\",\"everything_compiler\",\"lineage_runtime\",\"verification_gates\",\"failure_genome\",\"google_cortex\"],\"activeRoles\":[\"JARVIS\",\"ALISA\",\"ALPHA\",\"SYSTEM\",\"ANTISYSTEM\",\"CONNECTOR_CORPS\",\"SKILL_SMITH\",\"DIMA\"],\"externalGates\":[\"GEMINI_ACCOUNT_BINDING\",\"TRUSTED_WRITE_BINDING\"]}\n",
+          "stderr": "",
+          "durationMs": 553
+        },
+        "verificationRequest": {
+          "command": "python3",
+          "args": [
+            "-c",
+            "from pathlib import Path; print(Path('project-zero-live.json').read_text(), end='')"
+          ]
+        },
+        "acceptance": {
+          "stdoutIncludes": "project-zero-live-ok",
+          "stderrEmpty": true
+        },
+        "executionFingerprint": "ed4b0116fd4fe93c",
+        "verificationFingerprint": "54bdfee1a5950d05"
+      }
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "ed4b0116fd4fe93c",
+    "verificationFingerprint": "54bdfee1a5950d05",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "from pathlib import Path; print(Path('project-zero-live.json').read_text(), end='')"
+      ],
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "{\"ok\":true,\"marker\":\"project-zero-live-ok\",\"totalValid\":56,\"uniqueEffects\":54,\"compression\":2.67,\"openPullRequests\":0,\"activeOrgans\":[\"visual_release_gate\",\"CONTINUITY_KERNEL\",\"MONDAY_WORK\",\"capability_foundry\",\"durable_task_objects\",\"resumable_workless_runtime\",\"everything_compiler\",\"lineage_runtime\",\"verification_gates\",\"failure_genome\",\"google_cortex\"],\"activeRoles\":[\"JARVIS\",\"ALISA\",\"ALPHA\",\"SYSTEM\",\"ANTISYSTEM\",\"CONNECTOR_CORPS\",\"SKILL_SMITH\",\"DIMA\"],\"externalGates\":[\"GEMINI_ACCOUNT_BINDING\",\"TRUSTED_WRITE_BINDING\"]}",
+      "stderr": "",
+      "durationMs": 27
+    },
+    "receptor": "mondayid-process-computer",
+    "mux": "mondayid-computer-fabric"
+  },
+  "runner": {
+    "kind": "github-actions-bootstrap",
+    "ownedContract": "mondayid-computer-fabric",
+    "externalSubstrate": "github-actions",
+    "commit": "5836390113900cd0d6ce2fb9524b06d49c30dd7e",
+    "runId": "37222236857"
+  },
+  "at": "2026-10-04T17:53:35.979Z"
+}
