@@ -60,7 +60,8 @@
     "execute_reachable_route_graph_before_returning_intermediate_status",
     "cross_host_organs_publish_verified_deltas_not_persona_copies",
     "google_cortex_keeps_raw_personal_data_at_source_and_publishes_compact_provenance",
-    "owned_capability_fabric_precedes_platform_mode"
+    "owned_capability_fabric_precedes_platform_mode",
+    "sealed_generation_evolves_without_reopening_finished_architecture"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -540,5 +541,15 @@
       "recurrence_veto",
       "visual_release_gate"
     ]
+  },
+  "release_state": {
+    "schema": "mondayid.release-state.v1",
+    "generation": 5,
+    "status": "INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN",
+    "seal": "ops/final-seal-20261004.json",
+    "canonical_host": "https://mondayid-host.vercel.app",
+    "monday_work_mcp": "https://mondayid-host.vercel.app/api/mcp",
+    "chatgpt_private_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
+    "finish_law": "future work evolves the sealed organism; it must not restart the three-year architecture unless new evidence falsifies a seal invariant"
   }
 }
