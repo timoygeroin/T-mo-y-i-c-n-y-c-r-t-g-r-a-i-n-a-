@@ -6,7 +6,7 @@ import { PolicyField, defaultMetaInvariants } from './policy-field.mjs';
 import { evaluateCandidateOutput } from './attractor-field.mjs';
 import { ensureTasks, updateTasks } from './task-field.mjs';
 import { ActionLedger } from './action-ledger.mjs';
-import { sensePhysiology, regulatePhysiology } from './physiology-field.mjs';
+import { sensePhysiology, regulatePhysiology, allocateMetabolism } from './physiology-field.mjs';
 
 export class MondayRuntime {
   constructor({
@@ -15,7 +15,8 @@ export class MondayRuntime {
     foundry = null,
     policyField = null,
     actionLedger = null,
-    cellId = 'cell:runtime'
+    cellId = 'cell:runtime',
+    hostPool = []
   } = {}) {
     this.worldline = worldline;
     this.capabilities = capabilities;
@@ -23,6 +24,22 @@ export class MondayRuntime {
     this.policyField = policyField || new PolicyField({ metaInvariants:defaultMetaInvariants });
     this.actionLedger = actionLedger || new ActionLedger();
     this.cellId = cellId;
+    this.hostPool = Array.isArray(hostPool) ? [...hostPool] : [];
+  }
+
+  routeHost({ desiredEffect, task = {}, regulation = null, hosts = null } = {}) {
+    const observedRegulation = regulation || regulatePhysiology(sensePhysiology({
+      state:this.worldline.materialize(),
+      worldlineHeads:this.worldline.heads(),
+      actionLedger:this.actionLedger.snapshot(),
+      frontier:{ready:[],blocked:[],parallel:[]}
+    }));
+    return allocateMetabolism({
+      desiredEffect,
+      regulation:observedRegulation,
+      hosts:Array.isArray(hosts) ? hosts : this.hostPool,
+      task
+    });
   }
 
   mutatePolicy(mutation) {

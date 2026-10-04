@@ -58,3 +58,80 @@ export const defaultMetaInvariants = Object.freeze([
   'identity_requires_validated_lineage',
   'preventable_failure_must_become_detector'
 ]);
+
+
+const leasePayload = lease => JSON.stringify({
+  id:lease.id,
+  cellId:lease.cellId,
+  domain:lease.domain,
+  effect:lease.effect,
+  issuedAt:lease.issuedAt,
+  expiresAt:lease.expiresAt,
+  nonce:lease.nonce
+});
+
+export function createAuthorityMembrane({
+  rootKey,
+  now = () => Date.now(),
+  randomBytes = size => crypto.randomBytes(size)
+} = {}) {
+  if (!rootKey) throw new Error('AUTHORITY_ROOT_KEY_REQUIRED');
+  const consumed = new Set();
+
+  const sign = lease => crypto
+    .createHmac('sha256', String(rootKey))
+    .update(leasePayload(lease))
+    .digest('hex');
+
+  const validSignature = lease => {
+    if (!lease?.signature) return false;
+    const expected=Buffer.from(sign(lease),'hex');
+    const actual=Buffer.from(String(lease.signature),'hex');
+    return expected.length===actual.length && crypto.timingSafeEqual(expected,actual);
+  };
+
+  const authorize = ({ lease, cellId, domain, effect } = {}) => {
+    if (!lease || !validSignature(lease)) return {ok:false,code:'LEASE_INVALID'};
+    if (consumed.has(lease.id)) return {ok:false,code:'LEASE_ALREADY_CONSUMED'};
+    if (Number(now()) > Number(lease.expiresAt)) return {ok:false,code:'LEASE_EXPIRED'};
+    if (
+      String(cellId||'') !== lease.cellId ||
+      String(domain||'') !== lease.domain ||
+      String(effect||'') !== lease.effect
+    ) return {ok:false,code:'LEASE_SCOPE_MISMATCH'};
+    return {
+      ok:true,
+      leaseId:lease.id,
+      expiresAt:lease.expiresAt,
+      authority:'BOUNDED_EPHEMERAL_LEASE'
+    };
+  };
+
+  return Object.freeze({
+    schema:'mondayid.authority-membrane.v1',
+    issue({cellId,domain,effect,ttlMs=60_000} = {}) {
+      if (!cellId || !domain || !effect) return {ok:false,code:'LEASE_SCOPE_REQUIRED'};
+      const ttl=Math.max(1,Math.min(Number(ttlMs)||0,5*60_000));
+      const issuedAt=Number(now());
+      const nonce=randomBytes(16).toString('hex');
+      const unsigned={
+        id:`lease:${crypto.createHash('sha256').update([cellId,domain,effect,issuedAt,nonce].join('|')).digest('hex').slice(0,24)}`,
+        cellId:String(cellId),
+        domain:String(domain),
+        effect:String(effect),
+        issuedAt,
+        expiresAt:issuedAt+ttl,
+        nonce
+      };
+      const lease=Object.freeze({...unsigned,signature:sign(unsigned)});
+      return {ok:true,lease};
+    },
+    authorize,
+    consume(input={}) {
+      const auth=authorize(input);
+      if (!auth.ok) return auth;
+      consumed.add(input.lease.id);
+      return {...auth,consumed:true};
+    }
+  });
+}

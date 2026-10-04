@@ -84,7 +84,11 @@
     "state_before_response",
     "fresh_host_recovery_stays_backstage",
     "attached_image_is_not_render_authority",
-    "visual_success_is_provisional_until_critic_and_release_gate"
+    "visual_success_is_provisional_until_critic_and_release_gate",
+    "authority_is_leased_per_effect_not_inherited_by_host",
+    "host_failure_reroutes_effect_without_resetting_task_identity",
+    "quota_exhaustion_is_route_failure_not_task_failure",
+    "metabolism_allocates_compute_and_host_tissue_by_observed_need"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -145,6 +149,7 @@
     "observe",
     "interocept",
     "allostatic_regulate",
+    "metabolize_routes",
     "compile_semantic_frame",
     "compile_attractor",
     "compile_visual_contract_if_applicable",
@@ -510,7 +515,21 @@
       "host_A_recovers_returned_evidence",
       "both_hosts_converge_on_same_versioned_state",
       "concurrent_write_conflict_is_detected_not_overwritten"
-    ]
+    ],
+    "homeostasis": {
+      "schema": "mondayid.host-homeostasis.v1",
+      "provider_is_replaceable_tissue": true,
+      "preserve_task_identity_on_host_failure": true,
+      "reroute_on": [
+        "quota_exhausted",
+        "host_unhealthy",
+        "authority_unavailable",
+        "capability_missing",
+        "host_unavailable"
+      ],
+      "no_viable_host_state": "BLOCKED_PRESERVED",
+      "mutation_rule": "change_route_before_changing_goal"
+    }
   },
   "capability_fabric": {
     "schema": "mondayid.capability-fabric.v1",
@@ -578,7 +597,10 @@
       "organism_synapse",
       "reentry_response_law",
       "visual_forensic_critic",
-      "visual_surgical_repair"
+      "visual_surgical_repair",
+      "authority_membrane",
+      "metabolic_host_allocation",
+      "host_homeostasis"
     ]
   },
   "release_state": {
@@ -683,7 +705,39 @@
       "clean_capability_deficit_increases_exploration_instead_of_triggering_stabilization",
       "unknown_internal_signal_remains_unknown",
       "slow_global_regulation_modulates_fast_local_execution_without_owning_identity"
-    ]
+    ],
+    "metabolism": {
+      "schema": "mondayid.metabolism-contract.v1",
+      "identity_owner": false,
+      "role": "allocate compute and host tissue to desired effects under current organism state",
+      "host_selection": [
+        "capability",
+        "health",
+        "authority",
+        "quota",
+        "cost",
+        "latency",
+        "reliability"
+      ],
+      "inputs": [
+        "allostatic_regulation",
+        "desired_effect",
+        "task_identity",
+        "host_telemetry"
+      ],
+      "outputs": [
+        "selected_host",
+        "compute_tier",
+        "verification_strictness",
+        "rejected_routes"
+      ],
+      "laws": [
+        "quota_exhaustion_is_route_failure_not_task_failure",
+        "provider_failure_does_not_erase_desired_effect",
+        "healthy_authorized_viable_tissue_outranks_bound_provider_preference",
+        "compute_is_allocated_by_need_not_maximized_by_default"
+      ]
+    }
   },
   "visual_phenotype": {
     "schema": "mondayid.visual-phenotype-contract.v1",
@@ -913,6 +967,22 @@
       "avoid_future_promise_when_current_deliverable_is_possible",
       "repair_error_instead_of_apology_loop",
       "do_not_replace_behavior_change_with_documentation"
+    ]
+  },
+  "authority_membrane": {
+    "schema": "mondayid.authority-membrane-contract.v1",
+    "identity_owner": false,
+    "role": "bound authority transfer across cell and host boundaries",
+    "lease_scope": "cell + domain + exact_effect + expiry + one_shot",
+    "root_authority_inheritance": false,
+    "host_owns_authority": false,
+    "laws": [
+      "authority_is_leased_per_effect_not_inherited_by_host",
+      "lease_scope_mismatch_fails_closed",
+      "expired_lease_fails_closed",
+      "consumed_lease_cannot_replay",
+      "root_credential_never_enters_effect_payload",
+      "missing_authority_preserves_task_identity_instead_of_faking_capability"
     ]
   }
 }
