@@ -70,6 +70,8 @@ test('MCP capability_manifest exposes canonical release seal',async()=>{
   assert.equal(manifest.releaseState.status,'INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN');
   assert.equal(manifest.releaseState.seal,'ops/final-seal-20261004.json');
   assert.ok(manifest.metaInvariants.includes('platform_mode_is_not_capability_owner'));
+  assert.equal(manifest.physiology.schema,'mondayid.physiology-contract.v1');
+  assert.equal(manifest.physiology.identity_owner,false);
 });
 
 test('MCP compile_history collapses project shells into active capability state',async()=>{
