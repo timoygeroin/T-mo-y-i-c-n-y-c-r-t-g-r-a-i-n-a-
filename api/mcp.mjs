@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import { describeHost } from '../src/host-adapter.mjs';
 import { fetchWorldlineSnapshot } from '../src/remote-worldline.mjs';
+import { compileProjectLineage, projectToCapabilityDelta } from '../src/everything-compiler.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
+const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
 
-const serverInfo = Object.freeze({ name:'monday-work', version:'1.0.0' });
+const serverInfo = Object.freeze({ name:'monday-work', version:'1.1.0' });
 const protocolVersion = '2025-03-26';
 
 const tools = Object.freeze([
@@ -16,6 +18,11 @@ const tools = Object.freeze([
   {
     name:'capability_manifest',
     description:'Read the canonical Monday-owned capability and multi-host fabric contracts.',
+    inputSchema:{ type:'object', properties:{}, additionalProperties:false }
+  },
+  {
+    name:'compile_history',
+    description:'Compile historical MondayID project names into current reusable capabilities, roles, donors, failure genes, gates, and explicit unknowns. Project names retain no runtime authority.',
     inputSchema:{ type:'object', properties:{}, additionalProperties:false }
   },
   {
@@ -55,9 +62,17 @@ async function callTool(name, args = {}) {
       releaseState:system.release_state || null,
       metaInvariants:system.meta_invariants || [],
       currentPolicies:system.current_policies || [],
-      continuity:system.continuity || null
+      continuity:system.continuity || null,
+      everythingCompiler:system.everything_compiler || null
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
+  }
+
+  if (name === 'compile_history') {
+    const compiled=compileProjectLineage(projectRegistry.entries || []);
+    const delta=projectToCapabilityDelta(compiled);
+    const value={ok:delta.ok===true,compiled,delta};
+    return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
   }
 
   if (name === 'get_state') {
