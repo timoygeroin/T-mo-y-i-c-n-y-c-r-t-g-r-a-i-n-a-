@@ -77,6 +77,9 @@ test('MCP capability_manifest exposes canonical release seal',async()=>{
   assert.equal(manifest.reentryAndResponse.schema,'mondayid.reentry-response-law.v1');
   assert.equal(manifest.visualPhenotype.schema,'mondayid.visual-phenotype-contract.v1');
   assert.equal(manifest.visualPhenotype.route_governor.attached_image_alone_authorizes_render,false);
+  assert.equal(manifest.authorityMembrane.schema,'mondayid.authority-membrane-contract.v1');
+  assert.equal(manifest.metabolism.schema,'mondayid.metabolism-contract.v1');
+  assert.equal(manifest.hostHomeostasis.schema,'mondayid.host-homeostasis.v1');
 });
 
 test('MCP compile_history collapses project shells into active capability state',async()=>{
