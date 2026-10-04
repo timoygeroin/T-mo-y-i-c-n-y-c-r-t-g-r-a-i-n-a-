@@ -1,0 +1,16 @@
+{
+  "schema":"mondayid.computer-task.v1",
+  "id":"project-zero-live-20261004",
+  "effect":"independently prove that historical MondayID project shells have zero open PR authority and production Everything Compiler still exposes their compiled effects",
+  "domain":"host",
+  "executionRequest":{
+    "command":"node",
+    "args":["--input-type=module","-e","import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});return {status:r.status,json:await r.json()};}\nconst compiled=await rpc(1,'tools/call',{name:'compile_history',arguments:{}});\nconst prsRes=await fetch('https://api.github.com/repos/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/pulls?state=open&per_page=100',{headers:{'user-agent':'mondayid-project-zero-proof'}});\nconst prs=await prsRes.json();\nconst v=compiled?.json?.result?.structuredContent;\nconst ok=compiled.status===200 && v?.ok===true && v?.compiled?.projectRuntimeAuthority===false && v?.compiled?.totalValid>=55 && Array.isArray(prs) && prs.length===0;\nconst proof={ok,marker:ok?'project-zero-live-ok':'project-zero-live-fail',totalValid:v?.compiled?.totalValid,uniqueEffects:v?.compiled?.uniqueEffects,compression:v?.compiled?.compression,openPullRequests:Array.isArray(prs)?prs.length:null,activeOrgans:v?.delta?.activeOrgans,activeRoles:v?.delta?.activeRoles,externalGates:v?.delta?.externalGates};\nawait fs.writeFile('project-zero-live.json',JSON.stringify(proof));console.log(JSON.stringify(proof));if(!ok) process.exitCode=2;"],
+    "timeoutMs":30000
+  },
+  "verificationRequest":{
+    "command":"python3",
+    "args":["-c","from pathlib import Path; print(Path('project-zero-live.json').read_text(), end='')"]
+  },
+  "acceptance":{"stdoutIncludes":"project-zero-live-ok","stderrEmpty":true}
+}
