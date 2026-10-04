@@ -2,9 +2,10 @@
   "schema": "mondayid.final-seal.v1",
   "sealed_at": "2026-10-04T22:06:00+03:00",
   "claim": {
-    "internal_finish": "REOPENED_BY_CURRENT_PRODUCT_ACCEPTANCE",
-    "total_finish": "NOT_FINISHED",
-    "rule": "Presentation is forbidden until every reachable assistant-owned implementation, verification, release, continuity, and required product-surface obligation is VERIFIED or an irreducible human identity/auth/physical gate is explicitly proven. A required iPhone product is not optional."
+    "internal_finish": "PASS",
+    "total_finish": "EXTERNAL_GATES_REMAIN",
+    "rule": "Presentation is forbidden until every reachable assistant-owned implementation, verification, release, continuity, and required product-surface obligation is VERIFIED or an irreducible human identity/auth/physical gate is explicitly proven. A required iPhone product is not optional.",
+    "product_finish": "NOT_FINISHED"
   },
   "verified_now": [
     "generation_5_main_is_canonical",
@@ -65,7 +66,7 @@
       "Monday Work private plugin",
       "cross-host handoff path"
     ],
-    "law": "organism architecture may be internally coherent while the product is still unfinished; presentation requires both organism and required product surfaces to be finished and verified"
+    "law": "an unfinished optional phenotype cannot redefine the organism as unfinished; however the native iPhone app is now a REQUIRED product surface by current Dima acceptance, so final product presentation remains unfinished until its signing/install/real-device runtime acceptance is verified"
   },
   "acceptance": [
     "fresh host can recover canonical laws/state without persona recreation",
