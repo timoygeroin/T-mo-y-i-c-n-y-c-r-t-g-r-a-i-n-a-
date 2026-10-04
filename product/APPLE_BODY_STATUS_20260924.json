@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.apple-body.status.v1",
-  "date": "2026-09-24",
+  "date": "2026-10-04",
   "source_lineage": {
     "donor_pr": 39,
     "donor_branch": "monday/continuum-runtime-integration-20260914",
@@ -24,14 +24,23 @@
   },
   "current_evidence": [
     "consumer product constitution is canonical on main",
-    "Apple host and adapter source are now carried by the Generation-5 lineage",
-    "static product-body contract regressions run in the normal Node proof"
+    "Apple host and adapter source are carried by the Generation-5 lineage",
+    "static product-body contract regressions run in the normal Node proof",
+    "fresh Swift package tests PASS on current main via GitHub Actions run 37226757512",
+    "fresh MondayIDHost iPhone Simulator compile PASS on current main via GitHub Actions run 37226757512"
   ],
   "not_yet_claimed": [
-    "fresh Swift compile on current main",
     "code signing",
     "physical iPhone installation",
     "real-device runtime connection acceptance"
   ],
-  "release_state": "SOURCE_PORTED_BUILD_AND_DEVICE_UNVERIFIED"
+  "release_state": "SOURCE_PORTED_SIMULATOR_BUILD_VERIFIED_DEVICE_UNVERIFIED",
+  "latest_build_proof": {
+    "run_id": 37226757512,
+    "workflow": ".github/workflows/apple-build-proof.yml",
+    "head_sha": "52de581223b7ea0489052c1c8938514758255f65",
+    "swift_tests": "PASS",
+    "iphone_simulator_compile": "PASS",
+    "physical_device": "NOT_PROVEN"
+  }
 }
