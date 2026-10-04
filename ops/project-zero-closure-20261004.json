@@ -1,0 +1,73 @@
+{
+  "schema": "mondayid.project-zero-closure.v1",
+  "date": "2026-10-04",
+  "law": "open implementation branches may remain as provenance, but no historical project shell may retain organism-level runtime authority once its effect is compiled",
+  "closures": [
+    {
+      "pr": 39,
+      "name": "Continuum Product Convergence",
+      "disposition": "SUPERSEDED",
+      "compiledInto": "product_contract"
+    },
+    {
+      "pr": 37,
+      "name": "MondayVision",
+      "disposition": "ACTIVE_ORGAN",
+      "compiledInto": "visual_release_gate"
+    },
+    {
+      "pr": 30,
+      "name": "Post-LLM Foundation",
+      "disposition": "DONOR_PROVENANCE",
+      "compiledInto": "model_as_replaceable_substrate"
+    },
+    {
+      "pr": 32,
+      "name": "Workless Runtime v2",
+      "disposition": "ACTIVE_ORGAN",
+      "compiledInto": "resumable_workless_runtime"
+    },
+    {
+      "pr": 27,
+      "name": "Genome Expression Runtime v1",
+      "disposition": "SUPERSEDED",
+      "compiledInto": "lineage_runtime"
+    },
+    {
+      "pr": 28,
+      "name": "Grok Organism Phenotype v4",
+      "disposition": "DONOR_PROVENANCE",
+      "compiledInto": "multi_host_fabric"
+    },
+    {
+      "pr": 26,
+      "name": "Visual Actuator Gate v1",
+      "disposition": "SUPERSEDED",
+      "compiledInto": "visual_release_gate"
+    },
+    {
+      "pr": 24,
+      "name": "Organism Physics v1",
+      "disposition": "SUPERSEDED",
+      "compiledInto": "recursive_cell"
+    },
+    {
+      "pr": 16,
+      "name": "Self-Compiling Cognitive Runtime Boundary",
+      "disposition": "SUPERSEDED",
+      "compiledInto": "everything_compiler"
+    },
+    {
+      "pr": 9,
+      "name": "Full Corpus and Connector Audit",
+      "disposition": "SUPERSEDED",
+      "compiledInto": "genealogy_and_capability_discovery"
+    }
+  ],
+  "preservation": "branches remain addressable provenance/donor evidence; closing a PR does not delete its code or history",
+  "acceptance": {
+    "activeProjectCountAfterClosure": 0,
+    "noWholesaleMergeRequired": true,
+    "projectNamesRetainRuntimeAuthority": false
+  }
+}
