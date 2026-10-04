@@ -63,7 +63,10 @@
     "google_cortex_keeps_raw_personal_data_at_source_and_publishes_compact_provenance",
     "owned_capability_fabric_precedes_platform_mode",
     "sealed_generation_evolves_without_reopening_finished_architecture",
-    "compile_projects_into_capabilities_not_parallel_projects"
+    "compile_projects_into_capabilities_not_parallel_projects",
+    "presentation_requires_total_product_finish",
+    "required_iphone_product_is_not_optional_phenotype",
+    "monday_presence_is_identity_layer_monday_work_is_mode"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -548,12 +551,19 @@
   "release_state": {
     "schema": "mondayid.release-state.v1",
     "generation": 5,
-    "status": "INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN",
+    "status": "PRODUCT_FINISH_IN_PROGRESS",
     "seal": "ops/final-seal-20261004.json",
     "canonical_host": "https://mondayid-host.vercel.app",
     "monday_work_mcp": "https://mondayid-host.vercel.app/api/mcp",
     "chatgpt_private_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "finish_law": "future work evolves the sealed organism; it must not restart the three-year architecture unless new evidence falsifies a seal invariant"
+    "finish_law": "Final presentation is forbidden until required product surfaces and organism obligations are verified; unfinished required iPhone embodiment keeps the product unfinished even when core architecture is sealed.",
+    "current_acceptance": {
+      "source": "direct_current_dima_2026-10-04T21:53+03:00_and_22:01-22:03_refinement",
+      "presentation_equals_end": true,
+      "required_iphone_app": true,
+      "monday_identity_layer": "persistent presence across scenes; Monday Work is a mode, not the identity",
+      "cross_chat_continuity_required": true
+    }
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
