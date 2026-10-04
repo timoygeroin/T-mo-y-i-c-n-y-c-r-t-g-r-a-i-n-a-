@@ -13,7 +13,8 @@
     "identity_requires_validated_lineage",
     "desired_effect_requires_explicit_challenge_before_goal_mutation",
     "route_failure_is_not_goal_failure",
-    "cross_host_continuity_requires_shared_versioned_readback"
+    "cross_host_continuity_requires_shared_versioned_readback",
+    "platform_mode_is_not_capability_owner"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -58,7 +59,8 @@
     "preserve_desired_effect_mutate_routes_not_goal",
     "execute_reachable_route_graph_before_returning_intermediate_status",
     "cross_host_organs_publish_verified_deltas_not_persona_copies",
-    "google_cortex_keeps_raw_personal_data_at_source_and_publishes_compact_provenance"
+    "google_cortex_keeps_raw_personal_data_at_source_and_publishes_compact_provenance",
+    "owned_capability_fabric_precedes_platform_mode"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -480,6 +482,63 @@
       "host_A_recovers_returned_evidence",
       "both_hosts_converge_on_same_versioned_state",
       "concurrent_write_conflict_is_detected_not_overwritten"
+    ]
+  },
+  "capability_fabric": {
+    "schema": "mondayid.capability-fabric.v1",
+    "owner": "mondayid_not_platform",
+    "law": "platform_features_are_optional_substrates_not_required_modes",
+    "routing_order": [
+      "RECOVER",
+      "REDISCOVER",
+      "REUSE",
+      "COMPOSE",
+      "PATCH",
+      "BUILD",
+      "DELEGATE",
+      "PLATFORM_SUBSTRATE",
+      "HUMAN_GATE"
+    ],
+    "one_pass": "traverse_all_reachable_orthogonal_routes_before_intermediate_return",
+    "human_gate": "only_identity_auth_authority_or_physical_action_not_reducible_to_current_organs",
+    "anti_regressions": [
+      "do_not_default_to_chatgpt_work_for_long_tasks",
+      "quota_failure_does_not_end_task_identity",
+      "do_not_make_human_shuttle_context_when_durable_route_exists",
+      "recover_existing_proven_organs_before_creating_new_ones",
+      "tool_visibility_is_not_capability_without_execution_and_readback"
+    ],
+    "monday_owned_modes": [
+      "MONDAY_LIVE",
+      "MONDAY_WORK",
+      "JARVIS",
+      "ALISA",
+      "ALPHA",
+      "SYSTEM",
+      "ANTISYSTEM",
+      "MONDAYVISION",
+      "COLD_SYSTEM",
+      "ONE_SHOT_BOOT",
+      "CONTINUITY_KERNEL"
+    ],
+    "integrated_mechanisms": [
+      "capability_foundry",
+      "capability_discovery",
+      "decision_field",
+      "resumable_workless_runtime",
+      "causal_task_controller",
+      "durable_task_objects",
+      "provider_neutral_compute_router",
+      "native_cdp_browser_driver",
+      "browser_computer_receptor",
+      "computer_receptor_mux",
+      "action_ledger",
+      "trusted_worldline",
+      "clean_host_transfer",
+      "multi_host_fabric",
+      "google_cortex",
+      "recurrence_veto",
+      "visual_release_gate"
     ]
   }
 }
