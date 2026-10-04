@@ -66,7 +66,8 @@
     "compile_projects_into_capabilities_not_parallel_projects",
     "presentation_requires_total_product_finish",
     "required_iphone_product_is_not_optional_phenotype",
-    "monday_presence_is_identity_layer_monday_work_is_mode"
+    "monday_presence_is_identity_layer_monday_work_is_mode",
+    "internal_state_modulates_routes_before_failure"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -125,6 +126,8 @@
   "runtime_cycle": [
     "recover",
     "observe",
+    "interocept",
+    "allostatic_regulate",
     "compile_semantic_frame",
     "compile_attractor",
     "plan",
@@ -545,7 +548,9 @@
       "google_cortex",
       "recurrence_veto",
       "visual_release_gate",
-      "everything_compiler"
+      "everything_compiler",
+      "physiology_field",
+      "allostatic_regulation"
     ]
   },
   "release_state": {
@@ -605,5 +610,51 @@
     "registry": "ops/project-subsumption-registry-20261004.json",
     "implementation": "src/everything-compiler.mjs",
     "principle": "every historical conversation or project should contribute a reusable effect, evidence, failure gene, preference, provenance edge, or explicit unknown; names do not survive as parallel runtime projects"
+  },
+  "physiology": {
+    "schema": "mondayid.physiology-contract.v1",
+    "identity_owner": false,
+    "role": "internal-state sensing and predictive regulation across the whole organism",
+    "control_law": "interoception -> allostatic regulation -> route modulation",
+    "observed_signals": [
+      "active_intents",
+      "active_tasks",
+      "task_blockers",
+      "failures",
+      "verified_receipts",
+      "ambiguous_actions",
+      "executing_actions",
+      "unsettled_actions",
+      "branch_divergence",
+      "capability_deficit"
+    ],
+    "regulatory_modes": [
+      "BASELINE",
+      "EXPLORE",
+      "RECOVER",
+      "STABILIZE"
+    ],
+    "effectors": [
+      "compute_floor",
+      "exploration_bias",
+      "verification_strictness",
+      "reconcile_first",
+      "freeze_expansion"
+    ],
+    "unknown_telemetry": [
+      "context_pressure_without_host_telemetry",
+      "energy_or_compute_reserve_without_host_telemetry"
+    ],
+    "forbidden_inferences": [
+      "invent_energy_without_telemetry",
+      "invent_context_pressure_without_telemetry",
+      "treat_regulation_as_persona_or_identity"
+    ],
+    "laws": [
+      "divergence_or_ambiguous_effect_stabilizes_before_capability_expansion",
+      "clean_capability_deficit_increases_exploration_instead_of_triggering_stabilization",
+      "unknown_internal_signal_remains_unknown",
+      "slow_global_regulation_modulates_fast_local_execution_without_owning_identity"
+    ]
   }
 }
