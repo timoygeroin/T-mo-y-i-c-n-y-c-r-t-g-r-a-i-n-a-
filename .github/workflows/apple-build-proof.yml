@@ -2,6 +2,17 @@ name: MondayID Apple build proof
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "platform/apple-host/**"
+      - "platform/apple-adapter/**"
+      - ".github/workflows/apple-build-proof.yml"
+  pull_request:
+    paths:
+      - "platform/apple-host/**"
+      - "platform/apple-adapter/**"
+      - ".github/workflows/apple-build-proof.yml"
 
 permissions:
   contents: read
