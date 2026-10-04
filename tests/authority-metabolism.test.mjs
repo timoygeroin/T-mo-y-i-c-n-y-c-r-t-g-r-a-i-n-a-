@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as physiology from '../src/physiology-field.mjs';
 import * as policy from '../src/policy-field.mjs';
+import { MondayRuntime } from '../src/runtime.mjs';
 
 test('authority membrane issues a short-lived action-bound lease without exposing the root key', () => {
   assert.equal(typeof policy.createAuthorityMembrane,'function');
@@ -132,4 +133,23 @@ test('host homeostasis returns a precise preserved blocker when every host is un
   assert.equal(out.taskId,'task:write');
   assert.equal(out.preserveTaskIdentity,true);
   assert.deepEqual(out.rejected.map(x=>x.reason).sort(),['AUTHORITY_UNAVAILABLE','HOST_UNHEALTHY']);
+});
+
+
+test('runtime exposes metabolic host routing instead of binding task identity to one provider', () => {
+  const runtime=new MondayRuntime({
+    hostPool:[
+      {id:'vercel',capabilities:['deploy'],health:'HEALTHY',available:true,quotaRemaining:0,auth:'AVAILABLE',cost:1,latency:1,reliability:0.99},
+      {id:'replit',capabilities:['deploy'],health:'HEALTHY',available:true,quotaRemaining:3,auth:'AVAILABLE',cost:2,latency:2,reliability:0.95}
+    ]
+  });
+  assert.equal(typeof runtime.routeHost,'function');
+  const routed=runtime.routeHost({
+    desiredEffect:'deploy',
+    task:{id:'task:runtime-route'},
+    regulation:{mode:'EXPLORE',computeFloor:'HIGH',verificationStrictness:'NORMAL'}
+  });
+  assert.equal(routed.selectedHost,'replit');
+  assert.equal(routed.taskId,'task:runtime-route');
+  assert.equal(routed.preserveTaskIdentity,true);
 });
