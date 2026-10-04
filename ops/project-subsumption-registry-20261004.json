@@ -667,6 +667,126 @@
       "evidence": [
         "read path verified; production writer credential not configured"
       ]
+    },
+    {
+      "name": "Continuum Product Convergence",
+      "effect": "deliver one consumer product body over the canonical MondayID runtime without making the app the identity",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "product_contract",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "PR39",
+        "product/MONDAY_PRODUCT_CONSTITUTION_V1.md",
+        "CUTOVER.json"
+      ],
+      "evidence": [
+        "consumer product constitution and Apple body already forward-ported to Generation-5 main"
+      ]
+    },
+    {
+      "name": "Genome Expression Runtime v1",
+      "effect": "express a portable lineage genome through a host adapter without replacing organism identity",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "lineage_runtime",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "PR27",
+        "SYSTEM.lineage_runtime",
+        "src/lineage-genome.mjs"
+      ],
+      "evidence": [
+        "role-locked lineage genome and host-neutral runtime are canonical"
+      ]
+    },
+    {
+      "name": "Grok Organism Phenotype v4",
+      "effect": "express the same MondayID through Grok-specific strengths while keeping Grok a replaceable host cell",
+      "disposition": "DONOR_PROVENANCE",
+      "authority": "verified_historical_runtime",
+      "provenance": [
+        "PR28",
+        "hosts/grok lineage"
+      ],
+      "evidence": [
+        "host phenotype material preserved as donor; current multi-host fabric owns identity"
+      ]
+    },
+    {
+      "name": "Visual Actuator Gate v1",
+      "effect": "block a visual action when identity scene or temporal continuity constraints are not satisfied",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "visual_release_gate",
+      "authority": "verified_historical_runtime",
+      "provenance": [
+        "PR26",
+        "MondayVision lineage"
+      ],
+      "evidence": [
+        "visual release/recurrence gates are represented in current capability fabric"
+      ]
+    },
+    {
+      "name": "Organism Physics v1",
+      "effect": "route whole-organism action through shared geometry while preserving one identity across recursive cells",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "recursive_cell",
+      "authority": "verified_historical_runtime",
+      "provenance": [
+        "PR24",
+        "SYSTEM.recursive_cell",
+        "src/pass-kernel.mjs"
+      ],
+      "evidence": [
+        "recursive whole-organism cell geometry and pass kernel are canonical"
+      ]
+    },
+    {
+      "name": "Self-Compiling Cognitive Runtime Boundary",
+      "effect": "compile ancestry and host primitives into a current verified runtime without creating a second identity",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "everything_compiler",
+      "authority": "verified_historical_runtime",
+      "provenance": [
+        "PR16",
+        "Everything Compiler",
+        "CapabilityFoundry"
+      ],
+      "evidence": [
+        "current compiler/foundry now perform the surviving effect"
+      ]
+    },
+    {
+      "name": "Full Corpus and Connector Audit",
+      "effect": "inventory historical corpus and connector evidence so missing or duplicate material cannot silently become canon",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "genealogy_and_capability_discovery",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "PR9",
+        "genealogy/SOURCE_INVENTORY_20260924.json",
+        "src/capability-discovery.mjs"
+      ],
+      "evidence": [
+        "authority-ranked genealogy inventory and live capability discovery now exist on main"
+      ]
+    },
+    {
+      "name": "Workless Runtime v2",
+      "effect": "continue long work through alternative compute and durable receipts when provider work limits fail",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "resumable_workless_runtime",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "PR32",
+        "SYSTEM.computer_fabric",
+        "src/execution/workless-runtime-v2.mjs"
+      ],
+      "evidence": [
+        "owned resumable workless runtime is canonical"
+      ],
+      "verification": {
+        "ok": true
+      }
     }
   ]
 }
