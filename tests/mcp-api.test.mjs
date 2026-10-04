@@ -53,3 +53,15 @@ test('MCP GET provides transport discovery without claiming external verificatio
   assert.equal(res.body.transport,'streamable-http');
   assert.ok(res.body.tools.includes('get_state'));
 });
+
+
+test('MCP capability_manifest exposes canonical release seal',async()=>{
+  const req={method:'POST',body:{jsonrpc:'2.0',id:4,method:'tools/call',params:{name:'capability_manifest',arguments:{}}}};
+  const res=response();
+  await mcpHandler(req,res);
+  assert.equal(res.statusCode,200);
+  const manifest=res.body.result.structuredContent;
+  assert.equal(manifest.releaseState.status,'INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN');
+  assert.equal(manifest.releaseState.seal,'ops/final-seal-20261004.json');
+  assert.ok(manifest.metaInvariants.includes('platform_mode_is_not_capability_owner'));
+});
