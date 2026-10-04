@@ -40,3 +40,15 @@ test('compiled output can be promoted as a capability delta without reifying pro
   assert.ok(delta.activeRoles.includes('ANTISYSTEM'));
   assert.ok(delta.donorEffects.length>0);
 });
+
+
+test('project-zero closure maps every formerly open project shell into a non-project disposition',async()=>{
+  const closure=JSON.parse(await readFile(new URL('../ops/project-zero-closure-20261004.json',import.meta.url),'utf8'));
+  const names=new Set(registry.entries.map(x=>x.name));
+  assert.equal(closure.acceptance.activeProjectCountAfterClosure,0);
+  assert.equal(closure.acceptance.projectNamesRetainRuntimeAuthority,false);
+  for(const item of closure.closures){
+    assert.ok(names.has(item.name),`missing subsumption record for ${item.name}`);
+    assert.notEqual(item.disposition,'ACTIVE_PROJECT');
+  }
+});
