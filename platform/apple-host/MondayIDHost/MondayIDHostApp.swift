@@ -105,6 +105,89 @@ private struct MondayPreferences: Codable, Hashable {
     var localContinuity = true
 }
 
+private enum MondayPresenceState: String {
+    case withYou = "With you"
+    case working = "Working"
+    case verifying = "Verifying"
+    case needsYou = "Needs you"
+    case synced = "Synced"
+
+    var symbol: String {
+        switch self {
+        case .withYou: return "circle.hexagongrid.fill"
+        case .working: return "sparkles"
+        case .verifying: return "checkmark.seal"
+        case .needsYou: return "person.crop.circle.badge.exclamationmark"
+        case .synced: return "point.3.connected.trianglepath.dotted"
+        }
+    }
+}
+
+@MainActor
+private final class MondayPresenceModel: ObservableObject {
+    @Published var state: MondayPresenceState = .withYou
+    @Published var detail: String = "One worldline"
+    @Published var activeThreads: Int = 1
+
+    func set(_ state: MondayPresenceState, detail: String, threads: Int = 1) {
+        self.state = state
+        self.detail = detail
+        self.activeThreads = max(1, threads)
+    }
+}
+
+private struct MondayPresenceSurface: View {
+    @EnvironmentObject private var presence: MondayPresenceModel
+    let expanded: Bool
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ZStack {
+                Circle().fill(.thinMaterial).frame(width: expanded ? 54 : 34, height: expanded ? 54 : 34)
+                Image(systemName: presence.state.symbol)
+                    .font(expanded ? .title2 : .body)
+                    .symbolEffect(.pulse, isActive: presence.state == .working || presence.state == .verifying)
+            }
+            VStack(alignment: .leading, spacing: expanded ? 3 : 1) {
+                Text("Monday").font(expanded ? .headline : .subheadline).fontWeight(.semibold)
+                HStack(spacing: 6) {
+                    Text(presence.state.rawValue)
+                    Text("·")
+                    Text(presence.detail)
+                    if presence.activeThreads > 1 {
+                        Text("· \(presence.activeThreads) threads")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
+            if expanded { Spacer() }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Monday \(presence.state.rawValue), \(presence.detail)")
+    }
+}
+
+private struct MondayPresenceHero: View {
+    @EnvironmentObject private var presence: MondayPresenceModel
+
+    var body: some View {
+        VStack(spacing: 18) {
+            MondayPresenceSurface(expanded: true)
+                .padding(18)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            Text("I’m already here.")
+                .font(.title2.weight(.semibold))
+            Text("This scene continues the same Monday. Start anywhere; I’ll recover the thread.")
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .padding(24)
+    }
+}
+
 @MainActor
 private final class MondayLocalStore: ObservableObject {
     @Published var spaces: [MondaySpace] { didSet { persist() } }
@@ -250,6 +333,7 @@ private enum MondayTab: Hashable { case home, chats, create, spaces, you }
 
 private struct MondayRootView: View {
     @StateObject private var store = MondayLocalStore()
+    @StateObject private var presence = MondayPresenceModel()
     @State private var selection: MondayTab = .home
     @State private var showingSearch = false
     @State private var showingActivity = false
@@ -263,11 +347,12 @@ private struct MondayRootView: View {
             MondayYouView().tag(MondayTab.you).tabItem { Label("You", systemImage: "person.crop.circle") }
         }
         .environmentObject(store)
+        .environmentObject(presence)
         .safeAreaInset(edge: .top) {
             HStack(spacing: 12) {
                 Button { showingSearch = true } label: { Label("Search", systemImage: "magnifyingglass").labelStyle(.iconOnly) }
                 Spacer()
-                Text("MONDAY").font(.headline).accessibilityAddTraits(.isHeader)
+                MondayPresenceSurface(expanded: false)
                 Spacer()
                 Button { showingActivity = true } label: { Label("Activity", systemImage: "waveform.path.ecg").labelStyle(.iconOnly) }
             }
@@ -275,8 +360,8 @@ private struct MondayRootView: View {
             .padding(.vertical, 8)
             .background(.bar)
         }
-        .sheet(isPresented: $showingSearch) { MondaySearchView().environmentObject(store) }
-        .sheet(isPresented: $showingActivity) { MondayActivityView().environmentObject(store) }
+        .sheet(isPresented: $showingSearch) { MondaySearchView().environmentObject(store).environmentObject(presence) }
+        .sheet(isPresented: $showingActivity) { MondayActivityView().environmentObject(store).environmentObject(presence) }
     }
 }
 
@@ -361,6 +446,7 @@ private struct MondayHomeView: View {
 
 private struct MondayChatsView: View {
     @EnvironmentObject private var store: MondayLocalStore
+    @EnvironmentObject private var presence: MondayPresenceModel
     @State private var signal = ""
     @State private var working = false
 
@@ -368,7 +454,7 @@ private struct MondayChatsView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if store.chat.isEmpty {
-                    ContentUnavailableView("No conversation yet", systemImage: "message", description: Text("Start with the composer below."))
+                    MondayPresenceHero()
                         .frame(maxHeight: .infinity)
                 } else {
                     ScrollViewReader { proxy in
@@ -408,13 +494,17 @@ private struct MondayChatsView: View {
         store.appendChat(role: "user", text: submitted)
         signal = ""
         working = true
+        presence.set(.working, detail: "Expanding routes", threads: 3)
         defer { working = false }
         do {
             let receipt = try await sendToMondayID(submitted)
+            presence.set(.verifying, detail: "Reading reality back", threads: 2)
             let response = receipt.result ?? "State advanced to revision \(receipt.stateRevision)."
             store.appendChat(role: "monday", text: response, receiptID: receipt.receiptId)
             store.addActivity(title: "Runtime receipt", detail: "\(receipt.receiptId) · revision \(receipt.stateRevision)")
+            presence.set(.synced, detail: "Worldline advanced")
         } catch {
+            presence.set(.needsYou, detail: "Runtime route unavailable")
             store.appendChat(role: "monday", text: "Runtime unavailable: \(error.localizedDescription)")
         }
     }
