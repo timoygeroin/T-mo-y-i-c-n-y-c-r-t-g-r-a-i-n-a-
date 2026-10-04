@@ -1,0 +1,26 @@
+{
+  "schema": "mondayid.computer-task.v1",
+  "id": "monday-work-mcp-live-20261004",
+  "effect": "prove the canonical production Monday Work MCP endpoint completes initialize, tools/list, and tools/call from an independent fresh computer substrate",
+  "domain": "host",
+  "executionRequest": {
+    "command": "node",
+    "args": [
+      "--input-type=module",
+      "-e",
+      "import fs from 'node:fs/promises';\nconst endpoint='https://mondayid-host.vercel.app/api/mcp';\nasync function rpc(id,method,params={}){\n  const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','accept':'application/json','MCP-Protocol-Version':'2025-03-26'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});\n  const text=await r.text();\n  let json; try{json=JSON.parse(text)}catch{json={parseError:true,text}}\n  return {status:r.status,contentType:r.headers.get('content-type'),json};\n}\nconst init=await rpc(1,'initialize',{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'mondayid-computer-proof',version:'1.0.0'}});\nconst list=await rpc(2,'tools/list',{});\nconst health=await rpc(3,'tools/call',{name:'health',arguments:{}});\nconst names=list?.json?.result?.tools?.map(x=>x.name)||[];\nconst ok=init.status===200 && init?.json?.result?.serverInfo?.name==='monday-work' && names.includes('health') && names.includes('capability_manifest') && names.includes('get_state') && health.status===200 && health?.json?.result?.structuredContent?.generation===5;\nconst proof={ok,marker:ok?'monday-work-mcp-live-ok':'monday-work-mcp-live-fail',endpoint,init,list,health};\nawait fs.writeFile('monday-work-mcp-live.json',JSON.stringify(proof));\nconsole.log(JSON.stringify(proof));\nif(!ok) process.exitCode=2;"
+    ],
+    "timeoutMs": 30000
+  },
+  "verificationRequest": {
+    "command": "python3",
+    "args": [
+      "-c",
+      "from pathlib import Path; print(Path('monday-work-mcp-live.json').read_text(), end='')"
+    ]
+  },
+  "acceptance": {
+    "stdoutIncludes": "monday-work-mcp-live-ok",
+    "stderrEmpty": true
+  }
+}
