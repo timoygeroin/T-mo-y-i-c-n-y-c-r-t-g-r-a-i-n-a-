@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.finalization-state.v1",
   "date": "2026-09-24",
-  "status": "ACTIVE_NOT_COMPLETE",
+  "status": "SUPERSEDED_BY_FINAL_SEAL_20261004",
   "canonical_branch": "main",
   "completed": [
     "generation_5_code_cutover",
@@ -96,5 +96,7 @@
     "vercel_production_deploy_credential_or_explicit_authenticated_deploy_path",
     "explicit_api_spend_authorization_before_live_paid_inference",
     "apple_physical_device_signing_or_distribution_approval"
-  ]
+  ],
+  "superseded_by": "ops/final-seal-20261004.json",
+  "supersession_reason": "The 2026-09-24 finish line was written before verified production MCP, host-neutral capability fabric, Google Cortex, and the private ChatGPT Monday Work plugin. Remaining items are reclassified by the final seal into verified core, nonblocking forensic backlog, optional phenotypes, or explicit external gates."
 }
