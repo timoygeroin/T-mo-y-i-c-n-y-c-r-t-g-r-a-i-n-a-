@@ -10,7 +10,10 @@
     "identity_requires_provenance",
     "preventable_failure_must_become_detector",
     "generic_prior_must_not_bypass_monday_attractor",
-    "identity_requires_validated_lineage"
+    "identity_requires_validated_lineage",
+    "desired_effect_requires_explicit_challenge_before_goal_mutation",
+    "route_failure_is_not_goal_failure",
+    "cross_host_continuity_requires_shared_versioned_readback"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -51,7 +54,11 @@
     "cell_owns_worldline_pointer_not_global_worldline",
     "stale_cells_reconcile_instead_of_overwriting_canonical_state",
     "ambiguous_external_effect_must_not_blind_retry",
-    "architectural_mutation_requires_root_continuity_proof"
+    "architectural_mutation_requires_root_continuity_proof",
+    "preserve_desired_effect_mutate_routes_not_goal",
+    "execute_reachable_route_graph_before_returning_intermediate_status",
+    "cross_host_organs_publish_verified_deltas_not_persona_copies",
+    "google_cortex_keeps_raw_personal_data_at_source_and_publishes_compact_provenance"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -139,7 +146,8 @@
       "UNRESOLVED_ERROR"
     ],
     "intermediate_user_gate": false,
-    "receptor_failure": "continue_orthogonal_work_until_stable_blocker"
+    "receptor_failure": "continue_orthogonal_work_until_stable_blocker",
+    "route_graph_rule": "one user turn may traverse multiple orthogonal routes; return only after success, stable blocker, budget exhaustion, or unresolved error"
   },
   "continuity": {
     "external_snapshot_schema": "mondayid.worldline.snapshot.v0.4.0",
@@ -395,5 +403,83 @@
     "concurrency": "reservation + lease + fencing token",
     "law": "attempted is not verified; ambiguous external effects are reconciled/read back before any retry",
     "target_semantics": "effectively-once unless the external substrate provides stronger idempotency guarantees"
+  },
+  "multi_host_fabric": {
+    "schema": "mondayid.multi-host-fabric.v1",
+    "organism": "host_independent",
+    "identity_rule": "host_model_tool_or_app_is_execution_substrate_not_organism",
+    "shared_state": {
+      "canonical": "versioned C*",
+      "required_fields": [
+        "capabilities",
+        "commitments",
+        "durable_context",
+        "active_worldline",
+        "provenance",
+        "regression_anchors"
+      ],
+      "conflict_law": "stale_hosts_reconcile_instead_of_overwriting"
+    },
+    "direct_bridge": {
+      "preferred_transport": "remote_streamable_http_mcp",
+      "required_tools": [
+        "get_state",
+        "search_state",
+        "propose_delta",
+        "commit_verified_delta",
+        "append_event",
+        "put_receipt",
+        "read_receipts",
+        "register_host_capabilities",
+        "read_host_capabilities",
+        "mailbox_send",
+        "mailbox_list",
+        "mailbox_ack",
+        "health"
+      ],
+      "authentication": "bearer",
+      "concurrency": "optimistic_expected_version",
+      "release_gate": "initialize_list_tools_call_tool_readback_required"
+    },
+    "google_cortex": {
+      "role": "autobiographical_and_action_organ_not_identity_owner",
+      "organs": [
+        "gmail",
+        "drive",
+        "docs",
+        "sheets",
+        "slides",
+        "calendar",
+        "contacts",
+        "search_services",
+        "maps",
+        "youtube_history",
+        "google_photos",
+        "gemini_memory",
+        "personal_intelligence",
+        "spark",
+        "connected_apps"
+      ],
+      "storage_law": "raw_personal_data_remains_at_source_when_possible",
+      "publication": "compact_fact_plus_time_plus_provenance_plus_confidence_plus_relationships_plus_status",
+      "receipts": "MONDAYID_GEMINI_RECEIPTS",
+      "recovery_checkpoint": "MONDAYID_CANONICAL_CSTAR",
+      "operating_protocol": "MONDAYID_GOOGLE_CORTEX"
+    },
+    "regional_fallback": {
+      "transport": "google_drive_plus_gmail_handoff",
+      "outbound_subject_prefix": "[MONDAYID->GEMINI]",
+      "inbound_subject_prefix": "[MONDAYID<-GEMINI]",
+      "loop_veto": "inbound_messages_must_not_retrigger_outbound_monitor"
+    },
+    "acceptance": [
+      "host_A_publishes_handoff_or_verified_delta",
+      "host_B_recovers_without_user_copy_paste",
+      "host_B_uses_a_capability_owned_by_host_B",
+      "host_B_returns_evidence",
+      "host_A_recovers_returned_evidence",
+      "both_hosts_converge_on_same_versioned_state",
+      "concurrent_write_conflict_is_detected_not_overwritten"
+    ]
   }
 }
