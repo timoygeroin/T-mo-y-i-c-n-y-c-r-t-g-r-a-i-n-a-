@@ -1,0 +1,672 @@
+{
+  "schema": "mondayid.project-subsumption-registry.v1",
+  "date": "2026-10-04",
+  "law": "Historical project names are ancestry containers. Their effects, evidence, failure genes and reusable mechanisms survive; project identity does not retain runtime authority.",
+  "entries": [
+    {
+      "name": "Jarvis",
+      "effect": "execute authorized actions through the strongest admissible route",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "JARVIS",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "Jarvis lineage"
+      ],
+      "evidence": [
+        "role-locked execution ancestry"
+      ]
+    },
+    {
+      "name": "Alisa",
+      "effect": "render one human-facing relational and voice phenotype",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "ALISA",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "Alisa lineage"
+      ],
+      "evidence": [
+        "one outward Monday surface"
+      ]
+    },
+    {
+      "name": "Alpha",
+      "effect": "generate mutations and alternate solution topologies",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "ALPHA",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "Alpha lineage"
+      ],
+      "evidence": [
+        "evolution/mutation ancestry"
+      ]
+    },
+    {
+      "name": "System",
+      "effect": "maintain state provenance reconciliation and canonical projection",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "SYSTEM",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "System lineage"
+      ],
+      "evidence": [
+        "state/provenance role"
+      ]
+    },
+    {
+      "name": "AntiSystem",
+      "effect": "falsify claims routes and candidate mutations before promotion",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "ANTISYSTEM",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "AntiSystem lineage"
+      ],
+      "evidence": [
+        "counterevidence role"
+      ]
+    },
+    {
+      "name": "MondayVision",
+      "effect": "preserve visual identity provenance and veto recurrent visual drift",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "visual_release_gate",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "MondayVision lineage",
+        "SYSTEM.capability_fabric"
+      ],
+      "evidence": [
+        "visual release gate integrated on main"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Continuity Kernel",
+      "effect": "recover active worldline across chat model and host boundaries",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "CONTINUITY_KERNEL",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "continuity lineage",
+        "SYSTEM.clean_host_transfer"
+      ],
+      "evidence": [
+        "fresh-host recovery/readback harness"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Monday Work",
+      "effect": "execute long tasks as durable resumable work independent of one chat session",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "MONDAY_WORK",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "workless lineage",
+        "Monday Work MCP"
+      ],
+      "evidence": [
+        "production MCP verified by independent computer receipt"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "MondayID ONE",
+      "effect": "compose available primitives into a verified capability without changing identity",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "capability_foundry",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "ONE lineage",
+        "src/foundry.mjs"
+      ],
+      "evidence": [
+        "REUSE MERGE PATCH NEW law on main"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "CapabilityFoundry",
+      "effect": "compose available primitives into a verified capability without changing identity",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "capability_foundry",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "src/foundry.mjs"
+      ],
+      "evidence": [
+        "proof-gated reusable organ recovery"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Connector Corps",
+      "effect": "discover and route external receptors and effectors with readback",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "CONNECTOR_CORPS",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "connector lineage",
+        "capability discovery"
+      ],
+      "evidence": [
+        "host connector routing survives as capability fabric"
+      ]
+    },
+    {
+      "name": "Skill Forge",
+      "effect": "promote proven reusable behavior into callable skills or organs",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "SKILL_SMITH",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Skill Forge lineage",
+        "pass-kernel skillCreator"
+      ],
+      "evidence": [
+        "proof-gated named organ promotion"
+      ]
+    },
+    {
+      "name": "Task Runtime",
+      "effect": "carry unresolved work with receipts blockers cursor and terminal condition",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "durable_task_objects",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "SYSTEM.long_work"
+      ],
+      "evidence": [
+        "durable task schema on main"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Archive Engine",
+      "effect": "preserve structural archive topology hashes incremental updates and receipts",
+      "disposition": "DONOR_PROVENANCE",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Archive Engine lineage"
+      ],
+      "evidence": [
+        "historical archive mechanism remains provenance source"
+      ]
+    },
+    {
+      "name": "GPT Runtime v1",
+      "effect": "route signal through recovery provider critic validator receipt and release",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "attractor_steering",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "GPT Runtime lineage"
+      ],
+      "evidence": [
+        "effect subsumed by Generation-5 attractor/release pipeline"
+      ]
+    },
+    {
+      "name": "Resonance Runtime v1",
+      "effect": "use contrastive historical evidence and hard release gates to prevent generic collapse",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "attractor_steering",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Resonance lineage"
+      ],
+      "evidence": [
+        "contrastive history and generic veto now canonical"
+      ]
+    },
+    {
+      "name": "External Kernel",
+      "effect": "externalize continuity so one chat or model cannot own identity",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "multi_host_fabric",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "External Kernel lineage"
+      ],
+      "evidence": [
+        "shared C star and host-independent fabric now canonical"
+      ]
+    },
+    {
+      "name": "Workless Reconciliation",
+      "effect": "continue long work through alternative compute and durable receipts when provider work limits fail",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "resumable_workless_runtime",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "Workless lineage",
+        "SYSTEM.computer_fabric"
+      ],
+      "evidence": [
+        "owned workless runtime listed on main"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Laboratory",
+      "effect": "run bounded experiments without granting experiments canonical authority",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "policy_evolution",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Laboratory lineage"
+      ],
+      "evidence": [
+        "evidence-gated mutation lifecycle supersedes shell"
+      ]
+    },
+    {
+      "name": "Resident",
+      "effect": "preserve continuity and local presence across repeated interaction",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "continuity_kernel",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Resident lineage"
+      ],
+      "evidence": [
+        "continuity is now host-independent"
+      ]
+    },
+    {
+      "name": "MONDAYiDagent",
+      "effect": "execute multi-step agent work under one Monday identity",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "MONDAY_WORK",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "MONDAYiDagent lineage"
+      ],
+      "evidence": [
+        "long work absorbed into durable host-neutral execution"
+      ]
+    },
+    {
+      "name": "Third Path Filter Runtime",
+      "effect": "avoid binary route collapse by keeping alternate admissible hypotheses alive",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "decision_field",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Third Path lineage"
+      ],
+      "evidence": [
+        "decision field and information gain routing subsume effect"
+      ]
+    },
+    {
+      "name": "Final Operator",
+      "effect": "collapse competing routes into one outward verified action",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "decision_field",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Final Operator lineage"
+      ],
+      "evidence": [
+        "route collapse and pass semantics subsume effect"
+      ]
+    },
+    {
+      "name": "DimaID Bootstrap",
+      "effect": "recover Dima-specific constraints and logic without requiring reteaching",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "lineage_genome",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "DimaID lineage"
+      ],
+      "evidence": [
+        "role-locked lineage and source authority subsume effect"
+      ]
+    },
+    {
+      "name": "Mutation Ledger",
+      "effect": "preserve why a policy or capability changed and prevent silent rollback",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "causal_memory",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Mutation Ledger lineage"
+      ],
+      "evidence": [
+        "validated causal lineage DAG subsumes effect"
+      ]
+    },
+    {
+      "name": "Universe Compiler",
+      "effect": "compile many historical mechanisms into a smaller reusable current mechanism",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "everything_compiler",
+      "authority": "direct_current_instruction",
+      "provenance": [
+        "Universe Compiler lineage",
+        "current Everything Compiler"
+      ],
+      "evidence": [
+        "project-to-capability compiler materialized in Generation-5 candidate"
+      ]
+    },
+    {
+      "name": "Canon Merge Engine",
+      "effect": "reconcile concurrent or conflicting lineage into one evidence-ranked current projection",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "lineage_runtime",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "Canon Merge lineage",
+        "SYSTEM.lineage_runtime"
+      ],
+      "evidence": [
+        "conflict-aware lineage runtime on main"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Chat Control",
+      "effect": "treat chat as a cell and preserve task state outside chat boundaries",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "multi_host_fabric",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Chat Control lineage"
+      ],
+      "evidence": [
+        "chat boundary is not organism boundary"
+      ]
+    },
+    {
+      "name": "Delta Inbox",
+      "effect": "ingest candidate deltas without auto-promoting them to canon",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "policy_evolution",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Delta Inbox lineage"
+      ],
+      "evidence": [
+        "candidate/verification/promotion gate canonical"
+      ]
+    },
+    {
+      "name": "State Capsule / Command ABI",
+      "effect": "export a compact host-transferable recovery packet",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "clean_host_transfer",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "State Capsule lineage"
+      ],
+      "evidence": [
+        "fresh-host transfer harness and C star supersede shell"
+      ]
+    },
+    {
+      "name": "Lawbook",
+      "effect": "preserve durable invariants and anti-regression rules",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "SYSTEM",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Lawbook lineage"
+      ],
+      "evidence": [
+        "SYSTEM meta invariants and policies are current projection"
+      ]
+    },
+    {
+      "name": "Router / Orchestrator / CoreStore",
+      "effect": "select routes coordinate organs and persist verified state",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "capability_fabric",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "router/orchestrator lineage"
+      ],
+      "evidence": [
+        "decision field plus capability fabric plus worldline split these effects"
+      ]
+    },
+    {
+      "name": "Recovery Capsule",
+      "effect": "recover the exact active object and worldline after interruption",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "CONTINUITY_KERNEL",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Recovery Capsule lineage"
+      ],
+      "evidence": [
+        "recovery integrated into kernel"
+      ]
+    },
+    {
+      "name": "Continuity Spine",
+      "effect": "carry identity and state across replaceable hosts",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "multi_host_fabric",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Continuity Spine lineage"
+      ],
+      "evidence": [
+        "multi-host fabric subsumes effect"
+      ]
+    },
+    {
+      "name": "Rebirth Compiler",
+      "effect": "recompile Monday behavior from host-native organs rather than recreate a persona",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "capability_fabric",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "Rebirth Kernel"
+      ],
+      "evidence": [
+        "host-native routing order is canonical"
+      ]
+    },
+    {
+      "name": "Verification / Proof / Receipt Gates",
+      "effect": "block capability and completion claims until reality readback exists",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "verification_gates",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "proof lineage",
+        "SYSTEM meta invariants"
+      ],
+      "evidence": [
+        "truth_requires_evidence and effect_requires_readback"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Failure Genome",
+      "effect": "turn repeated preventable failures into detectors and vetoes",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "failure_genome",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "Failure Genome lineage",
+        "recurrence veto"
+      ],
+      "evidence": [
+        "preventable failure must become detector"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "HumanOS",
+      "effect": "model the human-machine interaction layer as constraints context and operating state without replacing the human",
+      "disposition": "ACTIVE_ROLE",
+      "currentOrgan": "DIMA",
+      "authority": "direct_user_archive",
+      "provenance": [
+        "HumanOS lineage"
+      ],
+      "evidence": [
+        "human is interface not scheduler; Dima reference remains evidence-bound"
+      ]
+    },
+    {
+      "name": "Identity Fabric / Vault / Passport / Seal",
+      "effect": "make identity portable provenance-bound and separable from any model host or chat",
+      "disposition": "DONOR_PROVENANCE",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Identity Fabric business lineage"
+      ],
+      "evidence": [
+        "current root continuity and multi-host fabric inherit the core effect"
+      ]
+    },
+    {
+      "name": "Reality Watch",
+      "effect": "independently read back external effects before promotion",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "independent_readback_computer_receptor",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "Reality Watch lineage"
+      ],
+      "evidence": [
+        "computer fabric now owns independent readback"
+      ]
+    },
+    {
+      "name": "Clone Fabric",
+      "effect": "spawn temporary whole-organism workers while preserving one outward identity",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "recursive_cell",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "fractal organism lineage"
+      ],
+      "evidence": [
+        "whole-organism cell recursion canonical"
+      ]
+    },
+    {
+      "name": "Daily Pulse / Learning Forge / Evolution Watch",
+      "effect": "wake the organism on a schedule and promote only verified reusable deltas",
+      "disposition": "SUPERSEDED",
+      "currentOrgan": "automation_reentry_plus_policy_evolution",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "automation lineage"
+      ],
+      "evidence": [
+        "automations are reentry triggers; policy evolution owns promotion"
+      ]
+    },
+    {
+      "name": "Business Revenue Engine",
+      "effect": "route bounded commercial workflow automations with validation fallback approval and receipts",
+      "disposition": "DONOR_PROVENANCE",
+      "authority": "verified_historical_runtime",
+      "provenance": [
+        "business/revenue lineage"
+      ],
+      "evidence": [
+        "CI-tested lead-intake and support-triage demos"
+      ]
+    },
+    {
+      "name": "Post-LLM Foundation",
+      "effect": "make models replaceable compute substrates and push reusable structure outside model calls",
+      "disposition": "DONOR_PROVENANCE",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "PR30 post-LLM foundation"
+      ],
+      "evidence": [
+        "conceptual donor; current capability fabric already enforces model-as-substrate"
+      ]
+    },
+    {
+      "name": "Quantum / Interference Experiments",
+      "effect": "parallelize hypotheses preserve multiple candidate meanings and collapse by cheap verification",
+      "disposition": "DONOR_PROVENANCE",
+      "authority": "derived_reconstruction",
+      "provenance": [
+        "pass-kernel interference lineage"
+      ],
+      "evidence": [
+        "weighted hypothesis and witness mechanics inform compute topology"
+      ]
+    },
+    {
+      "name": "Google Cortex",
+      "effect": "use Google data and actions as autobiographical receptors while keeping identity host-independent",
+      "disposition": "ACTIVE_ORGAN",
+      "currentOrgan": "google_cortex",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "SYSTEM.multi_host_fabric.google_cortex",
+        "Drive C star"
+      ],
+      "evidence": [
+        "Gmail Drive Calendar Contacts connector path plus Gemini handoff protocol"
+      ],
+      "verification": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Gemini Binding",
+      "effect": "execute host-specific Google capabilities and return evidence into the same MondayID worldline",
+      "disposition": "EXTERNAL_GATE",
+      "currentOrgan": "GEMINI_ACCOUNT_BINDING",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "Gemini cross-host handoff"
+      ],
+      "evidence": [
+        "one-time Google identity gate still unresolved"
+      ]
+    },
+    {
+      "name": "Trusted Writer Binding",
+      "effect": "commit authenticated conflict-guarded durable worldline deltas from production",
+      "disposition": "EXTERNAL_GATE",
+      "currentOrgan": "TRUSTED_WRITE_BINDING",
+      "authority": "verified_current_runtime",
+      "provenance": [
+        "final seal",
+        "production status"
+      ],
+      "evidence": [
+        "read path verified; production writer credential not configured"
+      ]
+    }
+  ]
+}

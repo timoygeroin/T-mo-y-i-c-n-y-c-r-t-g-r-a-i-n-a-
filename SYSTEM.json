@@ -14,7 +14,8 @@
     "desired_effect_requires_explicit_challenge_before_goal_mutation",
     "route_failure_is_not_goal_failure",
     "cross_host_continuity_requires_shared_versioned_readback",
-    "platform_mode_is_not_capability_owner"
+    "platform_mode_is_not_capability_owner",
+    "project_name_must_not_retain_runtime_authority_after_effect_compilation"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -61,7 +62,8 @@
     "cross_host_organs_publish_verified_deltas_not_persona_copies",
     "google_cortex_keeps_raw_personal_data_at_source_and_publishes_compact_provenance",
     "owned_capability_fabric_precedes_platform_mode",
-    "sealed_generation_evolves_without_reopening_finished_architecture"
+    "sealed_generation_evolves_without_reopening_finished_architecture",
+    "compile_projects_into_capabilities_not_parallel_projects"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -137,8 +139,8 @@
     "mechanism": "capability_foundry",
     "promotion_gate": "proof.ok === true",
     "principle": "derive reusable organs from desired effects and available primitives",
-    "prebuild_gate": "recover proven compatible organs before invoking the builder; REUSE -> MERGE -> PATCH -> NEW",
-    "builder_input": "residual capability gap after recovery adjudication"
+    "prebuild_gate": "recover and compile existing project lineage into current organs before builder; REUSE -> MERGE -> PATCH -> NEW",
+    "builder_input": "residual capability gap only after Everything Compiler + CapabilityFoundry recovery adjudication"
   },
   "pass_semantics": {
     "entry": "user_turn",
@@ -539,7 +541,8 @@
       "multi_host_fabric",
       "google_cortex",
       "recurrence_veto",
-      "visual_release_gate"
+      "visual_release_gate",
+      "everything_compiler"
     ]
   },
   "release_state": {
@@ -551,5 +554,45 @@
     "monday_work_mcp": "https://mondayid-host.vercel.app/api/mcp",
     "chatgpt_private_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
     "finish_law": "future work evolves the sealed organism; it must not restart the three-year architecture unless new evidence falsifies a seal invariant"
+  },
+  "everything_compiler": {
+    "schema": "mondayid.everything-compiler.v1",
+    "project_law": "project_is_temporary_container_effect_and_evidence_survive",
+    "runtime_authority": "capability_effect_proof_and_provenance_not_project_name",
+    "input_surfaces": [
+      "current_direct_signal",
+      "historical_chats",
+      "library_files",
+      "github_lineage",
+      "worldline_receipts",
+      "drive_cstar",
+      "automations",
+      "plugins_connectors",
+      "business_and_product_donors"
+    ],
+    "output_classes": [
+      "ACTIVE_ORGAN",
+      "ACTIVE_ROLE",
+      "DONOR_PROVENANCE",
+      "FAILURE_GENE",
+      "SUPERSEDED",
+      "EXTERNAL_GATE",
+      "UNKNOWN"
+    ],
+    "compile_order": [
+      "recover_history",
+      "extract_effect",
+      "rank_authority",
+      "bind_provenance",
+      "deduplicate_by_effect",
+      "reuse_current_organ",
+      "promote_only_with_proof",
+      "quarantine_failure",
+      "preserve_unknown",
+      "remove_project_runtime_authority"
+    ],
+    "registry": "ops/project-subsumption-registry-20261004.json",
+    "implementation": "src/everything-compiler.mjs",
+    "principle": "every historical conversation or project should contribute a reusable effect, evidence, failure gene, preference, provenance edge, or explicit unknown; names do not survive as parallel runtime projects"
   }
 }
