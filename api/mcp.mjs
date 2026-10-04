@@ -51,7 +51,11 @@ async function callTool(name, args = {}) {
       schema:'mondayid.capability-manifest.runtime.v1',
       capabilityFabric:system.capability_fabric || null,
       multiHostFabric:system.multi_host_fabric || null,
-      computerFabric:system.computer_fabric || null
+      computerFabric:system.computer_fabric || null,
+      releaseState:system.release_state || null,
+      metaInvariants:system.meta_invariants || [],
+      currentPolicies:system.current_policies || [],
+      continuity:system.continuity || null
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
   }
