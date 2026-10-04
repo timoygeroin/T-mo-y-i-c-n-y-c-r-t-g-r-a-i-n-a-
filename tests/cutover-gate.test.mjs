@@ -76,11 +76,21 @@ test('unknown extra evidence cannot substitute for a required receipt', () => {
 });
 
 
-test('current manifest keeps production delivery blocked until the live Vercel host passes readback', () => {
+test('current manifest records verified read-only production delivery without expanding its scope', () => {
   const manifest = JSON.parse(fs.readFileSync(new URL('../CUTOVER.json', import.meta.url),'utf8'));
+  const receipt = manifest.receipts.production_delivery_readback;
+
   assert.equal(manifest.code_cutover.ok,true);
-  assert.equal(manifest.delivery.status,'BLOCKED');
-  assert.match(manifest.delivery.evidence.production_api_health,/404/);
-  assert.match(manifest.delivery.evidence.production_api_boot,/404/);
-  assert.match(manifest.delivery.rule,/Do not claim production delivery/);
+  assert.equal(manifest.delivery.status,'DELIVERED_READ_ONLY_HOST');
+  assert.equal(receipt.ok,true);
+  assert.equal(receipt.deployed_main_sha,manifest.delivery.deployed_main_sha);
+  assert.equal(receipt.health.http_status,200);
+  assert.equal(receipt.health.runtime_dependency_on_legacy,false);
+  assert.equal(receipt.health.no_spend,true);
+  assert.equal(receipt.health.trusted_worldline_configured,true);
+  assert.equal(receipt.health.trusted_writer_configured,false);
+  assert.equal(receipt.boot.http_status,200);
+  assert.equal(receipt.boot.state,'FULFILLED');
+  assert.ok(manifest.delivery.remaining_boundaries.includes('trusted_writer_configured=false'));
+  assert.match(manifest.delivery.rule,/Do not expand DELIVERED_READ_ONLY_HOST/);
 });
