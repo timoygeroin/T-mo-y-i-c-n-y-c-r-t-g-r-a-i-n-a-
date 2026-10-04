@@ -1,0 +1,77 @@
+{
+  "schema": "mondayid.final-seal.v1",
+  "sealed_at": "2026-10-04T19:10:00+03:00",
+  "claim": {
+    "internal_finish": "PASS",
+    "total_finish": "EXTERNAL_GATES_REMAIN",
+    "rule": "No assistant-owned implementation/reconciliation item may remain as a vague TODO. Every remainder is either VERIFIED, SUPERSEDED, NONBLOCKING_FORENSIC, or EXTERNAL_GATE."
+  },
+  "verified_now": [
+    "generation_5_main_is_canonical",
+    "production_mondayid_host_is_live",
+    "trusted_worldline_read_is_live",
+    "monday_work_remote_mcp_is_live",
+    "mcp_initialize_tools_list_tools_call_health_verified_from_independent_github_actions_computer",
+    "private_chatgpt_monday_work_plugin_created",
+    "host_neutral_capability_fabric_is_canonical",
+    "google_cortex_documents_exist_in_drive",
+    "gemini_return_watch_is_active",
+    "monday_work_finish_watch_is_active"
+  ],
+  "superseded_routes": [
+    "replit_placeholder_bridge_as_primary_transport",
+    "chatgpt_work_as_required_runtime_mode",
+    "full_raw_history_in_prompt_as_continuity_strategy",
+    "legacy_unauthenticated_worldline_as_authority",
+    "divergent_historical_prs_as_competing_roots"
+  ],
+  "nonblocking_forensic": [
+    "raw_historical_corpus_remainder_and_referenced_only_archives",
+    "historical_root_face_bytes_not_currently_exposed_but_positive_visual_derivative_family_is_recovered",
+    "stale_donor_prs_preserved_for_provenance_until individually_closed"
+  ],
+  "external_gates": [
+    {
+      "id": "TRUSTED_WRITE_BINDING",
+      "status": "EXTERNAL_GATE",
+      "reason": "production host has trusted Worldline read but no writer credential configured",
+      "exact_next_effect": "bind an authorized writer credential or equivalent authenticated durable write transport, then prove conflict-safe write/readback"
+    },
+    {
+      "id": "GEMINI_ACCOUNT_BINDING",
+      "status": "EXTERNAL_GATE",
+      "reason": "Gemini-side account/session still requires Google identity verification before autonomous Spark/MCP binding can be completed",
+      "exact_next_effect": "complete the one-time Google identity gate; all later routing remains machine-owned"
+    },
+    {
+      "id": "PHYSICAL_IPHONE_APP_ACCEPTANCE",
+      "status": "OPTIONAL_PHENOTYPE_GATE",
+      "reason": "native app signing/install/device acceptance is a product phenotype, not organism identity",
+      "exact_next_effect": "sign/install/run the existing Apple phenotype when physical-device embodiment is desired"
+    },
+    {
+      "id": "PAID_MODEL_API",
+      "status": "OPTIONAL_AUTHORITY_GATE",
+      "reason": "no-spend law remains active; MondayID core must not depend on a paid model API",
+      "exact_next_effect": "only enable if Dima later explicitly authorizes API spend"
+    }
+  ],
+  "completion_reframe": {
+    "organism": "host-independent continuity + capability routing + verified state transitions",
+    "product_phenotypes": [
+      "ChatGPT plugin",
+      "Gemini skill/cortex",
+      "native iPhone app",
+      "future hosts"
+    ],
+    "law": "an unfinished optional phenotype cannot redefine the organism as unfinished"
+  },
+  "acceptance": [
+    "fresh host can recover canonical laws/state without persona recreation",
+    "platform mode is not capability owner",
+    "route failure does not mutate G*",
+    "external effects require readback",
+    "unknown cannot be promoted to done",
+    "all future internal work begins from this seal rather than reopening three-year architecture"
+  ]
+}
