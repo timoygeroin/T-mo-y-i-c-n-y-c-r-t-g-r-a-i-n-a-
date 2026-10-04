@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import { describeHost } from '../src/host-adapter.mjs';
 import { fetchWorldlineSnapshot } from '../src/remote-worldline.mjs';
+import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
 import { compileProjectLineage, projectToCapabilityDelta } from '../src/everything-compiler.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
@@ -33,6 +34,11 @@ const tools = Object.freeze([
       properties:{ limit:{type:'integer',minimum:1,maximum:100,default:20} },
       additionalProperties:false
     }
+  },
+  {
+    name:'prove_trusted_write_readback',
+    description:'Persist one bounded MondayID continuity proof through the authenticated Worldline writer and verify the exact event by independent readback. No arbitrary state payload is accepted.',
+    inputSchema:{ type:'object', properties:{}, additionalProperties:false }
   }
 ]);
 
@@ -63,7 +69,12 @@ async function callTool(name, args = {}) {
       metaInvariants:system.meta_invariants || [],
       currentPolicies:system.current_policies || [],
       continuity:system.continuity || null,
-      everythingCompiler:system.everything_compiler || null
+      everythingCompiler:system.everything_compiler || null,
+      physiology:system.physiology || null,
+      organismPhysics:system.organism_physics || null,
+      organismSynapse:system.organism_synapse || null,
+      reentryAndResponse:system.reentry_and_response || null,
+      visualPhenotype:system.visual_phenotype || null
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
   }
@@ -96,6 +107,58 @@ async function callTool(name, args = {}) {
       snapshot:state.snapshot
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
+  }
+
+  if (name === 'prove_trusted_write_readback') {
+    const receptor = new TrustedWorldlineReceptor({
+      baseUrl:process.env.MONDAYID_WORLDLINE_URL,
+      token:process.env.MONDAYID_WORLDLINE_WRITER_TOKEN,
+      host:'monday-work-mcp',
+      identityFingerprint:'mondayid:rewrite:g5',
+      sourceRef:'monday-work:mcp:trusted-write-readback'
+    });
+    const action = {
+      objectiveId:'monday-work:trusted-write-readback',
+      sourceSignal:'monday-work:mcp:proof',
+      domain:'continuity',
+      effect:'prove this MCP host can persist and exact-readback one authenticated external effect'
+    };
+    const write = await receptor.execute(action);
+    if (!write.ok) {
+      const value = {
+        ok:false,
+        stage:'write',
+        code:write.code,
+        status:write.status ?? null
+      };
+      return {
+        isError:true,
+        content:[{type:'text',text:JSON.stringify(value)}],
+        structuredContent:value
+      };
+    }
+    const verification = await receptor.verify(write);
+    if (!verification.ok) {
+      const value = {
+        ok:false,
+        stage:'readback',
+        writeStatus:write.status,
+        eventId:write.event?.eventId ?? null,
+        verification
+      };
+      return {
+        isError:true,
+        content:[{type:'text',text:JSON.stringify(value)}],
+        structuredContent:value
+      };
+    }
+    const value = {
+      ok:true,
+      writeStatus:write.status,
+      eventId:write.event.eventId,
+      verification
+    };
+    return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
   }
 
   return {

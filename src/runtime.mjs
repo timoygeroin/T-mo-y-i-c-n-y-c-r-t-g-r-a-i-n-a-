@@ -6,6 +6,7 @@ import { PolicyField, defaultMetaInvariants } from './policy-field.mjs';
 import { evaluateCandidateOutput } from './attractor-field.mjs';
 import { ensureTasks, updateTasks } from './task-field.mjs';
 import { ActionLedger } from './action-ledger.mjs';
+import { sensePhysiology, regulatePhysiology } from './physiology-field.mjs';
 
 export class MondayRuntime {
   constructor({
@@ -33,7 +34,14 @@ export class MondayRuntime {
     const policies = this.policyField.snapshot();
     const graph = compileSignals(signals, { state, policies });
     const frontier = buildFrontier(graph, this.capabilities);
-    return { graph, frontier };
+    const physiology = sensePhysiology({
+      state,
+      worldlineHeads:this.worldline.heads(),
+      actionLedger:this.actionLedger.snapshot(),
+      frontier
+    });
+    const regulation = regulatePhysiology(physiology);
+    return { graph, frontier, physiology, regulation };
   }
 
   async invent(blocked = []) {
@@ -367,8 +375,9 @@ export class MondayRuntime {
     if (!tasksCreated.ok) return tasksCreated;
 
     const field = activeIntents(this.worldline);
-    const { graph } = this.observe(field);
-    let frontier = buildFrontier(graph, this.capabilities);
+    const observed = this.observe(field);
+    const { graph, physiology, regulation } = observed;
+    let frontier = observed.frontier;
 
     const observations = this.worldline.append({
       kind:'fact',
@@ -376,13 +385,17 @@ export class MondayRuntime {
       payload:{
         activeIntentIds:field.map(intent => intent.id),
         graph,
-        blocked:frontier.blocked
+        blocked:frontier.blocked,
+        physiology,
+        regulation
       },
       epistemic:'observed'
     }, this.worldline.revision());
     if (!observations.ok) return observations;
 
-    const forged = await this.invent(frontier.blocked);
+    const forged = regulation.freezeExpansion
+      ? []
+      : await this.invent(frontier.blocked);
 
     let rev = this.worldline.revision();
     for (const organ of forged) {
@@ -425,6 +438,8 @@ export class MondayRuntime {
       revision:this.worldline.revision(),
       graph,
       frontier,
+      physiology,
+      regulation,
       forged,
       results,
       intents:this.worldline.materialize().intents,
