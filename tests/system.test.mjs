@@ -131,3 +131,15 @@ test('human phenotype never says VERIFIED while a verified effect is still missi
   assert.match(surface.message,/1 failed/);
   assert.equal(cycle.intents['not-done'].status,'active');
 });
+
+
+test('system manifest treats physiology as regulation, not identity or another agent', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  assert.equal(system.physiology.schema,'mondayid.physiology-contract.v1');
+  assert.equal(system.physiology.identity_owner,false);
+  assert.equal(system.physiology.control_law,'interoception -> allostatic regulation -> route modulation');
+  assert.ok(system.physiology.observed_signals.includes('branch_divergence'));
+  assert.ok(system.physiology.observed_signals.includes('ambiguous_actions'));
+  assert.ok(system.physiology.forbidden_inferences.includes('invent_energy_without_telemetry'));
+  assert.ok(system.current_policies.includes('internal_state_modulates_routes_before_failure'));
+});
