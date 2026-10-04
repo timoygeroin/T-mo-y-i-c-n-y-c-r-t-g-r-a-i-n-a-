@@ -18,16 +18,16 @@ struct MondayIDRuntimeProbe {
         guard health.isReady else { throw ProbeError.unhealthy }
 
         let receipt = try await client.submit(signal: signal)
-        guard receipt.status == "executed",
+        guard receipt.status == "FULFILLED",
               receipt.result == "wire:\(signal):after:0",
               receipt.receiptId == "wire-r-1",
               receipt.providerId == "wire-provider",
-              receipt.stateRevision == 1 else {
+              receipt.stateRevision == "1" else {
             throw ProbeError.unexpectedReceipt(receipt)
         }
 
         print("MONDAYID_SWIFT_NODE_WIRE_PASS")
-        print("health=\(health.runtime)/durable=\(health.durable)")
+        print("health=\(health.runtime)/worldline=\(health.continuity.trustedWorldlineConfigured)/writer=\(health.continuity.trustedWriterConfigured)")
         print("receipt=\(receipt.receiptId)/revision=\(receipt.stateRevision)/status=\(receipt.status)")
     }
 }
