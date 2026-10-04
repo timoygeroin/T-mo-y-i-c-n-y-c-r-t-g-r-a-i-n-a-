@@ -69,7 +69,8 @@ async function callTool(name, args = {}) {
       metaInvariants:system.meta_invariants || [],
       currentPolicies:system.current_policies || [],
       continuity:system.continuity || null,
-      everythingCompiler:system.everything_compiler || null
+      everythingCompiler:system.everything_compiler || null,
+      physiology:system.physiology || null
     };
     return { content:[{ type:'text', text:JSON.stringify(value) }], structuredContent:value };
   }
