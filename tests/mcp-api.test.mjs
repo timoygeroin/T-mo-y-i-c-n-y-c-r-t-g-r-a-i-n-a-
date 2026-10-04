@@ -72,6 +72,11 @@ test('MCP capability_manifest exposes canonical release seal',async()=>{
   assert.ok(manifest.metaInvariants.includes('platform_mode_is_not_capability_owner'));
   assert.equal(manifest.physiology.schema,'mondayid.physiology-contract.v1');
   assert.equal(manifest.physiology.identity_owner,false);
+  assert.equal(manifest.organismPhysics.schema,'mondayid.organism-physics.v1');
+  assert.equal(manifest.organismSynapse.schema,'mondayid.organism-synapse.v1');
+  assert.equal(manifest.reentryAndResponse.schema,'mondayid.reentry-response-law.v1');
+  assert.equal(manifest.visualPhenotype.schema,'mondayid.visual-phenotype-contract.v1');
+  assert.equal(manifest.visualPhenotype.route_governor.attached_image_alone_authorizes_render,false);
 });
 
 test('MCP compile_history collapses project shells into active capability state',async()=>{
