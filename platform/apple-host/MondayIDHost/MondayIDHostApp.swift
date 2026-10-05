@@ -641,7 +641,22 @@ private struct MondayChatsView: View {
     @State private var working = false
     @State private var russianEnglishReady = false
 
+    @ViewBuilder
     var body: some View {
+        if #available(iOS 26.0, *) {
+            chatSurface
+                .translationTask(
+                    source: Locale.Language(identifier: "ru"),
+                    target: Locale.Language(identifier: "en")
+                ) { session in
+                    russianEnglishReady = await MondayTranslationBridge.warmup(session)
+                }
+        } else {
+            chatSurface
+        }
+    }
+
+    private var chatSurface: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 if store.chat.isEmpty {
@@ -676,12 +691,6 @@ private struct MondayChatsView: View {
                 .padding()
             }
             .navigationTitle("Chats")
-        }
-        .translationTask(
-            source: Locale.Language(identifier: "ru"),
-            target: Locale.Language(identifier: "en")
-        ) { session in
-            russianEnglishReady = await MondayTranslationBridge.warmup(session)
         }
     }
 
