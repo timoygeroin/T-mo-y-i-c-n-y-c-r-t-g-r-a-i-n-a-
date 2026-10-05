@@ -673,7 +673,7 @@ private struct MondayChatsView: View {
             target: Locale.Language(identifier: "en")
         ) { session in
             do {
-                try await session.prepareTranslation()
+                _ = try await session.translate("Проверка")
                 russianEnglishReady = true
             } catch {
                 russianEnglishReady = false
