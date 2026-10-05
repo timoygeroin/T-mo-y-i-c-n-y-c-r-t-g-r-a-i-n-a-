@@ -2,6 +2,7 @@ import AppIntents
 import AVFoundation
 import Foundation
 import PhotosUI
+import QuickLook
 import SwiftUI
 import UIKit
 import MondayIDAppleAdapter
@@ -1077,6 +1078,33 @@ private struct MondayLibraryView: View {
     }
 }
 
+private func mondayMediaURL(for document: MondayDocument) -> URL? {
+    guard document.kind == .image || document.kind == .video || document.kind == .audio else { return nil }
+    let relative = document.body.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard relative.hasPrefix("MondayMedia/") else { return nil }
+    guard let base = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else { return nil }
+    let url = base.appendingPathComponent(relative)
+    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+    return url
+}
+
+private struct QuickLookPreview: UIViewControllerRepresentable {
+    let url: URL
+    final class Coordinator: NSObject, QLPreviewControllerDataSource {
+        let url: URL
+        init(url: URL) { self.url = url }
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem { url as NSURL }
+    }
+    func makeCoordinator() -> Coordinator { Coordinator(url: url) }
+    func makeUIViewController(context: Context) -> QLPreviewController {
+        let controller = QLPreviewController()
+        controller.dataSource = context.coordinator
+        return controller
+    }
+    func updateUIViewController(_ uiViewController: QLPreviewController, context: Context) {}
+}
+
 private struct MondayDocumentDetailView: View {
     @EnvironmentObject private var store: MondayLocalStore
     let documentID: UUID
@@ -1116,10 +1144,14 @@ private struct MondayDocumentDetailView: View {
                             }
                         }
                     } else {
-                        Section("Stored object") {
-                            Text(document.body).textSelection(.enabled)
-                            Text("Media bytes are stored in Monday's Application Support container; this object is the durable Library pointer.")
-                                .font(.footnote).foregroundStyle(.secondary)
+                        Section("Media") {
+                            if let mediaURL = mondayMediaURL(for: document) {
+                                QuickLookPreview(url: mediaURL).frame(minHeight: 320)
+                                ShareLink(item: mediaURL) { Label("Share or export", systemImage: "square.and.arrow.up") }
+                                LabeledContent("Stored locally", value: mediaURL.lastPathComponent)
+                            } else {
+                                ContentUnavailableView("Media unavailable", systemImage: "exclamationmark.triangle", description: Text("The Library pointer exists, but the local media bytes are missing."))
+                            }
                         }
                     }
                 }
