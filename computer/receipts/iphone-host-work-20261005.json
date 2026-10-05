@@ -24,12 +24,12 @@
             "-e",
             "import fs from 'node:fs';import crypto from 'node:crypto';const paths=[\"src/work-readiness.mjs\",\"api/status.mjs\",\"api/mcp.mjs\",\"src/execution/computer-task-runner.mjs\",\"index.html\",\"plugins/monday-work/skills/mondayid/SKILL.md\",\"plugins/monday-work/plugin.json\"];const files=paths.map(path=>({path,sha256:crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex')}));const out={schema:'mondayid.work-source-checkpoint.v1',at:new Date().toISOString(),files,scope:'source-integrity-only',physicalDeviceAcceptance:false};fs.writeFileSync('ops/iphone-work-source-checkpoint-20261005.json',JSON.stringify(out,null,2)+'\\n');console.log('Source checkpoint saved');"
           ],
-          "cwd": "/workspace/scratch/a09e32873f41/mondayid",
+          "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
           "exitCode": 0,
           "signal": null,
           "stdout": "Source checkpoint saved\n",
           "stderr": "",
-          "durationMs": 166
+          "durationMs": 35
         },
         "verificationRequest": {
           "command": "python3",
@@ -60,24 +60,24 @@
         "-c",
         "import json,hashlib,pathlib; d=json.loads(pathlib.Path('ops/iphone-work-source-checkpoint-20261005.json').read_text()); assert d['schema']=='mondayid.work-source-checkpoint.v1'; assert len(d['files'])==7; assert all(hashlib.sha256(pathlib.Path(f['path']).read_bytes()).hexdigest()==f['sha256'] for f in d['files']); assert not d['physicalDeviceAcceptance']; print('SOURCE_CHECKPOINT_VERIFIED',end='')"
       ],
-      "cwd": "/workspace/scratch/a09e32873f41/mondayid",
+      "cwd": "/home/runner/work/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
       "exitCode": 0,
       "signal": null,
       "stdout": "SOURCE_CHECKPOINT_VERIFIED",
       "stderr": "",
-      "durationMs": 85
+      "durationMs": 24
     },
     "receptor": "mondayid-process-computer",
     "mux": "mondayid-computer-fabric"
   },
   "runner": {
-    "kind": "host-workspace",
+    "kind": "github-actions-bootstrap",
     "ownedContract": "mondayid-computer-fabric",
-    "externalSubstrate": "current-host",
+    "externalSubstrate": "github-actions",
     "userComputerRequired": false,
     "physicalDeviceAcceptance": false,
-    "commit": null,
-    "runId": null
+    "commit": "9a4a6ad587a4a42b19cc4444f0a48b5fcf0c5a2d",
+    "runId": "37383829168"
   },
-  "at": "2026-10-05T17:42:53.252Z"
+  "at": "2026-10-05T22:39:17.592Z"
 }
