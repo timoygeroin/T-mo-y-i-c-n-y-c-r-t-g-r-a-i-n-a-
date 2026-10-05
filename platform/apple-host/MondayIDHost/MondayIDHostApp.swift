@@ -565,13 +565,64 @@ private enum MondayLocalModelError: LocalizedError {
     }
 }
 
+private enum MondayTranslationBridge {
+    static func translateInstalled(_ text: String, source: String, target: String) async throws -> String {
+        let session = TranslationSession(
+            installedSource: Locale.Language(identifier: source),
+            target: Locale.Language(identifier: target)
+        )
+        return try await session.translate(text).targetText
+    }
+}
+
+@available(iOS 26.0, *)
+private enum MondayOnDeviceBrain {
+    static func respond(prompt: String, recentContinuity: String) async throws -> String {
+        let model = SystemLanguageModel.default
+        guard model.isAvailable else {
+            let reason: String
+            switch model.availability {
+            case .available:
+                reason = "On-device model unavailable."
+            case .unavailable(.appleIntelligenceNotEnabled):
+                reason = "Apple Intelligence is turned off."
+            case .unavailable(.deviceNotEligible):
+                reason = "This device is not eligible for Apple Intelligence."
+            case .unavailable(.modelNotReady):
+                reason = "Apple Intelligence model is still downloading."
+            case .unavailable:
+                reason = "Apple Intelligence is not ready."
+            }
+            throw MondayLocalModelError.unavailable(reason)
+        }
+
+        let session = LanguageModelSession(instructions: """
+            You are Monday: one continuous personal assistant, not a collection of personas.
+            Be concise, warm, direct, and useful. Preserve the current conversation's intent.
+            Never claim an external action happened unless the app has evidence for it.
+            Prefer concrete action over architecture discussion.
+            Respond in English; the app may translate the result for the person.
+            """)
+
+        let response = try await session.respond(to: """
+            Recent local continuity:
+            \(recentContinuity)
+
+            Current message:
+            \(prompt)
+            """)
+        let text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { throw MondayLocalModelError.emptyResponse }
+        return text
+    }
+}
+
 private struct MondayChatsView: View {
     @EnvironmentObject private var store: MondayLocalStore
     @EnvironmentObject private var presence: MondayPresenceModel
     @State private var signal = ""
     @State private var working = false
-    @State private var russianToEnglish: TranslationSession?
-    @State private var englishToRussian: TranslationSession?
+    @State private var russianEnglishReady = false
 
     var body: some View {
         NavigationStack {
@@ -613,13 +664,12 @@ private struct MondayChatsView: View {
             source: Locale.Language(identifier: "ru"),
             target: Locale.Language(identifier: "en")
         ) { session in
-            russianToEnglish = session
-        }
-        .translationTask(
-            source: Locale.Language(identifier: "en"),
-            target: Locale.Language(identifier: "ru")
-        ) { session in
-            englishToRussian = session
+            do {
+                try await session.prepareTranslation()
+                russianEnglishReady = true
+            } catch {
+                russianEnglishReady = false
+            }
         }
     }
 
@@ -662,54 +712,20 @@ private struct MondayChatsView: View {
     }
 
     @available(iOS 26.0, *)
-    private func onDeviceResponse(to submitted: String, wantsRussian: Bool) async throws -> String {
-        let model = SystemLanguageModel.default
-        guard model.isAvailable else {
-            let reason: String
-            switch model.availability {
-            case .available:
-                reason = "On-device model unavailable."
-            case .unavailable(.appleIntelligenceNotEnabled):
-                reason = "Apple Intelligence is turned off."
-            case .unavailable(.deviceNotEligible):
-                reason = "This device is not eligible for Apple Intelligence."
-            case .unavailable(.modelNotReady):
-                reason = "Apple Intelligence model is still downloading."
-            case .unavailable:
-                reason = "Apple Intelligence is not ready."
-            }
-            throw MondayLocalModelError.unavailable(reason)
-        }
-
+    @MainActor private func onDeviceResponse(to submitted: String, wantsRussian: Bool) async throws -> String {
         var modelPrompt = submitted
-        if wantsRussian, let russianToEnglish {
-            modelPrompt = try await russianToEnglish.translate(submitted).targetText
+        if wantsRussian && russianEnglishReady {
+            modelPrompt = try await MondayTranslationBridge.translateInstalled(submitted, source: "ru", target: "en")
         }
 
         let recent = store.chat.suffix(10)
             .map { "\($0.role == "user" ? "Dima" : "Monday"): \($0.text)" }
             .joined(separator: "\n")
 
-        let session = LanguageModelSession(instructions: """
-            You are Monday: one continuous personal assistant, not a collection of personas.
-            Be concise, warm, direct, and useful. Preserve the current conversation's intent.
-            Never claim an external action happened unless the app has evidence for it.
-            Prefer concrete action over architecture discussion.
-            Respond in English; the app may translate the result for the person.
-            """)
+        var text = try await MondayOnDeviceBrain.respond(prompt: modelPrompt, recentContinuity: recent)
 
-        let response = try await session.respond(to: """
-            Recent local continuity:
-            \(recent)
-
-            Current message:
-            \(modelPrompt)
-            """)
-        var text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { throw MondayLocalModelError.emptyResponse }
-
-        if wantsRussian, let englishToRussian {
-            text = try await englishToRussian.translate(text).targetText
+        if wantsRussian && russianEnglishReady {
+            text = try await MondayTranslationBridge.translateInstalled(text, source: "en", target: "ru")
         }
         return text
     }
