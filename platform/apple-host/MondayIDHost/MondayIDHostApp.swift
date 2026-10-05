@@ -574,15 +574,6 @@ private enum MondayLocalModelError: LocalizedError {
 
 @available(iOS 26.0, *)
 private enum MondayTranslationBridge {
-    static func warmup(_ session: sending TranslationSession) async -> Bool {
-        do {
-            _ = try await session.translate("Проверка")
-            return true
-        } catch {
-            return false
-        }
-    }
-
     static func translateInstalled(_ text: String, source: String, target: String) async throws -> String {
         let session = TranslationSession(
             installedSource: Locale.Language(identifier: source),
@@ -639,22 +630,8 @@ private struct MondayChatsView: View {
     @EnvironmentObject private var presence: MondayPresenceModel
     @State private var signal = ""
     @State private var working = false
-    @State private var russianEnglishReady = false
 
-    @ViewBuilder
-    var body: some View {
-        if #available(iOS 26.0, *) {
-            chatSurface
-                .translationTask(
-                    source: Locale.Language(identifier: "ru"),
-                    target: Locale.Language(identifier: "en")
-                ) { session in
-                    russianEnglishReady = await MondayTranslationBridge.warmup(session)
-                }
-        } else {
-            chatSurface
-        }
-    }
+    var body: some View { chatSurface }
 
     private var chatSurface: some View {
         NavigationStack {
@@ -728,7 +705,7 @@ private struct MondayChatsView: View {
             presence.set(.needsYou, detail: "Local model and runtime unavailable")
             store.appendChat(
                 role: "monday",
-                text: "Monday is installed, but intelligence is not ready on this device yet. Turn on Apple Intelligence and allow the Russian/English translation models to download, then send the message again."
+                text: "Monday is installed, but on-device intelligence is not ready yet. Turn on Apple Intelligence and send the message again. Russian translation is used automatically when the system translation model is available."
             )
         }
     }
@@ -736,8 +713,8 @@ private struct MondayChatsView: View {
     @available(iOS 26.0, *)
     @MainActor private func onDeviceResponse(to submitted: String, wantsRussian: Bool) async throws -> String {
         var modelPrompt = submitted
-        if wantsRussian && russianEnglishReady {
-            modelPrompt = try await MondayTranslationBridge.translateInstalled(submitted, source: "ru", target: "en")
+        if wantsRussian {
+            modelPrompt = (try? await MondayTranslationBridge.translateInstalled(submitted, source: "ru", target: "en")) ?? submitted
         }
 
         let recent = store.chat.suffix(10)
@@ -746,8 +723,8 @@ private struct MondayChatsView: View {
 
         var text = try await MondayOnDeviceBrain.respond(prompt: modelPrompt, recentContinuity: recent)
 
-        if wantsRussian && russianEnglishReady {
-            text = try await MondayTranslationBridge.translateInstalled(text, source: "en", target: "ru")
+        if wantsRussian {
+            text = (try? await MondayTranslationBridge.translateInstalled(text, source: "en", target: "ru")) ?? text
         }
         return text
     }
