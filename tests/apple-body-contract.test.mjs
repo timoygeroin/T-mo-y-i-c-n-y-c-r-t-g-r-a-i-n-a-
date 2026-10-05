@@ -7,6 +7,8 @@ const project=fs.readFileSync(new URL('../platform/apple-host/MondayIDHost.xcode
 const adapter=fs.readFileSync(new URL('../platform/apple-adapter/Package.swift',import.meta.url),'utf8');
 const intents=fs.readFileSync(new URL('../platform/apple-adapter/Sources/MondayIDAppleAdapter/MondayIDIntents.swift',import.meta.url),'utf8');
 const appleWorkflow=fs.readFileSync(new URL('../.github/workflows/apple-build-proof.yml',import.meta.url),'utf8');
+const installPage=fs.readFileSync(new URL('../install/index.html',import.meta.url),'utf8');
+const signingTable=fs.readFileSync(new URL('../install/certificate-validity.tsv',import.meta.url),'utf8');
 
 test('canonical repository contains the five-surface Monday consumer iPhone body',()=>{
   for(const label of ['Home','Chats','Create','Spaces','You']){
@@ -78,6 +80,16 @@ test('Apple proof also compiles the real iPhoneOS target and emits an unsigned s
   assert.match(appleWorkflow,/Payload/);
   assert.match(appleWorkflow,/actions\/upload-artifact@v4/);
   assert.match(appleWorkflow,/Physical iPhone signing\/install\/runtime acceptance: NOT PROVEN/);
+});
+
+test('direct install fails closed instead of offering a revoked signing identity',()=>{
+  assert.match(appleWorkflow,/Fail closed on revoked or unverified signing identities/);
+  assert.match(appleWorkflow,/accepted=new Set\(\['active','good','not_revoked','valid'\]\)/);
+  assert.match(appleWorkflow,/usable_count/);
+  assert.match(appleWorkflow,/Installation is paused|installation is paused/i);
+  assert.ok(signingTable.split(/\r?\n/).slice(1).filter(Boolean).every(line=>line.endsWith('\trevoked')));
+  assert.match(installPage,/iPhone installation is paused/);
+  assert.doesNotMatch(installPage,/itms-services:/);
 });
 
 
