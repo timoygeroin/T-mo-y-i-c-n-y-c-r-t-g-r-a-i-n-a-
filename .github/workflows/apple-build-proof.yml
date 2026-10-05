@@ -95,7 +95,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           CERT_ZIP_URL: https://sideloading.net
-          NEXCERTS_STATUS: signed
+          NEXCERTS_STATUS: all
           OUTPUT_DIR: ${{ github.workspace }}/install
           OUTPUT_PREFIX: monday
           UNSIGNED_IPA_URL: file://${{ github.workspace }}/Monday.ipa
