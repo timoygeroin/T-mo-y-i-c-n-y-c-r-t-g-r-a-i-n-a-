@@ -86,7 +86,9 @@ test('Monday chat has a no-spend on-device intelligence route on iOS 27',()=>{
   assert.match(source,/import Translation/);
   assert.match(source,/SystemLanguageModel\.default/);
   assert.match(source,/LanguageModelSession\(instructions:/);
-  assert.match(source,/translationTask\(/);
+  assert.match(source,/TranslationSession\(/);
+  assert.match(source,/MondayTranslationBridge\.translateInstalled/);
+  assert.match(source,/session\.translate\(text\)\.targetText/);
   assert.match(source,/Apple Foundation Model · no API spend/);
   assert.match(source,/onDeviceResponse\(to:/);
 });
