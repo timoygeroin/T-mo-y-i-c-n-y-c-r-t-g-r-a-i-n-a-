@@ -1,0 +1,41 @@
+{
+  "schema": "mondayid.host-capability-manifest.v0",
+  "host": "grok",
+  "role": "replaceable_organ",
+  "not": "organism_owner",
+  "observedAtIso": "2026-10-05T09:05:00Z",
+  "recoveredFrom": [
+    "https://mondayid-host.vercel.app/api/mcp",
+    "docs/MONDAYID_GOOGLE_CORTEX_CROSSHOST.md",
+    "ops/final-seal-20261004.json",
+    "Drive:MONDAYID_CANONICAL_CSTAR",
+    "Drive:MONDAYID_HOST_CAPABILITY_MANIFEST_CHATGPT_2026-10-04"
+  ],
+  "liveBridge": {
+    "url": "https://mondayid-host.vercel.app/api/mcp",
+    "toolsObserved": ["health", "capability_manifest", "compile_history", "get_state"],
+    "generation": 5,
+    "trusted_worldline_configured": true,
+    "trusted_writer_configured": false,
+    "snapshotReadOnly": true,
+    "newestVerifiedEvent": "2026-09-22T15:06:43Z post_cutover_stabilized",
+    "compileHistory": {
+      "projectRuntimeAuthority": false,
+      "totalValid": 56,
+      "uniqueEffects": 54,
+      "externalGates": ["GEMINI_ACCOUNT_BINDING", "TRUSTED_WRITE_BINDING"]
+    }
+  },
+  "organsVerifiedThisSession": [
+    "Monday Work MCP readback",
+    "GitHub read and host/grok branch write",
+    "Google Drive read of C* and ChatGPT host manifest",
+    "local skill monday-work"
+  ],
+  "promotionLaw": "visibility is not capability; promote only after execute plus readback",
+  "finalBarrierLeftUncalled": {
+    "id": "TRUSTED_WRITE_BINDING",
+    "exactUncalledTools": ["register_host_capabilities", "mailbox_send", "mailbox_list", "mailbox_ack", "put_receipt", "prove_trusted_write_readback"],
+    "repoHasUndeployedTool": "prove_trusted_write_readback in api/mcp.mjs on main; live tools/list does not expose it"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "mondayid.reserved-final-call.v0",
+  "status": "PREPARED_NOT_CALLED",
+  "barrier": "TRUSTED_WRITE_BINDING",
+  "whenToolsExistCallInOrder": [
+    {
+      "tool": "register_host_capabilities",
+      "arguments": {
+        "host": "grok",
+        "role": "replaceable_organ",
+        "manifestRef": "host/grok/union-ready-20261005/manifest.json",
+        "expectedVersion": "READ_FIRST"
+      }
+    },
+    {
+      "tool": "mailbox_send",
+      "arguments": {
+        "to": "chatgpt",
+        "subject": "grok-host-ready",
+        "body": "Grok recovered C*, seal, and ChatGPT manifest. Writer not called. Reply with mailbox_ack after readback."
+      }
+    },
+    {
+      "tool": "mailbox_list",
+      "arguments": {"host": "grok"}
+    }
+  ],
+  "doNotCallUntil": "live tools/list exposes the tool and a prior get_state readback is fresh"
+}
