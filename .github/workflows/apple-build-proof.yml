@@ -44,8 +44,38 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
+      - name: Compile MondayIDHost for physical iPhone SDK without signing
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project platform/apple-host/MondayIDHost.xcodeproj \
+            -scheme MondayIDHost \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            -derivedDataPath .build/iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package unsigned iPhoneOS app for the signing gate
+        run: |
+          set -euo pipefail
+          ditto -c -k --sequesterRsrc --keepParent \
+            .build/iphoneos/Build/Products/Release-iphoneos/MondayIDHost.app \
+            mondayid-host-unsigned-iphoneos.zip
+
+      - name: Upload unsigned iPhoneOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mondayid-host-unsigned-iphoneos
+          path: mondayid-host-unsigned-iphoneos.zip
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Record proof boundary
         run: |
           echo "Swift package tests: PASS"
           echo "iPhone Simulator compile: PASS"
-          echo "Physical iPhone signing/install: NOT PROVEN BY THIS WORKFLOW"
+          echo "Physical iPhoneOS SDK compile: PASS"
+          echo "Unsigned iPhoneOS app artifact: PRODUCED"
+          echo "Physical iPhone signing/install/runtime acceptance: NOT PROVEN BY THIS WORKFLOW"
