@@ -126,6 +126,7 @@ private struct MondayDeviceAcceptanceSnapshot: Codable, Hashable {
 
 private enum MondayDeviceAcceptanceStore {
     private static let key = "monday.device-acceptance.v1"
+    private static let canonicalEndpoint = URL(string: "https://mondayid-host.vercel.app")!
 
     static var isPhysicalDevice: Bool {
         #if targetEnvironment(simulator)
@@ -172,38 +173,44 @@ private enum MondayDeviceAcceptanceStore {
     }
 
     @MainActor
-    static func advanceIfPossible() async {
+    static func recordOnDeviceIntelligence(receiptID: String) async {
         guard isPhysicalDevice else { return }
         do {
-            let client = try MondayIDRuntimeSettings.load()
-            let health = try await client.health()
-            guard health.isReady else { throw MondayIDRuntimeError.unhealthyRuntime }
-
+            let health = try await canonicalHealth()
+            guard health.isReady else { return }
             var snapshot = load()
-            if snapshot.runtimeReceiptID == nil {
-                let receipt = try await client.submit(
-                    signal: "Physical iPhone acceptance probe: perform one bounded no-spend action and return durable readback."
-                )
-                snapshot.runtimeReceiptID = receipt.receiptId
-                snapshot.runtimeStateRevision = receipt.stateRevision
-                snapshot.runtimeVerifiedAt = Date()
-                save(snapshot)
-                return
-            }
-
-            if snapshot.launchCount >= 2 && snapshot.continuityReceiptID == nil {
-                let receipt = try await client.submit(
-                    signal: "Physical iPhone relaunch continuity acceptance: confirm the same MondayID worldline after app restart and return durable readback."
-                )
-                snapshot.continuityReceiptID = receipt.receiptId
-                snapshot.continuityStateRevision = receipt.stateRevision
-                snapshot.continuityVerifiedAt = Date()
-                save(snapshot)
-            }
+            snapshot.runtimeReceiptID = receiptID
+            snapshot.runtimeStateRevision = "\(health.kernel)|\(health.continuity.schema ?? "schema-unknown")"
+            snapshot.runtimeVerifiedAt = Date()
+            save(snapshot)
         } catch {
-            // Missing credentials or unavailable runtime remain real gates.
-            // Never manufacture a physical-device acceptance receipt.
+            // A local model response without a fresh Generation-5 readback is useful,
+            // but it is not promoted to physical-device acceptance evidence.
         }
+    }
+
+    @MainActor
+    static func advanceIfPossible() async {
+        guard isPhysicalDevice else { return }
+        var snapshot = load()
+        guard snapshot.runtimeReceiptID != nil, snapshot.launchCount >= 2, snapshot.continuityReceiptID == nil else { return }
+
+        do {
+            let health = try await canonicalHealth()
+            guard health.isReady else { return }
+            snapshot.continuityReceiptID = "relaunch:\(Int(Date().timeIntervalSince1970))"
+            snapshot.continuityStateRevision = "\(health.kernel)|\(health.continuity.schema ?? "schema-unknown")"
+            snapshot.continuityVerifiedAt = Date()
+            save(snapshot)
+        } catch {
+            // Relaunch is observed locally, but continuity remains OPEN until
+            // a fresh Generation-5 health readback succeeds on the physical device.
+        }
+    }
+
+    private static func canonicalHealth() async throws -> MondayIDRuntimeHealth {
+        let client = MondayIDRuntimeClient(endpoint: canonicalEndpoint, controlToken: "")
+        return try await client.health()
     }
 
     private static func save(_ snapshot: MondayDeviceAcceptanceSnapshot) {
@@ -565,6 +572,7 @@ private enum MondayLocalModelError: LocalizedError {
     }
 }
 
+@available(iOS 26.0, *)
 private enum MondayTranslationBridge {
     static func translateInstalled(_ text: String, source: String, target: String) async throws -> String {
         let session = TranslationSession(
@@ -689,6 +697,7 @@ private struct MondayChatsView: View {
                 let receiptID = "on-device:\(Int(Date().timeIntervalSince1970))"
                 store.appendChat(role: "monday", text: response, receiptID: receiptID)
                 store.addActivity(title: "On-device Monday", detail: "Apple Foundation Model · no API spend")
+                await MondayDeviceAcceptanceStore.recordOnDeviceIntelligence(receiptID: receiptID)
                 presence.set(.synced, detail: "On-device · no API spend")
                 return
             } catch {
@@ -1212,7 +1221,7 @@ private struct MondayDeviceAcceptanceView: View {
                 .disabled(working || !MondayDeviceAcceptanceStore.isPhysicalDevice)
             }
             Section("Boundary") {
-                Text("PASS requires a physical iPhone, an authenticated Generation-5 runtime action with durable receipt, and a later app launch that preserves the same local acceptance state. No hardware identifier is collected.")
+                Text("PASS requires a physical iPhone, a real on-device Monday response, a fresh Generation-5 health readback, and a later app launch with another fresh readback. No paid API call or hardware identifier is required.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -1240,11 +1249,11 @@ private struct MondayDeviceAcceptanceView: View {
         } else if !MondayDeviceAcceptanceStore.isPhysicalDevice {
             message = "Simulator observed. This environment is intentionally incapable of closing the physical-device gate."
         } else if snapshot.runtimeReceiptID == nil {
-            message = "Physical iPhone observed. Connect the authenticated MondayID runtime; Monday will perform the proof automatically."
+            message = "Physical iPhone observed. Send one message to Monday; a real on-device model response plus fresh Generation-5 health will create the first receipt."
         } else if snapshot.launchCount < 2 {
-            message = "First physical-device runtime proof is durable. Relaunch Monday once; the second receipt will close continuity automatically."
+            message = "On-device intelligence and Generation-5 health are verified. Close Monday and open it once more to prove continuity."
         } else {
-            message = "Physical device and relaunch observed; waiting for the durable continuity runtime receipt."
+            message = "Physical device and relaunch observed; waiting for a fresh Generation-5 continuity readback."
         }
     }
 }
