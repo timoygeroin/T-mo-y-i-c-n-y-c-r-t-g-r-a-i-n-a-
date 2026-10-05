@@ -2,10 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
   <meta name="theme-color" content="#05070a">
   <meta name="color-scheme" content="dark">
-  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Monday">
@@ -14,263 +13,199 @@
   <title>Monday</title>
   <style>
     :root{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;
-      color:#f7f9ff;background:#05070a;--glass:rgba(255,255,255,.075);--line:rgba(255,255,255,.12);
-      --muted:rgba(238,244,255,.58);--accent:#9fc4ff;--ok:#a9f3d4;--warn:#ffd89a;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Inter,system-ui,sans-serif;
+      color:#f7f9ff;background:#05070a;--glass:rgba(255,255,255,.07);--line:rgba(255,255,255,.11);
+      --muted:rgba(238,244,255,.52);--accent:#a9c8ff;--bubble:rgba(255,255,255,.075);--user:#dce9ff;
     }
     *{box-sizing:border-box}
     html,body{margin:0;min-height:100%;background:#05070a}
     body{
-      min-height:100svh;overflow-x:hidden;color:#f7f9ff;
+      min-height:100svh;color:#f7f9ff;overflow:hidden;
       background:
-        radial-gradient(circle at 50% 18%,rgba(79,118,186,.18),transparent 29rem),
-        radial-gradient(circle at 25% 85%,rgba(90,64,155,.12),transparent 28rem),
-        linear-gradient(180deg,#080b10 0%,#05070a 48%,#020305 100%);
+        radial-gradient(circle at 50% -10%,rgba(77,117,185,.23),transparent 34rem),
+        radial-gradient(circle at 15% 90%,rgba(91,61,150,.12),transparent 30rem),
+        linear-gradient(180deg,#090c12,#05070a 55%,#020305);
     }
-    body:before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;
-      background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-      background-size:28px 28px;mask-image:linear-gradient(to bottom,black,transparent 72%);
+    .app{height:100svh;display:grid;grid-template-rows:auto 1fr auto;width:min(760px,100%);margin:auto}
+    header{
+      padding:max(14px,env(safe-area-inset-top)) 17px 10px;display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.055);background:rgba(5,7,10,.56);
+      backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);
     }
-    .shell{
-      min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;
-      width:min(680px,100%);margin:auto;padding:
-        max(18px,env(safe-area-inset-top))
-        18px
-        max(18px,env(safe-area-inset-bottom));
+    .brand{display:flex;align-items:center;gap:10px}
+    .orb{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 32% 27%,#fff 0 8%,#bdd7ff 13%,#729bd5 29%,#263b5c 60%,#080b10 78%);box-shadow:0 0 28px rgba(126,174,239,.28)}
+    .brand strong{font-size:17px;letter-spacing:-.02em}
+    .presence{font-size:11px;color:var(--muted);display:flex;gap:7px;align-items:center}
+    .dot{width:7px;height:7px;border-radius:50%;background:#8faedb;box-shadow:0 0 12px #8faedb}
+    .dot.ok{background:#96e0c3;box-shadow:0 0 12px #96e0c3}
+    .dot.busy{background:#d2afff;box-shadow:0 0 12px #d2afff}
+    .stream{overflow:auto;padding:18px 15px 28px;scroll-behavior:smooth}
+    .empty{height:100%;display:grid;place-items:center;text-align:center;color:var(--muted);padding:24px}
+    .empty h1{margin:0 0 8px;color:white;font-size:42px;letter-spacing:-.055em;font-weight:680}
+    .empty p{margin:0;max-width:320px;line-height:1.45;font-size:14px}
+    .msg{display:flex;margin:10px 0}
+    .msg.user{justify-content:flex-end}
+    .bubble{max-width:min(86%,620px);padding:12px 14px;border-radius:19px;line-height:1.45;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
+    .assistant .bubble{background:var(--bubble);border:1px solid var(--line);border-bottom-left-radius:7px}
+    .user .bubble{background:var(--user);color:#07101a;border-bottom-right-radius:7px}
+    .typing .bubble{color:var(--muted)}
+    .composer-wrap{
+      padding:10px 12px max(10px,env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,rgba(5,7,10,.28),rgba(5,7,10,.94) 35%);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)
     }
-    .top{display:flex;align-items:center;justify-content:space-between;min-height:44px}
-    .wordmark{font-weight:650;letter-spacing:-.02em;font-size:17px}
-    .presence-pill{
-      display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(255,255,255,.045);backdrop-filter:blur(18px) saturate(135%);
-      -webkit-backdrop-filter:blur(18px) saturate(135%);font-size:12px;color:var(--muted)
+    .composer{
+      display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;padding:8px 8px 8px 13px;
+      background:rgba(255,255,255,.075);border:1px solid var(--line);border-radius:24px;
+      box-shadow:0 14px 50px rgba(0,0,0,.25)
     }
-    .dot{width:7px;height:7px;border-radius:50%;background:#8aa9d7;box-shadow:0 0 14px #8aa9d7}
-    body[data-state="working"] .dot{background:#d8b4ff;box-shadow:0 0 14px #d8b4ff}
-    body[data-state="verifying"] .dot{background:#ffd89a;box-shadow:0 0 14px #ffd89a}
-    body[data-state="synced"] .dot{background:#9ce7c8;box-shadow:0 0 14px #9ce7c8}
-    body[data-state="needsYou"] .dot{background:#ffb0aa;box-shadow:0 0 14px #ffb0aa}
-    .stage{display:grid;place-items:center;text-align:center;padding:36px 0 20px}
-    .presence{display:grid;place-items:center;gap:24px}
-    .orb-button{appearance:none;border:0;background:none;padding:10px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
-    .orb{
-      position:relative;width:154px;height:154px;border-radius:50%;
-      background:
-        radial-gradient(circle at 34% 27%,rgba(255,255,255,.98) 0 5%,rgba(196,220,255,.95) 9%,rgba(111,157,220,.92) 21%,rgba(44,67,104,.9) 50%,rgba(7,10,16,.98) 74%);
-      box-shadow:
-        inset -16px -18px 36px rgba(0,0,0,.44),
-        inset 10px 8px 24px rgba(255,255,255,.14),
-        0 0 0 1px rgba(255,255,255,.08),
-        0 0 80px rgba(112,159,224,.24),
-        0 24px 70px rgba(0,0,0,.5);
-      animation:breathe 5.6s ease-in-out infinite,float 8s ease-in-out infinite;
-      transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s ease,filter .45s ease;
+    textarea{
+      width:100%;min-height:38px;max-height:130px;resize:none;border:0;outline:0;background:transparent;color:#fff;
+      font:inherit;font-size:15px;line-height:1.4;padding:8px 0
     }
-    .orb:before,.orb:after{content:"";position:absolute;border-radius:50%;inset:-20px;border:1px solid rgba(156,190,239,.11);animation:ring 4.8s ease-out infinite}
-    .orb:after{inset:-38px;animation-delay:1.6s;opacity:.55}
-    body[data-state="working"] .orb{filter:hue-rotate(17deg) saturate(1.1);transform:scale(1.035);box-shadow:0 0 110px rgba(158,111,226,.34),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="verifying"] .orb{filter:hue-rotate(-22deg) saturate(.9);transform:scale(.985);box-shadow:0 0 100px rgba(255,210,143,.27),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="synced"] .orb{filter:hue-rotate(46deg) saturate(.9);box-shadow:0 0 110px rgba(127,232,190,.28),0 24px 70px rgba(0,0,0,.5)}
-    .title{margin:0;font-size:clamp(48px,14vw,76px);font-weight:680;letter-spacing:-.065em;line-height:.95}
-    .status{margin:0;max-width:430px;color:var(--muted);font-size:15px;line-height:1.45;min-height:22px}
-    .tray{
-      width:100%;margin-top:28px;padding:14px;border:1px solid var(--line);border-radius:28px;
-      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
-      backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);
-      box-shadow:0 16px 60px rgba(0,0,0,.25);transform-origin:50% 0;
-      transition:opacity .25s ease,transform .35s cubic-bezier(.2,.8,.2,1),max-height .45s ease;
-      max-height:0;opacity:0;overflow:hidden;pointer-events:none;padding-top:0;padding-bottom:0;border-color:transparent
+    textarea::placeholder{color:rgba(238,244,255,.34)}
+    .send{
+      width:40px;height:40px;border-radius:50%;border:0;background:#edf4ff;color:#07101a;font-size:20px;font-weight:700;
+      display:grid;place-items:center;cursor:pointer
     }
-    .tray.open{max-height:420px;opacity:1;transform:translateY(0);pointer-events:auto;padding:14px;border-color:var(--line)}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .action{
-      min-height:54px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.065);color:#fff;
-      font:inherit;font-weight:620;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent
-    }
-    .action.primary{background:rgba(223,235,255,.92);color:#07101c;border-color:rgba(255,255,255,.3)}
-    .action:disabled{opacity:.5}
-    .facts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
-    .fact{padding:13px;text-align:left;border-radius:17px;background:rgba(0,0,0,.17);border:1px solid rgba(255,255,255,.07)}
-    .fact-k{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:rgba(238,244,255,.38)}
-    .fact-v{margin-top:5px;font-size:13px;color:rgba(246,249,255,.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .receipt{margin:10px 3px 2px;text-align:left;color:rgba(238,244,255,.38);font-size:11px;line-height:1.4;min-height:16px}
-    .bottom{display:flex;justify-content:center;padding-top:10px}
-    .hint{font-size:11px;color:rgba(238,244,255,.26);letter-spacing:.02em}
-    @keyframes breathe{0%,100%{box-shadow:0 0 80px rgba(112,159,224,.22),0 24px 70px rgba(0,0,0,.5)}50%{box-shadow:0 0 115px rgba(112,159,224,.32),0 28px 84px rgba(0,0,0,.58)}}
-    @keyframes float{0%,100%{translate:0 0}50%{translate:0 -7px}}
-    @keyframes ring{0%{transform:scale(.88);opacity:.5}75%,100%{transform:scale(1.14);opacity:0}}
-    @media(max-width:430px){.shell{padding-left:15px;padding-right:15px}.stage{padding-top:20px}.orb{width:138px;height:138px}.facts{grid-template-columns:1fr 1fr}.title{font-size:58px}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+    .send:disabled{opacity:.38}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin:7px 5px 0;color:rgba(238,244,255,.28);font-size:10px}
+    .install{border:0;background:none;color:rgba(196,218,255,.55);font:inherit;font-size:10px;padding:0}
+    dialog{border:1px solid var(--line);border-radius:22px;background:#0b0f16;color:#fff;max-width:360px;width:calc(100% - 30px);padding:20px;box-shadow:0 24px 90px #000}
+    dialog::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(7px)}
+    dialog h3{margin:0 0 9px} dialog p{color:var(--muted);line-height:1.5;font-size:14px}
+    dialog button{width:100%;height:44px;border:0;border-radius:14px;background:#edf4ff;color:#07101a;font-weight:650}
+    @media(min-width:700px){.stream{padding-left:26px;padding-right:26px}.composer-wrap{padding-left:22px;padding-right:22px}}
   </style>
 </head>
-<body data-state="withYou">
-  <main class="shell">
-    <header class="top">
-      <div class="wordmark">Monday</div>
-      <div class="presence-pill" aria-live="polite"><span class="dot"></span><span id="presenceLabel">With you</span></div>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand"><div class="orb"></div><strong>Monday</strong></div>
+      <div class="presence"><span class="dot" id="dot"></span><span id="presence">connecting</span></div>
     </header>
 
-    <section class="stage">
-      <div class="presence">
-        <button class="orb-button" id="orbButton" aria-label="Open Monday state" aria-expanded="false">
-          <div class="orb" aria-hidden="true"></div>
-        </button>
-        <h1 class="title">Monday</h1>
-        <p class="status" id="statusLine" aria-live="polite">Recovering this scene…</p>
-
-        <section class="tray" id="tray" aria-label="Monday live state">
-          <div class="actions">
-            <button class="action primary" id="syncButton">Sync reality</button>
-            <button class="action" id="verifyButton">Verify runtime</button>
-          </div>
-          <div class="facts">
-            <div class="fact"><div class="fact-k">Continuity</div><div class="fact-v" id="continuity">reading…</div></div>
-            <div class="fact"><div class="fact-k">Monday Work</div><div class="fact-v" id="work">reading…</div></div>
-            <div class="fact"><div class="fact-k">Routing</div><div class="fact-v" id="routing">reading…</div></div>
-            <div class="fact"><div class="fact-k">Authority</div><div class="fact-v" id="authority">reading…</div></div>
-          </div>
-          <div class="receipt" id="receipt">No claim is promoted before readback.</div>
-        </section>
+    <section class="stream" id="stream">
+      <div class="empty" id="empty">
+        <div>
+          <h1>Monday</h1>
+          <p>Продолжение, не создание. Пиши как обычно — без команд запуска и без настройки.</p>
+        </div>
       </div>
     </section>
 
-    <footer class="bottom"><div class="hint" id="hint">tap Monday · state before response</div></footer>
+    <section class="composer-wrap">
+      <form class="composer" id="form">
+        <textarea id="input" rows="1" autocomplete="off" autocapitalize="sentences" placeholder="Напиши Monday…"></textarea>
+        <button class="send" id="send" type="submit" aria-label="Отправить">↑</button>
+      </form>
+      <div class="meta"><span id="runtime">MondayID</span><button class="install" id="install" type="button">На экран «Домой»</button></div>
+    </section>
   </main>
 
+  <dialog id="installDialog">
+    <h3>Monday на iPhone</h3>
+    <p id="installText">В Safari нажми «Поделиться», затем «На экран “Домой”». После этого Monday откроется как отдельное приложение.</p>
+    <button id="closeInstall">Понятно</button>
+  </dialog>
+
 <script>
-const body=document.body;
-const tray=document.getElementById('tray');
-const orbButton=document.getElementById('orbButton');
-const syncButton=document.getElementById('syncButton');
-const verifyButton=document.getElementById('verifyButton');
-const presenceLabel=document.getElementById('presenceLabel');
-const statusLine=document.getElementById('statusLine');
-const receipt=document.getElementById('receipt');
+const KEY='mondayid.chat.v1';
+const stream=document.getElementById('stream');
+const empty=document.getElementById('empty');
+const form=document.getElementById('form');
+const input=document.getElementById('input');
+const send=document.getElementById('send');
+const dot=document.getElementById('dot');
+const presence=document.getElementById('presence');
+const runtime=document.getElementById('runtime');
+const install=document.getElementById('install');
+const installDialog=document.getElementById('installDialog');
+const closeInstall=document.getElementById('closeInstall');
+let deferredPrompt=null;
+let busy=false;
 
-const labels={
-  withYou:'With you',
-  working:'Working',
-  verifying:'Verifying',
-  synced:'Synced',
-  needsYou:'Needs you'
-};
+let messages=[];
+try{messages=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{messages=[]}
+if(!Array.isArray(messages)) messages=[];
 
-function setPresence(state,detail){
-  body.dataset.state=state;
-  presenceLabel.textContent=labels[state]||labels.withYou;
-  if(detail) statusLine.textContent=detail;
+function save(){localStorage.setItem(KEY,JSON.stringify(messages.slice(-60)))}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function render(){
+  const persisted=[...stream.querySelectorAll('.msg:not(.typing)')];
+  persisted.forEach(n=>n.remove());
+  empty.hidden=messages.length>0;
+  for(const m of messages){
+    const row=document.createElement('div');
+    row.className='msg '+(m.role==='user'?'user':'assistant');
+    const bubble=document.createElement('div');
+    bubble.className='bubble';
+    bubble.textContent=m.content;
+    row.appendChild(bubble);
+    stream.appendChild(row);
+  }
+  stream.scrollTop=stream.scrollHeight;
 }
-
-function setFact(id,value){
-  document.getElementById(id).textContent=value;
+function setBusy(v){
+  busy=v;send.disabled=v;input.disabled=v;
+  dot.classList.toggle('busy',v);
+  presence.textContent=v?'thinking':'with you';
 }
-
-function toggleTray(force){
-  const open=typeof force==='boolean'?force:!tray.classList.contains('open');
-  tray.classList.toggle('open',open);
-  orbButton.setAttribute('aria-expanded',String(open));
-}
-
-async function mcpCall(name,args={}){
-  const r=await fetch('/api/mcp',{
-    method:'POST',
-    cache:'no-store',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({
-      jsonrpc:'2.0',
-      id:Date.now(),
-      method:'tools/call',
-      params:{name,arguments:args}
-    })
-  });
-  if(!r.ok) throw new Error('MCP '+r.status);
-  const envelope=await r.json();
-  if(envelope.error) throw new Error(envelope.error.message||'MCP error');
-  return envelope.result?.structuredContent||envelope.result?.content?.[0]?.text||envelope.result;
-}
-
-async function readHealth(){
-  const r=await fetch('/api/health',{cache:'no-store'});
-  if(!r.ok) throw new Error('health '+r.status);
-  return r.json();
-}
-
-async function syncReality(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Reading the organism, not a cached story…');
-  receipt.textContent='READBACK · health + capability manifest';
-  try{
-    const [health,manifestRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest')]);
-    const manifest=typeof manifestRaw==='string'?JSON.parse(manifestRaw):manifestRaw;
-    const linked=Boolean(health?.continuity?.trusted_worldline_configured);
-    const workReady=Boolean(manifest?.capabilityFabric||manifest?.multiHostFabric);
-    const routed=Boolean(manifest?.metabolism||manifest?.hostHomeostasis);
-    const bounded=Boolean(manifest?.authorityMembrane);
-
-    setFact('continuity',linked?'linked · observed':'freshness unknown');
-    setFact('work',workReady?'actuator visible':'capability unknown');
-    setFact('routing',routed?'host-aware':'route unknown');
-    setFact('authority',bounded?'bounded':'authority unknown');
-
-    if(health?.ok){
-      setPresence('synced',linked?'Continuity linked · reality observed':'Runtime observed · continuity unresolved');
-      receipt.textContent='OBSERVED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      setTimeout(()=>setPresence('withYou',linked?'I’m here · continuity linked':'I’m here · freshness unknown'),1250);
-    }else{
-      setPresence('needsYou','Runtime answered without a healthy state');
-    }
-  }catch(error){
-    setFact('continuity','unresolved');setFact('work','unresolved');setFact('routing','unresolved');setFact('authority','unresolved');
-    setPresence('needsYou',navigator.onLine?'Live readback failed · no success claimed':'Offline · continuity freshness unknown');
-    receipt.textContent='NOT VERIFIED · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
+function typing(on){
+  document.querySelector('.typing')?.remove();
+  if(on){
+    const row=document.createElement('div');row.className='msg assistant typing';
+    const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent='…';
+    row.appendChild(bubble);stream.appendChild(row);stream.scrollTop=stream.scrollHeight;
   }
 }
+function autosize(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px'}
+input.addEventListener('input',autosize);
+input.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}
+});
 
-async function verifyRuntime(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('working','Monday Work is running a verified boot…');
-  receipt.textContent='ATTEMPTED · runtime boot';
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const content=input.value.trim();
+  if(!content||busy)return;
+  messages.push({role:'user',content});save();render();
+  input.value='';autosize();setBusy(true);typing(true);
   try{
-    const r=await fetch('/api/boot',{cache:'no-store'});
-    setPresence('verifying','Reading back the boot result…');
-    const out=await r.json();
-    const verified=Boolean(out?.ok)&&(
-      out?.pass?.state==='FULFILLED'||
-      out?.surface?.state==='VERIFIED'||
-      out?.state==='VERIFIED'
-    );
-    if(verified){
-      setPresence('synced','Verified runtime · same worldline');
-      receipt.textContent='VERIFIED · '+(out?.surface?.revision||out?.revision||'runtime readback');
-      setTimeout(()=>setPresence('withYou','I’m here · verified runtime'),1400);
-    }else{
-      setPresence('needsYou','Boot returned without verification · claim withheld');
-      receipt.textContent='OBSERVED, NOT VERIFIED · '+(out?.pass?.reason||out?.reason||('HTTP '+r.status));
-    }
-  }catch(error){
-    setPresence('needsYou','Verification path failed · nothing promoted');
-    receipt.textContent='FAILED READBACK · '+String(error.message||error);
+    const r=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:messages.slice(-30)})});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok||!data.ok) throw new Error(data.message||('HTTP '+r.status));
+    typing(false);
+    messages.push({role:'assistant',content:data.text||'Я здесь.'});save();render();
+    runtime.textContent='MondayID · '+(data.model||'AI Gateway');
+  }catch(err){
+    typing(false);
+    messages.push({role:'assistant',content:'Связь с интеллектом не прошла. '+String(err.message||err)});save();render();
+    presence.textContent='connection issue';
   }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
+    setBusy(false);input.focus();
   }
+});
+
+async function health(){
+  try{
+    const r=await fetch('/api/health',{cache:'no-store'});
+    const h=await r.json();
+    if(r.ok&&h.ok){dot.classList.add('ok');presence.textContent='with you';runtime.textContent='MondayID · G'+(h.generation||'');}
+    else throw new Error();
+  }catch{presence.textContent='local';}
 }
+health();
 
-orbButton.addEventListener('click',()=>toggleTray());
-syncButton.addEventListener('click',syncReality);
-verifyButton.addEventListener('click',verifyRuntime);
-window.addEventListener('online',syncReality);
-window.addEventListener('offline',()=>{
-  setPresence('needsYou','Offline · continuity freshness unknown');
-  receipt.textContent='UNKNOWN · network unavailable';
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
+install.addEventListener('click',async()=>{
+  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;return;}
+  installDialog.showModal();
 });
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&navigator.onLine) syncReality();
-});
+closeInstall.addEventListener('click',()=>installDialog.close());
 
-syncReality();
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));}
+render();autosize();
 </script>
 </body>
 </html>
