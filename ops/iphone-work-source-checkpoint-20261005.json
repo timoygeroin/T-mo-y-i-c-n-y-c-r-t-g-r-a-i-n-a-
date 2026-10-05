@@ -1,0 +1,36 @@
+{
+  "schema": "mondayid.work-source-checkpoint.v1",
+  "at": "2026-10-05T17:42:53.150Z",
+  "files": [
+    {
+      "path": "src/work-readiness.mjs",
+      "sha256": "ebd298b79e220629b979f3c8f8d0489c699b90e3057b217ffee506fc48ef2820"
+    },
+    {
+      "path": "api/status.mjs",
+      "sha256": "0d177411dc11c7208d9f1df3d11ea57c98d8f53be1cfac8998b0b3a4367aa42a"
+    },
+    {
+      "path": "api/mcp.mjs",
+      "sha256": "2856994e03d1b6b4c7f32ff528e6050b92720ddef355b7bc843ed63a25bfbad7"
+    },
+    {
+      "path": "src/execution/computer-task-runner.mjs",
+      "sha256": "65348679e8262899831b51a40fa0fdb3dbf03c754ad5cbdbd444f0cd8140a5be"
+    },
+    {
+      "path": "index.html",
+      "sha256": "bf80a9f0390a9425e7102fa7e05d4f2a2fab7c4deaf6c7f05602eb974627e41c"
+    },
+    {
+      "path": "plugins/monday-work/skills/mondayid/SKILL.md",
+      "sha256": "202adac7fe0c2699dd3e8d9a8b1fa56736adc6364179f4e781a99c73ddbcc69d"
+    },
+    {
+      "path": "plugins/monday-work/plugin.json",
+      "sha256": "120fd09f633864506f30146ae4eed061f0496cab99c9246f9421d996fdfef443"
+    }
+  ],
+  "scope": "source-integrity-only",
+  "physicalDeviceAcceptance": false
+}

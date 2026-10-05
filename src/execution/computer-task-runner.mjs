@@ -108,9 +108,11 @@ const receipt={
   },
   verification,
   runner:{
-    kind:'github-actions-bootstrap',
+    kind:process.env.GITHUB_ACTIONS==='true'?'github-actions-bootstrap':'host-workspace',
     ownedContract:'mondayid-computer-fabric',
-    externalSubstrate:'github-actions',
+    externalSubstrate:process.env.GITHUB_ACTIONS==='true'?'github-actions':'current-host',
+    userComputerRequired:false,
+    physicalDeviceAcceptance:false,
     commit:process.env.GITHUB_SHA || null,
     runId:process.env.GITHUB_RUN_ID || null
   },

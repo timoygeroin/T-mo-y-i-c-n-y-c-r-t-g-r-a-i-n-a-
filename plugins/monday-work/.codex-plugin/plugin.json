@@ -1,0 +1,28 @@
+{
+  "name": "monday-work",
+  "version": "1.2.0",
+  "description": "MondayID continuity and execution through available host tools, with iPhone-first operation and optional remote MCP recovery.",
+  "author": {
+    "name": "Workspace upload"
+  },
+  "interface": {
+    "displayName": "monday-work",
+    "shortDescription": "One MondayID across hosts; recover, compile, act, verify, evolve.",
+    "longDescription": "One Monday across phone and cloud. Execute tasks with the current host's available tools, recover shared evidence through supported sources, verify the effect, and save continuation. The remote MCP endpoint supports continuity and bounded operations; it is not a requirement to use a personal computer.",
+    "developerName": "Workspace upload",
+    "category": "Other",
+    "capabilities": [],
+    "defaultPrompt": null
+  },
+  "keywords": [
+    "mondayid",
+    "continuity",
+    "mcp",
+    "work",
+    "capability",
+    "evolution",
+    "compiler"
+  ],
+  "skills": "./skills",
+  "mcpServers": "./.mcp.json"
+}

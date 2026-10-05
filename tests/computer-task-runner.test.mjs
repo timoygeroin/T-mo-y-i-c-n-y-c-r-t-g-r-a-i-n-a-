@@ -18,7 +18,8 @@ function run(args,{cwd,env={}}={}) {
   });
 }
 
-test('computer task runner writes VERIFIED receipt only after independent readback', async () => {
+for(const [githubActions,expectedSubstrate] of [['true','github-actions'],['false','current-host']]) {
+test(`computer task runner independently verifies work on ${expectedSubstrate}`, async () => {
   const root=await mkdtemp(join(tmpdir(),'mondayid-task-runner-'));
   try {
     await mkdir(join(root,'computer','requests'),{recursive:true});
@@ -40,18 +41,21 @@ test('computer task runner writes VERIFIED receipt only after independent readba
     const requestPath=join(root,'computer','requests','self-test.json');
     await writeFile(requestPath,JSON.stringify(request),'utf8');
 
-    const out=await run(['computer/requests/self-test.json'],{cwd:root,env:{GITHUB_SHA:'proof-sha',GITHUB_RUN_ID:'proof-run'}});
+    const out=await run(['computer/requests/self-test.json'],{cwd:root,env:{GITHUB_ACTIONS:githubActions,GITHUB_SHA:'proof-sha',GITHUB_RUN_ID:'proof-run'}});
     assert.equal(out.code,0,out.stderr);
     const receipt=JSON.parse(await readFile(join(root,'computer','receipts','self-test.json'),'utf8'));
     assert.equal(receipt.status,'VERIFIED');
     assert.equal(receipt.execution.ok,true);
     assert.equal(receipt.verification.ok,true);
     assert.equal(receipt.verification.mode,'independent-process-readback');
-    assert.equal(receipt.runner.externalSubstrate,'github-actions');
+    assert.equal(receipt.runner.externalSubstrate,expectedSubstrate);
+    assert.equal(receipt.runner.userComputerRequired,false);
+    assert.equal(receipt.runner.physicalDeviceAcceptance,false);
   } finally {
     await rm(root,{recursive:true,force:true});
   }
 });
+}
 
 test('computer task runner fails closed when verification cannot prove the effect', async () => {
   const root=await mkdtemp(join(tmpdir(),'mondayid-task-runner-'));

@@ -1,4 +1,5 @@
 import { describeHost } from '../src/host-adapter.mjs';
+import { describeWorkReadiness } from '../src/work-readiness.mjs';
 
 export default async function handler(_req,res){
   res.setHeader('Cache-Control','no-store');
@@ -12,6 +13,7 @@ export default async function handler(_req,res){
       status:'/api/status'
     },
     host,
+    work:describeWorkReadiness(),
     selfCheck:{
       health:'PASS',
       mcpEndpoint:'PENDING_EXTERNAL_READBACK',

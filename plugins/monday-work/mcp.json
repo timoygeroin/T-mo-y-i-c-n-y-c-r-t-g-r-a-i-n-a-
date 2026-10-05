@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "monday-work": {
+      "type": "streamable-http",
+      "url": "https://mondayid-host.vercel.app/api/mcp"
+    }
+  }
+}

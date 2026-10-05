@@ -201,22 +201,21 @@ async function syncReality(){
   setPresence('verifying','Reading the organism, not a cached story…');
   receipt.textContent='READBACK · health + capability manifest';
   try{
-    const [health,manifestRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest')]);
+    const [health,manifestRaw,stateRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest'),mcpCall('get_state',{limit:1})]);
     const manifest=typeof manifestRaw==='string'?JSON.parse(manifestRaw):manifestRaw;
-    const linked=Boolean(health?.continuity?.trusted_worldline_configured);
-    const workReady=Boolean(manifest?.capabilityFabric||manifest?.multiHostFabric);
+    const state=typeof stateRaw==='string'?JSON.parse(stateRaw):stateRaw;
+    const linked=Boolean(state?.ok&&state?.snapshot?.schema===health?.continuity?.schema&&state?.snapshot?.trust==='AUTHENTICATED_MACHINE_WRITER');
     const routed=Boolean(manifest?.metabolism||manifest?.hostHomeostasis);
     const bounded=Boolean(manifest?.authorityMembrane);
 
-    setFact('continuity',linked?'linked · observed':'freshness unknown');
-    setFact('work',workReady?'actuator visible':'capability unknown');
-    setFact('routing',routed?'host-aware':'route unknown');
+    setFact('continuity',linked?'shared context read':'freshness unknown');
+    setFact('work','uses current chat tools');
+    setFact('routing',routed?'routing rules loaded':'route unknown');
     setFact('authority',bounded?'bounded':'authority unknown');
 
     if(health?.ok){
-      setPresence('synced',linked?'Continuity linked · reality observed':'Runtime observed · continuity unresolved');
+      setPresence('withYou',linked?'Shared context read · work continues in your chat':'Server available · shared context unresolved');
       receipt.textContent='OBSERVED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      setTimeout(()=>setPresence('withYou',linked?'I’m here · continuity linked':'I’m here · freshness unknown'),1250);
     }else{
       setPresence('needsYou','Runtime answered without a healthy state');
     }
@@ -231,7 +230,7 @@ async function syncReality(){
 
 async function verifyRuntime(){
   syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('working','Monday Work is running a verified boot…');
+  setPresence('verifying','Checking runtime access…');
   receipt.textContent='ATTEMPTED · runtime boot';
   try{
     const r=await fetch('/api/boot',{cache:'no-store'});
@@ -243,9 +242,8 @@ async function verifyRuntime(){
       out?.state==='VERIFIED'
     );
     if(verified){
-      setPresence('synced','Verified runtime · same worldline');
+      setPresence('withYou','Runtime check complete · tasks use your chat tools');
       receipt.textContent='VERIFIED · '+(out?.surface?.revision||out?.revision||'runtime readback');
-      setTimeout(()=>setPresence('withYou','I’m here · verified runtime'),1400);
     }else{
       setPresence('needsYou','Boot returned without verification · claim withheld');
       receipt.textContent='OBSERVED, NOT VERIFIED · '+(out?.pass?.reason||out?.reason||('HTTP '+r.status));

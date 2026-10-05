@@ -1,0 +1,83 @@
+{
+  "schema": "mondayid.computer-receipt.v1",
+  "id": "iphone-host-work-20261005",
+  "requestPath": "computer/requests/iphone-host-work-20261005.json",
+  "requestFingerprint": "3ae0409ed99066fb8bbc4804179cdb5aa0bf7669049451da13f28ea93375daf1",
+  "effect": "persist the changed Monday Work source checkpoint and independently validate every file hash from a separate process",
+  "routeKind": "workspace-exec",
+  "status": "VERIFIED",
+  "supported": true,
+  "execution": {
+    "ok": true,
+    "code": null,
+    "receptor": "mondayid-process-computer",
+    "result": {
+      "ok": true,
+      "effect": "persist the changed Monday Work source checkpoint and independently validate every file hash from a separate process",
+      "evidence": {
+        "mode": "bounded-process-workspace",
+        "execution": {
+          "status": "completed",
+          "command": "node",
+          "args": [
+            "--input-type=module",
+            "-e",
+            "import fs from 'node:fs';import crypto from 'node:crypto';const paths=[\"src/work-readiness.mjs\",\"api/status.mjs\",\"api/mcp.mjs\",\"src/execution/computer-task-runner.mjs\",\"index.html\",\"plugins/monday-work/skills/mondayid/SKILL.md\",\"plugins/monday-work/plugin.json\"];const files=paths.map(path=>({path,sha256:crypto.createHash('sha256').update(fs.readFileSync(path)).digest('hex')}));const out={schema:'mondayid.work-source-checkpoint.v1',at:new Date().toISOString(),files,scope:'source-integrity-only',physicalDeviceAcceptance:false};fs.writeFileSync('ops/iphone-work-source-checkpoint-20261005.json',JSON.stringify(out,null,2)+'\\n');console.log('Source checkpoint saved');"
+          ],
+          "cwd": "/workspace/scratch/a09e32873f41/mondayid",
+          "exitCode": 0,
+          "signal": null,
+          "stdout": "Source checkpoint saved\n",
+          "stderr": "",
+          "durationMs": 166
+        },
+        "verificationRequest": {
+          "command": "python3",
+          "args": [
+            "-c",
+            "import json,hashlib,pathlib; d=json.loads(pathlib.Path('ops/iphone-work-source-checkpoint-20261005.json').read_text()); assert d['schema']=='mondayid.work-source-checkpoint.v1'; assert len(d['files'])==7; assert all(hashlib.sha256(pathlib.Path(f['path']).read_bytes()).hexdigest()==f['sha256'] for f in d['files']); assert not d['physicalDeviceAcceptance']; print('SOURCE_CHECKPOINT_VERIFIED',end='')"
+          ]
+        },
+        "acceptance": {
+          "stdoutEquals": "SOURCE_CHECKPOINT_VERIFIED",
+          "stderrEmpty": true
+        },
+        "executionFingerprint": "a466a82520b92616",
+        "verificationFingerprint": "47201d4df07868fb"
+      }
+    }
+  },
+  "verification": {
+    "ok": true,
+    "code": null,
+    "mode": "independent-process-readback",
+    "executionFingerprint": "a466a82520b92616",
+    "verificationFingerprint": "47201d4df07868fb",
+    "readback": {
+      "status": "completed",
+      "command": "python3",
+      "args": [
+        "-c",
+        "import json,hashlib,pathlib; d=json.loads(pathlib.Path('ops/iphone-work-source-checkpoint-20261005.json').read_text()); assert d['schema']=='mondayid.work-source-checkpoint.v1'; assert len(d['files'])==7; assert all(hashlib.sha256(pathlib.Path(f['path']).read_bytes()).hexdigest()==f['sha256'] for f in d['files']); assert not d['physicalDeviceAcceptance']; print('SOURCE_CHECKPOINT_VERIFIED',end='')"
+      ],
+      "cwd": "/workspace/scratch/a09e32873f41/mondayid",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "SOURCE_CHECKPOINT_VERIFIED",
+      "stderr": "",
+      "durationMs": 85
+    },
+    "receptor": "mondayid-process-computer",
+    "mux": "mondayid-computer-fabric"
+  },
+  "runner": {
+    "kind": "host-workspace",
+    "ownedContract": "mondayid-computer-fabric",
+    "externalSubstrate": "current-host",
+    "userComputerRequired": false,
+    "physicalDeviceAcceptance": false,
+    "commit": null,
+    "runId": null
+  },
+  "at": "2026-10-05T17:42:53.252Z"
+}

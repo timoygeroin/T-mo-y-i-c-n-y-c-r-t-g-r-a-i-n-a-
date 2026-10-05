@@ -3,11 +3,12 @@ import { describeHost } from '../src/host-adapter.mjs';
 import { fetchWorldlineSnapshot } from '../src/remote-worldline.mjs';
 import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
 import { compileProjectLineage, projectToCapabilityDelta } from '../src/everything-compiler.mjs';
+import { describeWorkReadiness } from '../src/work-readiness.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
 const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
 
-const serverInfo = Object.freeze({ name:'monday-work', version:'1.1.0' });
+const serverInfo = Object.freeze({ name:'monday-work', version:'1.2.0' });
 const protocolVersion = '2025-03-26';
 
 const tools = Object.freeze([
@@ -62,6 +63,7 @@ async function callTool(name, args = {}) {
   if (name === 'capability_manifest') {
     const value = {
       schema:'mondayid.capability-manifest.runtime.v1',
+      workDelivery:describeWorkReadiness(),
       capabilityFabric:system.capability_fabric || null,
       multiHostFabric:system.multi_host_fabric || null,
       computerFabric:system.computer_fabric || null,

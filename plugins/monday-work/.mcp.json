@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "monday-work": {
+      "type": "streamable-http",
+      "url": "https://mondayid-host.vercel.app/api/mcp",
+      "headers": {}
+    }
+  }
+}
