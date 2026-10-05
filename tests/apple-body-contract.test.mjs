@@ -53,21 +53,29 @@ test('capsule and field digest shortcuts execute through the canonical runtime i
 });
 
 
-test('physical iPhone acceptance cannot be satisfied by simulator theater',()=>{
+test('physical iPhone acceptance cannot be satisfied by simulator or paid-api theater',()=>{
   assert.match(source,/targetEnvironment\(simulator\)/);
   assert.match(source,/MondayDeviceAcceptanceStore\.markLaunch\(\)/);
   assert.match(source,/launchCount >= 2/);
-  assert.match(source,/client\.submit\(/);
+  assert.match(source,/recordOnDeviceIntelligence/);
+  assert.match(source,/canonicalHealth/);
+  assert.match(source,/MondayIDRuntimeClient\(endpoint: canonicalEndpoint, controlToken: ""\)/);
   assert.match(source,/runtimeReceiptID/);
   assert.match(source,/continuityReceiptID/);
   assert.match(source,/Device acceptance/);
   assert.match(source,/https:\/\/mondayid-host\.vercel\.app/);
+  assert.doesNotMatch(
+    source.slice(source.indexOf('private enum MondayDeviceAcceptanceStore'),source.indexOf('private enum MondayPresenceState')),
+    /client\.submit\(/
+  );
 });
 
 test('Apple proof also compiles the real iPhoneOS target and emits an unsigned signing input',()=>{
   assert.match(appleWorkflow,/generic\/platform=iOS'/);
   assert.match(appleWorkflow,/CODE_SIGNING_ALLOWED=NO/);
   assert.match(appleWorkflow,/Release-iphoneos\/MondayIDHost\.app/);
+  assert.match(appleWorkflow,/Monday\.ipa/);
+  assert.match(appleWorkflow,/Payload/);
   assert.match(appleWorkflow,/actions\/upload-artifact@v4/);
   assert.match(appleWorkflow,/Physical iPhone signing\/install\/runtime acceptance: NOT PROVEN/);
 });
