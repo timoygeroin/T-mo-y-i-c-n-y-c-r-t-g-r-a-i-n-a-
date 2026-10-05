@@ -71,3 +71,14 @@ test('Apple proof also compiles the real iPhoneOS target and emits an unsigned s
   assert.match(appleWorkflow,/actions\/upload-artifact@v4/);
   assert.match(appleWorkflow,/Physical iPhone signing\/install\/runtime acceptance: NOT PROVEN/);
 });
+
+
+test('Monday chat has a no-spend on-device intelligence route on iOS 27',()=>{
+  assert.match(source,/import FoundationModels/);
+  assert.match(source,/import Translation/);
+  assert.match(source,/SystemLanguageModel\.default/);
+  assert.match(source,/LanguageModelSession\(instructions:/);
+  assert.match(source,/translationTask\(/);
+  assert.match(source,/Apple Foundation Model · no API spend/);
+  assert.match(source,/onDeviceResponse\(to:/);
+});
