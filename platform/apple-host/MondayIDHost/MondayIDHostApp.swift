@@ -574,6 +574,15 @@ private enum MondayLocalModelError: LocalizedError {
 
 @available(iOS 26.0, *)
 private enum MondayTranslationBridge {
+    static func warmup(_ session: sending TranslationSession) async -> Bool {
+        do {
+            _ = try await session.translate("Проверка")
+            return true
+        } catch {
+            return false
+        }
+    }
+
     static func translateInstalled(_ text: String, source: String, target: String) async throws -> String {
         let session = TranslationSession(
             installedSource: Locale.Language(identifier: source),
@@ -672,12 +681,7 @@ private struct MondayChatsView: View {
             source: Locale.Language(identifier: "ru"),
             target: Locale.Language(identifier: "en")
         ) { session in
-            do {
-                _ = try await session.translate("Проверка")
-                russianEnglishReady = true
-            } catch {
-                russianEnglishReady = false
-            }
+            russianEnglishReady = await MondayTranslationBridge.warmup(session)
         }
     }
 
