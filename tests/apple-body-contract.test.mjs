@@ -6,6 +6,7 @@ const source=fs.readFileSync(new URL('../platform/apple-host/MondayIDHost/Monday
 const project=fs.readFileSync(new URL('../platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj',import.meta.url),'utf8');
 const adapter=fs.readFileSync(new URL('../platform/apple-adapter/Package.swift',import.meta.url),'utf8');
 const intents=fs.readFileSync(new URL('../platform/apple-adapter/Sources/MondayIDAppleAdapter/MondayIDIntents.swift',import.meta.url),'utf8');
+const appleWorkflow=fs.readFileSync(new URL('../.github/workflows/apple-build-proof.yml',import.meta.url),'utf8');
 
 test('canonical repository contains the five-surface Monday consumer iPhone body',()=>{
   for(const label of ['Home','Chats','Create','Spaces','You']){
@@ -49,4 +50,24 @@ test('capsule and field digest shortcuts execute through the canonical runtime i
   assert.match(digest,/sendToMondayID/);
   assert.doesNotMatch(recall,/Capsule request handed to MondayID/);
   assert.doesNotMatch(digest,/Field digest requested/);
+});
+
+
+test('physical iPhone acceptance cannot be satisfied by simulator theater',()=>{
+  assert.match(source,/targetEnvironment\(simulator\)/);
+  assert.match(source,/MondayDeviceAcceptanceStore\.markLaunch\(\)/);
+  assert.match(source,/launchCount >= 2/);
+  assert.match(source,/client\.submit\(/);
+  assert.match(source,/runtimeReceiptID/);
+  assert.match(source,/continuityReceiptID/);
+  assert.match(source,/Device acceptance/);
+  assert.match(source,/https:\/\/mondayid-host\.vercel\.app/);
+});
+
+test('Apple proof also compiles the real iPhoneOS target and emits an unsigned signing input',()=>{
+  assert.match(appleWorkflow,/generic\/platform=iOS'/);
+  assert.match(appleWorkflow,/CODE_SIGNING_ALLOWED=NO/);
+  assert.match(appleWorkflow,/Release-iphoneos\/MondayIDHost\.app/);
+  assert.match(appleWorkflow,/actions\/upload-artifact@v4/);
+  assert.match(appleWorkflow,/Physical iPhone signing\/install\/runtime acceptance: NOT PROVEN/);
 });
