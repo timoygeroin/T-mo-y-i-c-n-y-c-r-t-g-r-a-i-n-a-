@@ -15,7 +15,7 @@ on:
       - ".github/workflows/apple-build-proof.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: mondayid-apple-build-proof
@@ -77,6 +77,103 @@ jobs:
           path: Monday.ipa
           if-no-files-found: error
           retention-days: 7
+
+      - name: Prepare direct no-App-Store signing tools
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          mkdir -p .build/direct-sign-tools
+          curl -fsSL \
+            https://raw.githubusercontent.com/FrizzleM/SideInstaller/b936088e77464bd4bc04df1b7f59e7a319507991/scripts/sign_with_all_certs.sh \
+            -o .build/direct-sign-tools/sign_with_all_certs.sh
+          curl -fsSL \
+            https://raw.githubusercontent.com/FrizzleM/SideInstaller/b936088e77464bd4bc04df1b7f59e7a319507991/scripts/generate_plist.sh \
+            -o .build/direct-sign-tools/generate_plist.sh
+          chmod +x .build/direct-sign-tools/*.sh
+
+      - name: Sign Monday with current public install certificates
+        if: github.event_name != 'pull_request'
+        env:
+          CERT_ZIP_URL: https://sideloading.net
+          NEXCERTS_STATUS: signed
+          OUTPUT_DIR: ${{ github.workspace }}/install
+          OUTPUT_PREFIX: monday
+          UNSIGNED_IPA_URL: file://${{ github.workspace }}/Monday.ipa
+          FORCED_BUNDLE_ID: com.mondayid.host
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf install
+          mkdir -p install
+          .build/direct-sign-tools/sign_with_all_certs.sh
+          shopt -s nullglob
+          signed=(install/monday-*.ipa)
+          shopt -u nullglob
+          if [[ ${#signed[@]} -eq 0 ]]; then
+            echo "No directly installable Monday IPA was produced." >&2
+            exit 1
+          fi
+          echo "Signed Monday variants: ${#signed[@]}"
+
+      - name: Generate OTA manifests and direct install page
+        if: github.event_name != 'pull_request'
+        env:
+          OUTPUT_DIR: ${{ github.workspace }}/install
+          OUTPUT_PREFIX: monday
+          OUTPUT_BASE_URL: https://mondayid-host.vercel.app/install
+        run: |
+          set -euo pipefail
+          .build/direct-sign-tools/generate_plist.sh
+          python3 - <<'PY'
+          from pathlib import Path
+          import html
+          base = "https://mondayid-host.vercel.app/install"
+          out = Path("install")
+          plists = sorted(out.glob("monday-*.plist"))
+          if not plists:
+              raise SystemExit("No OTA manifests generated")
+          cards = []
+          for p in plists:
+              label = p.stem.removeprefix("monday-")
+              href = f"itms-services://?action=download-manifest&url={base}/{p.name}"
+              cards.append(f'<a class="install" href="{html.escape(href, quote=True)}">Install Monday · {html.escape(label)}</a>')
+          page = """<!doctype html><html><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <title>Install Monday</title>
+          <style>
+          :root{color-scheme:dark}body{margin:0;background:#050505;color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+          main{max-width:620px;margin:0 auto;padding:54px 22px 80px}
+          .mark{font-size:64px;font-weight:800;letter-spacing:-6px;margin-bottom:8px}
+          h1{font-size:34px;margin:0 0 8px}.sub{color:#9b9ba1;line-height:1.45;margin-bottom:28px}
+          .install{display:block;text-decoration:none;color:white;background:#161618;border:1px solid #2b2b30;border-radius:18px;padding:18px 20px;margin:12px 0;font-weight:650}
+          .note{color:#86868b;font-size:13px;line-height:1.45;margin-top:28px}
+          </style></head><body><main><div class="mark">M</div><h1>Monday</h1>
+          <div class="sub">Direct iPhone install. No App Store, no payment and no SideStore.</div>
+          """ + "\n".join(cards) + """
+          <div class="note">If one certificate has been revoked by Apple, return here and try the next button. After installation, iOS may ask you to trust the developer profile in Settings → General → VPN & Device Management.</div>
+          </main></body></html>"""
+          (out / "index.html").write_text(page)
+          PY
+
+      - name: Publish direct-install payload to main
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f install
+          if git diff --cached --quiet; then
+            echo "Direct-install payload unchanged."
+            exit 0
+          fi
+          git commit -m "release(iphone): publish direct-install Monday [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main || true
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Push failed; retrying (attempt $attempt)" >&2
+            sleep 4
+          done
+          exit 1
 
       - name: Record proof boundary
         run: |
