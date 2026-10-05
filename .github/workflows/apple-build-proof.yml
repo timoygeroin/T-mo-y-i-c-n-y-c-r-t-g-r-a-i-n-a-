@@ -57,18 +57,24 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             build
 
-      - name: Package unsigned iPhoneOS app for the signing gate
+      - name: Package sideload-ready unsigned IPA
         run: |
           set -euo pipefail
-          ditto -c -k --sequesterRsrc --keepParent \
-            .build/iphoneos/Build/Products/Release-iphoneos/MondayIDHost.app \
-            mondayid-host-unsigned-iphoneos.zip
+          rm -rf .build/ipa
+          mkdir -p .build/ipa/Payload
+          cp -R .build/iphoneos/Build/Products/Release-iphoneos/MondayIDHost.app .build/ipa/Payload/
+          (
+            cd .build/ipa
+            zip -qry ../../Monday.ipa Payload
+          )
+          test -s Monday.ipa
+          shasum -a 256 Monday.ipa
 
-      - name: Upload unsigned iPhoneOS build
+      - name: Upload unsigned iPhone IPA
         uses: actions/upload-artifact@v4
         with:
-          name: mondayid-host-unsigned-iphoneos
-          path: mondayid-host-unsigned-iphoneos.zip
+          name: mondayid-iphone-ipa
+          path: Monday.ipa
           if-no-files-found: error
           retention-days: 7
 
@@ -77,5 +83,5 @@ jobs:
           echo "Swift package tests: PASS"
           echo "iPhone Simulator compile: PASS"
           echo "Physical iPhoneOS SDK compile: PASS"
-          echo "Unsigned iPhoneOS app artifact: PRODUCED"
+          echo "Unsigned sideload-ready Monday.ipa: PRODUCED"
           echo "Physical iPhone signing/install/runtime acceptance: NOT PROVEN BY THIS WORKFLOW"
