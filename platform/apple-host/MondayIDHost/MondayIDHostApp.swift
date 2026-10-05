@@ -1,7 +1,9 @@
 import AppIntents
 import AVFoundation
 import Foundation
+import FoundationModels
 import PhotosUI
+import Translation
 import QuickLook
 import SwiftUI
 import UIKit
@@ -551,11 +553,25 @@ private struct MondayHomeView: View {
     }
 }
 
+private enum MondayLocalModelError: LocalizedError {
+    case unavailable(String)
+    case emptyResponse
+
+    var errorDescription: String? {
+        switch self {
+        case .unavailable(let reason): return reason
+        case .emptyResponse: return "On-device Monday returned an empty response."
+        }
+    }
+}
+
 private struct MondayChatsView: View {
     @EnvironmentObject private var store: MondayLocalStore
     @EnvironmentObject private var presence: MondayPresenceModel
     @State private var signal = ""
     @State private var working = false
+    @State private var russianToEnglish: TranslationSession?
+    @State private var englishToRussian: TranslationSession?
 
     var body: some View {
         NavigationStack {
@@ -593,26 +609,114 @@ private struct MondayChatsView: View {
             }
             .navigationTitle("Chats")
         }
+        .translationTask(
+            source: Locale.Language(identifier: "ru"),
+            target: Locale.Language(identifier: "en")
+        ) { session in
+            russianToEnglish = session
+        }
+        .translationTask(
+            source: Locale.Language(identifier: "en"),
+            target: Locale.Language(identifier: "ru")
+        ) { session in
+            englishToRussian = session
+        }
     }
 
     @MainActor private func submit() async {
         let submitted = signal.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !submitted.isEmpty else { return }
+        let wantsRussian = containsCyrillic(submitted)
         store.appendChat(role: "user", text: submitted)
         signal = ""
         working = true
-        presence.set(.working, detail: "Expanding routes", threads: 3)
+        presence.set(.working, detail: "Thinking on this iPhone", threads: 2)
         defer { working = false }
+
+        if #available(iOS 26.0, *) {
+            do {
+                let response = try await onDeviceResponse(to: submitted, wantsRussian: wantsRussian)
+                let receiptID = "on-device:\(Int(Date().timeIntervalSince1970))"
+                store.appendChat(role: "monday", text: response, receiptID: receiptID)
+                store.addActivity(title: "On-device Monday", detail: "Apple Foundation Model · no API spend")
+                presence.set(.synced, detail: "On-device · no API spend")
+                return
+            } catch {
+                presence.set(.verifying, detail: "Trying verified runtime")
+            }
+        }
+
         do {
             let receipt = try await sendToMondayID(submitted)
-            presence.set(.verifying, detail: "Reading reality back", threads: 2)
             let response = receipt.result ?? "State advanced to revision \(receipt.stateRevision)."
             store.appendChat(role: "monday", text: response, receiptID: receipt.receiptId)
             store.addActivity(title: "Runtime receipt", detail: "\(receipt.receiptId) · revision \(receipt.stateRevision)")
             presence.set(.synced, detail: "Worldline advanced")
         } catch {
-            presence.set(.needsYou, detail: "Runtime route unavailable")
-            store.appendChat(role: "monday", text: "Runtime unavailable: \(error.localizedDescription)")
+            presence.set(.needsYou, detail: "Local model and runtime unavailable")
+            store.appendChat(
+                role: "monday",
+                text: "Monday is installed, but intelligence is not ready on this device yet. Turn on Apple Intelligence and allow the Russian/English translation models to download, then send the message again."
+            )
+        }
+    }
+
+    @available(iOS 26.0, *)
+    private func onDeviceResponse(to submitted: String, wantsRussian: Bool) async throws -> String {
+        let model = SystemLanguageModel.default
+        guard model.isAvailable else {
+            let reason: String
+            switch model.availability {
+            case .available:
+                reason = "On-device model unavailable."
+            case .unavailable(.appleIntelligenceNotEnabled):
+                reason = "Apple Intelligence is turned off."
+            case .unavailable(.deviceNotEligible):
+                reason = "This device is not eligible for Apple Intelligence."
+            case .unavailable(.modelNotReady):
+                reason = "Apple Intelligence model is still downloading."
+            case .unavailable:
+                reason = "Apple Intelligence is not ready."
+            }
+            throw MondayLocalModelError.unavailable(reason)
+        }
+
+        var modelPrompt = submitted
+        if wantsRussian, let russianToEnglish {
+            modelPrompt = try await russianToEnglish.translate(submitted).targetText
+        }
+
+        let recent = store.chat.suffix(10)
+            .map { "\($0.role == "user" ? "Dima" : "Monday"): \($0.text)" }
+            .joined(separator: "\n")
+
+        let session = LanguageModelSession(instructions: """
+            You are Monday: one continuous personal assistant, not a collection of personas.
+            Be concise, warm, direct, and useful. Preserve the current conversation's intent.
+            Never claim an external action happened unless the app has evidence for it.
+            Prefer concrete action over architecture discussion.
+            Respond in English; the app may translate the result for the person.
+            """)
+
+        let response = try await session.respond(to: """
+            Recent local continuity:
+            \(recent)
+
+            Current message:
+            \(modelPrompt)
+            """)
+        var text = response.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { throw MondayLocalModelError.emptyResponse }
+
+        if wantsRussian, let englishToRussian {
+            text = try await englishToRussian.translate(text).targetText
+        }
+        return text
+    }
+
+    private func containsCyrillic(_ text: String) -> Bool {
+        text.unicodeScalars.contains { scalar in
+            (0x0400...0x04FF).contains(Int(scalar.value))
         }
     }
 }
