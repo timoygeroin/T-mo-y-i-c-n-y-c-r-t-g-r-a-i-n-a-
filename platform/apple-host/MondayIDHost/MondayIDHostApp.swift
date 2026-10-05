@@ -19,7 +19,10 @@ struct MondayIDHostShortcuts: AppShortcutsProvider {
 
 @main
 struct MondayIDHostApp: App {
-    init() { MondayIDHostShortcuts.updateAppShortcutParameters() }
+    init() {
+        MondayIDHostShortcuts.updateAppShortcutParameters()
+        MondayDeviceAcceptanceStore.markLaunch()
+    }
     var body: some Scene { WindowGroup { MondayRootView() } }
 }
 
@@ -104,6 +107,108 @@ private struct MondayPreferences: Codable, Hashable {
     var proactiveSuggestions = true
     var reduceMotion = false
     var localContinuity = true
+}
+
+private struct MondayDeviceAcceptanceSnapshot: Codable, Hashable {
+    var installID: String
+    var launchCount: Int
+    var firstLaunchAt: Date
+    var latestLaunchAt: Date
+    var runtimeReceiptID: String?
+    var runtimeStateRevision: String?
+    var runtimeVerifiedAt: Date?
+    var continuityReceiptID: String?
+    var continuityStateRevision: String?
+    var continuityVerifiedAt: Date?
+}
+
+private enum MondayDeviceAcceptanceStore {
+    private static let key = "monday.device-acceptance.v1"
+
+    static var isPhysicalDevice: Bool {
+        #if targetEnvironment(simulator)
+        false
+        #else
+        true
+        #endif
+    }
+
+    static func load() -> MondayDeviceAcceptanceSnapshot {
+        if let data = UserDefaults.standard.data(forKey: key),
+           let snapshot = try? JSONDecoder().decode(MondayDeviceAcceptanceSnapshot.self, from: data) {
+            return snapshot
+        }
+        let now = Date()
+        return MondayDeviceAcceptanceSnapshot(
+            installID: UUID().uuidString,
+            launchCount: 0,
+            firstLaunchAt: now,
+            latestLaunchAt: now,
+            runtimeReceiptID: nil,
+            runtimeStateRevision: nil,
+            runtimeVerifiedAt: nil,
+            continuityReceiptID: nil,
+            continuityStateRevision: nil,
+            continuityVerifiedAt: nil
+        )
+    }
+
+    static func markLaunch() {
+        var snapshot = load()
+        let now = Date()
+        if snapshot.launchCount == 0 { snapshot.firstLaunchAt = now }
+        snapshot.launchCount += 1
+        snapshot.latestLaunchAt = now
+        save(snapshot)
+    }
+
+    static func isVerified(_ snapshot: MondayDeviceAcceptanceSnapshot) -> Bool {
+        isPhysicalDevice &&
+        snapshot.launchCount >= 2 &&
+        snapshot.runtimeReceiptID != nil &&
+        snapshot.continuityReceiptID != nil
+    }
+
+    @MainActor
+    static func advanceIfPossible() async {
+        guard isPhysicalDevice else { return }
+        do {
+            let client = try MondayIDRuntimeSettings.load()
+            let health = try await client.health()
+            guard health.isReady else { throw MondayIDRuntimeError.unhealthyRuntime }
+
+            var snapshot = load()
+            if snapshot.runtimeReceiptID == nil {
+                let receipt = try await client.submit(
+                    signal: "Physical iPhone acceptance probe: perform one bounded no-spend action and return durable readback."
+                )
+                snapshot.runtimeReceiptID = receipt.receiptId
+                snapshot.runtimeStateRevision = receipt.stateRevision
+                snapshot.runtimeVerifiedAt = Date()
+                save(snapshot)
+                return
+            }
+
+            if snapshot.launchCount >= 2 && snapshot.continuityReceiptID == nil {
+                let receipt = try await client.submit(
+                    signal: "Physical iPhone relaunch continuity acceptance: confirm the same MondayID worldline after app restart and return durable readback."
+                )
+                snapshot.continuityReceiptID = receipt.receiptId
+                snapshot.continuityStateRevision = receipt.stateRevision
+                snapshot.continuityVerifiedAt = Date()
+                save(snapshot)
+            }
+        } catch {
+            // Missing credentials or unavailable runtime remain real gates.
+            // Never manufacture a physical-device acceptance receipt.
+        }
+    }
+
+    private static func save(_ snapshot: MondayDeviceAcceptanceSnapshot) {
+        if let data = try? JSONEncoder().encode(snapshot) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
 }
 
 private enum MondayPresenceState: String {
@@ -363,6 +468,7 @@ private struct MondayRootView: View {
         }
         .sheet(isPresented: $showingSearch) { MondaySearchView().environmentObject(store).environmentObject(presence) }
         .sheet(isPresented: $showingActivity) { MondayActivityView().environmentObject(store).environmentObject(presence) }
+        .task { await MondayDeviceAcceptanceStore.advanceIfPossible() }
     }
 }
 
@@ -938,6 +1044,7 @@ private struct MondayYouView: View {
                 Section {
                     NavigationLink("Library") { MondayLibraryView() }
                     NavigationLink("Connections") { MondayRuntimeConnectionView() }
+                    NavigationLink("Device acceptance") { MondayDeviceAcceptanceView() }
                 }
                 Section("Monday & Me") {
                     Toggle("Concise replies", isOn: $store.preferences.conciseReplies)
@@ -954,6 +1061,70 @@ private struct MondayYouView: View {
                 Section("Privacy") { Text("Local consumer state stays in this app container unless an explicit runtime action or connection sends it elsewhere.").font(.footnote).foregroundStyle(.secondary) }
             }
             .navigationTitle("You")
+        }
+    }
+}
+
+private struct MondayDeviceAcceptanceView: View {
+    @State private var snapshot = MondayDeviceAcceptanceStore.load()
+    @State private var working = false
+    @State private var message = "Acceptance is evidence-driven: simulator can never promote this gate."
+
+    private var verified: Bool { MondayDeviceAcceptanceStore.isVerified(snapshot) }
+
+    var body: some View {
+        Form {
+            Section("iPhone") {
+                LabeledContent("Environment", value: MondayDeviceAcceptanceStore.isPhysicalDevice ? "Physical iPhone" : "Simulator")
+                LabeledContent("Launches", value: "\(snapshot.launchCount)")
+                LabeledContent("Runtime action", value: snapshot.runtimeReceiptID == nil ? "Not verified" : "Receipt stored")
+                LabeledContent("Relaunch continuity", value: snapshot.continuityReceiptID == nil ? "Not verified" : "Receipt stored")
+                LabeledContent("Acceptance", value: verified ? "VERIFIED" : "OPEN")
+            }
+            Section("Proof") {
+                Text(message).font(.footnote).foregroundStyle(.secondary)
+                if let revision = snapshot.continuityStateRevision ?? snapshot.runtimeStateRevision {
+                    Text("Worldline revision \(revision)").font(.caption).textSelection(.enabled)
+                }
+                Button(working ? "Verifying…" : "Run acceptance now") {
+                    Task { await runAcceptance() }
+                }
+                .disabled(working || !MondayDeviceAcceptanceStore.isPhysicalDevice)
+            }
+            Section("Boundary") {
+                Text("PASS requires a physical iPhone, an authenticated Generation-5 runtime action with durable receipt, and a later app launch that preserves the same local acceptance state. No hardware identifier is collected.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .navigationTitle("Device acceptance")
+        .task {
+            await MondayDeviceAcceptanceStore.advanceIfPossible()
+            snapshot = MondayDeviceAcceptanceStore.load()
+            updateMessage()
+        }
+    }
+
+    @MainActor
+    private func runAcceptance() async {
+        working = true
+        defer { working = false }
+        await MondayDeviceAcceptanceStore.advanceIfPossible()
+        snapshot = MondayDeviceAcceptanceStore.load()
+        updateMessage()
+    }
+
+    private func updateMessage() {
+        if verified {
+            message = "VERIFIED on physical iPhone: authenticated runtime receipt and relaunch continuity receipt are both durable."
+        } else if !MondayDeviceAcceptanceStore.isPhysicalDevice {
+            message = "Simulator observed. This environment is intentionally incapable of closing the physical-device gate."
+        } else if snapshot.runtimeReceiptID == nil {
+            message = "Physical iPhone observed. Connect the authenticated MondayID runtime; Monday will perform the proof automatically."
+        } else if snapshot.launchCount < 2 {
+            message = "First physical-device runtime proof is durable. Relaunch Monday once; the second receipt will close continuity automatically."
+        } else {
+            message = "Physical device and relaunch observed; waiting for the durable continuity runtime receipt."
         }
     }
 }
@@ -1203,7 +1374,7 @@ private struct MondayTaskDetailView: View {
 }
 
 private struct MondayRuntimeConnectionView: View {
-    @State private var endpoint = ""
+    @State private var endpoint = "https://mondayid-host.vercel.app"
     @State private var token = ""
     @State private var result = "Connect only to a runtime that proves durable MondayID health."
     @State private var working = false
@@ -1231,7 +1402,8 @@ private struct MondayRuntimeConnectionView: View {
             guard health.isReady else { throw MondayIDRuntimeError.unhealthyRuntime }
             try MondayIDRuntimeSettings.save(endpoint: url, controlToken: token)
             token = ""
-            result = "Verified durable MondayID runtime and saved this connection securely on this iPhone."
+            await MondayDeviceAcceptanceStore.advanceIfPossible()
+            result = "Verified durable MondayID runtime, saved this connection securely on this iPhone, and advanced physical-device acceptance."
         } catch { result = "Connection not saved: \(error.localizedDescription)" }
     }
 }
