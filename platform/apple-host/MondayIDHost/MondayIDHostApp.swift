@@ -22,10 +22,19 @@ struct MondayIDHostShortcuts: AppShortcutsProvider {
 @main
 struct MondayIDHostApp: App {
     init() {
-        MondayIDHostShortcuts.updateAppShortcutParameters()
+        // App Shortcuts metadata refresh is intentionally excluded from the
+        // critical launch path. Enterprise/ad-hoc re-signing can change the
+        // effective bundle identifier after build-time AppIntents metadata was
+        // generated; Monday must remain launchable even when that surface is
+        // unavailable or stale.
         MondayDeviceAcceptanceStore.markLaunch()
     }
-    var body: some Scene { WindowGroup { MondayRootView() } }
+
+    var body: some Scene {
+        WindowGroup {
+            MondayRootView()
+        }
+    }
 }
 
 private struct MondaySpace: Codable, Identifiable, Hashable {
