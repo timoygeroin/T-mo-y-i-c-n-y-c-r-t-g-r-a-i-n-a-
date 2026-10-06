@@ -25,6 +25,7 @@ test('monday exposes a complete iPhone-first chat shell',()=>{
   assert.match(index,/id=["']attachButton["']/);
   assert.match(index,/id=["']voiceButton["']/);
   assert.match(index,/id=["']sendButton["']/);
+  assert.match(index,/id=["']runtimeButton["'][^>]*aria-label=["']MondayID runtime status["']/);
   assert.match(index,/env\(safe-area-inset-bottom\)/);
   assert.match(index,/100dvh|100svh/);
 });
