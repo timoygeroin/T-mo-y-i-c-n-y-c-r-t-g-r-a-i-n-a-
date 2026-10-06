@@ -9,7 +9,7 @@ import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
 const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
 
-const serverInfo = Object.freeze({ name:'mondayid', version:'2.0.0' });
+const serverInfo = Object.freeze({ name:'mondayid', version:'2.0.1' });
 const protocolVersion = '2025-03-26';
 
 const tools = Object.freeze([
@@ -92,7 +92,7 @@ async function callTool(name, args = {}) {
       worldlineError:state.ok ? null : state,
       carrier:{
         pluginId:system.release_state?.chatgpt_private_plugin || null,
-        version:String(args?.carrierVersion || '2.0.0')
+        version:String(args?.carrierVersion || '2.0.1')
       }
     });
     return {
