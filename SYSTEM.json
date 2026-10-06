@@ -633,7 +633,7 @@
       "no_manual_reteaching": true,
       "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "ERA2_CARRIER_RUNTIME_BINDING_CANDIDATE",
+    "product_status": "ERA2_LIVE_CARRIER_CUTOVER_TRANSFER_PENDING",
     "canonical_user_surface": {
       "host": "ChatGPT iPhone",
       "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
@@ -1100,6 +1100,19 @@
       "current_signal_survives_recovery",
       "missing_worldline_degrades_without_identity_reset",
       "carrier_runtime_drift_reconciles_before_release"
-    ]
+    ],
+    "preferred_ingress": "cell_attach",
+    "live_composite_fallback": [
+      "health",
+      "capability_manifest",
+      "compile_history",
+      "get_state"
+    ],
+    "live_proof": {
+      "workflow": ".github/workflows/system-proof.yml",
+      "script": "scripts/prove-carrier-live.mjs",
+      "acceptance": "either cell_attach succeeds or the production composite fallback proves generation-5 + canonical carrier + compiled lineage + trusted Worldline",
+      "transfer_learning_gate": "blind fresh ChatGPT cell must later continue without reteaching before LEARNED"
+    }
   }
 }
