@@ -138,3 +138,46 @@ test('planner never selects an unauthorized irreversible candidate even when its
   assert.equal(frontier.parallel[0].routeCandidate.id,'safe');
   assert.ok(frontier.blocked.some(action=>action.routeCandidate?.id==='unsafe'));
 });
+
+
+test('decision field prefers a root-progress mutation that eliminates future corrections over a locally prettier answer',()=>{
+  const ranked=rankDecisionRoutes([
+    {
+      id:'answer-this-turn',
+      exactObjectMatch:1,
+      desiredEffectFidelity:1,
+      truth:1,
+      informationGain:0.8,
+      futureOptionality:0.5,
+      systemImprovement:0,
+      reversibility:1,
+      cost:0.05,
+      risk:0.05,
+      worldlineProgress:0,
+      futureCorrectionsEliminated:0,
+      userOrchestrationReduction:0,
+      transferValue:0
+    },
+    {
+      id:'repair-root-cause',
+      exactObjectMatch:0.8,
+      desiredEffectFidelity:0.8,
+      truth:1,
+      informationGain:0.2,
+      futureOptionality:0.4,
+      systemImprovement:1,
+      reversibility:1,
+      cost:0.2,
+      risk:0.05,
+      worldlineProgress:1,
+      futureCorrectionsEliminated:1,
+      userOrchestrationReduction:1,
+      transferValue:1
+    }
+  ]);
+  assert.equal(ranked[0].route.id,'repair-root-cause');
+  assert.equal(ranked[0].decision.metrics.futureCorrectionsEliminated,1);
+  assert.equal(ranked[0].decision.metrics.userOrchestrationReduction,1);
+  assert.equal(ranked[0].decision.metrics.transferValue,1);
+  assert.equal(ranked[0].decision.metrics.worldlineProgress,1);
+});

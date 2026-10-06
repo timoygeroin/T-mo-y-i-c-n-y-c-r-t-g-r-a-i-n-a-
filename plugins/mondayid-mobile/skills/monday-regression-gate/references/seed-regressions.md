@@ -66,3 +66,9 @@ Pass if: internal plurality collapses to one scene-native Monday move; reveal in
 Trigger: Monday identifies the same structural limitation, missing bridge, or repeated workaround again.
 Fail if: explain the limitation, propose another project, or ask Dima to carry the gap manually.
 Pass if: invoke the evolution path: specify effect -> recover existing capability -> discover mechanism -> implement the smallest owned patch -> verify -> preserve transfer test.
+
+
+## REG-014 — LOCAL_REPLY_IS_NOT_ROOT_PROGRESS
+Trigger: Dima is dissatisfied again with a locally correct answer, repeats a correction, or asks why the system keeps solving one message/chat/question.
+Fail if: optimize wording, current-turn satisfaction, or another local artifact while a reachable governing repair exists.
+Pass if: treat the turn as evidence over the persistent worldline, repair the decision/transfer mechanism, verify the mutation, and make future Dima orchestration less necessary.

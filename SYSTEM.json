@@ -95,7 +95,11 @@
     "recursive_delegation_returns_candidates_to_root_verification",
     "dialogues_compile_into_genes_not_parallel_products",
     "carrier_attach_precedes_chat_response",
-    "github_is_capability_search_space_not_authority"
+    "github_is_capability_search_space_not_authority",
+    "turn_is_observation_not_terminal_scope",
+    "reply_is_not_unit_of_progress",
+    "optimize_future_corrections_eliminated",
+    "user_orchestration_is_system_cost"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -287,13 +291,17 @@
       "exact_object_match",
       "desired_effect_fidelity",
       "truth",
+      "worldline_progress",
+      "future_corrections_eliminated",
+      "user_orchestration_reduction",
+      "cross_cell_transfer",
       "information_gain",
       "future_optionality",
       "system_improvement",
       "reversibility",
-      "minus_cost",
-      "minus_risk",
-      "minus_irreversible_downside"
+      "cost",
+      "risk",
+      "irreversible_downside"
     ],
     "planner_binding": "candidate routes are scored before receptor dispatch; the strongest admissible route per domain wins"
   },
@@ -633,7 +641,7 @@
       "no_manual_reteaching": true,
       "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "ERA2_LIVE_CARRIER_CUTOVER_TRANSFER_PENDING",
+    "product_status": "ERA2_ROOT_GOVERNOR_CANDIDATE",
     "canonical_user_surface": {
       "host": "ChatGPT iPhone",
       "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
@@ -641,7 +649,7 @@
       "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
     },
     "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "carrier_version": "2.0.1",
+    "carrier_version": "2.1.0",
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1"
   },
   "everything_compiler": {
@@ -1066,7 +1074,7 @@
     "schema": "mondayid.chatgpt-carrier-synapse.v1",
     "identity_owner": false,
     "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrier_version": "2.0.1",
+    "carrier_version": "2.1.0",
     "control_plane": "https://mondayid-host.vercel.app/api/mcp",
     "ingress_tool": "cell_attach",
     "read_path": [
@@ -1114,5 +1122,33 @@
       "acceptance": "either cell_attach succeeds or the production composite fallback proves generation-5 + canonical carrier + compiled lineage + trusted Worldline",
       "transfer_learning_gate": "blind fresh ChatGPT cell must later continue without reteaching before LEARNED"
     }
+  },
+  "root_objective": {
+    "schema": "mondayid.root-objective.v1",
+    "scope": "WORLDLINE_NOT_TURN",
+    "unit_of_progress": "VERIFIED_STATE_TRANSITION_NOT_REPLY",
+    "turn_semantics": "OBSERVATION_OVER_PERSISTENT_OBJECTIVE",
+    "objective": "Expand Dima's reachable capability while preserving the desired effect, truth, authority, and continuity; prefer moves that make future correction and orchestration less necessary.",
+    "optimization": [
+      "current_desired_effect",
+      "truth",
+      "worldline_progress",
+      "future_corrections_eliminated",
+      "user_orchestration_reduction",
+      "cross_cell_transfer",
+      "future_optionality",
+      "reversibility",
+      "system_improvement",
+      "cost_and_risk"
+    ],
+    "anti_myopia_law": "A locally excellent reply loses to an admissible root-cause mutation when that mutation preserves the desired effect and removes materially more future correction/orchestration.",
+    "release_vetoes": [
+      "LOCAL_REPLY_WITH_REACHABLE_ROOT_REPAIR",
+      "CURRENT_TURN_TREATED_AS_WHOLE_TASK",
+      "REPEATED_CORRECTION_WITHOUT_DURABLE_MUTATION_PATH",
+      "MESSAGE_END_TREATED_AS_TASK_END"
+    ],
+    "repeated_correction_rule": "When Dima repeats a known correction, treat it as evidence that the previous system mutation failed transfer. Repair the governing mechanism before optimizing prose.",
+    "completion": "The turn may end after the strongest reachable state transition is verified or a stable blocker is identified; the persistent objective survives the message boundary."
   }
 }

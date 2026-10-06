@@ -1,9 +1,24 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "mondayid-mobile",
-  "version": "2.0.1",
-  "description": "MondayID Era 2 carrier: mandatory cell attach, Generation-5 synapse, live-worldline recovery, evolution compilation, GitHub Genome discovery, regression gates, and verified execution.",
-  "author": {"name":"MondayID"},
+  "version": "2.1.0",
+  "description": "MondayID Era 2.1 carrier: mandatory cell attach, persistent-worldline root governor, Generation-5 synapse, evolution compilation, GitHub Genome discovery, regression gates, and verified execution.",
+  "author": {
+    "name": "MondayID"
+  },
   "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-  "keywords": ["mondayid","continuity","cell-attach","synapse","generation-5","worldline","evolution","github-genome","iphone","execution","regression","preflight"]
+  "keywords": [
+    "mondayid",
+    "continuity",
+    "cell-attach",
+    "synapse",
+    "generation-5",
+    "worldline",
+    "evolution",
+    "github-genome",
+    "iphone",
+    "execution",
+    "regression",
+    "preflight"
+  ]
 }
