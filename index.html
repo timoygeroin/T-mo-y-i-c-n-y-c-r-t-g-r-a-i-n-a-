@@ -3,272 +3,449 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#05070a">
+  <meta name="theme-color" content="#0b0b0c">
   <meta name="color-scheme" content="dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Monday">
+  <meta name="apple-mobile-web-app-title" content="monday">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/monday-mark.svg" type="image/svg+xml">
-  <title>Monday</title>
+  <title>monday</title>
   <style>
     :root{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;
-      color:#f7f9ff;background:#05070a;--glass:rgba(255,255,255,.075);--line:rgba(255,255,255,.12);
-      --muted:rgba(238,244,255,.58);--accent:#9fc4ff;--ok:#a9f3d4;--warn:#ffd89a;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Inter,system-ui,sans-serif;
+      color:#f5f5f5;background:#0b0b0c;
+      --bg:#0b0b0c;--panel:#121214;--panel2:#18181b;--hover:#202024;--line:#2a2a2f;
+      --text:#f5f5f5;--muted:#9b9ba3;--soft:#71717a;--accent:#f4f4f5;--accentText:#111113;
+      --danger:#ff8b82;--ok:#89ddb9;--shadow:0 18px 60px rgba(0,0,0,.42);
+      --sidebar:286px;--composerMax:760px;
     }
     *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:#05070a}
-    body{
-      min-height:100svh;overflow-x:hidden;color:#f7f9ff;
-      background:
-        radial-gradient(circle at 50% 18%,rgba(79,118,186,.18),transparent 29rem),
-        radial-gradient(circle at 25% 85%,rgba(90,64,155,.12),transparent 28rem),
-        linear-gradient(180deg,#080b10 0%,#05070a 48%,#020305 100%);
+    html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text)}
+    body{min-height:100svh;min-height:100dvh;overflow:hidden}
+    button,textarea,input{font:inherit}
+    button{color:inherit}
+    .app{height:100dvh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);background:var(--bg)}
+    .sidebar{
+      position:relative;z-index:30;display:flex;flex-direction:column;min-width:0;height:100%;
+      background:#111113;border-right:1px solid rgba(255,255,255,.055);padding:10px 9px 12px;
+      transition:transform .24s ease;
     }
-    body:before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;
-      background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-      background-size:28px 28px;mask-image:linear-gradient(to bottom,black,transparent 72%);
+    .sidebar-top{display:flex;align-items:center;gap:8px;padding:2px 3px 8px}
+    .brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1;padding:7px 8px;border-radius:12px}
+    .brand-mark{
+      width:28px;height:28px;border-radius:9px;display:grid;place-items:center;
+      background:linear-gradient(145deg,#f4f4f5,#b8b8bf);color:#0d0d0f;font-weight:850;font-size:13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)
     }
-    .shell{
-      min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;
-      width:min(680px,100%);margin:auto;padding:
-        max(18px,env(safe-area-inset-top))
-        18px
-        max(18px,env(safe-area-inset-bottom));
+    .brand-copy{min-width:0}
+    .brand-name{font-size:13px;font-weight:680;letter-spacing:-.01em}
+    .brand-owner{font-size:10px;color:var(--muted);margin-top:1px}
+    .icon-btn{
+      width:36px;height:36px;border:0;border-radius:10px;background:transparent;display:grid;place-items:center;cursor:pointer;
+      -webkit-tap-highlight-color:transparent
     }
-    .top{display:flex;align-items:center;justify-content:space-between;min-height:44px}
-    .wordmark{font-weight:650;letter-spacing:-.02em;font-size:17px}
-    .presence-pill{
-      display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(255,255,255,.045);backdrop-filter:blur(18px) saturate(135%);
-      -webkit-backdrop-filter:blur(18px) saturate(135%);font-size:12px;color:var(--muted)
+    .icon-btn:hover{background:var(--hover)}
+    .icon{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .new-chat{
+      width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:10px 11px;border-radius:11px;
+      font-size:14px;cursor:pointer;text-align:left
     }
-    .dot{width:7px;height:7px;border-radius:50%;background:#8aa9d7;box-shadow:0 0 14px #8aa9d7}
-    body[data-state="working"] .dot{background:#d8b4ff;box-shadow:0 0 14px #d8b4ff}
-    body[data-state="verifying"] .dot{background:#ffd89a;box-shadow:0 0 14px #ffd89a}
-    body[data-state="synced"] .dot{background:#9ce7c8;box-shadow:0 0 14px #9ce7c8}
-    body[data-state="needsYou"] .dot{background:#ffb0aa;box-shadow:0 0 14px #ffb0aa}
-    .stage{display:grid;place-items:center;text-align:center;padding:36px 0 20px}
-    .presence{display:grid;place-items:center;gap:24px}
-    .orb-button{appearance:none;border:0;background:none;padding:10px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
-    .orb{
-      position:relative;width:154px;height:154px;border-radius:50%;
-      background:
-        radial-gradient(circle at 34% 27%,rgba(255,255,255,.98) 0 5%,rgba(196,220,255,.95) 9%,rgba(111,157,220,.92) 21%,rgba(44,67,104,.9) 50%,rgba(7,10,16,.98) 74%);
-      box-shadow:
-        inset -16px -18px 36px rgba(0,0,0,.44),
-        inset 10px 8px 24px rgba(255,255,255,.14),
-        0 0 0 1px rgba(255,255,255,.08),
-        0 0 80px rgba(112,159,224,.24),
-        0 24px 70px rgba(0,0,0,.5);
-      animation:breathe 5.6s ease-in-out infinite,float 8s ease-in-out infinite;
-      transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s ease,filter .45s ease;
+    .new-chat:hover{background:var(--hover)}
+    .new-chat .icon{width:18px;height:18px}
+    .sidebar-section{padding:12px 5px 4px;color:#777780;font-size:11px;font-weight:650}
+    .history{overflow:auto;padding:0 1px 12px;display:flex;flex-direction:column;gap:2px}
+    .history-item{
+      display:flex;align-items:center;min-height:38px;width:100%;padding:8px 10px;border:0;background:transparent;border-radius:10px;
+      color:#d4d4d8;font-size:13px;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
     }
-    .orb:before,.orb:after{content:"";position:absolute;border-radius:50%;inset:-20px;border:1px solid rgba(156,190,239,.11);animation:ring 4.8s ease-out infinite}
-    .orb:after{inset:-38px;animation-delay:1.6s;opacity:.55}
-    body[data-state="working"] .orb{filter:hue-rotate(17deg) saturate(1.1);transform:scale(1.035);box-shadow:0 0 110px rgba(158,111,226,.34),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="verifying"] .orb{filter:hue-rotate(-22deg) saturate(.9);transform:scale(.985);box-shadow:0 0 100px rgba(255,210,143,.27),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="synced"] .orb{filter:hue-rotate(46deg) saturate(.9);box-shadow:0 0 110px rgba(127,232,190,.28),0 24px 70px rgba(0,0,0,.5)}
-    .title{margin:0;font-size:clamp(48px,14vw,76px);font-weight:680;letter-spacing:-.065em;line-height:.95}
-    .status{margin:0;max-width:430px;color:var(--muted);font-size:15px;line-height:1.45;min-height:22px}
-    .tray{
-      width:100%;margin-top:28px;padding:14px;border:1px solid var(--line);border-radius:28px;
-      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
-      backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);
-      box-shadow:0 16px 60px rgba(0,0,0,.25);transform-origin:50% 0;
-      transition:opacity .25s ease,transform .35s cubic-bezier(.2,.8,.2,1),max-height .45s ease;
-      max-height:0;opacity:0;overflow:hidden;pointer-events:none;padding-top:0;padding-bottom:0;border-color:transparent
+    .history-item:hover,.history-item.active{background:var(--hover);color:#fff}
+    .sidebar-spacer{flex:1}
+    .account{
+      border-top:1px solid rgba(255,255,255,.055);padding:10px 7px 0;display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px
     }
-    .tray.open{max-height:420px;opacity:1;transform:translateY(0);pointer-events:auto;padding:14px;border-color:var(--line)}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .action{
-      min-height:54px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.065);color:#fff;
-      font:inherit;font-weight:620;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent
+    .avatar{width:28px;height:28px;border-radius:50%;background:#2a2a2f;display:grid;place-items:center;color:#fff;font-weight:700;font-size:11px}
+    .main{position:relative;min-width:0;height:100%;display:flex;flex-direction:column;background:var(--bg)}
+    .topbar{
+      height:54px;flex:0 0 54px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;
+      border-bottom:1px solid transparent;position:relative;z-index:15
     }
-    .action.primary{background:rgba(223,235,255,.92);color:#07101c;border-color:rgba(255,255,255,.3)}
-    .action:disabled{opacity:.5}
-    .facts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
-    .fact{padding:13px;text-align:left;border-radius:17px;background:rgba(0,0,0,.17);border:1px solid rgba(255,255,255,.07)}
-    .fact-k{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:rgba(238,244,255,.38)}
-    .fact-v{margin-top:5px;font-size:13px;color:rgba(246,249,255,.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .receipt{margin:10px 3px 2px;text-align:left;color:rgba(238,244,255,.38);font-size:11px;line-height:1.4;min-height:16px}
-    .bottom{display:flex;justify-content:center;padding-top:10px}
-    .hint{font-size:11px;color:rgba(238,244,255,.26);letter-spacing:.02em}
-    @keyframes breathe{0%,100%{box-shadow:0 0 80px rgba(112,159,224,.22),0 24px 70px rgba(0,0,0,.5)}50%{box-shadow:0 0 115px rgba(112,159,224,.32),0 28px 84px rgba(0,0,0,.58)}}
-    @keyframes float{0%,100%{translate:0 0}50%{translate:0 -7px}}
-    @keyframes ring{0%{transform:scale(.88);opacity:.5}75%,100%{transform:scale(1.14);opacity:0}}
-    @media(max-width:430px){.shell{padding-left:15px;padding-right:15px}.stage{padding-top:20px}.orb{width:138px;height:138px}.facts{grid-template-columns:1fr 1fr}.title{font-size:58px}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+    .topbar-left,.topbar-right{display:flex;align-items:center;gap:8px;min-width:76px}
+    .topbar-title{position:absolute;left:50%;transform:translateX(-50%);font-weight:670;font-size:16px;letter-spacing:-.015em}
+    .menu-button{display:none}
+    .runtime-button{
+      border:1px solid rgba(255,255,255,.09);background:#151517;border-radius:999px;padding:7px 10px;display:flex;align-items:center;gap:7px;
+      color:var(--muted);font-size:11px;cursor:pointer
+    }
+    .runtime-dot{width:7px;height:7px;border-radius:50%;background:#8d8d96}
+    body[data-runtime-state="ready"] .runtime-dot{background:var(--ok);box-shadow:0 0 12px rgba(137,221,185,.45)}
+    body[data-runtime-state="error"] .runtime-dot{background:var(--danger)}
+    .chat{
+      flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+      padding:12px 18px 156px;
+    }
+    .empty{
+      min-height:calc(100dvh - 230px);display:grid;place-items:center;padding:40px 0;
+    }
+    .empty-inner{width:min(620px,100%);text-align:center}
+    .empty-mark{
+      width:46px;height:46px;margin:0 auto 21px;border-radius:15px;display:grid;place-items:center;
+      background:linear-gradient(145deg,#f4f4f5,#a6a6ae);color:#0d0d0f;font-weight:850;letter-spacing:-.04em;box-shadow:0 12px 38px rgba(0,0,0,.32)
+    }
+    .empty h1{margin:0;font-size:30px;line-height:1.1;letter-spacing:-.045em;font-weight:650}
+    .empty p{margin:10px auto 0;color:var(--muted);font-size:14px;line-height:1.45;max-width:460px}
+    .messages{width:min(760px,100%);margin:0 auto;display:flex;flex-direction:column;gap:24px}
+    .message{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start}
+    .message-avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:750;font-size:11px}
+    .message.user .message-avatar{background:#27272b}
+    .message.user .message-body{
+      justify-self:start;background:#202024;border:1px solid rgba(255,255,255,.05);padding:10px 13px;border-radius:17px;
+      max-width:min(620px,92%);font-size:14px;line-height:1.52;white-space:pre-wrap;word-break:break-word
+    }
+    .runtime-note{
+      margin:4px 0 0 44px;color:var(--muted);font-size:12px;line-height:1.45;display:flex;align-items:flex-start;gap:8px
+    }
+    .runtime-note .mini-dot{margin-top:5px;width:6px;height:6px;border-radius:50%;background:#73737d;flex:0 0 auto}
+    .composer-wrap{
+      position:absolute;left:0;right:0;bottom:0;z-index:20;padding:22px 18px max(13px,env(safe-area-inset-bottom));
+      background:linear-gradient(to bottom,rgba(11,11,12,0),rgba(11,11,12,.92) 28%,#0b0b0c 55%)
+    }
+    .composer{
+      width:min(var(--composerMax),100%);margin:0 auto;background:#202024;border:1px solid rgba(255,255,255,.08);border-radius:27px;
+      box-shadow:var(--shadow);padding:8px 9px 8px 10px
+    }
+    .composer textarea{
+      display:block;width:100%;min-height:32px;max-height:150px;resize:none;border:0;outline:0;background:transparent;color:var(--text);
+      padding:8px 9px 5px;font-size:15px;line-height:1.45
+    }
+    .composer textarea::placeholder{color:#8b8b94}
+    .composer-row{display:flex;align-items:center;gap:4px;padding-top:3px}
+    .composer-row .icon-btn{width:36px;height:36px;border-radius:50%}
+    .composer-spacer{flex:1}
+    .send{
+      width:36px;height:36px;border:0;border-radius:50%;background:#f4f4f5;color:#111113;display:grid;place-items:center;cursor:pointer;
+      transition:opacity .18s ease,transform .18s ease
+    }
+    .send:disabled{opacity:.28;cursor:default}
+    .send:not(:disabled):active{transform:scale(.94)}
+    .composer-meta{
+      width:min(var(--composerMax),100%);margin:7px auto 0;text-align:center;font-size:10px;color:#66666f;min-height:14px
+    }
+    .runtime-sheet{
+      position:absolute;right:14px;top:48px;width:min(360px,calc(100vw - 28px));border:1px solid rgba(255,255,255,.09);
+      border-radius:18px;background:rgba(27,27,30,.96);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+      box-shadow:var(--shadow);padding:13px;display:none;z-index:50
+    }
+    .runtime-sheet.open{display:block}
+    .runtime-sheet h2{font-size:13px;margin:0 0 8px}
+    .runtime-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .runtime-cell{padding:9px 10px;border-radius:12px;background:#141416;border:1px solid rgba(255,255,255,.05)}
+    .runtime-k{font-size:9px;color:#74747e;text-transform:uppercase;letter-spacing:.08em}
+    .runtime-v{font-size:11px;color:#d2d2d8;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .runtime-receipt{margin-top:9px;font-size:10px;color:#74747e;line-height:1.4}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:25}
+    .toast{
+      position:fixed;left:50%;bottom:calc(116px + env(safe-area-inset-bottom));transform:translate(-50%,14px);
+      max-width:calc(100vw - 32px);background:#f4f4f5;color:#111113;border-radius:12px;padding:9px 12px;
+      font-size:12px;font-weight:620;opacity:0;pointer-events:none;transition:.22s ease;z-index:80;box-shadow:0 10px 34px rgba(0,0,0,.35)
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:820px){
+      .app{display:block}
+      .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(86vw,310px);transform:translateX(-103%);box-shadow:var(--shadow)}
+      body.sidebar-open .sidebar{transform:translateX(0)}
+      body.sidebar-open .scrim{display:block}
+      .menu-button{display:grid}
+      .topbar{height:52px;flex-basis:52px;padding-top:max(0px,env(safe-area-inset-top))}
+      .topbar-left,.topbar-right{min-width:66px}
+      .runtime-button{padding:7px 9px}
+      .runtime-button .runtime-label{display:none}
+      .chat{padding:10px 14px 150px}
+      .empty{min-height:calc(100dvh - 210px)}
+      .empty h1{font-size:27px}
+      .composer-wrap{padding-left:10px;padding-right:10px}
+      .composer{border-radius:25px}
+      .brand{padding-left:6px}
+    }
+    @media(max-width:430px){
+      .topbar-title{font-size:15px}
+      .message{grid-template-columns:28px minmax(0,1fr);gap:9px}
+      .message-avatar{width:26px;height:26px}
+      .message.user .message-body{font-size:14px}
+      .runtime-note{margin-left:37px}
+    }
+    @media(prefers-reduced-motion:reduce){*{transition:none!important}}
   </style>
 </head>
-<body data-state="withYou">
-  <main class="shell">
-    <header class="top">
-      <div class="wordmark">Monday</div>
-      <div class="presence-pill" aria-live="polite"><span class="dot"></span><span id="presenceLabel">With you</span></div>
-    </header>
-
-    <section class="stage">
-      <div class="presence">
-        <button class="orb-button" id="orbButton" aria-label="Open Monday state" aria-expanded="false">
-          <div class="orb" aria-hidden="true"></div>
+<body data-product="monday" data-runtime-state="checking">
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="MondayID navigation">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="brand-mark">M</div>
+          <div class="brand-copy">
+            <div class="brand-name">monday</div>
+            <div class="brand-owner">MondayID</div>
+          </div>
+        </div>
+        <button class="icon-btn" id="closeSidebarButton" aria-label="Close sidebar">
+          <svg class="icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
         </button>
-        <h1 class="title">Monday</h1>
-        <p class="status" id="statusLine" aria-live="polite">Recovering this scene…</p>
-
-        <section class="tray" id="tray" aria-label="Monday live state">
-          <div class="actions">
-            <button class="action primary" id="syncButton">Sync reality</button>
-            <button class="action" id="verifyButton">Verify runtime</button>
-          </div>
-          <div class="facts">
-            <div class="fact"><div class="fact-k">Continuity</div><div class="fact-v" id="continuity">reading…</div></div>
-            <div class="fact"><div class="fact-k">Monday Work</div><div class="fact-v" id="work">reading…</div></div>
-            <div class="fact"><div class="fact-k">Routing</div><div class="fact-v" id="routing">reading…</div></div>
-            <div class="fact"><div class="fact-k">Authority</div><div class="fact-v" id="authority">reading…</div></div>
-          </div>
-          <div class="receipt" id="receipt">No claim is promoted before readback.</div>
-        </section>
       </div>
-    </section>
 
-    <footer class="bottom"><div class="hint" id="hint">tap Monday · state before response</div></footer>
-  </main>
+      <button class="new-chat" id="newChatButton">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Новый чат</span>
+      </button>
+
+      <div class="sidebar-section">Недавние</div>
+      <nav class="history" id="chatHistory" aria-label="Chat history"></nav>
+
+      <div class="sidebar-spacer"></div>
+      <div class="account">
+        <div class="avatar">D</div>
+        <div>
+          <div style="color:#e4e4e7;font-weight:620">Дима</div>
+          <div>MondayID · local body</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="scrim" id="scrim"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn menu-button" id="openSidebarButton" aria-label="Open sidebar">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+        <div class="topbar-title">monday</div>
+        <div class="topbar-right" style="justify-content:flex-end">
+          <button class="runtime-button" id="runtimeButton" aria-expanded="false">
+            <span class="runtime-dot"></span>
+            <span class="runtime-label" id="runtimeLabel">sync</span>
+          </button>
+        </div>
+
+        <section class="runtime-sheet" id="runtimeSheet" aria-label="MondayID runtime status">
+          <h2>MondayID runtime</h2>
+          <div class="runtime-grid">
+            <div class="runtime-cell"><div class="runtime-k">Continuity</div><div class="runtime-v" id="continuityValue">checking…</div></div>
+            <div class="runtime-cell"><div class="runtime-k">Carrier</div><div class="runtime-v" id="carrierValue">checking…</div></div>
+            <div class="runtime-cell"><div class="runtime-k">Routing</div><div class="runtime-v" id="routingValue">checking…</div></div>
+            <div class="runtime-cell"><div class="runtime-k">Model</div><div class="runtime-v" id="modelValue">not bound</div></div>
+          </div>
+          <div class="runtime-receipt" id="runtimeReceipt">Reading live state…</div>
+        </section>
+      </header>
+
+      <section class="chat" id="chatViewport">
+        <div class="empty" id="emptyState">
+          <div class="empty-inner">
+            <div class="empty-mark">m</div>
+            <h1>Что делаем?</h1>
+            <p>Один интерфейс для Monday. История, состояние и инструменты принадлежат MondayID; вычислительный хост может меняться.</p>
+          </div>
+        </div>
+        <div class="messages" id="messageList" aria-live="polite"></div>
+      </section>
+
+      <div class="composer-wrap">
+        <form class="composer" id="composerForm">
+          <textarea id="composerInput" rows="1" placeholder="Сообщение для monday" aria-label="Message"></textarea>
+          <div class="composer-row">
+            <button class="icon-btn" type="button" id="attachButton" aria-label="Attach">
+              <svg class="icon" viewBox="0 0 24 24"><path d="m8.5 12.5 6.3-6.3a3 3 0 0 1 4.2 4.2l-8.1 8.1a5 5 0 0 1-7.1-7.1l8-8"/></svg>
+            </button>
+            <button class="icon-btn" type="button" id="voiceButton" aria-label="Voice">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+            </button>
+            <div class="composer-spacer"></div>
+            <button class="send" id="sendButton" type="submit" aria-label="Send" disabled>
+              <svg class="icon" viewBox="0 0 24 24"><path d="m6 12 6-6 6 6M12 6v12"/></svg>
+            </button>
+          </div>
+        </form>
+        <div class="composer-meta" id="composerMeta">Проверяю MondayID…</div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
 <script>
 const body=document.body;
-const tray=document.getElementById('tray');
-const orbButton=document.getElementById('orbButton');
-const syncButton=document.getElementById('syncButton');
-const verifyButton=document.getElementById('verifyButton');
-const presenceLabel=document.getElementById('presenceLabel');
-const statusLine=document.getElementById('statusLine');
-const receipt=document.getElementById('receipt');
+const sidebar=document.getElementById('sidebar');
+const scrim=document.getElementById('scrim');
+const openSidebarButton=document.getElementById('openSidebarButton');
+const closeSidebarButton=document.getElementById('closeSidebarButton');
+const newChatButton=document.getElementById('newChatButton');
+const chatHistory=document.getElementById('chatHistory');
+const messageList=document.getElementById('messageList');
+const emptyState=document.getElementById('emptyState');
+const composerForm=document.getElementById('composerForm');
+const composerInput=document.getElementById('composerInput');
+const sendButton=document.getElementById('sendButton');
+const attachButton=document.getElementById('attachButton');
+const voiceButton=document.getElementById('voiceButton');
+const runtimeButton=document.getElementById('runtimeButton');
+const runtimeSheet=document.getElementById('runtimeSheet');
+const runtimeLabel=document.getElementById('runtimeLabel');
+const runtimeReceipt=document.getElementById('runtimeReceipt');
+const composerMeta=document.getElementById('composerMeta');
+const toast=document.getElementById('toast');
+const chatViewport=document.getElementById('chatViewport');
 
-const labels={
-  withYou:'With you',
-  working:'Working',
-  verifying:'Verifying',
-  synced:'Synced',
-  needsYou:'Needs you'
-};
+const storeKey='monday.chat.shell.v1';
+let runtime={ready:false,modelBound:false,continuity:'unknown',carrier:'unknown',routing:'unknown'};
+let state=loadState();
 
-function setPresence(state,detail){
-  body.dataset.state=state;
-  presenceLabel.textContent=labels[state]||labels.withYou;
-  if(detail) statusLine.textContent=detail;
+function uid(){return (crypto.randomUUID?.() || (Date.now()+'-'+Math.random().toString(16).slice(2)))}
+function loadState(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(storeKey)||'null');
+    if(raw&&Array.isArray(raw.chats)) return raw;
+  }catch{}
+  return {active:null,chats:[]};
 }
-
-function setFact(id,value){
-  document.getElementById(id).textContent=value;
+function saveState(){localStorage.setItem(storeKey,JSON.stringify(state))}
+function activeChat(){return state.chats.find(x=>x.id===state.active)||null}
+function ensureChat(seedText=''){
+  let chat=activeChat();
+  if(chat) return chat;
+  chat={id:uid(),title:seedText.trim().slice(0,42)||'Новый чат',createdAt:Date.now(),messages:[]};
+  state.chats.unshift(chat);state.active=chat.id;saveState();return chat;
 }
-
-function toggleTray(force){
-  const open=typeof force==='boolean'?force:!tray.classList.contains('open');
-  tray.classList.toggle('open',open);
-  orbButton.setAttribute('aria-expanded',String(open));
+function setSidebar(open){body.classList.toggle('sidebar-open',open)}
+function showToast(text){
+  toast.textContent=text;toast.classList.add('show');
+  clearTimeout(showToast.t);showToast.t=setTimeout(()=>toast.classList.remove('show'),2200);
+}
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function renderHistory(){
+  chatHistory.innerHTML='';
+  if(!state.chats.length){
+    const n=document.createElement('div');n.className='sidebar-section';n.style.padding='8px 10px';n.textContent='Пока пусто';chatHistory.appendChild(n);return;
+  }
+  state.chats.forEach(chat=>{
+    const b=document.createElement('button');b.className='history-item'+(chat.id===state.active?' active':'');
+    b.textContent=chat.title;b.addEventListener('click',()=>{state.active=chat.id;saveState();renderAll();setSidebar(false)});chatHistory.appendChild(b);
+  });
+}
+function renderMessages(){
+  const chat=activeChat();
+  messageList.innerHTML='';
+  const messages=chat?.messages||[];
+  emptyState.style.display=messages.length?'none':'grid';
+  messages.forEach(message=>{
+    const row=document.createElement('article');row.className='message user';
+    row.innerHTML='<div class="message-avatar">D</div><div class="message-body">'+escapeHtml(message.text)+'</div>';
+    messageList.appendChild(row);
+  });
+  if(messages.length){
+    const note=document.createElement('div');note.className='runtime-note';
+    note.innerHTML='<span class="mini-dot"></span><span>'+(
+      runtime.modelBound
+        ? 'Monday executor подключён.'
+        : 'Сообщения сохраняются локально. Web-body не будет изображать ответ модели, пока реальный executor не подключён.'
+    )+'</span>';
+    messageList.appendChild(note);
+  }
+  requestAnimationFrame(()=>{chatViewport.scrollTop=chatViewport.scrollHeight});
+}
+function renderAll(){renderHistory();renderMessages()}
+function autosize(){
+  composerInput.style.height='auto';
+  composerInput.style.height=Math.min(composerInput.scrollHeight,150)+'px';
+  sendButton.disabled=!composerInput.value.trim();
 }
 
 async function mcpCall(name,args={}){
-  const r=await fetch('/api/mcp',{
-    method:'POST',
-    cache:'no-store',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({
-      jsonrpc:'2.0',
-      id:Date.now(),
-      method:'tools/call',
-      params:{name,arguments:args}
-    })
+  const response=await fetch('/api/mcp',{
+    method:'POST',cache:'no-store',
+    headers:{'content-type':'application/json','MCP-Protocol-Version':'2025-03-26'},
+    body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method:'tools/call',params:{name,arguments:args}})
   });
-  if(!r.ok) throw new Error('MCP '+r.status);
-  const envelope=await r.json();
+  if(!response.ok) throw new Error('MCP '+response.status);
+  const envelope=await response.json();
   if(envelope.error) throw new Error(envelope.error.message||'MCP error');
   return envelope.result?.structuredContent||envelope.result?.content?.[0]?.text||envelope.result;
 }
-
-async function readHealth(){
-  const r=await fetch('/api/health',{cache:'no-store'});
-  if(!r.ok) throw new Error('health '+r.status);
-  return r.json();
-}
-
-async function syncReality(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Reading the organism, not a cached story…');
-  receipt.textContent='READBACK · health + capability manifest';
+async function syncRuntime(){
+  body.dataset.runtimeState='checking';runtimeLabel.textContent='sync';composerMeta.textContent='Проверяю MondayID…';
   try{
-    const [health,manifestRaw,stateRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest'),mcpCall('get_state',{limit:1})]);
-    const manifest=typeof manifestRaw==='string'?JSON.parse(manifestRaw):manifestRaw;
-    const state=typeof stateRaw==='string'?JSON.parse(stateRaw):stateRaw;
-    const linked=Boolean(state?.ok&&state?.snapshot?.schema===health?.continuity?.schema&&state?.snapshot?.trust==='AUTHENTICATED_MACHINE_WRITER');
-    const routed=Boolean(manifest?.metabolism||manifest?.hostHomeostasis);
-    const bounded=Boolean(manifest?.authorityMembrane);
-
-    setFact('continuity',linked?'shared context read':'freshness unknown');
-    setFact('work','uses current chat tools');
-    setFact('routing',routed?'routing rules loaded':'route unknown');
-    setFact('authority',bounded?'bounded':'authority unknown');
-
-    if(health?.ok){
-      setPresence('withYou',linked?'Shared context read · work continues in your chat':'Server available · shared context unresolved');
-      receipt.textContent='OBSERVED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    }else{
-      setPresence('needsYou','Runtime answered without a healthy state');
-    }
+    const [health,attach,manifest]=await Promise.all([
+      fetch('/api/health',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('health '+r.status);return r.json()}),
+      mcpCall('cell_attach',{limit:4,carrierVersion:'2.0.1'}),
+      mcpCall('capability_manifest')
+    ]);
+    const a=typeof attach==='string'?JSON.parse(attach):attach;
+    const m=typeof manifest==='string'?JSON.parse(manifest):manifest;
+    runtime.ready=Boolean(health?.ok);
+    runtime.continuity=a?.worldline?.ok||a?.continuity?.ok||a?.ok?'attached':'freshness unknown';
+    runtime.carrier=a?.carrier?.version||'2.0.1';
+    runtime.routing=(m?.metabolism||m?.hostHomeostasis)?'loaded':'unknown';
+    runtime.modelBound=false;
+    body.dataset.runtimeState=runtime.ready?'ready':'error';
+    runtimeLabel.textContent=runtime.ready?'live':'check';
+    document.getElementById('continuityValue').textContent=runtime.continuity;
+    document.getElementById('carrierValue').textContent=runtime.carrier;
+    document.getElementById('routingValue').textContent=runtime.routing;
+    document.getElementById('modelValue').textContent=runtime.modelBound?'bound':'not bound';
+    runtimeReceipt.textContent='OBSERVED · live readback · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    composerMeta.textContent=runtime.modelBound?'Monday готова отвечать здесь':'MondayID live · model executor для web-body ещё не привязан';
+    renderMessages();
   }catch(error){
-    setFact('continuity','unresolved');setFact('work','unresolved');setFact('routing','unresolved');setFact('authority','unresolved');
-    setPresence('needsYou',navigator.onLine?'Live readback failed · no success claimed':'Offline · continuity freshness unknown');
-    receipt.textContent='NOT VERIFIED · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
+    runtime.ready=false;body.dataset.runtimeState='error';runtimeLabel.textContent='offline';
+    runtimeReceipt.textContent='NOT VERIFIED · '+String(error.message||error);
+    composerMeta.textContent='Runtime не подтверждён · ничего не симулирую';
+    renderMessages();
   }
 }
 
-async function verifyRuntime(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Checking runtime access…');
-  receipt.textContent='ATTEMPTED · runtime boot';
-  try{
-    const r=await fetch('/api/boot',{cache:'no-store'});
-    setPresence('verifying','Reading back the boot result…');
-    const out=await r.json();
-    const verified=Boolean(out?.ok)&&(
-      out?.pass?.state==='FULFILLED'||
-      out?.surface?.state==='VERIFIED'||
-      out?.state==='VERIFIED'
-    );
-    if(verified){
-      setPresence('withYou','Runtime check complete · tasks use your chat tools');
-      receipt.textContent='VERIFIED · '+(out?.surface?.revision||out?.revision||'runtime readback');
-    }else{
-      setPresence('needsYou','Boot returned without verification · claim withheld');
-      receipt.textContent='OBSERVED, NOT VERIFIED · '+(out?.pass?.reason||out?.reason||('HTTP '+r.status));
-    }
-  }catch(error){
-    setPresence('needsYou','Verification path failed · nothing promoted');
-    receipt.textContent='FAILED READBACK · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
+composerInput.addEventListener('input',autosize);
+composerInput.addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&!event.shiftKey){
+    event.preventDefault();
+    if(!sendButton.disabled) composerForm.requestSubmit();
   }
-}
-
-orbButton.addEventListener('click',()=>toggleTray());
-syncButton.addEventListener('click',syncReality);
-verifyButton.addEventListener('click',verifyRuntime);
-window.addEventListener('online',syncReality);
+});
+composerForm.addEventListener('submit',event=>{
+  event.preventDefault();
+  const text=composerInput.value.trim();
+  if(!text) return;
+  const chat=ensureChat(text);
+  chat.messages.push({id:uid(),role:'user',text,createdAt:Date.now()});
+  if(chat.messages.length===1) chat.title=text.slice(0,42);
+  composerInput.value='';autosize();saveState();renderAll();
+  if(!runtime.modelBound){
+    showToast('Сохранено локально · реальный model executor ещё не привязан');
+  }
+});
+newChatButton.addEventListener('click',()=>{
+  state.active=null;saveState();renderAll();composerInput.focus();setSidebar(false)
+});
+openSidebarButton.addEventListener('click',()=>setSidebar(true));
+closeSidebarButton.addEventListener('click',()=>setSidebar(false));
+scrim.addEventListener('click',()=>setSidebar(false));
+runtimeButton.addEventListener('click',()=>{
+  const open=!runtimeSheet.classList.contains('open');runtimeSheet.classList.toggle('open',open);runtimeButton.setAttribute('aria-expanded',String(open))
+});
+attachButton.addEventListener('click',()=>showToast('Вложения подключу через MondayID file receptor'));
+voiceButton.addEventListener('click',()=>showToast('Voice surface будет привязан к локальному iPhone runtime'));
+document.addEventListener('click',event=>{
+  if(!runtimeSheet.contains(event.target)&&!runtimeButton.contains(event.target)) runtimeSheet.classList.remove('open')
+});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&navigator.onLine)syncRuntime()});
+window.addEventListener('online',syncRuntime);
 window.addEventListener('offline',()=>{
-  setPresence('needsYou','Offline · continuity freshness unknown');
-  receipt.textContent='UNKNOWN · network unavailable';
-});
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&navigator.onLine) syncReality();
+  body.dataset.runtimeState='error';runtimeLabel.textContent='offline';composerMeta.textContent='Offline · локальная история доступна'
 });
 
-syncReality();
+renderAll();autosize();syncRuntime();
 </script>
 </body>
 </html>
