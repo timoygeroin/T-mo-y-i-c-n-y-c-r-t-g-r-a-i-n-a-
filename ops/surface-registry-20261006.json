@@ -9,7 +9,7 @@
       "plugin_id": "plugins_6ac400facbe481918f97d70c3b46e5e3",
       "name": "mondayid-mobile",
       "disposition": "CANONICAL_CARRIER",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "synapse": "https://mondayid-host.vercel.app/api/mcp",
       "ingress_tool": "cell_attach"
     },
