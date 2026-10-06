@@ -106,7 +106,9 @@
     "human_gate_only_after_reachable_autonomous_routes_exhausted",
     "historical_shells_are_provenance_not_runtime_authority",
     "optional_side_bodies_do_not_block_monday_core_closure",
-    "held_out_proof_is_not_implementation_backlog"
+    "held_out_proof_is_not_implementation_backlog",
+    "legacy_work_plugin_is_compatibility_organ_not_identity",
+    "gpt_root_open_prs_are_donor_provenance_not_runtime_authority"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -662,7 +664,9 @@
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1",
     "autopoiesis": "mondayid.autopoiesis.v1",
     "autopoiesis_wake": "INSTALLED",
-    "unified_closure": "ops/unified-closure-20261006.json"
+    "unified_closure": "ops/unified-closure-20261006.json",
+    "internal_legacy_work_plugin_version": "1.3.0",
+    "internal_legacy_work_plugin_disposition": "COMPATIBILITY_EXECUTION_ORGAN"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -1223,6 +1227,8 @@
       "PLATFORM",
       "HELD_OUT_PROOF"
     ],
-    "law": "No stale project/issue/branch may become active authority merely because it remains open or contains an older acceptance contract."
+    "law": "No stale project/issue/branch may become active authority merely because it remains open or contains an older acceptance contract.",
+    "externalProjectAuthority": false,
+    "compatibilityWorkPlugin": "plugins_6ac2797393ac8191b3eba1877b99c293@1.3.0"
   }
 }
