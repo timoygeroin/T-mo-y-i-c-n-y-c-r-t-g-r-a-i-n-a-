@@ -31,6 +31,15 @@ test('objects persist locally and expose semantic-depth mechanics without preten
   assert.match(js,/Ghost State needs at least two recorded versions/);
 });
 
+test('persisted runtime can never reopen as live verified truth and local objects are deletable',()=>{
+  assert.match(js,/restored\.runtime\.presence='recovering'/);
+  assert.match(js,/restored\.runtime\.live=false/);
+  assert.match(js,/Cached prior state · live verification required/);
+  assert.match(js,/Offline · cached state is not live verification/);
+  assert.match(html,/id="deleteObject"/);
+  assert.match(js,/Delete this local object/);
+});
+
 test('PWA is installable/offline while API truth remains network-only',()=>{
   assert.match(html,/manifest\.webmanifest/);
   assert.match(js,/serviceWorker\.register/);
@@ -43,4 +52,5 @@ test('visual language remains quiet premium rather than cyberpunk dashboard',()=
   assert.match(css,/backdrop-filter:blur/);
   assert.match(css,/safe-area-inset-bottom/);
   assert.doesNotMatch(css,/neon|matrix|hud/i);
+  for(const label of ['Library','Idea Lab','Vision']) assert.match(html,new RegExp('>'+label+'<'));
 });
