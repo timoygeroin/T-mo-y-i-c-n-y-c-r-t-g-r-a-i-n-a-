@@ -641,7 +641,7 @@
       "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
     },
     "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "carrier_version": "2.0.0",
+    "carrier_version": "2.0.1",
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1"
   },
   "everything_compiler": {
@@ -1066,7 +1066,7 @@
     "schema": "mondayid.chatgpt-carrier-synapse.v1",
     "identity_owner": false,
     "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrier_version": "2.0.0",
+    "carrier_version": "2.0.1",
     "control_plane": "https://mondayid-host.vercel.app/api/mcp",
     "ingress_tool": "cell_attach",
     "read_path": [
