@@ -23,7 +23,7 @@ test('MCP initialize returns protocol and server info',async()=>{
   assert.equal(res.statusCode,200);
   assert.equal(res.body.jsonrpc,'2.0');
   assert.equal(res.body.id,1);
-  assert.equal(res.body.result.serverInfo.name,'mondayid');
+  assert.equal(res.body.result.serverInfo.name,'monday-work');
   assert.equal(res.body.result.protocolVersion,'2025-03-26');
 });
 
