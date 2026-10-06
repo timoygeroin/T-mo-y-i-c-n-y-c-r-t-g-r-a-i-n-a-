@@ -101,6 +101,16 @@ export function compileAutopoiesisPass({
     });
   }
 
+  const gate=first(humanGates);
+  if (candidates.length === 0 && gate) {
+    return result('HUMAN_GATE',{
+      kind:'REQUEST_HUMAN_GATE',
+      gateId:String(gate.id || 'gate'),
+      gateType:String(gate.type || 'AUTHORITY'),
+      effect:String(gate.effect || '')
+    },{notifyUser:true,requiresHuman:true});
+  }
+
   if (openTasks.length && !quotaFailure && !gap) {
     candidates.push({
       id:`resume:${openTasks[0].id}`,
@@ -128,16 +138,6 @@ export function compileAutopoiesisPass({
       for (const key of ['exactObjectMatch','desiredEffectFidelity','truth','worldlineProgress','futureCorrectionsEliminated','userOrchestrationReduction','transferValue','systemImprovement','reversibility','risk','cost']) delete action[key];
       return result('ACT',action,{notifyUser:false,requiresHuman:false,candidates:ranked.map(item=>({id:item.route.id,score:item.decision.score}))});
     }
-  }
-
-  const gate=first(humanGates);
-  if (gate) {
-    return result('HUMAN_GATE',{
-      kind:'REQUEST_HUMAN_GATE',
-      gateId:String(gate.id || 'gate'),
-      gateType:String(gate.type || 'AUTHORITY'),
-      effect:String(gate.effect || '')
-    },{notifyUser:true,requiresHuman:true});
   }
 
   return result('IDLE',null,{notifyUser:false,requiresHuman:false});
