@@ -1,12 +1,12 @@
 {
-  "name": "Monday",
-  "short_name": "Monday",
-  "description": "MondayID live presence surface",
+  "name": "monday",
+  "short_name": "monday",
+  "description": "MondayID iPhone-first chat client",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#05070a",
-  "theme_color": "#05070a",
+  "background_color": "#0b0b0c",
+  "theme_color": "#0b0b0c",
   "orientation": "portrait-primary",
   "icons": [
     {
