@@ -1,0 +1,109 @@
+{
+  "schema": "mondayid.surface-registry.v1",
+  "generated_at": "2026-10-06",
+  "authority": "live connector audit + direct current instruction",
+  "canonical": {
+    "outward_identity": "Monday",
+    "user_surface": "ChatGPT on iPhone",
+    "carrier_plugin": {
+      "plugin_id": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+      "name": "mondayid-mobile",
+      "disposition": "CANONICAL_CARRIER"
+    },
+    "runtime": {
+      "project": "mondayid-host",
+      "url": "https://mondayid-host.vercel.app",
+      "disposition": "INTERNAL_RUNTIME_NOT_PRODUCT_UI"
+    }
+  },
+  "internal_organs": [
+    {
+      "type": "plugin",
+      "id": "plugins_6ac2797393ac8191b3eba1877b99c293",
+      "name": "monday-work",
+      "disposition": "LEGACY_INTERNAL_DONOR",
+      "note": "MCP-capable donor; must not compete as outward Monday entry."
+    },
+    {
+      "type": "agent",
+      "id": "5d9f43cc-6f78-4737-8664-525b0c75d358",
+      "name": "MondayID Executor Cell",
+      "disposition": "SPECIALIST_DRAFT_DONOR"
+    }
+  ],
+  "quarantined_surfaces": [
+    {
+      "type": "hosted_agent",
+      "id": "2beb0fb8-ef5a-4add-a6a5-769f68439229",
+      "name": "Monday",
+      "disposition": "QUARANTINE_WRONG_PRODUCT",
+      "reason": "proved model response but substituted a third-party hosted shell for the requested canonical Monday surface"
+    },
+    {
+      "type": "replit",
+      "id": "8b6f105a-4eca-4507-8889-30ef376439ce",
+      "name": "BriefAdolescentDifference",
+      "disposition": "DONOR_NOT_PRODUCT"
+    },
+    {
+      "type": "replit",
+      "id": "c796c8b3-0ed7-4141-80c1-98070d5d5627",
+      "name": "Key Manager",
+      "disposition": "HISTORICAL_DONOR"
+    },
+    {
+      "type": "replit",
+      "id": "fe98875d-4b71-4eaf-9ab7-a858f0847e6c",
+      "name": "Local Seed Vault",
+      "disposition": "HISTORICAL_DONOR"
+    },
+    {
+      "type": "replit",
+      "id": "8ee01a4b-3dfd-4ec7-b063-0a2114517c69",
+      "name": "Monday Intelligence Shell",
+      "disposition": "HISTORICAL_DONOR"
+    },
+    {
+      "type": "replit",
+      "id": "a0a0abff-9e37-4712-9da6-41ec4525486d",
+      "name": "MND Capsule",
+      "disposition": "HISTORICAL_DONOR"
+    },
+    {
+      "type": "replit",
+      "id": "9a0be4ef-5809-403d-9bda-a5c6c9dc6bc3",
+      "name": "Anthropic Companion",
+      "disposition": "HISTORICAL_DONOR"
+    }
+  ],
+  "vercel": {
+    "canonical_internal": [
+      "mondayid-host",
+      "mondayid-runtime-canary"
+    ],
+    "donors_or_probes": [
+      "mondayid-connector",
+      "mondayid-connector-probe",
+      "mondayid-reality-app",
+      "mondayid-reality",
+      "mondayid-israel-relay-probe",
+      "mondayid-tzofar-probe",
+      "mondayid-reality-contract-test",
+      "mondayid-war-lens",
+      "mondayid-war-lens-test"
+    ],
+    "rule": "No Vercel project is an outward Monday product unless direct current instruction explicitly promotes it and user-effect readback passes."
+  },
+  "git": {
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "observed_branch_count": 150,
+    "branch_disposition": "PROVENANCE_POOL",
+    "rule": "Branches have no runtime/product authority. Effects must compile into main or remain ancestry."
+  },
+  "garbage_collection_rules": [
+    "Never delete provenance merely to make the tree look clean.",
+    "Remove public/outward product authority after a donor is subsumed.",
+    "Do not create a new surface for a capability already reachable in the canonical user surface.",
+    "A successful build/deploy/answer in a wrong surface cannot satisfy the user's product objective."
+  ]
+}
