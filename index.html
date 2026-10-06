@@ -149,6 +149,26 @@
   <div class="stack" id="searchResults"></div>
 </dialog>
 
+<dialog id="chatDialog" class="chat-sheet">
+  <header class="chat-header">
+    <button class="chat-back" id="chatClose" aria-label="Close">‹</button>
+    <div class="chat-identity"><span class="mark"></span><div><b id="chatTitle">Chat</b><small id="chatPresence">Monday</small></div></div>
+    <button class="chat-more" id="chatMore" aria-label="Thread object">•••</button>
+  </header>
+  <div class="chat-stage" id="chatStage"></div>
+  <div class="chat-context-bar">
+    <button id="chatWork">Work</button>
+    <button id="chatVoice">Voice</button>
+    <button id="chatMedia">Photo / Video</button>
+    <button id="chatHandoff">Handoff</button>
+  </div>
+  <div class="chat-composer">
+    <textarea id="chatComposer" rows="1" placeholder="Message"></textarea>
+    <button id="chatSend">↑</button>
+  </div>
+  <input id="chatMediaInput" type="file" accept="image/*,video/*,audio/*" hidden>
+</dialog>
+
 <dialog id="objectDialog" class="sheet">
   <div class="sheet-head"><div><p class="eyebrow" id="objectKind">OBJECT</p><h2 id="objectTitle">Object</h2></div><button data-close>×</button></div>
   <div class="depth-control">
