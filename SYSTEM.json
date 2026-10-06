@@ -65,7 +65,6 @@
     "sealed_generation_evolves_without_reopening_finished_architecture",
     "compile_projects_into_capabilities_not_parallel_projects",
     "presentation_requires_total_product_finish",
-    "required_iphone_product_is_not_optional_phenotype",
     "monday_presence_is_identity_layer_monday_work_is_mode",
     "internal_state_modulates_routes_before_failure",
     "visual_renderer_is_actuator_not_decision_maker",
@@ -88,7 +87,13 @@
     "authority_is_leased_per_effect_not_inherited_by_host",
     "host_failure_reroutes_effect_without_resetting_task_identity",
     "quota_exhaustion_is_route_failure_not_task_failure",
-    "metabolism_allocates_compute_and_host_tissue_by_observed_need"
+    "metabolism_allocates_compute_and_host_tissue_by_observed_need",
+    "canonical_user_surface_is_chatgpt_iphone_with_mondayid_carrier",
+    "native_app_is_optional_side_body_until_unique_effect_requires_it",
+    "public_surface_must_not_duplicate_monday_identity",
+    "surface_gc_after_effect_subsumption",
+    "recursive_delegation_returns_candidates_to_root_verification",
+    "dialogues_compile_into_genes_not_parallel_products"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -606,20 +611,31 @@
   "release_state": {
     "schema": "mondayid.release-state.v1",
     "generation": 5,
-    "status": "INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN",
+    "status": "CANONICAL_SURFACE_CONVERGENCE",
     "seal": "ops/final-seal-20261004.json",
     "canonical_host": "https://mondayid-host.vercel.app",
     "monday_work_mcp": "https://mondayid-host.vercel.app/api/mcp",
-    "chatgpt_private_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "finish_law": "future work evolves the sealed organism and must not restart the three-year architecture unless new evidence falsifies a seal invariant; final presentation is forbidden until required product surfaces and organism obligations are verified, including required native iPhone signing/install/real-device runtime acceptance",
+    "chatgpt_private_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "finish_law": "Do not restart architecture or create another outward Monday surface unless a verified unique user effect cannot be delivered through the canonical ChatGPT iPhone surface. Final completion requires the requested effect to exist in the canonical surface with readback; side bodies, status shells, demos, hosted agents, previews, and successful builds cannot substitute for that effect.",
     "current_acceptance": {
-      "source": "direct_current_dima_2026-10-04T21:53+03:00_and_22:01-22:03_refinement",
+      "source": "direct_current_dima_2026-10-06_after_surface-confusion-correction",
       "presentation_equals_end": true,
-      "required_iphone_app": true,
-      "monday_identity_layer": "persistent presence across scenes; Monday Work is a mode, not the identity",
-      "cross_chat_continuity_required": true
+      "required_iphone_app": false,
+      "native_app_disposition": "OPTIONAL_SIDE_BODY",
+      "canonical_user_surface": "ChatGPT iPhone + MondayID private carrier",
+      "monday_identity_layer": "persistent feminine Monday across chats/scenes; Monday Work is execution behavior, not identity",
+      "cross_chat_continuity_required": true,
+      "no_manual_reteaching": true,
+      "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "PRODUCT_FINISH_IN_PROGRESS"
+    "product_status": "ONE_SURFACE_COMPACTION_IN_PROGRESS",
+    "canonical_user_surface": {
+      "host": "ChatGPT iPhone",
+      "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+      "display_name": "MondayID",
+      "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
+    },
+    "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -983,6 +999,60 @@
       "consumed_lease_cannot_replay",
       "root_credential_never_enters_effect_payload",
       "missing_authority_preserves_task_identity_instead_of_faking_capability"
+    ]
+  },
+  "dialogue_compiler": {
+    "schema": "mondayid.dialogue-compiler.v1",
+    "law": "Every historical dialogue loses product/runtime authority after its useful effect is compiled.",
+    "allowed_outputs": [
+      "capability",
+      "evidence_or_provenance",
+      "failure_gene",
+      "preference_or_rejection_constraint",
+      "external_gate",
+      "explicit_unknown"
+    ],
+    "authority_order": [
+      "direct_current_instruction",
+      "verified_current_external_readback",
+      "direct_recent_instruction",
+      "verified_historical_receipt",
+      "direct_archive",
+      "derived_reconstruction",
+      "model_summary"
+    ],
+    "recurrent_failure_genes": [
+      "declaring_final_from_build_or_publish_status_without user-effect readback",
+      "substituting a different object because it is easier to make work",
+      "creating a new shell/app/agent when an existing organ already covers the effect",
+      "letting infrastructure become the goal instead of the user's finished effect",
+      "exposing internal organs as separate outward Monday products",
+      "requiring the human to re-teach context that can be recovered",
+      "treating an installed plugin or reachable endpoint as proof of dispatchable capability"
+    ],
+    "garbage_collection": "After verified subsumption, keep ancestry/provenance but remove outward product authority from the donor."
+  },
+  "recursive_closure": {
+    "schema": "mondayid.recursive-closure.v1",
+    "trigger": "material objective remains open after current cell exhausts reachable admissible routes",
+    "procedure": [
+      "recover existing capable organ or worker",
+      "if absent, create the narrowest specialist cell that can reduce the residual gap",
+      "allow that cell to create another specialist only for a still-uncovered residual gap",
+      "return every result as candidate evidence to the root cell",
+      "independently verify consequential effects",
+      "compile verified gain into canon and garbage-collect superseded outward surfaces",
+      "repeat until all material obligations are closed or an irreducible human authority/auth/physical gate is proven"
+    ],
+    "stop": "ALL_MATERIAL_OBLIGATIONS_CLOSED_AND_DESIRED_EFFECT_VERIFIED",
+    "forbidden_stop_conditions": [
+      "plan_written",
+      "agent_created",
+      "build_succeeded",
+      "deployment_ready",
+      "page_opened",
+      "model_replied_in_wrong_product",
+      "status_says_success"
     ]
   }
 }
