@@ -93,7 +93,9 @@
     "public_surface_must_not_duplicate_monday_identity",
     "surface_gc_after_effect_subsumption",
     "recursive_delegation_returns_candidates_to_root_verification",
-    "dialogues_compile_into_genes_not_parallel_products"
+    "dialogues_compile_into_genes_not_parallel_products",
+    "carrier_attach_precedes_chat_response",
+    "github_is_capability_search_space_not_authority"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -605,7 +607,10 @@
       "visual_surgical_repair",
       "authority_membrane",
       "metabolic_host_allocation",
-      "host_homeostasis"
+      "host_homeostasis",
+      "chatgpt_carrier_synapse",
+      "github_genome",
+      "evolution_compiler"
     ]
   },
   "release_state": {
@@ -628,14 +633,16 @@
       "no_manual_reteaching": true,
       "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "ONE_SURFACE_COMPACTION_IN_PROGRESS",
+    "product_status": "ERA2_CARRIER_RUNTIME_BINDING_CANDIDATE",
     "canonical_user_surface": {
       "host": "ChatGPT iPhone",
       "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
       "display_name": "MondayID",
       "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
     },
-    "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293"
+    "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
+    "carrier_version": "2.0.1",
+    "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -1053,6 +1060,46 @@
       "page_opened",
       "model_replied_in_wrong_product",
       "status_says_success"
+    ]
+  },
+  "chatgpt_carrier_synapse": {
+    "schema": "mondayid.chatgpt-carrier-synapse.v1",
+    "identity_owner": false,
+    "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "carrier_version": "2.0.1",
+    "control_plane": "https://mondayid-host.vercel.app/api/mcp",
+    "ingress_tool": "cell_attach",
+    "read_path": [
+      "carrier_invocation",
+      "generation5_health",
+      "capability_manifest",
+      "compiled_project_lineage",
+      "trusted_worldline",
+      "reconcile_current_signal",
+      "materialize_working_cstar",
+      "resume"
+    ],
+    "evolution_path": [
+      "detect_residual_gap",
+      "recover_existing_capability",
+      "compose",
+      "discover_external_gene",
+      "sanitize",
+      "implement_smallest_owned_patch",
+      "verify",
+      "transfer",
+      "promote"
+    ],
+    "platform_boundary": {
+      "explicit_carrier_invocation": "IN_SCOPE",
+      "native_global_pre_response_interception": "UNPROVEN_PLATFORM_BOUNDARY"
+    },
+    "laws": [
+      "carrier_is_receptor_not_organism",
+      "remote_runtime_is_substrate_not_identity_owner",
+      "current_signal_survives_recovery",
+      "missing_worldline_degrades_without_identity_reset",
+      "carrier_runtime_drift_reconciles_before_release"
     ]
   }
 }

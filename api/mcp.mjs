@@ -4,6 +4,7 @@ import { fetchWorldlineSnapshot } from '../src/remote-worldline.mjs';
 import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
 import { compileProjectLineage, projectToCapabilityDelta } from '../src/everything-compiler.mjs';
 import { describeWorkReadiness } from '../src/work-readiness.mjs';
+import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
 const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
@@ -16,6 +17,18 @@ const tools = Object.freeze([
     name:'health',
     description:'Read verified MondayID host health and generation identity.',
     inputSchema:{ type:'object', properties:{}, additionalProperties:false }
+  },
+  {
+    name:'cell_attach',
+    description:'Attach a fresh ChatGPT/host cell to the canonical MondayID Generation-5 contracts and trusted Worldline before ordinary response behavior.',
+    inputSchema:{
+      type:'object',
+      properties:{
+        limit:{type:'integer',minimum:1,maximum:100,default:20},
+        carrierVersion:{type:'string',default:'2.0.1'}
+      },
+      additionalProperties:false
+    }
   },
   {
     name:'capability_manifest',
@@ -58,6 +71,35 @@ function jsonRpcError(id, code, message, data = undefined) {
 async function callTool(name, args = {}) {
   if (name === 'health') {
     return { content:[{ type:'text', text:JSON.stringify(describeHost()) }], structuredContent:describeHost() };
+  }
+
+  if (name === 'cell_attach') {
+    const identity=describeHost();
+    const compiled=compileProjectLineage(projectRegistry.entries || []);
+    const delta=projectToCapabilityDelta(compiled);
+    const compiledHistory={ok:delta.ok===true,compiled,delta};
+    const limit=Math.max(1,Math.min(100,Number(args?.limit || 20)));
+    const state=await fetchWorldlineSnapshot({
+      baseUrl:process.env.MONDAYID_WORLDLINE_URL,
+      limit,
+      trust:'trusted'
+    });
+    const value=buildCarrierAttachSnapshot({
+      system,
+      identity,
+      compiledHistory,
+      worldline:state.ok ? state : null,
+      worldlineError:state.ok ? null : state,
+      carrier:{
+        pluginId:system.release_state?.chatgpt_private_plugin || null,
+        version:String(args?.carrierVersion || '2.0.1')
+      }
+    });
+    return {
+      ...(value.ok ? {} : {isError:true}),
+      content:[{type:'text',text:JSON.stringify(value)}],
+      structuredContent:value
+    };
   }
 
   if (name === 'capability_manifest') {

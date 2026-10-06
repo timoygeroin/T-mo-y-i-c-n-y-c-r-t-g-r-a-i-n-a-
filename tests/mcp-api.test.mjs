@@ -35,11 +35,46 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
   const names=res.body.result.tools.map(tool=>tool.name);
   assert.deepEqual(names,[
     'health',
+    'cell_attach',
     'capability_manifest',
     'compile_history',
     'get_state',
     'prove_trusted_write_readback'
   ]);
+});
+
+test('MCP cell_attach returns one canonical attach snapshot with trusted Worldline',async()=>{
+  const previousUrl=process.env.MONDAYID_WORLDLINE_URL;
+  const previousFetch=globalThis.fetch;
+  process.env.MONDAYID_WORLDLINE_URL='https://worldline.example.test';
+  globalThis.fetch=async()=>({
+    ok:true,
+    status:200,
+    json:async()=>({
+      schema:'mondayid.worldline.snapshot.v0.4.0',
+      trust:'AUTHENTICATED_MACHINE_WRITER',
+      readOnly:true,
+      generatedAtIso:'2026-10-06T10:00:00Z',
+      events:[]
+    })
+  });
+  try{
+    const req={method:'POST',body:{jsonrpc:'2.0',id:22,method:'tools/call',params:{name:'cell_attach',arguments:{limit:20,carrierVersion:'2.0.1'}}}};
+    const res=response();
+    await mcpHandler(req,res);
+    assert.equal(res.statusCode,200);
+    const value=res.body.result.structuredContent;
+    assert.equal(value.ok,true);
+    assert.equal(value.state,'ATTACHED');
+    assert.equal(value.schema,'mondayid.chatgpt-carrier-attach.v1');
+    assert.equal(value.canonical.carrierPlugin,'plugins_6ac400facbe481918f97d70c3b46e5e3');
+    assert.equal(value.worldline.schema,'mondayid.worldline.snapshot.v0.4.0');
+    assert.equal(value.next.operation,'RECONCILE_CURRENT_SIGNAL_THEN_RESUME');
+  } finally {
+    if(previousUrl===undefined) delete process.env.MONDAYID_WORLDLINE_URL;
+    else process.env.MONDAYID_WORLDLINE_URL=previousUrl;
+    globalThis.fetch=previousFetch;
+  }
 });
 
 test('MCP tools/call health returns structured host readback',async()=>{
@@ -57,6 +92,7 @@ test('MCP GET provides transport discovery without claiming external verificatio
   await mcpHandler(req,res);
   assert.equal(res.statusCode,200);
   assert.equal(res.body.transport,'streamable-http');
+  assert.ok(res.body.tools.includes('cell_attach'));
   assert.ok(res.body.tools.includes('get_state'));
   assert.ok(res.body.tools.includes('prove_trusted_write_readback'));
 });

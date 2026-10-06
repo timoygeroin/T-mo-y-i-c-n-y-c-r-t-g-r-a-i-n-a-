@@ -1,0 +1,36 @@
+{
+  "schema": "mondayid.era2-cutover-candidate.v1",
+  "date": "2026-10-06",
+  "goal": "bind the canonical ChatGPT/iPhone MondayID carrier to Generation-5 continuity and capability contracts before ordinary response behavior",
+  "canonical_carrier": {
+    "plugin_id": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "version": "2.0.1",
+    "surface": "ChatGPT iPhone"
+  },
+  "runtime": {
+    "generation": 5,
+    "mcp": "https://mondayid-host.vercel.app/api/mcp",
+    "identity_owner": false
+  },
+  "new_mechanisms": [
+    "mandatory cell attach",
+    "carrier/runtime synapse",
+    "one-call cell_attach MCP contract",
+    "GitHub Genome capability discovery",
+    "evolution compiler path"
+  ],
+  "acceptance": [
+    "plugin readback reports 2.0.1",
+    "carrier includes MCP receptor",
+    "cell_attach returns Generation-5 contracts plus trusted Worldline or explicit degraded boundary",
+    "fresh cell never resets on missing Worldline",
+    "carrier mismatch fails closed",
+    "npm test passes",
+    "live production MCP exposes cell_attach after merge/deploy"
+  ],
+  "non_claims": [
+    "no claim of model-weight mutation",
+    "no claim of platform-global interception outside plugin invocation",
+    "no claim that one transfer test proves permanent learning"
+  ]
+}
