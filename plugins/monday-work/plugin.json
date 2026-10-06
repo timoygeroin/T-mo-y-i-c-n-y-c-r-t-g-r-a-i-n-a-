@@ -1,15 +1,14 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "monday-work",
-  "version": "1.2.0",
-  "description": "MondayID continuity and execution through available host tools, with iPhone-first operation and optional remote MCP recovery.",
+  "version": "1.3.0",
+  "description": "Legacy compatibility execution organ of MondayID. Same organism, same canonical worldline; Work is behavior, not a second identity.",
   "keywords": [
     "mondayid",
     "continuity",
     "mcp",
     "work",
-    "capability",
-    "evolution",
-    "compiler"
+    "execution",
+    "compatibility"
   ]
 }
