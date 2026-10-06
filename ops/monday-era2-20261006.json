@@ -20,7 +20,7 @@
     "evolution compiler path"
   ],
   "acceptance": [
-    "plugin readback reports 2.0.0",
+    "plugin readback reports 2.0.1",
     "carrier includes MCP receptor",
     "cell_attach returns Generation-5 contracts plus trusted Worldline or explicit degraded boundary",
     "fresh cell never resets on missing Worldline",
