@@ -103,7 +103,10 @@
     "autonomy_is_bounded_self_completion_not_unbounded_authority",
     "resident_requires_wake_receptor",
     "autonomous_passes_stay_silent_when_idle",
-    "human_gate_only_after_reachable_autonomous_routes_exhausted"
+    "human_gate_only_after_reachable_autonomous_routes_exhausted",
+    "historical_shells_are_provenance_not_runtime_authority",
+    "optional_side_bodies_do_not_block_monday_core_closure",
+    "held_out_proof_is_not_implementation_backlog"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -647,7 +650,7 @@
       "no_manual_reteaching": true,
       "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "AUTOPOIESIS_LIVE",
+    "product_status": "AUTOPOIESIS_LIVE_UNIFIED_CLOSURE",
     "canonical_user_surface": {
       "host": "ChatGPT iPhone",
       "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
@@ -658,7 +661,8 @@
     "carrier_version": "2.2.0",
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1",
     "autopoiesis": "mondayid.autopoiesis.v1",
-    "autopoiesis_wake": "INSTALLED"
+    "autopoiesis_wake": "INSTALLED",
+    "unified_closure": "ops/unified-closure-20261006.json"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -1207,5 +1211,18 @@
     "wake_schedule": "hourly_condition_watch",
     "wake_installed_at": "2026-10-06T12:55:33Z",
     "wake_receipt": "ops/autopoiesis-live-20261006.json"
+  },
+  "unified_closure": {
+    "schema": "mondayid.unified-closure.v1",
+    "ledger": "ops/unified-closure-20261006.json",
+    "assistantOwnedOpenWork": 0,
+    "oldProjectRuntimeAuthority": false,
+    "optionalBodiesAreNonBlocking": true,
+    "remainingGateClasses": [
+      "HUMAN",
+      "PLATFORM",
+      "HELD_OUT_PROOF"
+    ],
+    "law": "No stale project/issue/branch may become active authority merely because it remains open or contains an older acceptance contract."
   }
 }
