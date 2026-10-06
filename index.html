@@ -157,13 +157,15 @@
     <button data-depth="relations">Relations</button>
     <button data-depth="evidence">Evidence</button>
   </div>
+  <div class="gesture-hint">Thought Pinch / Cognitive Zoom · pinch with two fingers or use the depth controls</div>
   <div id="objectBody" class="object-body"></div>
   <div class="object-actions">
+    <button id="editObject">Edit / Move</button>
     <button id="peelButton">Peel</button>
     <button id="timeButton">Time Scrub</button>
     <button id="ghostButton">Ghost State</button>
     <button id="shareObject">Share</button>
-    <button id="deleteObject" class="danger-button">Delete local</button>
+    <button id="deleteObject" class="danger-button">Move to Trash</button>
   </div>
 </dialog>
 
@@ -178,11 +180,28 @@
   </form>
 </dialog>
 
+<dialog id="editDialog" class="sheet compact">
+  <div class="sheet-head"><div><p class="eyebrow">SEMANTIC OBJECT</p><h2>Edit / Move</h2></div><button data-close>×</button></div>
+  <form id="editForm">
+    <label>Name<input id="editName" maxlength="120" required></label>
+    <label>Inside<textarea id="editBody" rows="5"></textarea></label>
+    <label>Space<select id="editSpace"><option value="">No Space</option></select></label>
+    <label class="toggle-row"><span>Pin</span><input id="editPinned" type="checkbox"></label>
+    <button class="primary-action" type="submit">Save new version</button>
+  </form>
+</dialog>
+
+<dialog id="installDialog" class="sheet compact">
+  <div class="sheet-head"><div><p class="eyebrow">IPHONE BODY</p><h2>Install Monday</h2></div><button data-close>×</button></div>
+  <div class="install-steps" id="installBody"></div>
+</dialog>
+
 <dialog id="stateDialog" class="sheet compact">
   <div class="sheet-head"><div><p class="eyebrow">MONDAY MARK</p><h2>Presence</h2></div><button data-close>×</button></div>
   <div id="stateBody"></div>
 </dialog>
 
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastAction">Undo</button></div>
 <input id="hiddenFile" type="file" hidden>
 <script src="/app.js" defer></script>
 </body>
