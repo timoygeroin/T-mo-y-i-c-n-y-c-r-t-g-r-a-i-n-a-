@@ -113,7 +113,7 @@
     "status": "CANDIDATE",
     "law": "explicit @MondayID invocation attaches current ChatGPT cell to Generation-5 contracts before ordinary response behavior",
     "proof": [
-      "plugin 2.0.0 readback",
+      "plugin 2.0.1 readback",
       "src/chatgpt-carrier-synapse.mjs",
       "tests/chatgpt-carrier-synapse.test.mjs",
       "ops/monday-era2-20261006.json"
