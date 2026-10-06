@@ -18,7 +18,7 @@ const fresh=()=>({
   activity:[],
   media:[],
   settings:{initiative:'Balanced',autonomy:'Bounded',memory:'Inspectable',voice:'Monday',appearance:'Liquid Glass',privacy:'Local-first'},
-  runtime:{presence:'recovering',syncedAt:null,status:null,boot:null,state:null,error:null}
+  runtime:{presence:'recovering',live:false,syncedAt:null,status:null,boot:null,state:null,error:null}
 });
 let state=load();
 let currentObject=null;
@@ -26,8 +26,15 @@ let currentDepth='surface';
 let libraryFilter='All';
 
 function load(){
-  try{const v=JSON.parse(localStorage.getItem(STORAGE));return v&&v.version===1?{...fresh(),...v,runtime:{...fresh().runtime,...(v.runtime||{})}}:fresh();}
-  catch{return fresh();}
+  try{
+    const v=JSON.parse(localStorage.getItem(STORAGE));
+    if(!(v&&v.version===1))return fresh();
+    const restored={...fresh(),...v,runtime:{...fresh().runtime,...(v.runtime||{})}};
+    restored.runtime.presence='recovering';
+    restored.runtime.live=false;
+    restored.runtime.error=null;
+    return restored;
+  }catch{return fresh();}
 }
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state));}
 function record(title,detail,kind='local'){
@@ -88,7 +95,7 @@ function renderHome(){
   $('todayGrid').innerHTML=cards.length?cards.map((x,i)=>card(x,i===0)).join(''):empty('No active objects.');
   const pinned=allObjects().filter(x=>x.pinned);
   $('pinnedStrip').innerHTML=pinned.length?pinned.map(x=>card(x)).join(''):empty('Pin any object and it stays here.');
-  const ok=runtime.presence==='verified';
+  const ok=runtime.live===true&&runtime.presence==='verified';
   $('runtimeChip').textContent=ok?'VERIFIED':runtime.presence==='gate'?'NEEDS YOU':runtime.presence==='working'?'WORKING':'READING';
   $('heroEyebrow').textContent=ok?'CONTINUITY LIVE':'NOW';
   $('heroTitle').textContent=recent?'Continue.':'Monday.';
@@ -150,7 +157,8 @@ function renderVision(){
 }
 function presenceDetail(){
   const r=state.runtime;
-  if(r.presence==='verified') return 'Live Generation-5 readback · continuity attached';
+  if(r.live===true&&r.presence==='verified') return 'Live Generation-5 readback · continuity attached';
+  if(r.live!==true&&r.syncedAt) return 'Cached prior state · live verification required';
   if(r.presence==='gate') return 'Runtime answered with an unresolved gate';
   if(r.error) return 'Live readback failed · no success claimed';
   return 'Recovering live state';
@@ -176,12 +184,12 @@ async function syncRuntime(){
       fetch('/api/boot',{cache:'no-store'}).then(r=>r.json()),
       mcpCall('get_state',{limit:1}).catch(()=>null)
     ]);
-    state.runtime={...state.runtime,status,boot,state:mcpState,syncedAt:now(),error:null};
+    state.runtime={...state.runtime,status,boot,state:mcpState,live:true,syncedAt:now(),error:null};
     const verified=Boolean(status?.ok&&status?.host?.generation===5&&(boot?.pass?.state==='FULFILLED'||boot?.surface?.state==='VERIFIED'));
     setPresence(verified?'verified':'gate',verified?'With you · live state verified':'Live host · verification incomplete');
     record(verified?'Runtime verified':'Runtime observed',verified?'Generation 5 + boot readback':'Host responded without full verification','runtime');
   }catch(e){
-    state.runtime.error=String(e.message||e);state.runtime.syncedAt=now();setPresence('gate','Readback failed · claim withheld');save();
+    state.runtime.error=String(e.message||e);state.runtime.live=false;state.runtime.syncedAt=now();setPresence('gate','Readback failed · claim withheld');save();
     record('Runtime readback failed',state.runtime.error,'runtime');
   }
   render();
@@ -223,7 +231,7 @@ function renderObjectBody(){
 function renderStateDialog(){
   const r=state.runtime,s=r.status||{},h=s.host||{},w=s.work||{};
   $('stateBody').innerHTML='<div class="runtime-grid">'+[
-    ['Presence',r.presence],
+    ['Presence',r.live===true?r.presence:'cached / unverified'],
     ['Generation',h.generation||'unknown'],
     ['Worldline',h.continuity?.trusted_worldline_configured?'connected':'unknown'],
     ['Shared writer',h.continuity?.trusted_writer_configured?'configured':'not configured'],
@@ -281,9 +289,16 @@ $('peelButton').onclick=()=>{currentDepth=currentDepth==='evidence'?'surface':'e
 $('timeButton').onclick=()=>{if(!currentObject)return;const versions=currentObject.versions||[];$('objectBody').innerHTML=versions.length?versions.map((v,i)=>'<p><b>v'+(i+1)+' · '+new Date(v.at).toLocaleString()+'</b><br>'+safe(v.body||v.title)+'</p>').join(''):'<p>No historical versions yet.</p>';};
 $('ghostButton').onclick=()=>{if(!currentObject)return;const versions=currentObject.versions||[];const a=versions[0],b=versions[versions.length-1];$('objectBody').innerHTML=versions.length>1?'<p><span class="badge">OLD</span></p><p>'+safe(a.body||a.title)+'</p><p><span class="badge ok">NOW</span></p><p>'+safe(b.body||b.title)+'</p>':'<p>Ghost State needs at least two recorded versions. No fake delta is invented.</p>';};
 $('shareObject').onclick=()=>currentObject&&shareText(currentObject.title,currentObject.body||currentObject.detail||currentObject.title);
+$('deleteObject').onclick=()=>{
+  if(!currentObject)return;
+  const title=currentObject.title;
+  if(!confirm('Delete this local object?'))return;
+  for(const key of ['chats','spaces','library','ideas','tasks','signals']) state[key]=state[key].filter(x=>x.id!==currentObject.id);
+  save();record('Deleted local object',title);currentObject=null;$('objectDialog').close();render();
+};
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&navigator.onLine)syncRuntime();});
 window.addEventListener('online',syncRuntime);
-window.addEventListener('offline',()=>setPresence('gate','Offline · local objects remain available'));
+window.addEventListener('offline',()=>{state.runtime.live=false;setPresence('gate','Offline · cached state is not live verification');});
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));
 route(state.view||'home');
 syncRuntime();
