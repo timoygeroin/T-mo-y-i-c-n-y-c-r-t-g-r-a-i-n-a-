@@ -17,6 +17,7 @@ const fresh=()=>({
   signals:[],
   activity:[],
   media:[],
+  trash:[],
   settings:{initiative:'Balanced',autonomy:'Bounded',memory:'Inspectable',voice:'Monday',appearance:'Liquid Glass',privacy:'Local-first'},
   runtime:{presence:'recovering',live:false,syncedAt:null,status:null,boot:null,state:null,error:null}
 });
@@ -24,6 +25,9 @@ let state=load();
 let currentObject=null;
 let currentDepth='surface';
 let libraryFilter='All';
+let lastTrashed=null;
+let toastTimer=null;
+let pinchStart=null;
 
 function load(){
   try{
@@ -76,9 +80,28 @@ function allObjects(){
     ...state.signals.map(x=>({...x,kind:'signal'}))
   ];
 }
+function objectArrayKey(kind){return ({chat:'chats',space:'spaces',file:'library',idea:'ideas',task:'tasks',signal:'signals'})[kind]||null;}
 function findObject(id,kind){
-  const maps={chat:state.chats,space:state.spaces,file:state.library,idea:state.ideas,task:state.tasks,signal:state.signals};
-  return (maps[kind]||[]).find(x=>x.id===id);
+  const key=objectArrayKey(kind);
+  return key?(state[key]||[]).find(x=>x.id===id):null;
+}
+function words(text){
+  const stop=new Set(['this','that','with','from','have','your','what','when','where','will','into','about','just','only','then','than','как','что','это','для','или','при','она','оно','они','его','её','мне','тебя','так','всё','все','уже','если','чтобы','когда']);
+  return new Set(String(text||'').toLowerCase().replace(/[^a-zа-яё0-9\s-]/gi,' ').split(/\s+/).filter(w=>w.length>3&&!stop.has(w)));
+}
+function resonanceFor(o){
+  const base=words((o.title||'')+' '+(o.body||o.detail||''));
+  return allObjects().filter(x=>x.id!==o.id).map(x=>{
+    const other=words((x.title||'')+' '+(x.body||x.detail||''));
+    const shared=[...base].filter(w=>other.has(w));
+    const sameSpace=Boolean(o.spaceID&&x.spaceID&&o.spaceID===x.spaceID);
+    return {...x,shared,sameSpace,score:shared.length+(sameSpace?2:0)};
+  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,8);
+}
+function showToast(text,action){
+  clearTimeout(toastTimer);$('toastText').textContent=text;$('toastAction').style.display=action?'block':'none';$('toast').classList.add('show');
+  $('toastAction').onclick=()=>{if(action)action();$('toast').classList.remove('show');};
+  toastTimer=setTimeout(()=>$('toast').classList.remove('show'),5000);
 }
 function renderHome(){
   const recent=[...allObjects()].sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt))[0];
@@ -121,6 +144,7 @@ function renderIdeas(){
 }
 function renderYou(){
   const r=state.runtime;
+  const installed=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
   const entries=[
     ['Personality','Monday','One continuing identity across replaceable hosts'],
     ['Intelligence',r.status?.host?.kernel||'Generation-5','Host is substrate, not identity'],
@@ -133,7 +157,8 @@ function renderYou(){
     ['Automations','Autopoiesis','Bounded wake / repair / resume'],
     ['Privacy',state.settings.privacy,'Local objects remain local unless explicitly moved']
   ];
-  $('settingsList').innerHTML=entries.map(([k,v,d])=>'<div class="setting-row"><div class="copy"><b>'+safe(k)+'</b><span>'+safe(d)+'</span></div><button>'+safe(v)+'</button></div>').join('');
+  $('settingsList').innerHTML='<div class="setting-row"><div class="copy"><b>iPhone body</b><span>Install this verified web body on the Home Screen without App Store or payment.</span></div><button id="installMonday">'+(installed?'Installed':'Install')+'</button></div>'+entries.map(([k,v,d])=>'<div class="setting-row"><div class="copy"><b>'+safe(k)+'</b><span>'+safe(d)+'</span></div><button>'+safe(v)+'</button></div>').join('');
+  const install=$('installMonday');if(install)install.onclick=()=>openInstall(installed);
 }
 function renderActivity(){
   const r=state.runtime;
@@ -205,7 +230,8 @@ function openCreate(type){
   $('createType').value=type;$('createTitle').textContent=label;$('createName').value='';$('createBody').value='';$('createPinned').checked=false;$('createDialog').showModal();$('createName').focus();
 }
 function createObject(type,title,body,pinned=false){
-  const base={id:uid(),title,body,createdAt:now(),updatedAt:now(),pinned,versions:[{at:now(),title,body}]};
+  const created=now();
+  const base={id:uid(),title,body,createdAt:created,updatedAt:created,pinned,spaceID:null,provenance:'created locally in Monday',versions:[{at:created,title,body}]};
   if(type==='space')state.spaces.unshift({...base,kind:'space'});
   else if(type==='idea')state.ideas.unshift({...base,kind:'idea',status:'Fragment'});
   else if(type==='chat')state.chats.unshift({...base,kind:'chat'});
@@ -218,14 +244,48 @@ function openObject(id,kind){
   currentObject=findObject(id,kind);if(!currentObject)return;
   currentDepth='surface';$('objectKind').textContent=kind.toUpperCase();$('objectTitle').textContent=currentObject.title;renderObjectBody();$('objectDialog').showModal();
 }
+function openEdit(){
+  if(!currentObject)return;
+  $('editName').value=currentObject.title||'';$('editBody').value=currentObject.body||currentObject.detail||'';$('editPinned').checked=Boolean(currentObject.pinned);
+  $('editSpace').innerHTML='<option value="">No Space</option>'+state.spaces.filter(s=>s.id!==currentObject.id).map(s=>'<option value="'+s.id+'">'+safe(s.name||s.title)+'</option>').join('');
+  $('editSpace').value=currentObject.spaceID||'';$('editDialog').showModal();
+}
+function openInstall(installed){
+  $('installBody').innerHTML=installed?
+    '<div class="install-state"><b>Monday is already running as a Home Screen app.</b><br><span class="badge ok">standalone body observed</span></div><p>This body keeps local objects on the device and reads live Generation-5 truth only when the network readback succeeds.</p>':
+    '<div class="install-state"><b>No App Store and no payment are required for this web body.</b></div><ol><li>Open Monday in Safari.</li><li>Tap the Share button.</li><li>Choose <b>Add to Home Screen</b>.</li><li>Open the new Monday icon. The app launches standalone and keeps local objects on this iPhone.</li></ol><p class="badge warn">Dynamic Island / Live Activity still require the native iOS body.</p>';
+  $('installDialog').showModal();
+}
 function renderObjectBody(){
   if(!currentObject)return;
-  $$('.depth-control button').forEach(b=>b.classList.toggle('active',b.dataset.depth===currentDepth));
+  $('.depth-control button').forEach(b=>b.classList.toggle('active',b.dataset.depth===currentDepth));
+  const space=currentObject.spaceID?state.spaces.find(s=>s.id===currentObject.spaceID):null;
   let out='';
-  if(currentDepth==='surface')out='<h3>'+safe(currentObject.title)+'</h3><p>'+safe(currentObject.body||currentObject.detail||'No surface text.')+'</p>';
-  if(currentDepth==='inside')out='<p><b>State</b></p><p>'+safe(currentObject.state||currentObject.status||'Persistent')+'</p><p><b>Created</b></p><p>'+new Date(currentObject.createdAt).toLocaleString()+'</p>';
-  if(currentDepth==='relations'){out='<p>Relations are explicit only when an object is linked to a Space, task or source. This object currently has '+safe(String((currentObject.relations||[]).length))+' recorded relation(s).</p>';}
-  if(currentDepth==='evidence'){out='<p><b>Evidence</b></p><p>Local object provenance: created on this device. Live runtime claims are never inherited from this local record.</p><p><span class="badge">Requested ≠ Verified</span></p>';}
+  if(currentDepth==='surface'){
+    out='<h3>'+safe(currentObject.title)+'</h3><p>'+safe(currentObject.body||currentObject.detail||'No surface text.')+'</p>'+
+      (space?'<p><span class="badge">Space · '+safe(space.name||space.title)+'</span></p>':'');
+    if(currentObject.kind==='task'){
+      const states=['Running','Waiting','Needs you','Completed','Changed','Failed'];
+      out+='<div class="task-states">'+states.map(s=>'<button data-task-state="'+s+'" class="'+(currentObject.state===s?'active':'')+'">'+s+'</button>').join('')+'</div>';
+    }
+  }
+  if(currentDepth==='inside'){
+    out='<p><b>State</b></p><p>'+safe(currentObject.state||currentObject.status||'Persistent')+'</p><p><b>Created</b></p><p>'+new Date(currentObject.createdAt).toLocaleString()+'</p>'+
+      '<p><b>Versions</b></p><p>'+String((currentObject.versions||[]).length)+' recorded state(s)</p>';
+  }
+  if(currentDepth==='relations'){
+    const related=resonanceFor(currentObject);
+    const owned=currentObject.kind==='space'?allObjects().filter(x=>x.spaceID===currentObject.id):[];
+    out='<p><b>Explicit relation</b></p><p>'+(space?'Inside '+safe(space.name||space.title):currentObject.kind==='space'?(owned.length+' object(s) currently inside this Space'):'No Space assigned')+'</p>';
+    if(owned.length)out+='<div class="relation-list">'+owned.map(x=>'<div class="relation"><b>'+safe(x.title)+'</b><span>member · '+safe(x.kind)+'</span></div>').join('')+'</div>';
+    out+='<p><b>Resonance</b></p><p>Only evidence-backed local relations are shown: shared Space or shared terms. No hidden semantic claim is invented.</p>'+
+      (related.length?'<div class="relation-list">'+related.map(x=>'<div class="relation"><b>'+safe(x.title)+'</b><span>'+(x.sameSpace?'same Space · ':'')+(x.shared.length?'shared: '+safe(x.shared.join(', ')):'explicit relation')+'</span></div>').join('')+'</div>':'<p class="badge">No observable resonance yet</p>');
+  }
+  if(currentDepth==='evidence'){
+    out='<p><b>Evidence Lens</b></p><p>Local provenance: '+safe(currentObject.provenance||'created on this device')+'.</p>'+
+      '<p>Updated: '+new Date(currentObject.updatedAt||currentObject.createdAt).toLocaleString()+'</p>'+
+      '<p><span class="badge">Requested ≠ Attempted ≠ Observed ≠ Verified</span></p>';
+  }
   $('objectBody').innerHTML=out;
 }
 function renderStateDialog(){
@@ -284,17 +344,48 @@ $('hiddenFile').addEventListener('change',async e=>{
   save();record('Captured local media',file.name);route('vision');e.target.value='';
 });
 $('visionInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;let dataUrl=null;if(f.size<1200000&&/^image\//.test(f.type))dataUrl=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f);});state.media.unshift({id:uid(),name:f.name,type:f.type,size:f.size,createdAt:now(),dataUrl});save();record('Vision capture',f.name);renderVision();});
-$$('[data-depth]').forEach(b=>b.addEventListener('click',()=>{currentDepth=b.dataset.depth;renderObjectBody();}));
-$('peelButton').onclick=()=>{currentDepth=currentDepth==='evidence'?'surface':'evidence';renderObjectBody();};
+$('[data-depth]').forEach(b=>b.addEventListener('click',()=>setDepth(b.dataset.depth)));
+$('objectDialog').addEventListener('touchstart',e=>{
+  if(e.touches.length!==2)return;const [a,b]=e.touches;pinchStart=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+},{passive:true});
+$('objectDialog').addEventListener('touchend',e=>{
+  if(pinchStart===null||e.touches.length!==0){if(e.touches.length===0)pinchStart=null;return;}
+  const changed=e.changedTouches;if(changed.length<2){pinchStart=null;return;}
+  const [a,b]=changed;const end=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);const ratio=end/pinchStart;pinchStart=null;
+  if(ratio>1.22)cycleDepth(1);else if(ratio<.82)cycleDepth(-1);
+},{passive:true});
+function setDepth(depth){currentDepth=depth;renderObjectBody();}
+function cycleDepth(direction=1){const order=['surface','inside','relations','evidence'];let i=order.indexOf(currentDepth);i=(i+direction+order.length)%order.length;setDepth(order[i]);}
+$('peelButton').onclick=()=>cycleDepth(1);
 $('timeButton').onclick=()=>{if(!currentObject)return;const versions=currentObject.versions||[];$('objectBody').innerHTML=versions.length?versions.map((v,i)=>'<p><b>v'+(i+1)+' · '+new Date(v.at).toLocaleString()+'</b><br>'+safe(v.body||v.title)+'</p>').join(''):'<p>No historical versions yet.</p>';};
 $('ghostButton').onclick=()=>{if(!currentObject)return;const versions=currentObject.versions||[];const a=versions[0],b=versions[versions.length-1];$('objectBody').innerHTML=versions.length>1?'<p><span class="badge">OLD</span></p><p>'+safe(a.body||a.title)+'</p><p><span class="badge ok">NOW</span></p><p>'+safe(b.body||b.title)+'</p>':'<p>Ghost State needs at least two recorded versions. No fake delta is invented.</p>';};
+$('editObject').onclick=openEdit;
+$('editForm').addEventListener('submit',e=>{
+  e.preventDefault();if(!currentObject)return;
+  const key=objectArrayKey(currentObject.kind);if(!key)return;
+  const title=$('editName').value.trim();if(!title)return;
+  const body=$('editBody').value.trim();const at=now();
+  currentObject.title=title;currentObject.body=body;if(currentObject.kind==='task')currentObject.detail=body;
+  currentObject.pinned=$('editPinned').checked;currentObject.spaceID=$('editSpace').value||null;currentObject.updatedAt=at;
+  currentObject.versions=[...(currentObject.versions||[]),{at,title,body}];
+  save();record('Object evolved',title);$('editDialog').close();$('objectTitle').textContent=title;renderObjectBody();render();
+});
+$('objectBody').addEventListener('click',e=>{
+  const b=e.target.closest('[data-task-state]');if(!b||!currentObject||currentObject.kind!=='task')return;
+  currentObject.state=b.dataset.taskState;currentObject.updatedAt=now();save();record('Task → '+currentObject.state,currentObject.title);renderObjectBody();renderActivity();
+});
 $('shareObject').onclick=()=>currentObject&&shareText(currentObject.title,currentObject.body||currentObject.detail||currentObject.title);
 $('deleteObject').onclick=()=>{
   if(!currentObject)return;
-  const title=currentObject.title;
-  if(!confirm('Delete this local object?'))return;
-  for(const key of ['chats','spaces','library','ideas','tasks','signals']) state[key]=state[key].filter(x=>x.id!==currentObject.id);
-  save();record('Deleted local object',title);currentObject=null;$('objectDialog').close();render();
+  const key=objectArrayKey(currentObject.kind);if(!key)return;
+  const title=currentObject.title;const copy=JSON.parse(JSON.stringify(currentObject));
+  state[key]=state[key].filter(x=>x.id!==currentObject.id);
+  state.trash.unshift({key,object:copy,trashedAt:now()});state.trash=state.trash.slice(0,30);lastTrashed=state.trash[0];
+  save();record('Moved to Trash',title);currentObject=null;$('objectDialog').close();render();
+  showToast('Moved “'+title+'” to Trash',()=>{
+    if(!lastTrashed)return;
+    state[lastTrashed.key].unshift(lastTrashed.object);state.trash=state.trash.filter(x=>x!==lastTrashed);const restored=lastTrashed.object;lastTrashed=null;save();record('Undo Trash',restored.title);render();
+  });
 };
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&navigator.onLine)syncRuntime();});
 window.addEventListener('online',syncRuntime);
