@@ -113,6 +113,7 @@ async function callTool(name, args = {}) {
       metaInvariants:system.meta_invariants || [],
       currentPolicies:system.current_policies || [],
       rootObjective:system.root_objective || null,
+      autopoiesis:system.autopoiesis || null,
       continuity:system.continuity || null,
       everythingCompiler:system.everything_compiler || null,
       physiology:system.physiology || null,
