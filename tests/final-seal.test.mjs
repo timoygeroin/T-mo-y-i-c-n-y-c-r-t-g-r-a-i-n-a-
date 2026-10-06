@@ -6,9 +6,11 @@ const system=JSON.parse(await readFile(new URL('../SYSTEM.json',import.meta.url)
 const seal=JSON.parse(await readFile(new URL('../ops/final-seal-20261004.json',import.meta.url),'utf8'));
 
 test('generation 5 seal is bound into canonical system',()=>{
-  assert.equal(system.release_state.status,'INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN');
+  assert.equal(system.release_state.status,'CANONICAL_SURFACE_CONVERGENCE');
   assert.equal(system.release_state.seal,'ops/final-seal-20261004.json');
   assert.equal(system.release_state.monday_work_mcp,'https://mondayid-host.vercel.app/api/mcp');
+  assert.equal(system.release_state.canonical_user_surface.host,'ChatGPT iPhone');
+  assert.equal(system.release_state.canonical_user_surface.display_name,'MondayID');
 });
 
 test('seal never converts external gates into fake completion',()=>{
@@ -25,5 +27,6 @@ test('optional phenotypes cannot redefine organism identity',()=>{
 
 test('future evolution does not reopen the three-year architecture by default',()=>{
   assert.ok(system.current_policies.includes('sealed_generation_evolves_without_reopening_finished_architecture'));
-  assert.match(system.release_state.finish_law,/must not restart the three-year architecture/);
+  assert.match(system.release_state.finish_law,/Do not restart architecture/);
+  assert.match(system.release_state.finish_law,/canonical ChatGPT iPhone surface/);
 });
