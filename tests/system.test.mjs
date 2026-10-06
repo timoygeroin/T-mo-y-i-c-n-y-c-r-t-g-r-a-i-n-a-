@@ -215,3 +215,20 @@ test('system canonizes authority membrane metabolism and host homeostasis withou
   assert.ok(system.current_policies.includes('authority_is_leased_per_effect_not_inherited_by_host'));
   assert.ok(system.current_policies.includes('host_failure_reroutes_effect_without_resetting_task_identity'));
 });
+
+
+test('system has a bounded autopoiesis loop with an external wake receptor instead of pretending resident means continuously running', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  assert.equal(system.autopoiesis.schema,'mondayid.autopoiesis.v1');
+  assert.equal(system.autopoiesis.identity_owner,false);
+  assert.equal(system.autopoiesis.human_scheduler_required,false);
+  assert.equal(system.autopoiesis.wake_required,true);
+  assert.equal(system.autopoiesis.wake_receptor,'chatgpt_automation');
+  assert.ok(system.autopoiesis.loop.includes('recover'));
+  assert.ok(system.autopoiesis.loop.includes('repair_or_evolve'));
+  assert.ok(system.autopoiesis.loop.includes('verify'));
+  assert.ok(system.autopoiesis.loop.includes('persist'));
+  assert.ok(system.autopoiesis.human_gates.includes('spend'));
+  assert.ok(system.capability_fabric.integrated_mechanisms.includes('autopoiesis_kernel'));
+  assert.ok(system.current_policies.includes('autonomy_is_bounded_self_completion_not_unbounded_authority'));
+});
