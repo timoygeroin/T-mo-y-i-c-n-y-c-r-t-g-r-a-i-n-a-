@@ -37,7 +37,27 @@ test('persisted runtime can never reopen as live verified truth and local object
   assert.match(js,/Cached prior state · live verification required/);
   assert.match(js,/Offline · cached state is not live verification/);
   assert.match(html,/id="deleteObject"/);
-  assert.match(js,/Delete this local object/);
+  assert.match(js,/Moved to Trash/);
+});
+
+test('semantic objects can evolve relate zoom move and undo instead of remaining decorative cards',()=>{
+  assert.match(html,/Edit \/ Move/);
+  assert.match(html,/Thought Pinch \/ Cognitive Zoom/);
+  assert.match(js,/function resonanceFor/);
+  assert.match(js,/shared Space or shared terms/);
+  assert.match(js,/currentObject\.versions=/);
+  assert.match(js,/data-task-state/);
+  assert.match(js,/Moved to Trash/);
+  assert.match(js,/Undo Trash/);
+  assert.match(js,/touchstart/);
+  assert.match(js,/cycleDepth/);
+});
+
+test('the web body has an explicit no-cost iPhone installation path',()=>{
+  assert.match(js,/Add to Home Screen/);
+  assert.match(js,/display-mode: standalone/);
+  assert.match(html,/id="installDialog"/);
+  assert.match(js,/Dynamic Island \/ Live Activity still require the native iOS body/);
 });
 
 test('PWA is installable/offline while API truth remains network-only',()=>{
