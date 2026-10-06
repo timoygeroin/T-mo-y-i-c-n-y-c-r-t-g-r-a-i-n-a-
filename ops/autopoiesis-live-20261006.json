@@ -1,0 +1,37 @@
+{
+  "schema": "mondayid.autopoiesis-live-receipt.v1",
+  "date": "2026-10-06",
+  "status": "LIVE",
+  "kernel": "src/autopoiesis-kernel.mjs",
+  "carrier": {
+    "plugin_id": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "version": "2.2.0",
+    "readback": "VERIFIED"
+  },
+  "canonical_main": "ed7b7c2273af88f3230beecc9d2ac7daaa0772a9",
+  "system_proof": {
+    "run": 656,
+    "conclusion": "success"
+  },
+  "wake": {
+    "provider": "ChatGPT automation",
+    "timing_mode": "condition_watch",
+    "cadence": "hourly",
+    "enabled": true,
+    "notification_policy": "material_verified_change_or_exact_human_gate_only",
+    "stores_private_task_identifier_publicly": false
+  },
+  "authority": {
+    "autonomous": "safe reversible already-authorized work",
+    "human_only": [
+      "identity",
+      "authentication",
+      "secret_entry",
+      "spend",
+      "billing",
+      "irreversible_external_action",
+      "physical_world_action"
+    ]
+  },
+  "truth_boundary": "This is scheduled re-entry, not a continuously running model process."
+}
