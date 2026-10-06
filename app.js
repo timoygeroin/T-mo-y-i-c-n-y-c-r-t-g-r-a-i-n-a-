@@ -65,10 +65,10 @@ function render(view=state.view){
 }
 function empty(text){return '<div class="empty">'+safe(text)+'</div>';}
 function card(o,wide=false){
-  return '<button class="object-card '+(wide?'wide':'')+'" data-object="'+safe(o.id)+'" data-kind="'+safe(o.kind)+'"><div class="kind">'+safe(o.kind)+'</div><h3>'+safe(o.title)+'</h3><p>'+safe(o.body||o.detail||'')+'</p></button>';
+  return '<button class="object-card '+(wide?'wide':'')+'" data-state="'+safe(o.state||o.status||'')+'" data-object="'+safe(o.id)+'" data-kind="'+safe(o.kind)+'"><div class="kind">'+safe(o.kind)+'</div><h3>'+safe(o.title)+'</h3><p>'+safe(o.body||o.detail||'')+'</p></button>';
 }
 function row(o,icon='◇'){
-  return '<button class="list-row" data-object="'+safe(o.id)+'" data-kind="'+safe(o.kind)+'"><span class="list-icon">'+icon+'</span><span class="list-copy"><b>'+safe(o.title)+'</b><p>'+safe(o.body||o.detail||'')+'</p></span><span class="list-meta">'+ago(o.updatedAt||o.createdAt)+'</span></button>';
+  return '<button class="list-row" data-state="'+safe(o.state||o.status||'')+'" data-object="'+safe(o.id)+'" data-kind="'+safe(o.kind)+'"><span class="list-icon">'+icon+'</span><span class="list-copy"><b>'+safe(o.title)+'</b><p>'+safe(o.body||o.detail||'')+'</p></span><span class="list-meta">'+ago(o.updatedAt||o.createdAt)+'</span></button>';
 }
 function allObjects(){
   return [
@@ -234,7 +234,7 @@ function createObject(type,title,body,pinned=false){
   const base={id:uid(),title,body,createdAt:created,updatedAt:created,pinned,spaceID:null,provenance:'created locally in Monday',versions:[{at:created,title,body}]};
   if(type==='space')state.spaces.unshift({...base,kind:'space'});
   else if(type==='idea')state.ideas.unshift({...base,kind:'idea',status:'Fragment'});
-  else if(type==='chat')state.chats.unshift({...base,kind:'chat'});
+  else if(type==='chat')state.chats.unshift({...base,kind:'chat',messages:[]});
   else if(type==='reminder'||type==='automation')state.tasks.unshift({...base,kind:'task',detail:body,state:'Waiting',isAutomation:type==='automation'});
   else state.library.unshift({...base,kind:'file',fileType:({presentation:'Presentation',table:'Table',code:'Code'}[type]||'Document')});
   save();record('Created '+type,title);render();
@@ -242,6 +242,7 @@ function createObject(type,title,body,pinned=false){
 function openObject(id,kind){
   if(kind==='runtime'){ $('stateDialog').showModal();renderStateDialog();return; }
   currentObject=findObject(id,kind);if(!currentObject)return;
+  if(kind==='chat'){openChat(currentObject);return;}
   currentDepth='surface';$('objectKind').textContent=kind.toUpperCase();$('objectTitle').textContent=currentObject.title;renderObjectBody();$('objectDialog').showModal();
 }
 function openEdit(){
@@ -256,6 +257,43 @@ function openInstall(installed){
     '<div class="install-state"><b>No App Store and no payment are required for this web body.</b></div><ol><li>Open Monday in Safari.</li><li>Tap the Share button.</li><li>Choose <b>Add to Home Screen</b>.</li><li>Open the new Monday icon. The app launches standalone and keeps local objects on this iPhone.</li></ol><p class="badge warn">Dynamic Island / Live Activity still require the native iOS body.</p>';
   $('installDialog').showModal();
 }
+function chatMessageHTML(m){
+  const role=['user','monday','system','work'].includes(m.role)?m.role:'system';
+  const media=m.media?.dataUrl?(m.media.type?.startsWith('image/')?'<div class="message-media"><img src="'+m.media.dataUrl+'" alt=""></div>':m.media.type?.startsWith('video/')?'<div class="message-media"><video src="'+m.media.dataUrl+'" controls></video>':''):'';
+  return '<div class="message '+role+'" data-message="'+safe(m.id)+'"><div class="bubble">'+safe(m.text||'')+'</div>'+media+(m.reaction?'<span class="reaction">'+safe(m.reaction)+'</span>':'')+'<span class="message-meta">'+safe(m.label||role)+' · '+ago(m.at)+'</span></div>';
+}
+function openChat(chat){
+  currentObject=chat;
+  if(!Array.isArray(chat.messages))chat.messages=[];
+  $('chatTitle').textContent=chat.title||'Chat';renderChat();$('chatDialog').showModal();
+}
+function renderChat(){
+  if(!currentObject||currentObject.kind!=='chat')return;
+  const live=state.runtime.live===true&&state.runtime.presence==='verified';
+  const running=state.tasks.some(t=>t.chatID===currentObject.id&&t.state==='Running');
+  $('chatPresence').textContent=running?'Working':live?'With you · live':'Local thread · Monday carrier external';
+  $('chatStage').innerHTML=currentObject.messages.length?currentObject.messages.map(chatMessageHTML).join(''):'<div class="chat-empty"><span class="mark"></span><p>This thread is persistent. Messages stay local in this body. Monday intelligence remains the ChatGPT carrier until a verified shared writer/model route exists.</p></div>';
+  $('chatStage').scrollTop=$('chatStage').scrollHeight;
+}
+function sendChatMessage(text){
+  if(!currentObject||currentObject.kind!=='chat'||!text.trim())return;
+  currentObject.messages.push({id:uid(),role:'user',label:'You',text:text.trim(),at:now()});currentObject.updatedAt=now();
+  currentObject.body=text.trim();currentObject.versions=[...(currentObject.versions||[]),{at:now(),title:currentObject.title,body:currentObject.body}];
+  save();record('Chat message preserved',currentObject.title);renderChat();renderChats();
+}
+function addChatMedia(file){
+  if(!currentObject||currentObject.kind!=='chat')return;
+  const commit=dataUrl=>{
+    currentObject.messages.push({id:uid(),role:'user',label:'You',text:file.name,at:now(),media:{type:file.type,name:file.name,dataUrl}});
+    currentObject.updatedAt=now();save();record('Chat media attached',file.name);renderChat();
+  };
+  if(file.size<1500000&&(/^(image|video)\//.test(file.type))){const fr=new FileReader();fr.onload=()=>commit(fr.result);fr.readAsDataURL(file);}else commit(null);
+}
+function startChatWork(){
+  if(!currentObject||currentObject.kind!=='chat')return;
+  const created=now();const task={id:uid(),title:'Work · '+currentObject.title,detail:'Bound task created inside this conversation.',body:'Bound task created inside this conversation.',createdAt:created,updatedAt:created,pinned:false,kind:'task',state:'Running',chatID:currentObject.id,versions:[{at:created,title:'Work · '+currentObject.title,body:'Bound task created inside this conversation.'}]};
+  state.tasks.unshift(task);currentObject.messages.push({id:uid(),role:'work',label:'Work',text:'Task is Running. Open Activity/Home to inspect its truthful state.',at:created,taskID:task.id});save();record('Work started',task.title);renderChat();renderHome();
+}
 function renderObjectBody(){
   if(!currentObject)return;
   $('.depth-control button').forEach(b=>b.classList.toggle('active',b.dataset.depth===currentDepth));
@@ -264,6 +302,10 @@ function renderObjectBody(){
   if(currentDepth==='surface'){
     out='<h3>'+safe(currentObject.title)+'</h3><p>'+safe(currentObject.body||currentObject.detail||'No surface text.')+'</p>'+
       (space?'<p><span class="badge">Space · '+safe(space.name||space.title)+'</span></p>':'');
+    if(currentObject.kind==='idea'){
+      const ideaStates=['Fragment','Contradiction','Candidate','Experiment','Accepted','Rejected'];
+      out+='<div class="task-states">'+ideaStates.map(s=>'<button data-idea-state="'+s+'" class="'+(currentObject.status===s?'active':'')+'">'+s+'</button>').join('')+'</div>';
+    }
     if(currentObject.kind==='task'){
       const states=['Running','Waiting','Needs you','Completed','Changed','Failed'];
       out+='<div class="task-states">'+states.map(s=>'<button data-task-state="'+s+'" class="'+(currentObject.state===s?'active':'')+'">'+s+'</button>').join('')+'</div>';
@@ -371,8 +413,10 @@ $('editForm').addEventListener('submit',e=>{
   save();record('Object evolved',title);$('editDialog').close();$('objectTitle').textContent=title;renderObjectBody();render();
 });
 $('objectBody').addEventListener('click',e=>{
-  const b=e.target.closest('[data-task-state]');if(!b||!currentObject||currentObject.kind!=='task')return;
-  currentObject.state=b.dataset.taskState;currentObject.updatedAt=now();save();record('Task → '+currentObject.state,currentObject.title);renderObjectBody();renderActivity();
+  const task=e.target.closest('[data-task-state]');
+  if(task&&currentObject?.kind==='task'){currentObject.state=task.dataset.taskState;currentObject.updatedAt=now();save();record('Task → '+currentObject.state,currentObject.title);renderObjectBody();renderActivity();return;}
+  const idea=e.target.closest('[data-idea-state]');
+  if(idea&&currentObject?.kind==='idea'){currentObject.status=idea.dataset.ideaState;currentObject.updatedAt=now();save();record('Idea → '+currentObject.status,currentObject.title);renderObjectBody();renderIdeas();}
 });
 $('shareObject').onclick=()=>currentObject&&shareText(currentObject.title,currentObject.body||currentObject.detail||currentObject.title);
 $('deleteObject').onclick=()=>{
@@ -387,6 +431,16 @@ $('deleteObject').onclick=()=>{
     state[lastTrashed.key].unshift(lastTrashed.object);state.trash=state.trash.filter(x=>x!==lastTrashed);const restored=lastTrashed.object;lastTrashed=null;save();record('Undo Trash',restored.title);render();
   });
 };
+$('chatClose').onclick=()=>$('chatDialog').close();
+$('chatMore').onclick=()=>{if(!currentObject)return;$('chatDialog').close();currentDepth='surface';$('objectKind').textContent='CHAT';$('objectTitle').textContent=currentObject.title;renderObjectBody();$('objectDialog').showModal();};
+$('chatSend').onclick=()=>{const v=$('chatComposer');sendChatMessage(v.value);v.value='';};
+$('chatComposer').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const v=e.currentTarget;sendChatMessage(v.value);v.value='';}});
+$('chatWork').onclick=startChatWork;
+$('chatMedia').onclick=()=>{$('chatMediaInput').accept='image/*,video/*';$('chatMediaInput').removeAttribute('capture');$('chatMediaInput').click();};
+$('chatVoice').onclick=()=>{$('chatMediaInput').accept='audio/*';$('chatMediaInput').setAttribute('capture','microphone');$('chatMediaInput').click();};
+$('chatMediaInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)addChatMedia(f);e.target.value='';});
+$('chatHandoff').onclick=()=>{if(!currentObject)return;const transcript=currentObject.messages.map(m=>(m.label||m.role)+': '+m.text).join('\n');shareText('Monday · '+currentObject.title,transcript||currentObject.title);};
+$('chatStage').addEventListener('dblclick',e=>{const el=e.target.closest('[data-message]');if(!el||!currentObject)return;const m=currentObject.messages.find(x=>x.id===el.dataset.message);if(!m)return;m.reaction=m.reaction?'':'✦';save();renderChat();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&navigator.onLine)syncRuntime();});
 window.addEventListener('online',syncRuntime);
 window.addEventListener('offline',()=>{state.runtime.live=false;setPresence('gate','Offline · cached state is not live verification');});
