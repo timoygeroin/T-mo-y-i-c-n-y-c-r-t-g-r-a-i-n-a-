@@ -53,6 +53,28 @@ test('semantic objects can evolve relate zoom move and undo instead of remaining
   assert.match(js,/cycleDepth/);
 });
 
+test('Chats are a real consumer scene with bubbles media reactions and Work in-dialogue',()=>{
+  assert.match(html,/id="chatDialog"/);
+  assert.match(html,/id="chatComposer"/);
+  assert.match(html,/Photo \/ Video/);
+  assert.match(html,/id="chatVoice"/);
+  assert.match(html,/id="chatWork"/);
+  assert.match(js,/function renderChat/);
+  assert.match(js,/startChatWork/);
+  assert.match(js,/Chat message preserved/);
+  assert.match(js,/dblclick/);
+  assert.match(css,/\.message\.user \.bubble/);
+  assert.match(css,/\.message\.work \.bubble/);
+});
+
+test('M-Matter encodes task state and Idea Lab keeps contradiction instead of flattening it',()=>{
+  assert.match(js,/data-state=/);
+  assert.match(css,/data-state="Needs you"/);
+  assert.match(js,/Contradiction/);
+  assert.match(js,/Experiment/);
+  assert.match(js,/Rejected/);
+});
+
 test('the web body has an explicit no-cost iPhone installation path',()=>{
   assert.match(js,/Add to Home Screen/);
   assert.match(js,/display-mode: standalone/);
