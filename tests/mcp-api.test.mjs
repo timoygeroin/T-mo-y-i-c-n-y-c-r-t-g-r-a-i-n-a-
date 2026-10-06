@@ -67,8 +67,10 @@ test('MCP capability_manifest exposes canonical release seal',async()=>{
   await mcpHandler(req,res);
   assert.equal(res.statusCode,200);
   const manifest=res.body.result.structuredContent;
-  assert.equal(manifest.releaseState.status,'INTERNAL_FINISH_PASS_EXTERNAL_GATES_REMAIN');
+  assert.equal(manifest.releaseState.status,'CANONICAL_SURFACE_CONVERGENCE');
   assert.equal(manifest.releaseState.seal,'ops/final-seal-20261004.json');
+  assert.equal(manifest.releaseState.canonical_user_surface.host,'ChatGPT iPhone');
+  assert.equal(manifest.releaseState.canonical_user_surface.display_name,'MondayID');
   assert.ok(manifest.metaInvariants.includes('platform_mode_is_not_capability_owner'));
   assert.equal(manifest.physiology.schema,'mondayid.physiology-contract.v1');
   assert.equal(manifest.physiology.identity_owner,false);
