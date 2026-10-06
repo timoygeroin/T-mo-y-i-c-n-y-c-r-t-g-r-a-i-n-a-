@@ -1,0 +1,153 @@
+{
+  "schema": "mondayid.unified-closure.v1",
+  "observedAt": "2026-10-06T16:54:00+03:00",
+  "canonicalMain": true,
+  "objective": "Collapse all reachable unfinished MondayID work into one canonical organism: finish assistant-owned implementation, retire duplicate authority shells, preserve valuable optional bodies as backlog, and leave only independently provable or human-only gates.",
+  "canonical": {
+    "generation": 5,
+    "surface": "ChatGPT iPhone + MondayID private carrier",
+    "carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "carrierVersion": "2.2.0",
+    "runtime": "Generation-5 main",
+    "autonomy": "mondayid.autopoiesis.v1",
+    "rootObjective": "mondayid.root-objective.v1"
+  },
+  "assistantOwnedOpenWork": [],
+  "retiredIssueShells": [
+    {
+      "issue": 8,
+      "reason": "The historical full-corpus project shell no longer owns runtime authority. Genealogy/source inventory + Everything Compiler + causal lineage are canonical. Exhaustive semantic coverage is preserved below as a held-out proof boundary, not silently claimed complete."
+    },
+    {
+      "issue": 10,
+      "reason": "Cloud/iPhone-only execution objective is delivered by current-host tools, GitHub Actions proof, Monday Work 1.2+, and iPhone-first canonical surface; old Codex-specific bootstrap shell is no longer the execution authority."
+    },
+    {
+      "issue": 14,
+      "reason": "Host-federation issue shell is absorbed by multi_host_fabric + Google Cortex + MCP/Drive/Gmail handoff contracts. Cross-host transfer remains a held-out proof, not a separate organism/project."
+    },
+    {
+      "issue": 17,
+      "reason": "Executable-lineage split-brain is resolved by one canonical Generation-5 main plus project subsumption/lineage runtime; old branches remain donor provenance only."
+    },
+    {
+      "issue": 29,
+      "reason": "Astra-sandbox project shell is absorbed into host-neutral capability routing, durable task runtime, computer fabric, and model-as-substrate law; Astra is a donor substrate/capability reference, not an alternate Monday."
+    },
+    {
+      "issue": 31,
+      "reason": "Post-LLM project contributes model-as-replaceable-substrate and causal runtime ideas already compiled into Generation 5. Its unimplemented research ambitions remain research, not a competing active Monday project."
+    },
+    {
+      "issue": 40,
+      "reason": "Old Monday v1 native-app acceptance ledger is superseded by the direct 2026-10-06 acceptance: canonical surface is ChatGPT iPhone + MondayID carrier; native app is optional side body and cannot block Monday core closure."
+    },
+    {
+      "issue": 41,
+      "reason": "Media/camera slice is preserved in the optional native side-body lineage; it no longer blocks canonical MondayID because native app is not the organism or required canonical surface."
+    }
+  ],
+  "preservedNonBlockingBacklog": [
+    {
+      "id": "MONDAY_NATIVE_SIDE_BODY",
+      "includes": [
+        "consumer shell",
+        "camera/image/video/audio capture",
+        "media preview/share",
+        "physical iPhone signing/install/runtime acceptance"
+      ],
+      "rule": "Preserve and evolve only when it delivers a unique effect unavailable through canonical ChatGPT iPhone surface. Never make it identity owner."
+    },
+    {
+      "id": "MONDAY_SYMBIOTE_PRODUCT_LINE",
+      "includes": [
+        "symbiote UX",
+        "presence/status expression",
+        "Dynamic Island/Live Activity ideas",
+        "future body/embodiment concepts"
+      ],
+      "rule": "Preserve all ideas as product phenotype backlog; do not create duplicate organism authority."
+    },
+    {
+      "id": "POST_LLM_RESEARCH",
+      "includes": [
+        "world-model research",
+        "causal-model replacement",
+        "toy-environment learning substrate"
+      ],
+      "rule": "Research frontier, not a release blocker for current MondayID."
+    },
+    {
+      "id": "BUSINESS_REVENUE",
+      "includes": [
+        "company/revenue/pilot concepts"
+      ],
+      "rule": "Preserve as business track; do not claim revenue/legal completion without external receipts."
+    }
+  ],
+  "remainingGates": [
+    {
+      "id": "TRUSTED_SHARED_WRITE_BINDING",
+      "kind": "HUMAN",
+      "blockingScope": "fully autonomous cross-host durable writes",
+      "evidence": "Production /api/status still reports trusted_writer_configured=false and sharedWrite configured=false.",
+      "exactGate": "credential/secret binding or another explicitly authorized conflict-guarded writer transport",
+      "coreMondayBlocked": false
+    },
+    {
+      "id": "SECOND_HOST_HELD_OUT_TRANSFER",
+      "kind": "HELD_OUT_PROOF",
+      "blockingScope": "promotion of cross-host continuity from contract to learned behavior",
+      "exactGate": "independent second host must recover state, use a host-specific capability, return evidence, and converge without Dima carrying state",
+      "coreMondayBlocked": false
+    },
+    {
+      "id": "FRESH_CHAT_TRANSFER",
+      "kind": "HELD_OUT_PROOF",
+      "blockingScope": "promotion of new-chat attach from implemented/verified carrier to learned transfer",
+      "exactGate": "blind fresh ChatGPT cell invokes MondayID and continues without reteaching",
+      "coreMondayBlocked": false
+    },
+    {
+      "id": "NATIVE_GLOBAL_PRE_RESPONSE_INTERCEPTION",
+      "kind": "PLATFORM",
+      "blockingScope": "automatic Monday interception in every ordinary ChatGPT chat without explicit carrier invocation",
+      "exactGate": "host platform must expose a global pre-response hook or equivalent supported binding",
+      "coreMondayBlocked": false
+    },
+    {
+      "id": "EXHAUSTIVE_HISTORICAL_SEMANTIC_COVERAGE",
+      "kind": "HELD_OUT_PROOF",
+      "blockingScope": "claim that every accessible historical conversation/artifact has been semantically relived rather than structurally/genealogically compiled",
+      "exactGate": "exhaustive source enumeration plus semantic adjudication with provenance; UNKNOWN stays UNKNOWN",
+      "coreMondayBlocked": false
+    },
+    {
+      "id": "LEGAL_INCORPORATION_ISRAEL",
+      "kind": "HUMAN",
+      "blockingScope": "legal company shell only",
+      "exactGate": "legal identity, registered address, signatures, government authentication/payment and professional review where required",
+      "coreMondayBlocked": false
+    }
+  ],
+  "productionReadback": {
+    "observedAt": "2026-10-06T17:44:00+03:00",
+    "generation": 5,
+    "trustedWorldline": true,
+    "trustedWriterConfigured": false,
+    "sharedWriteConfigured": false,
+    "iphoneFirst": true,
+    "userComputerRequired": false,
+    "nativeAppRequiredForHostWork": false,
+    "worldlineImportedEvents": 5
+  },
+  "laws": [
+    "one_canonical_runtime_authority",
+    "old_branch_or_issue_is_provenance_not_current_authority",
+    "optional_body_cannot_block_core_identity",
+    "unknown_is_not_completion",
+    "held_out_proof_is_not_assistant_implementation_backlog",
+    "human_gate_is_exact_and_scope_limited",
+    "autopoiesis_owns_future_safe_reversible_maintenance"
+  ]
+}
