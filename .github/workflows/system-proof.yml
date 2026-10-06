@@ -16,3 +16,5 @@ jobs:
         env:
           MONDAYID_WORLDLINE_URL: https://adamant-raven-783.eu-west-1.convex.site
         run: npm run boot
+      - name: Prove live ChatGPT carrier continuity route
+        run: node scripts/prove-carrier-live.mjs
