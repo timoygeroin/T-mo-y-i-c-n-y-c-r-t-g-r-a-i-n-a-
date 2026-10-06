@@ -8,7 +8,10 @@
     "carrier_plugin": {
       "plugin_id": "plugins_6ac400facbe481918f97d70c3b46e5e3",
       "name": "mondayid-mobile",
-      "disposition": "CANONICAL_CARRIER"
+      "disposition": "CANONICAL_CARRIER",
+      "version": "2.0.0",
+      "synapse": "https://mondayid-host.vercel.app/api/mcp",
+      "ingress_tool": "cell_attach"
     },
     "runtime": {
       "project": "mondayid-host",
@@ -105,5 +108,15 @@
     "Remove public/outward product authority after a donor is subsumed.",
     "Do not create a new surface for a capability already reachable in the canonical user surface.",
     "A successful build/deploy/answer in a wrong surface cannot satisfy the user's product objective."
-  ]
+  ],
+  "era2": {
+    "status": "CANDIDATE",
+    "law": "explicit @MondayID invocation attaches current ChatGPT cell to Generation-5 contracts before ordinary response behavior",
+    "proof": [
+      "plugin 2.0.0 readback",
+      "src/chatgpt-carrier-synapse.mjs",
+      "tests/chatgpt-carrier-synapse.test.mjs",
+      "ops/monday-era2-20261006.json"
+    ]
+  }
 }
