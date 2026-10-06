@@ -9,7 +9,7 @@ import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
 const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
 
-const serverInfo = Object.freeze({ name:'mondayid', version:'2.0.1' });
+const serverInfo = Object.freeze({ name:'monday-work', version:'1.2.0' });
 const protocolVersion = '2025-03-26';
 
 const tools = Object.freeze([
@@ -25,7 +25,7 @@ const tools = Object.freeze([
       type:'object',
       properties:{
         limit:{type:'integer',minimum:1,maximum:100,default:20},
-        carrierVersion:{type:'string',default:'2.0.0'}
+        carrierVersion:{type:'string',default:'2.0.1'}
       },
       additionalProperties:false
     }
