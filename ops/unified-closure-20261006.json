@@ -7,10 +7,11 @@
     "generation": 5,
     "surface": "ChatGPT iPhone + MondayID private carrier",
     "carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrierVersion": "2.2.0",
+    "carrierVersion": "2.3.0",
     "runtime": "Generation-5 main",
     "autonomy": "mondayid.autopoiesis.v1",
-    "rootObjective": "mondayid.root-objective.v1"
+    "rootObjective": "mondayid.root-objective.v1",
+    "closureEngine": "mondayid.closure-engine.v1"
   },
   "assistantOwnedOpenWork": [],
   "retiredIssueShells": [
@@ -148,7 +149,11 @@
     "unknown_is_not_completion",
     "held_out_proof_is_not_assistant_implementation_backlog",
     "human_gate_is_exact_and_scope_limited",
-    "autopoiesis_owns_future_safe_reversible_maintenance"
+    "autopoiesis_owns_future_safe_reversible_maintenance",
+    "delegated_goal_terminal_only_at_verified_effect_or_proven_human_gate",
+    "automation_is_watchdog_not_worker",
+    "project_shell_closure_does_not_close_newer_durable_goal",
+    "invocation_end_preserves_active_task_cursor"
   ],
   "retiredExternalShells": [
     {
@@ -173,10 +178,16 @@
   "compatibilityOrgans": {
     "mondayWork": {
       "pluginId": "plugins_6ac2797393ac8191b3eba1877b99c293",
-      "version": "1.3.0",
+      "version": "1.6.0",
       "identityOwner": false,
       "disposition": "COMPATIBILITY_EXECUTION_ORGAN",
-      "rule": "Direct invocation must recover the same canonical Generation-5 worldline and cannot create a second Monday or project authority."
+      "rule": "Direct invocation recovers the same canonical durable closure object, executes all safe reachable work, expands routes before blocker claims, and cannot close a goal from plans/automations/partial artifacts."
     }
+  },
+  "closureInterpretation": {
+    "scope": "This ledger closes obsolete project/runtime authority, not every future or current delegated goal.",
+    "taskTerminal": "VERIFIED_EFFECT_OR_PROVEN_IRREDUCIBLE_HUMAN_GATE",
+    "schedulerRole": "wake receptor/watchdog only",
+    "activeTaskLaw": "Any newer delegated non-trivial goal becomes its own durable A-to-Z closure object and survives chat/model/host/invocation boundaries until terminal."
   }
 }
