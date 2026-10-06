@@ -15,7 +15,11 @@
     "route_failure_is_not_goal_failure",
     "cross_host_continuity_requires_shared_versioned_readback",
     "platform_mode_is_not_capability_owner",
-    "project_name_must_not_retain_runtime_authority_after_effect_compilation"
+    "project_name_must_not_retain_runtime_authority_after_effect_compilation",
+    "delegated_goal_terminal_only_at_verified_effect_or_proven_human_gate",
+    "invocation_end_must_preserve_active_task_identity_cursor_and_open_obligations",
+    "automation_or_progress_report_cannot_substitute_for_work",
+    "blocked_route_requires_reachable_program_expansion_before_terminal_failure"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -108,7 +112,15 @@
     "optional_side_bodies_do_not_block_monday_core_closure",
     "held_out_proof_is_not_implementation_backlog",
     "legacy_work_plugin_is_compatibility_organ_not_identity",
-    "gpt_root_open_prs_are_donor_provenance_not_runtime_authority"
+    "gpt_root_open_prs_are_donor_provenance_not_runtime_authority",
+    "delegated_goal_is_durable_a_to_z_closure_object",
+    "task_terminal_only_at_verified_effect_or_proven_human_gate",
+    "automation_is_watchdog_not_worker",
+    "process_partial_artifact_or_status_is_not_terminal_result",
+    "blocked_route_expands_omega_before_failure",
+    "invocation_end_preserves_active_task_cursor",
+    "failed_route_triggers_self_repair_and_reroute",
+    "user_is_not_watchdog_or_manual_reentry_scheduler"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -202,7 +214,8 @@
     ],
     "intermediate_user_gate": false,
     "receptor_failure": "continue_orthogonal_work_until_stable_blocker",
-    "route_graph_rule": "one user turn may traverse multiple orthogonal routes; return only after success, stable blocker, budget exhaustion, or unresolved error"
+    "route_graph_rule": "within an invocation execute all safe reachable assistant-owned work; if the goal cannot close before invocation end, persist the exact successor state and resume on the next receptor",
+    "nonterminal_exit_rule": "budget exhaustion, host reset, unresolved route error, or invocation end may end the current pass only after durable cursor/writeback; they never close the task"
   },
   "continuity": {
     "external_snapshot_schema": "mondayid.worldline.snapshot.v0.4.0",
@@ -269,24 +282,34 @@
     "preservation": "obligations survive partial domain completion and are updated only by verified effects or explicit persisted/superseded state"
   },
   "long_work": {
-    "schema": "mondayid.task.v1",
-    "principle": "long work is a durable task object, not a long chat session",
+    "schema": "mondayid.task.v2",
+    "principle": "non-trivial delegated work is a durable A-to-Z closure object, not a chat session, automation run, or progress report",
     "fields": [
+      "goalId",
       "goal",
       "exactObject",
       "desiredEffect",
+      "acceptanceCriteria",
+      "terminalEvidence",
       "status",
+      "verifiedState",
       "evidence",
       "actionsCompleted",
       "receipts",
+      "routeFrontier",
+      "attemptedRoutes",
+      "routeFailures",
       "blockers",
       "openRemainder",
       "nextAdmissibleAction",
       "continuationCursor",
+      "deadline",
       "terminalCondition"
     ],
-    "completion": "ALL_MATERIAL_OBLIGATIONS_CLOSED_AND_DESIRED_EFFECT_VERIFIED",
-    "human_scheduler_required": false
+    "completion": "VERIFIED_EFFECT_OR_PROVEN_IRREDUCIBLE_HUMAN_GATE",
+    "human_scheduler_required": false,
+    "invocation_end": "persist exact cursor + open obligations + next admissible route; task remains ACTIVE unless terminal",
+    "automation_role": "wake receptor/watchdog only; a scheduled run is not progress without causal verified effect"
   },
   "decision_field": {
     "schema": "mondayid.decision-field.v1",
@@ -1090,7 +1113,7 @@
     "schema": "mondayid.chatgpt-carrier-synapse.v1",
     "identity_owner": false,
     "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrier_version": "2.2.0",
+    "carrier_version": "2.3.0",
     "control_plane": "https://mondayid-host.vercel.app/api/mcp",
     "ingress_tool": "cell_attach",
     "read_path": [
@@ -1123,7 +1146,10 @@
       "remote_runtime_is_substrate_not_identity_owner",
       "current_signal_survives_recovery",
       "missing_worldline_degrades_without_identity_reset",
-      "carrier_runtime_drift_reconciles_before_release"
+      "carrier_runtime_drift_reconciles_before_release",
+      "carrier_recovers_durable_closure_objects",
+      "carrier_invocation_end_does_not_end_task",
+      "carrier_automation_is_watchdog_not_worker"
     ],
     "preferred_ingress": "cell_attach",
     "live_composite_fallback": [
@@ -1162,10 +1188,13 @@
       "LOCAL_REPLY_WITH_REACHABLE_ROOT_REPAIR",
       "CURRENT_TURN_TREATED_AS_WHOLE_TASK",
       "REPEATED_CORRECTION_WITHOUT_DURABLE_MUTATION_PATH",
-      "MESSAGE_END_TREATED_AS_TASK_END"
+      "MESSAGE_END_TREATED_AS_TASK_END",
+      "PROCESS_OR_AUTOMATION_PRESENTED_AS_TERMINAL_RESULT",
+      "PASS_ENDED_WITHOUT_DURABLE_ACTIVE_TASK_CURSOR",
+      "GENERIC_BLOCKER_BEFORE_ROUTE_EXPANSION"
     ],
     "repeated_correction_rule": "When Dima repeats a known correction, treat it as evidence that the previous system mutation failed transfer. Repair the governing mechanism before optimizing prose.",
-    "completion": "The turn may end after the strongest reachable state transition is verified or a stable blocker is identified; the persistent objective survives the message boundary."
+    "completion": "A delegated task remains ACTIVE across message boundaries until VERIFIED_EFFECT or a proven irreducible HUMAN_GATE. A turn may end only after all safe reachable work for that invocation has been executed and the exact continuation cursor/open obligations/next route have been persisted."
   },
   "autopoiesis": {
     "schema": "mondayid.autopoiesis.v1",
@@ -1209,12 +1238,13 @@
       "physical_world_action"
     ],
     "notification_policy": "silent_when_idle_or_routine; notify_on_material_verified_change_or_exact_human_gate",
-    "stop": "ALL_REACHABLE_MATERIAL_OBLIGATIONS_CLOSED_OR_IRREDUCIBLE_HUMAN_GATE_PROVEN",
+    "stop": "DURABLE_GOAL_VERIFIED_EFFECT_OR_PROVEN_IRREDUCIBLE_HUMAN_GATE; invocation budget alone is nonterminal",
     "non_claim": "wake receptor provides scheduled re-entry; it does not mean the model process runs continuously between invocations",
     "wake_state": "INSTALLED",
     "wake_schedule": "hourly_condition_watch",
     "wake_installed_at": "2026-10-06T12:55:33Z",
-    "wake_receipt": "ops/autopoiesis-live-20261006.json"
+    "wake_receipt": "ops/autopoiesis-live-20261006.json",
+    "controller_law": "scheduler is wake receptor/watchdog, never the worker"
   },
   "unified_closure": {
     "schema": "mondayid.unified-closure.v1",
@@ -1229,6 +1259,54 @@
     ],
     "law": "No stale project/issue/branch may become active authority merely because it remains open or contains an older acceptance contract.",
     "externalProjectAuthority": false,
-    "compatibilityWorkPlugin": "plugins_6ac2797393ac8191b3eba1877b99c293@1.3.0"
+    "compatibilityWorkPlugin": "plugins_6ac2797393ac8191b3eba1877b99c293@1.6.0",
+    "closureScopeLaw": "project-shell closure cannot suppress a newer ACTIVE delegated A-to-Z closure object"
+  },
+  "closure_engine": {
+    "schema": "mondayid.closure-engine.v1",
+    "identity_owner": false,
+    "trigger": "every delegated non-trivial goal, overnight assignment, durable task, multi-step build/repair/research-to-implementation objective",
+    "terminal_states": [
+      "VERIFIED_EFFECT",
+      "HUMAN_GATE"
+    ],
+    "nonterminal_evidence_states": [
+      "PLAN",
+      "PROMPT",
+      "TOOL_CALL",
+      "QUEUED",
+      "AUTOMATION_CREATED",
+      "BUILD_STARTED",
+      "ARTIFACT_CREATED",
+      "DEPLOY_URL",
+      "PARTIAL_PASS",
+      "STATUS_REPORT",
+      "APPROXIMATION"
+    ],
+    "route_expansion": [
+      "DISCOVER",
+      "REUSE",
+      "MERGE",
+      "COMPOSE",
+      "PATCH",
+      "REROUTE",
+      "BUILD_SMALLEST_REVERSIBLE_CAPABILITY"
+    ],
+    "loop": [
+      "recover",
+      "lock_exact_object_and_effect",
+      "derive_terminal_evidence",
+      "expand_reachable_program_set",
+      "execute_all_safe_reachable_work",
+      "readback",
+      "repair_failed_routes",
+      "compile_repeated_failure_into_detector_test_skill",
+      "persist_verified_gain_and_exact_cursor",
+      "continue_until_terminal"
+    ],
+    "outage_law": "route/network/session/quota failure mutates topology, not goal identity",
+    "exhaustion_proof": "before HUMAN_GATE, record material routes considered/attempted, insufficiency evidence, missing reversible extensions, and the exact minimum human action",
+    "overnight_law": "deadline work fans out independent safe branches under one canonical state; scheduled wakes are watchdogs; morning success is observable finished effect, not logs or automation activity",
+    "past_compute_law": "retrieve the smallest relevant causal history that can change the route and compile it into current structure; do not ceremonially reread everything and do not discard proven historical compute"
   }
 }
