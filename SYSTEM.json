@@ -647,7 +647,7 @@
       "no_manual_reteaching": true,
       "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "AUTOPOIESIS_CUTOVER_CANDIDATE",
+    "product_status": "AUTOPOIESIS_LIVE",
     "canonical_user_surface": {
       "host": "ChatGPT iPhone",
       "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
@@ -656,7 +656,9 @@
     },
     "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
     "carrier_version": "2.2.0",
-    "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1"
+    "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1",
+    "autopoiesis": "mondayid.autopoiesis.v1",
+    "autopoiesis_wake": "INSTALLED"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -1200,6 +1202,10 @@
     ],
     "notification_policy": "silent_when_idle_or_routine; notify_on_material_verified_change_or_exact_human_gate",
     "stop": "ALL_REACHABLE_MATERIAL_OBLIGATIONS_CLOSED_OR_IRREDUCIBLE_HUMAN_GATE_PROVEN",
-    "non_claim": "wake receptor provides scheduled re-entry; it does not mean the model process runs continuously between invocations"
+    "non_claim": "wake receptor provides scheduled re-entry; it does not mean the model process runs continuously between invocations",
+    "wake_state": "INSTALLED",
+    "wake_schedule": "hourly_condition_watch",
+    "wake_installed_at": "2026-10-06T12:55:33Z",
+    "wake_receipt": "ops/autopoiesis-live-20261006.json"
   }
 }
