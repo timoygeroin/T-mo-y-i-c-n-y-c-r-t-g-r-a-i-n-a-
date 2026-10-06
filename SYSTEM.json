@@ -99,7 +99,11 @@
     "turn_is_observation_not_terminal_scope",
     "reply_is_not_unit_of_progress",
     "optimize_future_corrections_eliminated",
-    "user_orchestration_is_system_cost"
+    "user_orchestration_is_system_cost",
+    "autonomy_is_bounded_self_completion_not_unbounded_authority",
+    "resident_requires_wake_receptor",
+    "autonomous_passes_stay_silent_when_idle",
+    "human_gate_only_after_reachable_autonomous_routes_exhausted"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -618,7 +622,9 @@
       "host_homeostasis",
       "chatgpt_carrier_synapse",
       "github_genome",
-      "evolution_compiler"
+      "evolution_compiler",
+      "autopoiesis_kernel",
+      "wake_receptor"
     ]
   },
   "release_state": {
@@ -641,7 +647,7 @@
       "no_manual_reteaching": true,
       "no_duplicate_public_monday_surfaces": true
     },
-    "product_status": "ERA2_ROOT_GOVERNOR_CANDIDATE",
+    "product_status": "AUTOPOIESIS_CUTOVER_CANDIDATE",
     "canonical_user_surface": {
       "host": "ChatGPT iPhone",
       "carrier_plugin": "plugins_6ac400facbe481918f97d70c3b46e5e3",
@@ -649,7 +655,7 @@
       "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
     },
     "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "carrier_version": "2.1.0",
+    "carrier_version": "2.2.0",
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1"
   },
   "everything_compiler": {
@@ -1150,5 +1156,50 @@
     ],
     "repeated_correction_rule": "When Dima repeats a known correction, treat it as evidence that the previous system mutation failed transfer. Repair the governing mechanism before optimizing prose.",
     "completion": "The turn may end after the strongest reachable state transition is verified or a stable blocker is identified; the persistent objective survives the message boundary."
+  },
+  "autopoiesis": {
+    "schema": "mondayid.autopoiesis.v1",
+    "identity_owner": false,
+    "human_scheduler_required": false,
+    "wake_required": true,
+    "wake_receptor": "chatgpt_automation",
+    "controller": "src/autopoiesis-kernel.mjs",
+    "loop": [
+      "wake",
+      "attach_current_cell",
+      "recover",
+      "reconcile",
+      "sense_open_tasks_regressions_and_capability_gaps",
+      "rank_root_progress",
+      "resume_or_reroute",
+      "repair_or_evolve",
+      "execute_reversible_authorized_actions",
+      "verify",
+      "persist",
+      "garbage_collect_superseded_routes",
+      "sleep_until_next_signal_or_wake"
+    ],
+    "autonomous_scope": [
+      "read_current_state",
+      "reconcile_stale_state",
+      "resume_durable_tasks",
+      "reroute_failed_hosts",
+      "repair_preventable_regressions",
+      "create_or_patch_reversible_capabilities",
+      "run_tests_and_readbacks",
+      "update_owned_source_and_carrier_after_verified_proof"
+    ],
+    "human_gates": [
+      "identity",
+      "authentication",
+      "secret_entry",
+      "spend",
+      "billing",
+      "irreversible_external_action",
+      "physical_world_action"
+    ],
+    "notification_policy": "silent_when_idle_or_routine; notify_on_material_verified_change_or_exact_human_gate",
+    "stop": "ALL_REACHABLE_MATERIAL_OBLIGATIONS_CLOSED_OR_IRREDUCIBLE_HUMAN_GATE_PROVEN",
+    "non_claim": "wake receptor provides scheduled re-entry; it does not mean the model process runs continuously between invocations"
   }
 }
