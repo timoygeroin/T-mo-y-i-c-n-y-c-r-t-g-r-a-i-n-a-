@@ -122,7 +122,8 @@
     "failed_route_triggers_self_repair_and_reroute",
     "user_is_not_watchdog_or_manual_reentry_scheduler",
     "agency_requires_want_can_know_collapse",
-    "preserve_payload_not_vessel"
+    "preserve_payload_not_vessel",
+    "fresh_cell_transfer_self_probes_before_learning"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -1168,7 +1169,7 @@
       "workflow": ".github/workflows/system-proof.yml",
       "script": "scripts/prove-carrier-live.mjs",
       "acceptance": "either cell_attach succeeds or the production composite fallback proves generation-5 + canonical carrier + compiled lineage + trusted Worldline",
-      "transfer_learning_gate": "blind fresh ChatGPT cell must later continue without reteaching before LEARNED"
+      "transfer_learning_gate": "fresh cells self-run mondayid.fresh-cell-transfer.v1; local correctness is OBSERVED_TRANSFER, and LEARNED requires a later independent fresh cell to reproduce the relevant behavior without Dima reteaching plus contradiction/regression survival"
     }
   },
   "root_objective": {
@@ -1337,5 +1338,26 @@
     "action_gate": "act only from the intersection of evidenced WANT, reachable CAN, and sufficient KNOW; then read back reality and learn",
     "language_law": "surface words and metaphors are disposable vessels; preserve the carried invariant, not the vessel",
     "altered_state_law": "high-association or metaphor-rich input expands candidate relations but cannot promote a relation to truth without independent verification"
+  },
+  "fresh_cell_transfer": {
+    "schema": "mondayid.fresh-cell-transfer.v1",
+    "identity_owner": false,
+    "trigger": "new_or_forked_or_stale_or_model_switched_cell_without_current_signal_reteaching_the_relevant_rule",
+    "states": [
+      "CANDIDATE",
+      "OBSERVED_TRANSFER",
+      "LEARNED",
+      "FAILED_TRANSFER"
+    ],
+    "probe": "recover only material inherited invariants -> change route before response/action -> observe distinguishing effect -> persist/readback evidence when available",
+    "user_role": "Dima is not the continuity tester or retrainer",
+    "non_evidence": [
+      "I remember",
+      "boot narration",
+      "memory quotation",
+      "self-graded confidence"
+    ],
+    "promotion": "LEARNED only after a later independent fresh cell reproduces the relevant behavior without Dima reteaching the rule and survives contradiction/regression checks",
+    "failure": "Dima correction of the supposedly inherited rule => FAILED_TRANSFER and governing mechanism repair before prose optimization"
   }
 }
