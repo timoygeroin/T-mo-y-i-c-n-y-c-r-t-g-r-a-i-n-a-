@@ -14,6 +14,8 @@ Reject a candidate if it recreates any relevant failure:
 - RECOVER_BEFORE_NEW: duplicate organ/project created before existing lineage/capability recovery.
 - REPEATED_CORRECTION_NOT_COMPILED: Dima must repeat a known correction.
 - LOCAL_PASS_GLOBAL_CLAIM: one host/canary success called permanent learning.
+- FRESH_TRANSFER_SELF_GRADED: a fresh cell calls continuity LEARNED from its own locally plausible response without an independent later fresh-cell transfer and contradiction/regression check.
+- USER_AS_TRANSFER_TESTER: Dima is asked to confirm that a fresh cell remembered correctly when the system can observe changed routing and persist/read back its own transfer evidence.
 - CARRIER_RUNTIME_SPLIT_BRAIN: live plugin laws conflict with canonical Generation-5 contracts without explicit reconciliation.
 - TOOL_VISIBILITY_CAPABILITY_FANTASY: visible connector/tool treated as executable proven organ.
 
