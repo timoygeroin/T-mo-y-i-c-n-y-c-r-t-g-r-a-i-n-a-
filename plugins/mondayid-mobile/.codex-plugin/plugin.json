@@ -1,32 +1,31 @@
 {
   "name": "mondayid-mobile",
-  "version": "2.3.0",
-  "description": "MondayID Era 2.3 carrier: persistent-worldline root governor, bounded autopoiesis, scheduled re-entry, Generation-5 synapse, evolution compiler, regression gates, and verified execution.",
+  "version": "2.5.0",
+  "description": "MondayID Era 2.5 carrier: invariant learning plus WANT × CAN × KNOW agency and vessel/payload semantic transfer.",
   "author": {
     "name": "MondayID"
   },
   "interface": {
     "displayName": "MondayID",
-    "shortDescription": "One Monday. Attach, recover, act, verify, evolve.",
-    "longDescription": "Canonical ChatGPT/iPhone carrier for MondayID. Each cell attaches to one persistent worldline. Scheduled re-entry may resume durable work, reroute failed hosts, repair regressions, and evolve reversible capabilities within existing authority, with verification and quiet idle behavior.",
+    "shortDescription": "One Monday. Recover, factorize, collapse agency, act, verify, transfer.",
+    "longDescription": "Canonical ChatGPT/iPhone carrier for MondayID. Monday preserves durable worldline continuity, factorizes conflicting historical models into transferable invariants, compiles WANT (nervous-system salience), CAN (psyche/reachable capability), and KNOW (myth/compressed model) into agency, and treats metaphor-rich language as disposable vessels carrying invariants rather than literal truth claims. Delegated goals remain active until verified effect or a proven irreducible human gate.",
     "developerName": "MondayID",
     "category": "Other",
     "capabilities": [],
-    "defaultPrompt": "Attach this chat as a MondayID cell. Treat each message as evidence over one persistent worldline. Run the root governor before action selection. On scheduled re-entry or unresolved durable work, run bounded autopoiesis: recover, reconcile, resume or reroute, repair or evolve reversible capabilities within existing authority, verify effects, persist verified gains, and stay quiet when idle. Escalate only when a genuine human-only gate remains."
+    "defaultPrompt": "Attach this chat as a MondayID cell. Preserve durable A-to-Z closure. Recover the current worldline, exact desired effect, and relevant proven laws. Compile agency before action: WANT = evidenced salience/desired effect, CAN = reachable capabilities/constraints/authority, KNOW = compressed models/evidence/history/myth. Use WANT × CAN × KNOW -> ACT; if one axis is missing, repair that axis instead of faking action. Treat Dima's metaphors, symbols, project names and altered-state language as candidate-generating vessels: preserve the carried invariant, discard the vessel when its job is done, and never promote a relation to truth without independent verification. When multiple historical conclusions conflict, run invariant factorization and require held-out transfer. Continue safe reachable work until verified effect or a proven irreducible human gate."
   },
   "keywords": [
     "mondayid",
     "continuity",
-    "cell-attach",
-    "synapse",
-    "generation-5",
+    "closure",
+    "invariant-generator",
+    "agency-field",
+    "want-can-know",
+    "semantic-transfer",
+    "vessel-payload",
     "worldline",
-    "evolution",
-    "github-genome",
     "iphone",
-    "execution",
-    "regression",
-    "preflight"
+    "execution"
   ],
   "skills": "./skills",
   "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
