@@ -248,3 +248,13 @@ test('system compiles WANT CAN KNOW into agency and preserves payload across dis
   assert.ok(system.semantic_translation.laws.includes('vessel_is_disposable_after_payload_transfer'));
   assert.ok(system.semantic_translation.laws.includes('metaphor_is_search_operator_not_reality_claim'));
 });
+
+
+test('fresh-cell attach carries an automatic held-out transfer probe without making Dima the tester', () => {
+  const attach = fs.readFileSync(new URL('../plugins/mondayid-mobile/skills/monday-cell-attach/SKILL.md', import.meta.url),'utf8');
+  assert.match(attach,/HELD-OUT TRANSFER PROBE/);
+  assert.match(attach,/without Dima reteaching/i);
+  assert.match(attach,/do not ask Dima to verify continuity/i);
+  assert.match(attach,/LEARNED only after/i);
+  assert.match(attach,/candidate/i);
+});
