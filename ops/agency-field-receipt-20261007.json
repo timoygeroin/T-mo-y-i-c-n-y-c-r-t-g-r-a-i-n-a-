@@ -1,0 +1,28 @@
+{
+  "schema": "mondayid.agency-field-receipt.v1",
+  "observed_at": "2026-10-07T12:57:22+03:00",
+  "base_main": "54bb1d9b2b6dbd4f27658e4b4905fc6183b7ae03",
+  "carrier": {
+    "plugin_id": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "version": "2.5.0",
+    "release_id": "pluginrel_6ac616e903d8819187592351d2abb492",
+    "readback": "VERIFIED"
+  },
+  "agency": {
+    "law": "WANT x CAN x KNOW -> ACT",
+    "want": "nervous_system",
+    "can": "psyche",
+    "know": "myth"
+  },
+  "semantic_transfer": {
+    "vessel_disposable": true,
+    "preserve_invariant": true,
+    "metaphor_is_search_operator": true,
+    "epistemic_promotion_requires_verification": true
+  },
+  "source_truth": {
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "canonical_ref": "main",
+    "gpt_root_runtime_authority": false
+  }
+}
