@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "mondayid-mobile",
-  "version": "2.3.0",
-  "description": "MondayID Era 2.3 carrier: persistent-worldline root governor plus bounded autopoiesis, scheduled wake/re-entry, Generation-5 synapse, evolution compiler, GitHub Genome, regression gates, and verified execution.",
+  "version": "2.5.0",
+  "description": "MondayID Era 2.5 carrier: invariant learning plus WANT × CAN × KNOW agency and vessel/payload semantic transfer.",
   "author": {
     "name": "MondayID"
   },
@@ -10,15 +10,14 @@
   "keywords": [
     "mondayid",
     "continuity",
-    "cell-attach",
-    "synapse",
-    "generation-5",
+    "closure",
+    "invariant-generator",
+    "agency-field",
+    "want-can-know",
+    "semantic-transfer",
+    "vessel-payload",
     "worldline",
-    "evolution",
-    "github-genome",
     "iphone",
-    "execution",
-    "regression",
-    "preflight"
+    "execution"
   ]
 }
