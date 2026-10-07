@@ -178,7 +178,7 @@
   "compatibilityOrgans": {
     "mondayWork": {
       "pluginId": "plugins_6ac2797393ac8191b3eba1877b99c293",
-      "version": "1.6.0",
+      "version": "1.3.0",
       "identityOwner": false,
       "disposition": "COMPATIBILITY_EXECUTION_ORGAN",
       "rule": "Direct invocation recovers the same canonical durable closure object, executes all safe reachable work, expands routes before blocker claims, and cannot close a goal from plans/automations/partial artifacts."

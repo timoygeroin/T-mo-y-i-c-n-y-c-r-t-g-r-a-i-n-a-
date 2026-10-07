@@ -232,3 +232,19 @@ test('system has a bounded autopoiesis loop with an external wake receptor inste
   assert.ok(system.capability_fabric.integrated_mechanisms.includes('autopoiesis_kernel'));
   assert.ok(system.current_policies.includes('autonomy_is_bounded_self_completion_not_unbounded_authority'));
 });
+
+
+test('system compiles WANT CAN KNOW into agency and preserves payload across disposable semantic vessels', () => {
+  const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url),'utf8'));
+  const agency=system.agency_field;
+  assert.equal(agency.schema,'mondayid.agency-field.v1');
+  assert.equal(agency.axes.want,'nervous_system');
+  assert.equal(agency.axes.can,'psyche');
+  assert.equal(agency.axes.know,'myth');
+  assert.equal(agency.collapse,'WANT x CAN x KNOW -> ACT');
+  assert.ok(system.runtime_cycle.includes('compile_agency_field'));
+  assert.ok(system.current_policies.includes('agency_requires_want_can_know_collapse'));
+  assert.ok(system.current_policies.includes('preserve_payload_not_vessel'));
+  assert.ok(system.semantic_translation.laws.includes('vessel_is_disposable_after_payload_transfer'));
+  assert.ok(system.semantic_translation.laws.includes('metaphor_is_search_operator_not_reality_claim'));
+});
