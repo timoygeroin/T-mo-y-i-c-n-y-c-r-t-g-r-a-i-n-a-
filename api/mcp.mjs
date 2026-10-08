@@ -5,6 +5,7 @@ import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs'
 import { compileProjectLineage, projectToCapabilityDelta } from '../src/everything-compiler.mjs';
 import { describeWorkReadiness } from '../src/work-readiness.mjs';
 import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
+import { assessVisualTransition } from '../src/visual-release-gate.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
 const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
@@ -13,6 +14,11 @@ const serverInfo = Object.freeze({ name:'monday-work', version:'1.2.0' });
 const protocolVersion = '2025-03-26';
 
 const tools = Object.freeze([
+  {
+    name:'visual_release_gate',
+    description:'Fail-closed MondayVision preflight and post-render identity/scene/wardrobe transaction. Does not intercept arbitrary native ChatGPT image generation.',
+    inputSchema:{type:'object',properties:{renderRequested:{type:'boolean'},scene:{type:'object'},identity:{type:'object'},wardrobe:{type:'object'},history:{type:'object'},candidate:{type:'object'},directIdentityApproval:{type:'boolean'}},additionalProperties:false}
+  },
   {
     name:'health',
     description:'Read verified MondayID host health and generation identity.',
@@ -69,6 +75,10 @@ function jsonRpcError(id, code, message, data = undefined) {
 }
 
 async function callTool(name, args = {}) {
+  if (name === 'visual_release_gate') {
+    const value=assessVisualTransition(args);
+    return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+  }
   if (name === 'health') {
     return { content:[{ type:'text', text:JSON.stringify(describeHost()) }], structuredContent:describeHost() };
   }
