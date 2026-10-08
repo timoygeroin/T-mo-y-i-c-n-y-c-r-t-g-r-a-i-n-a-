@@ -123,7 +123,8 @@
     "user_is_not_watchdog_or_manual_reentry_scheduler",
     "agency_requires_want_can_know_collapse",
     "preserve_payload_not_vessel",
-    "fresh_cell_transfer_self_probes_before_learning"
+    "fresh_cell_transfer_self_probes_before_learning",
+    "visual_release_gate_is_executable_and_scoped_not_just_prose"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -933,6 +934,29 @@
       "mutation_without_evidence": "STORY_NOT_EVOLUTION",
       "connector_is_receptor_not_memory_owner": true,
       "focus_is_temporary_exact_object_identity_is_not": true
+    },
+    "release_transaction": {
+      "schema": "mondayid.visual-release-transaction.v1",
+      "executor": "src/visual-release-gate.mjs",
+      "tool": "visual_release_gate",
+      "scope": "only_callers_that_invoke_the_MCP_gate",
+      "preconditions": [
+        "explicit_visual_intent",
+        "source_scene_geometry_lock",
+        "accessible_approved_same_person_reference",
+        "current_wardrobe_lock",
+        "exhausted_route_veto"
+      ],
+      "postconditions": [
+        "identity_audit",
+        "source_scene_audit",
+        "wardrobe_audit",
+        "provisional_until_direct_identity_acceptance"
+      ],
+      "failures_stay": "HOLD",
+      "not_proven": "native_host_global_pre_response_interception",
+      "user_feedback_counts_as": "evidence_not_self_graded_learning",
+      "carrier_rollout": "PENDING_PRIVATE_CARRIER_ARCHIVE_UPDATE"
     }
   },
   "organism_physics": {
