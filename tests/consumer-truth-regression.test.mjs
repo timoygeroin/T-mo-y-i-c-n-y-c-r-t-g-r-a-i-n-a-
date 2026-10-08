@@ -26,20 +26,24 @@ test('composer-created chat can accept a message without an intermediate UI repa
   const uid = () => `id-${++i}`;
   const now = () => '2026-10-08T00:00:00.000Z';
   const noop = () => {};
+  let openedChat = null;
   invoke('signalFromComposer', {
     state, $: () => input, uid, now, save: noop, record: noop,
-    renderHome: noop, openObject: noop
+    renderHome: noop, openObject: noop, openChat: chat => { openedChat = chat; }
   });
   assert.equal(state.chats.length, 1);
   const chat = state.chats[0];
   assert.equal(chat.kind, 'chat');
   assert.ok(Array.isArray(chat.messages), 'chat messages initialized');
+  assert.equal(chat.messages.length, 1, 'original composer text becomes first chat message');
+  assert.equal(chat.messages[0].text, 'Persistent thought');
+  assert.equal(openedChat, chat, 'composer opens the conversation, not a signal detail sheet');
   invoke('sendChatMessage', {
     currentObject: chat, state, uid, now, save: noop, record: noop,
     renderChat: noop, renderChats: noop
   }, "'Hello Monday'");
-  assert.equal(chat.messages.length, 1);
-  assert.equal(chat.messages[0].text, 'Hello Monday');
+  assert.equal(chat.messages.length, 2);
+  assert.equal(chat.messages[1].text, 'Hello Monday');
 });
 
 test('Work without an executor is Waiting, never falsely Running', () => {

@@ -352,10 +352,11 @@ async function shareText(title,text){
 }
 function signalFromComposer(){
   const el=$('universalComposer');const text=el.value.trim();if(!text)return;
-  const obj={id:uid(),title:text.slice(0,70),body:text,createdAt:now(),updatedAt:now(),pinned:false,kind:'signal',status:'OPEN',versions:[{at:now(),title:text.slice(0,70),body:text}]};
-  state.signals.unshift(obj);
-  state.chats.unshift({id:uid(),kind:'chat',messages:[],title:text.slice(0,44),body:'Signal preserved. Reasoning/execution remains in the current ChatGPT host until a shared writer/model route is verified.',createdAt:now(),updatedAt:now(),pinned:false,versions:[{at:now(),title:text.slice(0,44),body:text}]});
-  el.value='';save();record('Signal preserved',obj.title);renderHome();openObject(obj.id,'signal');
+  const created=now();
+  const signal={id:uid(),title:text.slice(0,70),body:text,createdAt:created,updatedAt:created,pinned:false,kind:'signal',status:'OPEN',versions:[{at:created,title:text.slice(0,70),body:text}]};
+  const chat={id:uid(),kind:'chat',messages:[{id:uid(),role:'user',label:'You',text,at:created}],title:text.slice(0,44),body:text,createdAt:created,updatedAt:created,pinned:false,versions:[{at:created,title:text.slice(0,44),body:text}],provenance:'Signal preserved locally; model responses require a verified carrier'};
+  state.signals.unshift(signal);state.chats.unshift(chat);
+  el.value='';save();record('Signal and chat preserved',signal.title);renderHome();openChat(chat);
 }
 
 $$('[data-tab]').forEach(b=>b.addEventListener('click',()=>route(b.dataset.tab)));
