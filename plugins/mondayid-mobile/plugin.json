@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "mondayid-mobile",
-  "version": "2.7.0",
-  "description": "MondayID 2.7: agency, self-verifying cell transfer, and executable fail-closed MondayVision release gate.",
+  "version": "2.6.0",
+  "description": "MondayID Era 2.6 carrier: agency + invariant learning + self-verifying fresh-cell transfer without Dima as the continuity tester.",
   "author": {
     "name": "MondayID"
   },
@@ -19,7 +19,6 @@
     "worldline",
     "iphone",
     "execution",
-    "fresh-cell-transfer",
-    "visual-release-gate"
+    "fresh-cell-transfer"
   ]
 }
