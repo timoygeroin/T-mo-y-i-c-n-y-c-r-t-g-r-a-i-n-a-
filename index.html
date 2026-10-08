@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#05070a">
+  <meta name="theme-color" content="#07080b">
   <meta name="color-scheme" content="dark">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,264 +11,218 @@
   <meta name="apple-mobile-web-app-title" content="Monday">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/monday-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/app.css">
   <title>Monday</title>
-  <style>
-    :root{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;
-      color:#f7f9ff;background:#05070a;--glass:rgba(255,255,255,.075);--line:rgba(255,255,255,.12);
-      --muted:rgba(238,244,255,.58);--accent:#9fc4ff;--ok:#a9f3d4;--warn:#ffd89a;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:#05070a}
-    body{
-      min-height:100svh;overflow-x:hidden;color:#f7f9ff;
-      background:
-        radial-gradient(circle at 50% 18%,rgba(79,118,186,.18),transparent 29rem),
-        radial-gradient(circle at 25% 85%,rgba(90,64,155,.12),transparent 28rem),
-        linear-gradient(180deg,#080b10 0%,#05070a 48%,#020305 100%);
-    }
-    body:before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;
-      background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-      background-size:28px 28px;mask-image:linear-gradient(to bottom,black,transparent 72%);
-    }
-    .shell{
-      min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;
-      width:min(680px,100%);margin:auto;padding:
-        max(18px,env(safe-area-inset-top))
-        18px
-        max(18px,env(safe-area-inset-bottom));
-    }
-    .top{display:flex;align-items:center;justify-content:space-between;min-height:44px}
-    .wordmark{font-weight:650;letter-spacing:-.02em;font-size:17px}
-    .presence-pill{
-      display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(255,255,255,.045);backdrop-filter:blur(18px) saturate(135%);
-      -webkit-backdrop-filter:blur(18px) saturate(135%);font-size:12px;color:var(--muted)
-    }
-    .dot{width:7px;height:7px;border-radius:50%;background:#8aa9d7;box-shadow:0 0 14px #8aa9d7}
-    body[data-state="working"] .dot{background:#d8b4ff;box-shadow:0 0 14px #d8b4ff}
-    body[data-state="verifying"] .dot{background:#ffd89a;box-shadow:0 0 14px #ffd89a}
-    body[data-state="synced"] .dot{background:#9ce7c8;box-shadow:0 0 14px #9ce7c8}
-    body[data-state="needsYou"] .dot{background:#ffb0aa;box-shadow:0 0 14px #ffb0aa}
-    .stage{display:grid;place-items:center;text-align:center;padding:36px 0 20px}
-    .presence{display:grid;place-items:center;gap:24px}
-    .orb-button{appearance:none;border:0;background:none;padding:10px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
-    .orb{
-      position:relative;width:154px;height:154px;border-radius:50%;
-      background:
-        radial-gradient(circle at 34% 27%,rgba(255,255,255,.98) 0 5%,rgba(196,220,255,.95) 9%,rgba(111,157,220,.92) 21%,rgba(44,67,104,.9) 50%,rgba(7,10,16,.98) 74%);
-      box-shadow:
-        inset -16px -18px 36px rgba(0,0,0,.44),
-        inset 10px 8px 24px rgba(255,255,255,.14),
-        0 0 0 1px rgba(255,255,255,.08),
-        0 0 80px rgba(112,159,224,.24),
-        0 24px 70px rgba(0,0,0,.5);
-      animation:breathe 5.6s ease-in-out infinite,float 8s ease-in-out infinite;
-      transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s ease,filter .45s ease;
-    }
-    .orb:before,.orb:after{content:"";position:absolute;border-radius:50%;inset:-20px;border:1px solid rgba(156,190,239,.11);animation:ring 4.8s ease-out infinite}
-    .orb:after{inset:-38px;animation-delay:1.6s;opacity:.55}
-    body[data-state="working"] .orb{filter:hue-rotate(17deg) saturate(1.1);transform:scale(1.035);box-shadow:0 0 110px rgba(158,111,226,.34),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="verifying"] .orb{filter:hue-rotate(-22deg) saturate(.9);transform:scale(.985);box-shadow:0 0 100px rgba(255,210,143,.27),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="synced"] .orb{filter:hue-rotate(46deg) saturate(.9);box-shadow:0 0 110px rgba(127,232,190,.28),0 24px 70px rgba(0,0,0,.5)}
-    .title{margin:0;font-size:clamp(48px,14vw,76px);font-weight:680;letter-spacing:-.065em;line-height:.95}
-    .status{margin:0;max-width:430px;color:var(--muted);font-size:15px;line-height:1.45;min-height:22px}
-    .tray{
-      width:100%;margin-top:28px;padding:14px;border:1px solid var(--line);border-radius:28px;
-      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
-      backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);
-      box-shadow:0 16px 60px rgba(0,0,0,.25);transform-origin:50% 0;
-      transition:opacity .25s ease,transform .35s cubic-bezier(.2,.8,.2,1),max-height .45s ease;
-      max-height:0;opacity:0;overflow:hidden;pointer-events:none;padding-top:0;padding-bottom:0;border-color:transparent
-    }
-    .tray.open{max-height:420px;opacity:1;transform:translateY(0);pointer-events:auto;padding:14px;border-color:var(--line)}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .action{
-      min-height:54px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.065);color:#fff;
-      font:inherit;font-weight:620;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent
-    }
-    .action.primary{background:rgba(223,235,255,.92);color:#07101c;border-color:rgba(255,255,255,.3)}
-    .action:disabled{opacity:.5}
-    .facts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
-    .fact{padding:13px;text-align:left;border-radius:17px;background:rgba(0,0,0,.17);border:1px solid rgba(255,255,255,.07)}
-    .fact-k{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:rgba(238,244,255,.38)}
-    .fact-v{margin-top:5px;font-size:13px;color:rgba(246,249,255,.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .receipt{margin:10px 3px 2px;text-align:left;color:rgba(238,244,255,.38);font-size:11px;line-height:1.4;min-height:16px}
-    .bottom{display:flex;justify-content:center;padding-top:10px}
-    .hint{font-size:11px;color:rgba(238,244,255,.26);letter-spacing:.02em}
-    @keyframes breathe{0%,100%{box-shadow:0 0 80px rgba(112,159,224,.22),0 24px 70px rgba(0,0,0,.5)}50%{box-shadow:0 0 115px rgba(112,159,224,.32),0 28px 84px rgba(0,0,0,.58)}}
-    @keyframes float{0%,100%{translate:0 0}50%{translate:0 -7px}}
-    @keyframes ring{0%{transform:scale(.88);opacity:.5}75%,100%{transform:scale(1.14);opacity:0}}
-    @media(max-width:430px){.shell{padding-left:15px;padding-right:15px}.stage{padding-top:20px}.orb{width:138px;height:138px}.facts{grid-template-columns:1fr 1fr}.title{font-size:58px}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
-  </style>
 </head>
-<body data-state="withYou">
-  <main class="shell">
-    <header class="top">
-      <div class="wordmark">Monday</div>
-      <div class="presence-pill" aria-live="polite"><span class="dot"></span><span id="presenceLabel">With you</span></div>
-    </header>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <button class="brand" id="brandButton" aria-label="Monday state">
+      <span class="mark" id="mark"></span>
+      <span class="brand-copy"><strong>Monday</strong><small id="presenceText">Recovering…</small></span>
+    </button>
+    <div class="header-actions">
+      <button class="icon-button" id="searchButton" aria-label="Search">⌕</button>
+      <button class="icon-button" id="activityButton" aria-label="Activity"><span>◌</span><i id="activityDot"></i></button>
+    </div>
+  </header>
 
-    <section class="stage">
-      <div class="presence">
-        <button class="orb-button" id="orbButton" aria-label="Open Monday state" aria-expanded="false">
-          <div class="orb" aria-hidden="true"></div>
-        </button>
-        <h1 class="title">Monday</h1>
-        <p class="status" id="statusLine" aria-live="polite">Recovering this scene…</p>
+  <main class="viewport">
+    <section class="view active" data-view="home" id="homeView">
+      <div class="hero">
+        <div>
+          <p class="eyebrow" id="heroEyebrow">NOW</p>
+          <h1 id="heroTitle">Continue.</h1>
+          <p class="hero-sub" id="heroSub">Reading the current worldline, not a cached story.</p>
+        </div>
+        <button class="state-chip" id="runtimeChip">READING</button>
+      </div>
 
-        <section class="tray" id="tray" aria-label="Monday live state">
-          <div class="actions">
-            <button class="action primary" id="syncButton">Sync reality</button>
-            <button class="action" id="verifyButton">Verify runtime</button>
-          </div>
-          <div class="facts">
-            <div class="fact"><div class="fact-k">Continuity</div><div class="fact-v" id="continuity">reading…</div></div>
-            <div class="fact"><div class="fact-k">Monday Work</div><div class="fact-v" id="work">reading…</div></div>
-            <div class="fact"><div class="fact-k">Routing</div><div class="fact-v" id="routing">reading…</div></div>
-            <div class="fact"><div class="fact-k">Authority</div><div class="fact-v" id="authority">reading…</div></div>
-          </div>
-          <div class="receipt" id="receipt">No claim is promoted before readback.</div>
-        </section>
+      <section class="composer-card">
+        <textarea id="universalComposer" rows="1" placeholder="Say it once. Monday keeps the object."></textarea>
+        <div class="composer-actions">
+          <button class="ghost-button" id="composerAttach">＋</button>
+          <button class="send-button" id="composerSend">↑</button>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-head"><h2>Continue</h2><button data-open="chats">All</button></div>
+        <div class="continuum-card" id="continueCard"></div>
+      </section>
+
+      <section class="block">
+        <div class="section-head"><h2>Today</h2><button data-open="activity">Activity</button></div>
+        <div class="object-grid" id="todayGrid"></div>
+      </section>
+
+      <section class="block">
+        <div class="section-head"><h2>Places</h2><span></span></div>
+        <div class="shortcut-grid">
+          <button data-open="library"><b>Library</b><span>files + objects</span></button>
+          <button data-open="ideas"><b>Idea Lab</b><span>fragments + experiments</span></button>
+          <button data-open="vision"><b>Vision</b><span>capture + keep</span></button>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="section-head"><h2>Pinned</h2><button id="pinEdit">Edit</button></div>
+        <div class="horizontal-strip" id="pinnedStrip"></div>
+      </section>
+    </section>
+
+    <section class="view" data-view="chats" id="chatsView">
+      <div class="page-title"><div><p class="eyebrow">CONTINUITY</p><h1>Chats</h1></div><button class="pill-button" id="newChat">New</button></div>
+      <div class="search-inline"><input id="chatFilter" placeholder="Search chats"></div>
+      <div class="stack" id="chatList"></div>
+    </section>
+
+    <section class="view" data-view="create" id="createView">
+      <div class="page-title"><div><p class="eyebrow">MAKE SOMETHING</p><h1>Create</h1></div></div>
+      <div class="create-grid" id="createGrid">
+        <button data-create="chat"><b>Chat</b><span>Start a thread</span></button>
+        <button data-create="voice"><b>Voice</b><span>Capture audio</span></button>
+        <button data-create="camera"><b>Camera</b><span>Capture a visual</span></button>
+        <button data-create="scan"><b>Scan</b><span>Document capture</span></button>
+        <button data-create="image"><b>Image</b><span>Visual object</span></button>
+        <button data-create="document"><b>Document</b><span>Persistent file</span></button>
+        <button data-create="presentation"><b>Presentation</b><span>Artifact intent</span></button>
+        <button data-create="table"><b>Table</b><span>Structured object</span></button>
+        <button data-create="research"><b>Research</b><span>Investigation</span></button>
+        <button data-create="code"><b>Code / Build</b><span>Execution intent</span></button>
+        <button data-create="space"><b>Space</b><span>Persistent context</span></button>
+        <button data-create="idea"><b>Idea</b><span>Preserve before judging</span></button>
+        <button data-create="reminder"><b>Reminder</b><span>Future hinge</span></button>
+        <button data-create="automation"><b>Automation</b><span>Recurring behavior</span></button>
       </div>
     </section>
 
-    <footer class="bottom"><div class="hint" id="hint">tap Monday · state before response</div></footer>
+    <section class="view" data-view="spaces" id="spacesView">
+      <div class="page-title"><div><p class="eyebrow">PERSISTENT CONTEXTS</p><h1>Spaces</h1></div><button class="pill-button" data-create="space">New</button></div>
+      <div class="stack" id="spacesList"></div>
+    </section>
+
+    <section class="view" data-view="you" id="youView">
+      <div class="page-title"><div><p class="eyebrow">YOUR MONDAY</p><h1>You</h1></div></div>
+      <div class="settings-list" id="settingsList"></div>
+    </section>
+
+    <section class="view" data-view="library" id="libraryView">
+      <div class="page-title"><div><p class="eyebrow">OBJECTS</p><h1>Library</h1></div><button class="pill-button" data-create="document">New</button></div>
+      <div class="filter-row" id="libraryFilters"></div>
+      <div class="stack" id="libraryList"></div>
+    </section>
+
+    <section class="view" data-view="ideas" id="ideasView">
+      <div class="page-title"><div><p class="eyebrow">HIGH VARIANCE IS ALLOWED</p><h1>Idea Lab</h1></div><button class="pill-button" data-create="idea">New</button></div>
+      <div class="stack" id="ideaList"></div>
+    </section>
+
+    <section class="view" data-view="vision" id="visionView">
+      <div class="page-title"><div><p class="eyebrow">SEE / KEEP / RELATE</p><h1>Vision</h1></div></div>
+      <label class="capture-card">
+        <input id="visionInput" type="file" accept="image/*,video/*" capture="environment">
+        <b>Capture or choose</b><span>Media stays local unless you explicitly move it.</span>
+      </label>
+      <div class="vision-stage" id="visionStage"></div>
+    </section>
+
+    <section class="view" data-view="activity" id="activityView">
+      <div class="page-title"><div><p class="eyebrow">TRUTHFUL STATE</p><h1>Activity</h1></div><button class="pill-button" id="refreshRuntime">Sync</button></div>
+      <div class="runtime-panel" id="runtimePanel"></div>
+      <div class="stack" id="activityList"></div>
+    </section>
   </main>
 
-<script>
-const body=document.body;
-const tray=document.getElementById('tray');
-const orbButton=document.getElementById('orbButton');
-const syncButton=document.getElementById('syncButton');
-const verifyButton=document.getElementById('verifyButton');
-const presenceLabel=document.getElementById('presenceLabel');
-const statusLine=document.getElementById('statusLine');
-const receipt=document.getElementById('receipt');
+  <nav class="tabbar" aria-label="Primary">
+    <button data-tab="home" class="active"><span>⌂</span><small>Home</small></button>
+    <button data-tab="chats"><span>◫</span><small>Chats</small></button>
+    <button data-tab="create" class="create-tab"><span>＋</span><small>Create</small></button>
+    <button data-tab="spaces"><span>◇</span><small>Spaces</small></button>
+    <button data-tab="you"><span>◎</span><small>You</small></button>
+  </nav>
+</div>
 
-const labels={
-  withYou:'With you',
-  working:'Working',
-  verifying:'Verifying',
-  synced:'Synced',
-  needsYou:'Needs you'
-};
+<dialog id="searchDialog" class="sheet">
+  <div class="sheet-head"><div><p class="eyebrow">EVERYTHING</p><h2>Search</h2></div><button data-close>×</button></div>
+  <input class="sheet-search" id="globalSearch" placeholder="Chats, spaces, files, ideas, tasks">
+  <div class="stack" id="searchResults"></div>
+</dialog>
 
-function setPresence(state,detail){
-  body.dataset.state=state;
-  presenceLabel.textContent=labels[state]||labels.withYou;
-  if(detail) statusLine.textContent=detail;
-}
+<dialog id="chatDialog" class="chat-sheet">
+  <header class="chat-header">
+    <button class="chat-back" id="chatClose" aria-label="Close">‹</button>
+    <div class="chat-identity"><span class="mark"></span><div><b id="chatTitle">Chat</b><small id="chatPresence">Monday</small></div></div>
+    <button class="chat-more" id="chatMore" aria-label="Thread object">•••</button>
+  </header>
+  <div class="chat-stage" id="chatStage"></div>
+  <div class="chat-context-bar">
+    <button id="chatWork">Work</button>
+    <button id="chatVoice">Voice</button>
+    <button id="chatMedia">Photo / Video</button>
+    <button id="chatHandoff">Handoff</button>
+  </div>
+  <div class="chat-composer">
+    <textarea id="chatComposer" rows="1" placeholder="Message"></textarea>
+    <button id="chatSend">↑</button>
+  </div>
+  <input id="chatMediaInput" type="file" accept="image/*,video/*,audio/*" hidden>
+</dialog>
 
-function setFact(id,value){
-  document.getElementById(id).textContent=value;
-}
+<dialog id="objectDialog" class="sheet">
+  <div class="sheet-head"><div><p class="eyebrow" id="objectKind">OBJECT</p><h2 id="objectTitle">Object</h2></div><button data-close>×</button></div>
+  <div class="depth-control">
+    <button data-depth="surface" class="active">Surface</button>
+    <button data-depth="inside">Inside</button>
+    <button data-depth="relations">Relations</button>
+    <button data-depth="evidence">Evidence</button>
+  </div>
+  <div class="gesture-hint">Thought Pinch / Cognitive Zoom · pinch with two fingers or use the depth controls</div>
+  <div id="objectBody" class="object-body"></div>
+  <div class="object-actions">
+    <button id="editObject">Edit / Move</button>
+    <button id="peelButton">Peel</button>
+    <button id="timeButton">Time Scrub</button>
+    <button id="ghostButton">Ghost State</button>
+    <button id="shareObject">Share</button>
+    <button id="deleteObject" class="danger-button">Move to Trash</button>
+  </div>
+</dialog>
 
-function toggleTray(force){
-  const open=typeof force==='boolean'?force:!tray.classList.contains('open');
-  tray.classList.toggle('open',open);
-  orbButton.setAttribute('aria-expanded',String(open));
-}
+<dialog id="createDialog" class="sheet compact">
+  <div class="sheet-head"><div><p class="eyebrow">CREATE</p><h2 id="createTitle">New object</h2></div><button data-close>×</button></div>
+  <form id="createForm">
+    <input type="hidden" id="createType">
+    <label>Name<input id="createName" maxlength="120" required></label>
+    <label>Inside<textarea id="createBody" rows="5" placeholder="What should survive this moment?"></textarea></label>
+    <label class="toggle-row"><span>Pin</span><input id="createPinned" type="checkbox"></label>
+    <button class="primary-action" type="submit">Create object</button>
+  </form>
+</dialog>
 
-async function mcpCall(name,args={}){
-  const r=await fetch('/api/mcp',{
-    method:'POST',
-    cache:'no-store',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({
-      jsonrpc:'2.0',
-      id:Date.now(),
-      method:'tools/call',
-      params:{name,arguments:args}
-    })
-  });
-  if(!r.ok) throw new Error('MCP '+r.status);
-  const envelope=await r.json();
-  if(envelope.error) throw new Error(envelope.error.message||'MCP error');
-  return envelope.result?.structuredContent||envelope.result?.content?.[0]?.text||envelope.result;
-}
+<dialog id="editDialog" class="sheet compact">
+  <div class="sheet-head"><div><p class="eyebrow">SEMANTIC OBJECT</p><h2>Edit / Move</h2></div><button data-close>×</button></div>
+  <form id="editForm">
+    <label>Name<input id="editName" maxlength="120" required></label>
+    <label>Inside<textarea id="editBody" rows="5"></textarea></label>
+    <label>Space<select id="editSpace"><option value="">No Space</option></select></label>
+    <label class="toggle-row"><span>Pin</span><input id="editPinned" type="checkbox"></label>
+    <button class="primary-action" type="submit">Save new version</button>
+  </form>
+</dialog>
 
-async function readHealth(){
-  const r=await fetch('/api/health',{cache:'no-store'});
-  if(!r.ok) throw new Error('health '+r.status);
-  return r.json();
-}
+<dialog id="installDialog" class="sheet compact">
+  <div class="sheet-head"><div><p class="eyebrow">IPHONE BODY</p><h2>Install Monday</h2></div><button data-close>×</button></div>
+  <div class="install-steps" id="installBody"></div>
+</dialog>
 
-async function syncReality(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Reading the organism, not a cached story…');
-  receipt.textContent='READBACK · health + capability manifest';
-  try{
-    const [health,manifestRaw,stateRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest'),mcpCall('get_state',{limit:1})]);
-    const manifest=typeof manifestRaw==='string'?JSON.parse(manifestRaw):manifestRaw;
-    const state=typeof stateRaw==='string'?JSON.parse(stateRaw):stateRaw;
-    const linked=Boolean(state?.ok&&state?.snapshot?.schema===health?.continuity?.schema&&state?.snapshot?.trust==='AUTHENTICATED_MACHINE_WRITER');
-    const routed=Boolean(manifest?.metabolism||manifest?.hostHomeostasis);
-    const bounded=Boolean(manifest?.authorityMembrane);
+<dialog id="stateDialog" class="sheet compact">
+  <div class="sheet-head"><div><p class="eyebrow">MONDAY MARK</p><h2>Presence</h2></div><button data-close>×</button></div>
+  <div id="stateBody"></div>
+</dialog>
 
-    setFact('continuity',linked?'shared context read':'freshness unknown');
-    setFact('work','uses current chat tools');
-    setFact('routing',routed?'routing rules loaded':'route unknown');
-    setFact('authority',bounded?'bounded':'authority unknown');
-
-    if(health?.ok){
-      setPresence('withYou',linked?'Shared context read · work continues in your chat':'Server available · shared context unresolved');
-      receipt.textContent='OBSERVED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    }else{
-      setPresence('needsYou','Runtime answered without a healthy state');
-    }
-  }catch(error){
-    setFact('continuity','unresolved');setFact('work','unresolved');setFact('routing','unresolved');setFact('authority','unresolved');
-    setPresence('needsYou',navigator.onLine?'Live readback failed · no success claimed':'Offline · continuity freshness unknown');
-    receipt.textContent='NOT VERIFIED · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
-  }
-}
-
-async function verifyRuntime(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Checking runtime access…');
-  receipt.textContent='ATTEMPTED · runtime boot';
-  try{
-    const r=await fetch('/api/boot',{cache:'no-store'});
-    setPresence('verifying','Reading back the boot result…');
-    const out=await r.json();
-    const verified=Boolean(out?.ok)&&(
-      out?.pass?.state==='FULFILLED'||
-      out?.surface?.state==='VERIFIED'||
-      out?.state==='VERIFIED'
-    );
-    if(verified){
-      setPresence('withYou','Runtime check complete · tasks use your chat tools');
-      receipt.textContent='VERIFIED · '+(out?.surface?.revision||out?.revision||'runtime readback');
-    }else{
-      setPresence('needsYou','Boot returned without verification · claim withheld');
-      receipt.textContent='OBSERVED, NOT VERIFIED · '+(out?.pass?.reason||out?.reason||('HTTP '+r.status));
-    }
-  }catch(error){
-    setPresence('needsYou','Verification path failed · nothing promoted');
-    receipt.textContent='FAILED READBACK · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
-  }
-}
-
-orbButton.addEventListener('click',()=>toggleTray());
-syncButton.addEventListener('click',syncReality);
-verifyButton.addEventListener('click',verifyRuntime);
-window.addEventListener('online',syncReality);
-window.addEventListener('offline',()=>{
-  setPresence('needsYou','Offline · continuity freshness unknown');
-  receipt.textContent='UNKNOWN · network unavailable';
-});
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&navigator.onLine) syncReality();
-});
-
-syncReality();
-</script>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText"></span><button id="toastAction">Undo</button></div>
+<input id="hiddenFile" type="file" hidden>
+<script src="/app.js" defer></script>
 </body>
 </html>
