@@ -258,3 +258,14 @@ test('fresh-cell attach carries an automatic held-out transfer probe without mak
   assert.match(attach,/LEARNED only after/i);
   assert.match(attach,/candidate/i);
 });
+
+test('MondayVision contract points to executable scoped gate, not fictitious native interception',()=>{
+  const system=JSON.parse(fs.readFileSync(new URL('../SYSTEM.json',import.meta.url),'utf8'));
+  const txn=system.visual_phenotype.release_transaction;
+  assert.equal(txn.schema,'mondayid.visual-release-transaction.v1');
+  assert.equal(txn.tool,'visual_release_gate');
+  assert.equal(txn.executor,'src/visual-release-gate.mjs');
+  assert.equal(txn.scope,'only_callers_that_invoke_the_MCP_gate');
+  assert.equal(txn.not_proven,'native_host_global_pre_response_interception');
+  assert.ok(txn.preconditions.includes('accessible_approved_same_person_reference'));
+});
