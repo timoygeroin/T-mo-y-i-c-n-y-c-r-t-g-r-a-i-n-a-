@@ -294,6 +294,15 @@ function startChatWork(){
   const created=now();const task={id:uid(),title:'Work · '+currentObject.title,detail:'Awaiting a verified execution route; no work has started.',body:'Awaiting a verified execution route; no work has started.',createdAt:created,updatedAt:created,pinned:false,kind:'task',state:'Waiting',chatID:currentObject.id,versions:[{at:created,title:'Work · '+currentObject.title,body:'Awaiting a verified execution route; no work has started.'}]};
   state.tasks.unshift(task);currentObject.messages.push({id:uid(),role:'work',label:'Work',text:'Work is waiting for a verified executor. No execution has started.',at:created,taskID:task.id});save();record('Work queued',task.title);renderChat();renderHome();
 }
+function transitionTaskState(item,next){
+  const allowed=['Running','Waiting','Needs you','Completed','Changed','Failed'];
+  if(!allowed.includes(next))return false;
+  if(item.chatID&&!['Waiting','Needs you'].includes(next)){
+    record('Work transition rejected','No verified execution receipt for '+item.title);
+    return false;
+  }
+  item.state=next;item.updatedAt=now();save();record('Task → '+next,item.title);return true;
+}
 function renderObjectBody(){
   if(!currentObject)return;
   $('.depth-control button').forEach(b=>b.classList.toggle('active',b.dataset.depth===currentDepth));
@@ -307,8 +316,9 @@ function renderObjectBody(){
       out+='<div class="task-states">'+ideaStates.map(s=>'<button data-idea-state="'+s+'" class="'+(currentObject.status===s?'active':'')+'">'+s+'</button>').join('')+'</div>';
     }
     if(currentObject.kind==='task'){
-      const states=['Running','Waiting','Needs you','Completed','Changed','Failed'];
+      const states=currentObject.chatID?['Waiting','Needs you']:['Running','Waiting','Needs you','Completed','Changed','Failed'];
       out+='<div class="task-states">'+states.map(s=>'<button data-task-state="'+s+'" class="'+(currentObject.state===s?'active':'')+'">'+s+'</button>').join('')+'</div>';
+      if(currentObject.chatID)out+='<p class="badge">Work needs an execution receipt before Running or Completed can be verified.</p>';
     }
   }
   if(currentDepth==='inside'){
@@ -415,7 +425,7 @@ $('editForm').addEventListener('submit',e=>{
 });
 $('objectBody').addEventListener('click',e=>{
   const task=e.target.closest('[data-task-state]');
-  if(task&&currentObject?.kind==='task'){currentObject.state=task.dataset.taskState;currentObject.updatedAt=now();save();record('Task → '+currentObject.state,currentObject.title);renderObjectBody();renderActivity();return;}
+  if(task&&currentObject?.kind==='task'){transitionTaskState(currentObject,task.dataset.taskState);renderObjectBody();renderActivity();return;}
   const idea=e.target.closest('[data-idea-state]');
   if(idea&&currentObject?.kind==='idea'){currentObject.status=idea.dataset.ideaState;currentObject.updatedAt=now();save();record('Idea → '+currentObject.status,currentObject.title);renderObjectBody();renderIdeas();}
 });
