@@ -291,8 +291,8 @@ function addChatMedia(file){
 }
 function startChatWork(){
   if(!currentObject||currentObject.kind!=='chat')return;
-  const created=now();const task={id:uid(),title:'Work · '+currentObject.title,detail:'Bound task created inside this conversation.',body:'Bound task created inside this conversation.',createdAt:created,updatedAt:created,pinned:false,kind:'task',state:'Running',chatID:currentObject.id,versions:[{at:created,title:'Work · '+currentObject.title,body:'Bound task created inside this conversation.'}]};
-  state.tasks.unshift(task);currentObject.messages.push({id:uid(),role:'work',label:'Work',text:'Task is Running. Open Activity/Home to inspect its truthful state.',at:created,taskID:task.id});save();record('Work started',task.title);renderChat();renderHome();
+  const created=now();const task={id:uid(),title:'Work · '+currentObject.title,detail:'Awaiting a verified execution route; no work has started.',body:'Awaiting a verified execution route; no work has started.',createdAt:created,updatedAt:created,pinned:false,kind:'task',state:'Waiting',chatID:currentObject.id,versions:[{at:created,title:'Work · '+currentObject.title,body:'Awaiting a verified execution route; no work has started.'}]};
+  state.tasks.unshift(task);currentObject.messages.push({id:uid(),role:'work',label:'Work',text:'Work is waiting for a verified executor. No execution has started.',at:created,taskID:task.id});save();record('Work queued',task.title);renderChat();renderHome();
 }
 function renderObjectBody(){
   if(!currentObject)return;
@@ -354,7 +354,7 @@ function signalFromComposer(){
   const el=$('universalComposer');const text=el.value.trim();if(!text)return;
   const obj={id:uid(),title:text.slice(0,70),body:text,createdAt:now(),updatedAt:now(),pinned:false,kind:'signal',status:'OPEN',versions:[{at:now(),title:text.slice(0,70),body:text}]};
   state.signals.unshift(obj);
-  state.chats.unshift({id:uid(),title:text.slice(0,44),body:'Signal preserved. Reasoning/execution remains in the current ChatGPT host until a shared writer/model route is verified.',createdAt:now(),updatedAt:now(),pinned:false,versions:[{at:now(),title:text.slice(0,44),body:text}]});
+  state.chats.unshift({id:uid(),kind:'chat',messages:[],title:text.slice(0,44),body:'Signal preserved. Reasoning/execution remains in the current ChatGPT host until a shared writer/model route is verified.',createdAt:now(),updatedAt:now(),pinned:false,versions:[{at:now(),title:text.slice(0,44),body:text}]});
   el.value='';save();record('Signal preserved',obj.title);renderHome();openObject(obj.id,'signal');
 }
 
