@@ -59,3 +59,18 @@ test('Work without an executor is Waiting, never falsely Running', () => {
   assert.match(chat.messages[0].text, /waiting/i);
   assert.match(chat.messages[0].text, /no execution has started/i);
 });
+
+test('unverified Work cannot be manually promoted to Running or Completed', () => {
+  const item={id:'work-1',title:'Work · Task',chatID:'chat-1',state:'Waiting'};
+  const log=[];
+  const env={record:(...args)=>log.push(args),now:()=> '2026-10-08T12:38:00.000Z',save(){}};
+  const src=functionSource('transitionTaskState');
+  for(const next of ['Running','Completed','Changed','Failed']){
+    const value=vm.runInNewContext(`${src}\ntransitionTaskState(item,${JSON.stringify(next)});`,{...env,item});
+    assert.equal(value,false);
+    assert.equal(item.state,'Waiting');
+  }
+  assert.equal(vm.runInNewContext(`${src}\ntransitionTaskState(item,'Needs you');`,{...env,item}),true);
+  assert.equal(item.state,'Needs you');
+  assert.equal(log.filter(x=>x[0]==='Work transition rejected').length,4);
+});
