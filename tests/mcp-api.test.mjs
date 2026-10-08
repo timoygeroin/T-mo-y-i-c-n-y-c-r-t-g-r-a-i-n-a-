@@ -34,6 +34,7 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
   assert.equal(res.statusCode,200);
   const names=res.body.result.tools.map(tool=>tool.name);
   assert.deepEqual(names,[
+    'visual_release_gate',
     'health',
     'cell_attach',
     'capability_manifest',
@@ -189,4 +190,17 @@ test('MCP bounded trusted write proof persists then exact-readbacks one determin
     else process.env.MONDAYID_WORLDLINE_WRITER_TOKEN=previousToken;
     globalThis.fetch=previousFetch;
   }
+});
+
+test('MCP visual_release_gate blocks a render without approved identity bytes',async()=>{
+ const req={method:'POST',body:{jsonrpc:'2.0',id:66,method:'tools/call',params:{name:'visual_release_gate',arguments:{
+  renderRequested:true,scene:{assetId:'terrace',role:'scene',preserveGeometry:true},
+  identity:{role:'identity',approved:false,bytesAvailable:false},
+  wardrobe:{requested:'black-square-neck',selected:'black-square-neck'}
+ }}}};
+ const res=response();
+ await mcpHandler(req,res);
+ assert.equal(res.statusCode,200);
+ assert.equal(res.body.result.structuredContent.status,'HOLD');
+ assert.equal(res.body.result.structuredContent.code,'IDENTITY_ANCHOR_REQUIRED');
 });
