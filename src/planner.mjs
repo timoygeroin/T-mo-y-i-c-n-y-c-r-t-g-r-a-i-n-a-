@@ -1,4 +1,5 @@
 import { rankDecisionRoutes } from './decision-field.mjs';
+import { compileVirtualCloneField } from './virtual-clone-field.mjs';
 
 const score = (n) => {
   const computePressure = Number(n.inferenceContract?.compute?.score || 0);
@@ -9,7 +10,7 @@ const score = (n) => {
     - (n.cost ?? 0);
 };
 
-export function buildFrontier(graph, capabilities = {}) {
+export function buildFrontier(graph, capabilities = {}, { sourceRevision = 'unknown', virtualBudget = 8 } = {}) {
   const objectives = graph.nodes.filter(n => n.type === 'objective');
   const expandedObjectives = objectives.flatMap(o => {
     if (!Array.isArray(o.routeCandidates) || o.routeCandidates.length === 0) {
@@ -93,6 +94,7 @@ export function buildFrontier(graph, capabilities = {}) {
   return {
     ready,
     blocked,
-    parallel: ready.filter((a, i, arr) => arr.findIndex(x => x.domain === a.domain) === i)
+    parallel: ready.filter((a, i, arr) => arr.findIndex(x => x.domain === a.domain) === i),
+    virtualField: compileVirtualCloneField(graph, { sourceRevision, materializationBudget: virtualBudget })
   };
 }
