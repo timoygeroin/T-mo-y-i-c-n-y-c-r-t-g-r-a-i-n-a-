@@ -50,7 +50,7 @@ export class MondayRuntime {
     const state = this.worldline.materialize();
     const policies = this.policyField.snapshot();
     const graph = compileSignals(signals, { state, policies });
-    const frontier = buildFrontier(graph, this.capabilities);
+    const frontier = buildFrontier(graph, this.capabilities, { sourceRevision:this.worldline.revision() });
     const physiology = sensePhysiology({
       state,
       worldlineHeads:this.worldline.heads(),
@@ -426,7 +426,7 @@ export class MondayRuntime {
       rev = out.revision;
     }
 
-    if (forged.some(x => x.ok)) frontier = buildFrontier(graph, this.capabilities);
+    if (forged.some(x => x.ok)) frontier = buildFrontier(graph, this.capabilities, { sourceRevision:this.worldline.revision() });
 
     const results = await Promise.all(
       frontier.parallel.map(action => this.executeAction(action))
