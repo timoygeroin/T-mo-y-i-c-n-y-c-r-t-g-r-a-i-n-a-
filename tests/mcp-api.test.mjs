@@ -46,8 +46,10 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
 
 test('MCP cell_attach returns one canonical attach snapshot with trusted Worldline',async()=>{
   const previousUrl=process.env.MONDAYID_WORLDLINE_URL;
+  const previousAuth=process.env.MONDAYID_HOST_TOKEN;
   const previousFetch=globalThis.fetch;
   process.env.MONDAYID_WORLDLINE_URL='https://worldline.example.test';
+  process.env.MONDAYID_HOST_TOKEN='mcp-unit-test-secret';
   globalThis.fetch=async()=>({
     ok:true,
     status:200,
@@ -60,7 +62,7 @@ test('MCP cell_attach returns one canonical attach snapshot with trusted Worldli
     })
   });
   try{
-    const req={method:'POST',body:{jsonrpc:'2.0',id:22,method:'tools/call',params:{name:'cell_attach',arguments:{limit:20,carrierVersion:'2.0.1'}}}};
+    const req={method:'POST',headers:{authorization:'Bearer mcp-unit-test-secret'},body:{jsonrpc:'2.0',id:22,method:'tools/call',params:{name:'cell_attach',arguments:{limit:20,carrierVersion:'2.0.1'}}}};
     const res=response();
     await mcpHandler(req,res);
     assert.equal(res.statusCode,200);
@@ -74,6 +76,8 @@ test('MCP cell_attach returns one canonical attach snapshot with trusted Worldli
   } finally {
     if(previousUrl===undefined) delete process.env.MONDAYID_WORLDLINE_URL;
     else process.env.MONDAYID_WORLDLINE_URL=previousUrl;
+    if(previousAuth===undefined) delete process.env.MONDAYID_HOST_TOKEN;
+    else process.env.MONDAYID_HOST_TOKEN=previousAuth;
     globalThis.fetch=previousFetch;
   }
 });
@@ -138,10 +142,12 @@ test('MCP compile_history collapses project shells into active capability state'
 test('MCP bounded trusted write proof persists then exact-readbacks one deterministic effect',async()=>{
   const previousUrl=process.env.MONDAYID_WORLDLINE_URL;
   const previousToken=process.env.MONDAYID_WORLDLINE_WRITER_TOKEN;
+  const previousAuth=process.env.MONDAYID_HOST_TOKEN;
   const previousFetch=globalThis.fetch;
   const calls=[];
   process.env.MONDAYID_WORLDLINE_URL='https://worldline.example.test';
   process.env.MONDAYID_WORLDLINE_WRITER_TOKEN='writer-secret';
+  process.env.MONDAYID_HOST_TOKEN='mcp-unit-test-secret';
   globalThis.fetch=async(url,init)=>{
     calls.push({url:String(url),init});
     if(init?.method==='POST'){
@@ -170,7 +176,7 @@ test('MCP bounded trusted write proof persists then exact-readbacks one determin
   };
 
   try{
-    const req={method:'POST',body:{jsonrpc:'2.0',id:6,method:'tools/call',params:{name:'prove_trusted_write_readback',arguments:{}}}};
+    const req={method:'POST',headers:{authorization:'Bearer mcp-unit-test-secret'},body:{jsonrpc:'2.0',id:6,method:'tools/call',params:{name:'prove_trusted_write_readback',arguments:{}}}};
     const res=response();
     await mcpHandler(req,res);
     assert.equal(res.statusCode,200);
@@ -188,6 +194,32 @@ test('MCP bounded trusted write proof persists then exact-readbacks one determin
     else process.env.MONDAYID_WORLDLINE_URL=previousUrl;
     if(previousToken===undefined) delete process.env.MONDAYID_WORLDLINE_WRITER_TOKEN;
     else process.env.MONDAYID_WORLDLINE_WRITER_TOKEN=previousToken;
+    if(previousAuth===undefined) delete process.env.MONDAYID_HOST_TOKEN;
+    else process.env.MONDAYID_HOST_TOKEN=previousAuth;
+    globalThis.fetch=previousFetch;
+  }
+});
+
+test('MCP rejects anonymous state reads and attach before any Worldline network fetch',async()=>{
+  const previousToken=process.env.MONDAYID_HOST_TOKEN;
+  const previousFetch=globalThis.fetch;
+  let reads=0;
+  process.env.MONDAYID_HOST_TOKEN='private-test-token';
+  globalThis.fetch=async()=>{ reads++; throw new Error('must not reach Worldline'); };
+  try{
+    for(const name of ['cell_attach','get_state','prove_trusted_write_readback']){
+      const req={method:'POST',body:{jsonrpc:'2.0',id:71,method:'tools/call',params:{name,arguments:{limit:1}}}};
+      const res=response();
+      await mcpHandler(req,res);
+      assert.equal(res.statusCode,200);
+      assert.equal(res.body.error.code,-32001);
+      assert.equal(res.body.error.message,'PRIVATE_TOOL_AUTH_REQUIRED');
+      assert.equal(JSON.stringify(res.body).includes('events'),false);
+    }
+    assert.equal(reads,0);
+  } finally {
+    if(previousToken===undefined) delete process.env.MONDAYID_HOST_TOKEN;
+    else process.env.MONDAYID_HOST_TOKEN=previousToken;
     globalThis.fetch=previousFetch;
   }
 });
