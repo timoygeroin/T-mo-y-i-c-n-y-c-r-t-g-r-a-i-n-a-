@@ -32,6 +32,7 @@ export async function fetchWorldlineSnapshot({
   baseUrl,
   limit = 10,
   trust = 'trusted',
+  readerToken = process.env.MONDAYID_WORLDLINE_READ_TOKEN,
   fetchImpl = globalThis.fetch
 } = {}) {
   if (!baseUrl) return { ok:false, code:'NO_WORLDLINE_URL' };
@@ -44,7 +45,9 @@ export async function fetchWorldlineSnapshot({
 
   let response;
   try {
-    response = await fetchImpl(url);
+    response = await fetchImpl(url, readerToken
+      ? { headers:{ authorization:`Bearer ${readerToken}` } }
+      : undefined);
   } catch (error) {
     return { ok:false, code:'WORLDLINE_FETCH_FAILED', error:String(error) };
   }

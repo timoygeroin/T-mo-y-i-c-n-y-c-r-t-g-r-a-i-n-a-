@@ -12,9 +12,7 @@ jobs:
           node-version: 22
       - run: npm test
       - run: npm run boot
-      - name: Boot from live external Worldline
-        env:
-          MONDAYID_WORLDLINE_URL: https://adamant-raven-783.eu-west-1.convex.site
-        run: npm run boot
-      - name: Prove live ChatGPT carrier continuity route
+      - name: Verify public external Worldline denies anonymous access
+        run: node scripts/prove-worldline-private-live.mjs
+      - name: Prove live Monday Host public route and private-tool denial
         run: node scripts/prove-carrier-live.mjs
