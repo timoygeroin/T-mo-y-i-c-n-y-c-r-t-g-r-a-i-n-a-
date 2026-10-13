@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { authorizeMcpTool } from '../src/mcp-access.mjs';
 import { describeHost } from '../src/host-adapter.mjs';
 import { fetchWorldlineSnapshot } from '../src/remote-worldline.mjs';
 import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
@@ -275,6 +276,10 @@ export default async function handler(req, res) {
     if (method === 'tools/call') {
       const name = String(body.params?.name || '');
       const args = body.params?.arguments || {};
+      // Fail closed before any external snapshot fetch or writer action.
+      if (!authorizeMcpTool(name, req)) {
+        return res.status(200).json(jsonRpcError(id,-32001,'PRIVATE_TOOL_AUTH_REQUIRED'));
+      }
       const result = await callTool(name,args);
       return res.status(200).json(jsonRpcResult(id,result));
     }
