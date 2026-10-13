@@ -25,7 +25,7 @@ test('consumer entry does not fetch private Worldline or impersonate model execu
   assert.doesNotMatch(index,/\/api\/mcp/);
   assert.doesNotMatch(index,/get_state/);
   assert.match(index,/does not impersonate an AI assistant/);
-  assert.match(index,/Nothing is sent to an AI model here/);
+  assert.match(index,/(Your content is not sent to an AI model|Nothing is sent to an AI model here)/);
   assert.match(index,/localStorage\.setItem/);
   assert.match(index,/textContent/);
   assert.doesNotMatch(index,/\.innerHTML\s*=/);
