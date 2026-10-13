@@ -1,7 +1,7 @@
 {
   "name": "Monday",
   "short_name": "Monday",
-  "description": "MondayID live presence surface",
+  "description": "Monday — local-first continuum for threads, notes, tasks and spaces",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

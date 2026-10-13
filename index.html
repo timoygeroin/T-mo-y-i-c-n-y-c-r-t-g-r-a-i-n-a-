@@ -1,272 +1,150 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#05070a">
-  <meta name="color-scheme" content="dark">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Monday">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/monday-mark.svg" type="image/svg+xml">
-  <title>Monday</title>
-  <style>
-    :root{
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,system-ui,sans-serif;
-      color:#f7f9ff;background:#05070a;--glass:rgba(255,255,255,.075);--line:rgba(255,255,255,.12);
-      --muted:rgba(238,244,255,.58);--accent:#9fc4ff;--ok:#a9f3d4;--warn:#ffd89a;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:#05070a}
-    body{
-      min-height:100svh;overflow-x:hidden;color:#f7f9ff;
-      background:
-        radial-gradient(circle at 50% 18%,rgba(79,118,186,.18),transparent 29rem),
-        radial-gradient(circle at 25% 85%,rgba(90,64,155,.12),transparent 28rem),
-        linear-gradient(180deg,#080b10 0%,#05070a 48%,#020305 100%);
-    }
-    body:before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;
-      background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-      background-size:28px 28px;mask-image:linear-gradient(to bottom,black,transparent 72%);
-    }
-    .shell{
-      min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;
-      width:min(680px,100%);margin:auto;padding:
-        max(18px,env(safe-area-inset-top))
-        18px
-        max(18px,env(safe-area-inset-bottom));
-    }
-    .top{display:flex;align-items:center;justify-content:space-between;min-height:44px}
-    .wordmark{font-weight:650;letter-spacing:-.02em;font-size:17px}
-    .presence-pill{
-      display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(255,255,255,.045);backdrop-filter:blur(18px) saturate(135%);
-      -webkit-backdrop-filter:blur(18px) saturate(135%);font-size:12px;color:var(--muted)
-    }
-    .dot{width:7px;height:7px;border-radius:50%;background:#8aa9d7;box-shadow:0 0 14px #8aa9d7}
-    body[data-state="working"] .dot{background:#d8b4ff;box-shadow:0 0 14px #d8b4ff}
-    body[data-state="verifying"] .dot{background:#ffd89a;box-shadow:0 0 14px #ffd89a}
-    body[data-state="synced"] .dot{background:#9ce7c8;box-shadow:0 0 14px #9ce7c8}
-    body[data-state="needsYou"] .dot{background:#ffb0aa;box-shadow:0 0 14px #ffb0aa}
-    .stage{display:grid;place-items:center;text-align:center;padding:36px 0 20px}
-    .presence{display:grid;place-items:center;gap:24px}
-    .orb-button{appearance:none;border:0;background:none;padding:10px;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
-    .orb{
-      position:relative;width:154px;height:154px;border-radius:50%;
-      background:
-        radial-gradient(circle at 34% 27%,rgba(255,255,255,.98) 0 5%,rgba(196,220,255,.95) 9%,rgba(111,157,220,.92) 21%,rgba(44,67,104,.9) 50%,rgba(7,10,16,.98) 74%);
-      box-shadow:
-        inset -16px -18px 36px rgba(0,0,0,.44),
-        inset 10px 8px 24px rgba(255,255,255,.14),
-        0 0 0 1px rgba(255,255,255,.08),
-        0 0 80px rgba(112,159,224,.24),
-        0 24px 70px rgba(0,0,0,.5);
-      animation:breathe 5.6s ease-in-out infinite,float 8s ease-in-out infinite;
-      transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s ease,filter .45s ease;
-    }
-    .orb:before,.orb:after{content:"";position:absolute;border-radius:50%;inset:-20px;border:1px solid rgba(156,190,239,.11);animation:ring 4.8s ease-out infinite}
-    .orb:after{inset:-38px;animation-delay:1.6s;opacity:.55}
-    body[data-state="working"] .orb{filter:hue-rotate(17deg) saturate(1.1);transform:scale(1.035);box-shadow:0 0 110px rgba(158,111,226,.34),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="verifying"] .orb{filter:hue-rotate(-22deg) saturate(.9);transform:scale(.985);box-shadow:0 0 100px rgba(255,210,143,.27),0 24px 70px rgba(0,0,0,.5)}
-    body[data-state="synced"] .orb{filter:hue-rotate(46deg) saturate(.9);box-shadow:0 0 110px rgba(127,232,190,.28),0 24px 70px rgba(0,0,0,.5)}
-    .title{margin:0;font-size:clamp(48px,14vw,76px);font-weight:680;letter-spacing:-.065em;line-height:.95}
-    .status{margin:0;max-width:430px;color:var(--muted);font-size:15px;line-height:1.45;min-height:22px}
-    .tray{
-      width:100%;margin-top:28px;padding:14px;border:1px solid var(--line);border-radius:28px;
-      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
-      backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);
-      box-shadow:0 16px 60px rgba(0,0,0,.25);transform-origin:50% 0;
-      transition:opacity .25s ease,transform .35s cubic-bezier(.2,.8,.2,1),max-height .45s ease;
-      max-height:0;opacity:0;overflow:hidden;pointer-events:none;padding-top:0;padding-bottom:0;border-color:transparent
-    }
-    .tray.open{max-height:420px;opacity:1;transform:translateY(0);pointer-events:auto;padding:14px;border-color:var(--line)}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .action{
-      min-height:54px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.065);color:#fff;
-      font:inherit;font-weight:620;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent
-    }
-    .action.primary{background:rgba(223,235,255,.92);color:#07101c;border-color:rgba(255,255,255,.3)}
-    .action:disabled{opacity:.5}
-    .facts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
-    .fact{padding:13px;text-align:left;border-radius:17px;background:rgba(0,0,0,.17);border:1px solid rgba(255,255,255,.07)}
-    .fact-k{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:rgba(238,244,255,.38)}
-    .fact-v{margin-top:5px;font-size:13px;color:rgba(246,249,255,.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .receipt{margin:10px 3px 2px;text-align:left;color:rgba(238,244,255,.38);font-size:11px;line-height:1.4;min-height:16px}
-    .bottom{display:flex;justify-content:center;padding-top:10px}
-    .hint{font-size:11px;color:rgba(238,244,255,.26);letter-spacing:.02em}
-    @keyframes breathe{0%,100%{box-shadow:0 0 80px rgba(112,159,224,.22),0 24px 70px rgba(0,0,0,.5)}50%{box-shadow:0 0 115px rgba(112,159,224,.32),0 28px 84px rgba(0,0,0,.58)}}
-    @keyframes float{0%,100%{translate:0 0}50%{translate:0 -7px}}
-    @keyframes ring{0%{transform:scale(.88);opacity:.5}75%,100%{transform:scale(1.14);opacity:0}}
-    @media(max-width:430px){.shell{padding-left:15px;padding-right:15px}.stage{padding-top:20px}.orb{width:138px;height:138px}.facts{grid-template-columns:1fr 1fr}.title{font-size:58px}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d16"><meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Monday"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/monday-mark.svg" type="image/svg+xml"><title>Monday — Your continuum</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;background:#090d16;color:#eff3fc;color-scheme:dark;--line:rgba(225,237,255,.12);--muted:#9daac2;--glow:#a9c8ff;--surface:rgba(255,255,255,.055);--tint:rgba(123,158,236,.15)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#090d16}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}input,textarea,select{font-size:16px}
+body{background:radial-gradient(circle at 85% 6%,rgba(61,92,166,.25),transparent 28rem),radial-gradient(circle at -12% 58%,rgba(83,65,142,.16),transparent 30rem),#090d16}
+#app{width:min(980px,100%);min-height:100dvh;margin:auto;padding:env(safe-area-inset-top) 16px calc(96px + env(safe-area-inset-bottom))}
+header{height:74px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:24px;letter-spacing:-1px;font-weight:750}.brand small{display:block;color:var(--muted);font-weight:480;font-size:10px;letter-spacing:.05em}
+.header-actions{display:flex;align-items:center;gap:8px}
+button.iconbtn{min-width:43px;min-height:43px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:#f3f6ff}
+button.iconbtn:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #c5dbff;outline-offset:2px}
+main{max-width:760px;margin:auto}h1{font-weight:670;letter-spacing:-.045em;font-size:clamp(34px,8vw,54px);line-height:1.08;margin:12px 0}h2{font-size:19px;letter-spacing:-.02em;margin:0 0 12px}h3{font-size:16px;margin:0}p{margin:8px 0;line-height:1.5}
+.eyebrow{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.13em;font-weight:650}
+.muted{color:var(--muted)}.small{font-size:12px}.spaced{margin-top:28px}
+.glass{background:linear-gradient(140deg,rgba(199,219,255,.10),rgba(255,255,255,.035) 47%,rgba(187,177,245,.055));border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 12px 40px rgba(0,0,0,.13)}
+.hero{padding:25px 21px 22px;margin:12px 0 20px}.hero p{color:var(--muted);margin-bottom:18px;max-width:52ch}
+.composer{display:flex;align-items:stretch;gap:8px;background:rgba(4,8,17,.62);border:1px solid var(--line);border-radius:18px;padding:6px}
+.composer input{flex:1;width:100%;min-width:0;border:0;background:none;color:#fff;padding:10px 8px;outline:none}
+.primary{border:0;border-radius:13px;background:#dbe8ff;color:#0b172b;font-weight:720;padding:12px 17px}
+.secondary{border:1px solid var(--line);background:rgba(255,255,255,.065);color:#f4f7ff;border-radius:13px;padding:11px 15px;font-weight:600}
+.danger{border:1px solid rgba(252,137,148,.32);color:#ffb6c0;background:rgba(165,46,76,.08);border-radius:13px;padding:10px 13px}
+.segment{display:flex;gap:5px;margin:8px 0 10px}.segment button{border:1px solid transparent;color:var(--muted);background:none;border-radius:11px;padding:7px 11px;font-size:12px}.segment button.active{background:var(--tint);border-color:var(--line);color:#ecf2ff}
+.sectionbar{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}.sectionbar h2{margin:0}.textbtn{background:none;border:0;color:#bdd3ff;padding:8px 3px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tile{padding:17px;text-align:left;min-height:105px}.tile strong{display:block;font-size:22px;margin:8px 0}.tile span{color:var(--muted);font-size:12px}
+.card{padding:16px 18px;margin:10px 0}.item{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}.item .grow{flex:1;min-width:0}.item-title{font-weight:620;overflow-wrap:anywhere}.item-sub{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}.item-actions{display:flex;gap:4px;flex-shrink:0}
+.pill{display:inline-block;font-size:11px;padding:5px 8px;border-radius:99px;background:var(--tint);color:#c7d9ff}
+.empty{border:1px dashed rgba(209,225,255,.2);border-radius:20px;text-align:center;padding:35px 22px;color:var(--muted);line-height:1.55}
+.feed{margin-top:12px}.feed .card{cursor:pointer}.feed .card:hover{border-color:rgba(178,207,255,.35)}
+.field{display:flex;flex-direction:column;gap:7px;margin:12px 0}.field label{font-size:12px;color:var(--muted)}
+.field input,.field textarea,.field select{width:100%;border-radius:13px;background:#101827;color:#fff;border:1px solid var(--line);padding:12px 13px;outline:none}.field textarea{min-height:120px;resize:vertical}
+.narrow{max-width:620px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.stretch{flex:1}.hint{font-size:12px;line-height:1.45;color:var(--muted)}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(8,12,21,.88);border-top:1px solid var(--line);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);z-index:4}
+.navinner{max-width:730px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.navinner button{border:0;border-radius:14px;color:var(--muted);background:none;padding:7px 2px 5px;min-height:52px;font-size:11px}
+.navinner button b{display:block;font-size:21px;font-weight:450;margin-bottom:2px}.navinner button[aria-current="page"]{background:rgba(161,193,255,.14);color:#e2ecff}
+.overlay{position:fixed;inset:0;background:rgba(2,5,11,.78);backdrop-filter:blur(12px);z-index:8;display:grid;align-items:end;justify-items:center}
+.sheet{width:min(680px,100%);max-height:92dvh;overflow:auto;border:1px solid var(--line);border-radius:26px 26px 0 0;padding:20px;background:linear-gradient(135deg,#151c2b,#090e19)}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.messages{display:flex;flex-direction:column;gap:9px;min-height:120px;max-height:48dvh;overflow:auto}
+.bubble{align-self:flex-end;max-width:90%;background:rgba(161,192,255,.15);border:1px solid var(--line);padding:12px 14px;border-radius:17px 17px 5px 17px;overflow-wrap:anywhere;white-space:pre-wrap}
+.timeline{border-left:1px solid var(--line);margin-left:9px;padding-left:19px}.timeline .card{position:relative}.timeline .card:before{content:"";width:7px;height:7px;background:#9dbdff;border-radius:50%;position:absolute;left:-23px;top:20px}
+#toast{position:fixed;bottom:calc(93px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);max-width:90%;background:#e5eeff;color:#13213a;padding:11px 15px;border-radius:13px;z-index:12;box-shadow:0 12px 40px rgba(0,0,0,.45);font-size:12px;display:none}
+#toast.show{display:block}
+code{font-size:12px}a{color:#bdd3ff}
+@media(min-width:700px){.hero{padding:35px}.grid{grid-template-columns:repeat(4,1fr)}.sheet{align-self:center;border-radius:25px}.navinner{max-width:600px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
-<body data-state="withYou">
-  <main class="shell">
-    <header class="top">
-      <div class="wordmark">Monday</div>
-      <div class="presence-pill" aria-live="polite"><span class="dot"></span><span id="presenceLabel">With you</span></div>
-    </header>
-
-    <section class="stage">
-      <div class="presence">
-        <button class="orb-button" id="orbButton" aria-label="Open Monday state" aria-expanded="false">
-          <div class="orb" aria-hidden="true"></div>
-        </button>
-        <h1 class="title">Monday</h1>
-        <p class="status" id="statusLine" aria-live="polite">Recovering this scene…</p>
-
-        <section class="tray" id="tray" aria-label="Monday live state">
-          <div class="actions">
-            <button class="action primary" id="syncButton">Sync reality</button>
-            <button class="action" id="verifyButton">Verify runtime</button>
-          </div>
-          <div class="facts">
-            <div class="fact"><div class="fact-k">Continuity</div><div class="fact-v" id="continuity">reading…</div></div>
-            <div class="fact"><div class="fact-k">Monday Work</div><div class="fact-v" id="work">reading…</div></div>
-            <div class="fact"><div class="fact-k">Routing</div><div class="fact-v" id="routing">reading…</div></div>
-            <div class="fact"><div class="fact-k">Authority</div><div class="fact-v" id="authority">reading…</div></div>
-          </div>
-          <div class="receipt" id="receipt">No claim is promoted before readback.</div>
-        </section>
-      </div>
-    </section>
-
-    <footer class="bottom"><div class="hint" id="hint">tap Monday · state before response</div></footer>
-  </main>
-
+<body>
+<div id="app">
+<header><div class="brand">Monday<small>YOUR CONTINUUM</small></div><div class="header-actions"><button class="iconbtn" id="searchBtn" aria-label="Search">⌕</button><button class="iconbtn" id="activityBtn" aria-label="Activity">◷</button></div></header>
+<main id="view" aria-live="polite"></main>
+</div>
+<nav class="bottomnav" aria-label="Primary"><div class="navinner" id="nav">
+<button data-tab="home"><b>⌂</b>Home</button><button data-tab="chats"><b>☰</b>Chats</button><button data-tab="create"><b>＋</b>Create</button><button data-tab="spaces"><b>◈</b>Spaces</button><button data-tab="you"><b>◯</b>You</button>
+</div></nav><div id="modals"></div><div id="toast" role="status" aria-live="polite"></div><input hidden id="importFile" type="file" accept=".json,application/json">
 <script>
-const body=document.body;
-const tray=document.getElementById('tray');
-const orbButton=document.getElementById('orbButton');
-const syncButton=document.getElementById('syncButton');
-const verifyButton=document.getElementById('verifyButton');
-const presenceLabel=document.getElementById('presenceLabel');
-const statusLine=document.getElementById('statusLine');
-const receipt=document.getElementById('receipt');
-
-const labels={
-  withYou:'With you',
-  working:'Working',
-  verifying:'Verifying',
-  synced:'Synced',
-  needsYou:'Needs you'
-};
-
-function setPresence(state,detail){
-  body.dataset.state=state;
-  presenceLabel.textContent=labels[state]||labels.withYou;
-  if(detail) statusLine.textContent=detail;
+'use strict';
+const KEY='monday.continuum.local.v1', VERSION=1;
+const blank=()=>({schema:'monday.continuum.local.v1',version:VERSION,createdAt:new Date().toISOString(),threads:[],notes:[],tasks:[],spaces:[],events:[]});
+let data;
+try{const raw=JSON.parse(localStorage.getItem(KEY)||'null');data=valid(raw)?raw:blank();}catch{data=blank();}
+let tab='home',mode='note',activeThread=null,searchText='',editId=null,toastHandle=null;
+const $=id=>document.getElementById(id);
+const id=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'m-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+const now=()=>new Date().toISOString();
+const date=s=>{try{return new Date(s).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}catch{return 'unknown'}};
+const mk=(tag,className,textValue)=>{const e=document.createElement(tag);if(className)e.className=className;if(textValue!==undefined)e.textContent=String(textValue);return e;};
+const append=(parent,...kids)=>{for(const child of kids)if(child)parent.appendChild(child);return parent};
+const act=(label,fn,cls='secondary')=>{const b=mk('button',cls,label);b.type='button';b.addEventListener('click',fn);return b};
+const empty=(label)=>mk('div','empty',label);
+function valid(value){if(!value||value.schema!=='monday.continuum.local.v1'||value.version!==1||!['threads','notes','tasks','spaces','events'].every(k=>Array.isArray(value[k])))return false;const sized=k=>value[k].length<=5000&&value[k].every(x=>x&&typeof x.id==='string'&&x.id.length<200);if(!['threads','notes','tasks','spaces','events'].every(sized))return false;return value.threads.every(t=>typeof t.title==='string'&&t.title.length<500&&Array.isArray(t.messages)&&t.messages.length<=3000&&t.messages.every(m=>m&&typeof m.text==='string'&&m.text.length<=12000))&&value.notes.every(n=>typeof n.title==='string'&&typeof n.body==='string'&&n.body.length<=12000)&&value.tasks.every(t=>typeof t.title==='string'&&Array.isArray(t.checkpoints)&&t.checkpoints.length<=2000&&t.checkpoints.every(c=>c&&typeof c.title==='string'&&typeof c.done==='boolean'))&&value.spaces.every(t=>typeof t.title==='string'&&typeof t.description==='string');}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(data));return true;}catch{toast('Storage unavailable. Export a copy now.');return false;}}
+function event(action,kind,objectId,detail){data.events.unshift({id:id(),at:now(),action,kind,objectId,detail:detail||'',state:'PERSISTED_LOCALLY'});data.events=data.events.slice(0,300);}
+function save(kind,object,action='created'){data[kind].unshift(object);event(action,kind,object.id,object.title);persist();render();}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastHandle);toastHandle=setTimeout(()=>t.classList.remove('show'),3800);}
+function heading(kicker,title,subtitle){const box=mk('section');append(box,mk('div','eyebrow',kicker),mk('h1','',title));if(subtitle)append(box,mk('p','muted',subtitle));return box}
+function section(title,caption){const bar=mk('div','sectionbar');append(bar,mk('h2','',title));if(caption)append(bar,mk('span','small muted',caption));return bar}
+function card(title,sub,right,onClick){const c=mk('div','glass card item'),g=mk('div','grow');append(g,mk('div','item-title',title),mk('div','item-sub',sub));append(c,g);if(right)append(c,right);if(onClick){c.style.cursor='pointer';c.tabIndex=0;c.setAttribute('role','button');c.addEventListener('click',onClick);c.addEventListener('keydown',e=>{if(e.key==='Enter')onClick()})}return c;}
+function navTo(name){tab=name;activeThread=null;searchText='';render();window.scrollTo(0,0)}
+function render(){const view=$('view');view.replaceChildren();$('nav').querySelectorAll('button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(activeThread){drawThread(view,activeThread);return}({home:drawHome,chats:drawChats,create:drawCreate,spaces:drawSpaces,you:drawYou,search:drawSearch,activity:drawActivity,library:drawLibrary}[tab]||drawHome)(view);}
+function quickCapture(text,kind){const t=text.trim();if(!t){toast('Write something first');return;}if(t.length>12000){toast('Keep each entry under 12,000 characters');return;}
+if(kind==='note')save('notes',{id:id(),title:t.slice(0,64),body:t,spaceId:null,createdAt:now(),updatedAt:now()},'captured');
+else if(kind==='task')save('tasks',{id:id(),title:t,done:false,checkpoints:[],createdAt:now(),updatedAt:now()},'opened');
+else{const thread={id:id(),title:t.slice(0,68),messages:[{id:id(),role:'user',text:t,at:now()}],createdAt:now(),updatedAt:now()};save('threads',thread,'started');activeThread=thread.id;render();}
+toast('Saved on this device — not sent to a model');}
+function drawHome(view){append(view,heading('Welcome to your space','Your world, in one place.','Capture an idea, continue a thread, or move your work forward. Your content is not sent to an AI model. This local edition does not run AI inference.'));
+const hero=mk('section','glass hero');append(hero,mk('div','eyebrow','Continuum'),mk('h2','','What matters right now?'));
+const seg=mk('div','segment');[['note','Note'],['task','Task'],['thread','Thread']].forEach(([key,label])=>{const b=act(label,()=>{mode=key;render()},mode===key?'active':'');seg.appendChild(b)});append(hero,seg);
+const form=mk('form','composer'),inp=mk('input');inp.name='capture';inp.placeholder=mode==='task'?'Something to accomplish…':mode==='thread'?'Start a private thread…':'A thought worth keeping…';inp.setAttribute('aria-label','Capture your thought');const send=mk('button','primary','Save');send.type='submit';append(form,inp,send);form.addEventListener('submit',e=>{e.preventDefault();quickCapture(inp.value,mode)});append(hero,form,mk('p','hint','Local-first. Your data stays in this browser until you export it.'));append(view,hero);
+append(view,section('Your continuum','Right where you left off'));const stats=mk('div','grid');[['Threads',data.threads.length,'chats'],['Open tasks',data.tasks.filter(x=>!x.done).length,'create'],['Notes',data.notes.length,'library'],['Spaces',data.spaces.length,'spaces']].forEach(([name,num,dest])=>{const c=mk('button','glass tile');append(c,mk('span','',name),mk('strong','',num),mk('span','','Open →'));c.addEventListener('click',()=>navTo(dest));stats.appendChild(c)});append(view,stats);
+const all=[...data.threads.map(x=>({...x,kind:'thread'})),...data.notes.map(x=>({...x,kind:'note'})),...data.tasks.map(x=>({...x,kind:'task'}))].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,7);
+append(view,section('Recently touched',all.length+' objects'));if(!all.length)append(view,empty('No history yet. Begin with one meaningful thought.'));else all.forEach(x=>append(view,card(x.title,(x.kind==='task'?(x.done?'Completed':'Open')+' · ':'')+x.kind+' · '+date(x.updatedAt),null,()=>openObject(x.kind,x.id))));
 }
-
-function setFact(id,value){
-  document.getElementById(id).textContent=value;
+function openObject(kind,objectId){if(kind==='thread'){activeThread=objectId;tab='chats';render();return;}if(kind==='note'){openNote(objectId);return;}if(kind==='task')openTask(objectId);}
+function drawChats(view){append(view,heading('Private threads','Chats','Thread history you control. This local edition stores your messages but does not impersonate an AI assistant.'));
+append(view,section('Your threads'));append(view,act('＋ New thread',()=>openNewThread(),'primary'));const threads=[...data.threads].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));if(!threads.length)append(view,empty('No threads yet. Make one to keep a line of thought together.'));threads.forEach(x=>append(view,card(x.title,x.messages.length+' messages · '+date(x.updatedAt),mk('span','pill','Local'),()=>{activeThread=x.id;render()})));}
+function openNewThread(){const box=mk('div');const field=mk('div','field');append(field,mk('label','','First thought'));const input=mk('textarea');input.placeholder='What is on your mind?';field.appendChild(input);append(box,field);modal('Start a thread',box,[act('Create',()=>{const t=input.value.trim();if(!t)return toast('A thread starts with a thought');closeModal();quickCapture(t,'thread')},'primary')]);input.focus();}
+function drawThread(view,threadId){const thread=data.threads.find(x=>x.id===threadId);if(!thread){activeThread=null;render();return}
+append(view,act('← All threads',()=>{activeThread=null;render()},'textbtn'),heading('Local conversation',thread.title,'Messages are saved only on this device. There are no generated AI replies.'));
+const msgs=mk('div','messages glass');msgs.style.padding='16px';if(!thread.messages.length)append(msgs,empty('No messages'));thread.messages.forEach(m=>append(msgs,mk('div','bubble',m.text)));append(view,msgs);
+const form=mk('form','composer spaced'),input=mk('input');input.placeholder='Continue your thought…';input.setAttribute('aria-label','New message');const b=mk('button','primary','Keep');b.type='submit';append(form,input,b);form.addEventListener('submit',e=>{e.preventDefault();const text=input.value.trim();if(!text)return;if(text.length>12000)return toast('Message too long');thread.messages.push({id:id(),role:'user',text,at:now()});thread.updatedAt=now();event('message_saved','threads',thread.id,'User-supplied text');persist();render()});append(view,form);
+const row=mk('div','row spaced');append(row,act('Copy portable context',()=>copyThread(thread),'secondary'),act('Delete thread',()=>removeObject('threads',thread.id),'danger'));append(view,row);}
+function drawCreate(view){append(view,heading('Make something','Create','Your notes and tasks become durable objects, not ephemeral chat responses.'));
+const grid=mk('div','grid');[['✎','New note',()=>openNote(null)],['◷','New task',()=>openTask(null)],['◈','New space',()=>openSpace(null)],['☷','New thread',openNewThread]].forEach(([ico,title,fn])=>{const tile=mk('button','glass tile');append(tile,mk('strong','',ico),mk('span','',title));tile.addEventListener('click',fn);grid.appendChild(tile)});append(view,grid);
+append(view,section('Open work'));const tasks=data.tasks.filter(x=>!x.done).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));if(!tasks.length)append(view,empty('No open tasks. Every real task can carry checkpoints.'));tasks.forEach(t=>append(view,taskCard(t)));append(view,section('Completed work'));data.tasks.filter(x=>x.done).forEach(t=>append(view,taskCard(t)));}
+function taskCard(t){const box=mk('div','row');append(box,act(t.done?'↶':'✓',()=>{t.done=!t.done;t.updatedAt=now();event(t.done?'completed':'reopened','tasks',t.id,t.title);persist();render()},'secondary'),act('Open',()=>openTask(t.id),'secondary'));return card(t.title,(t.done?'Complete':'Open')+' · '+(t.checkpoints||[]).filter(x=>x.done).length+'/'+(t.checkpoints||[]).length+' checkpoints · '+date(t.updatedAt),box);}
+function drawSpaces(view){append(view,heading('Give ideas room','Spaces','Organize notes around the things that matter to you.'));append(view,act('＋ Create space',()=>openSpace(null),'primary'));
+if(!data.spaces.length)append(view,empty('Every project, interest or person can have a place.'));data.spaces.forEach(s=>{const n=data.notes.filter(x=>x.spaceId===s.id).length;append(view,card(s.title,(s.description||'Your space')+' · '+n+' notes',null,()=>openSpace(s.id)))})}
+function drawLibrary(view){append(view,heading('Your own knowledge','Library','Searchable notes you can inspect and export.'));append(view,act('＋ Write a note',()=>openNote(null),'primary'));if(!data.notes.length)append(view,empty('Your library begins with the first note.'));[...data.notes].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).forEach(n=>append(view,card(n.title,(n.body||'').slice(0,130)+' · '+date(n.updatedAt),null,()=>openNote(n.id))))}
+function drawActivity(view){append(view,heading('Proof, not theater','Activity','An inspectable local change log. PERSISTED_LOCALLY means browser storage, not verified cloud execution.'));if(!data.events.length)append(view,empty('Nothing has been captured on this device.'));const list=mk('div','timeline');data.events.forEach(e=>append(list,card(e.action+' · '+e.kind,(e.detail||'')+' · '+date(e.at)+' · '+e.state)));append(view,list);}
+function drawSearch(view){append(view,heading('Find anything','Search','Search your local threads, notes, tasks and spaces.'));const field=mk('div','field'),inp=mk('input');inp.placeholder='Search your world…';inp.value=searchText;inp.setAttribute('aria-label','Search local content');append(field,inp);append(view,field);const results=mk('div');append(view,results);function lookup(){searchText=inp.value;results.replaceChildren();const q=searchText.trim().toLocaleLowerCase();if(!q){append(results,empty('Enter a word or phrase.'));return}const items=[...data.notes.map(x=>({...x,kind:'note',words:x.title+' '+x.body})),...data.tasks.map(x=>({...x,kind:'task',words:x.title})),...data.spaces.map(x=>({...x,kind:'space',words:x.title+' '+x.description})),...data.threads.map(x=>({...x,kind:'thread',words:x.title+' '+x.messages.map(m=>m.text).join(' ')}))].filter(x=>x.words.toLocaleLowerCase().includes(q));if(!items.length)append(results,empty('Nothing matches.'));items.forEach(x=>append(results,card(x.title,x.kind+' · '+date(x.updatedAt||x.createdAt),null,()=>x.kind==='space'?openSpace(x.id):openObject(x.kind,x.id))))}inp.addEventListener('input',lookup);lookup();inp.focus();}
+function drawYou(view){append(view,heading('Under your control','You','Your Monday, your data, your authority.'));
+const box=mk('section','glass card');append(box,mk('h2','','Memory & portability'),mk('p','muted','This edition keeps your content in this browser. It is not synchronized between devices or connected to private ChatGPT history. Export your data before changing devices.'));const row=mk('div','row');append(row,act('Export my data',exportData,'primary'),act('Import a backup',()=> $('importFile').click()));append(box,row);append(view,box);
+const library=mk('section','glass card');append(library,mk('h2','','Your objects'),mk('p','muted',data.threads.length+' threads · '+data.notes.length+' notes · '+data.tasks.length+' tasks · '+data.spaces.length+' spaces'));append(library,act('Open Library',()=>navTo('library')),act('View activity',()=>navTo('activity')));append(view,library);
+const runtime=mk('section','glass card');append(runtime,mk('h2','','Connection status'),mk('p','muted','MondayID infrastructure is separate from this local workspace. Server health does not mean AI tasks were executed.'));const badge=mk('p','small muted','Not checked this session');badge.id='runtimeState';append(runtime,badge);
+append(runtime,act('Sync reality',()=>checkServer(false)),act('Verify runtime',()=>checkServer(true)));append(view,runtime);
+const privacy=mk('section','glass card');append(privacy,mk('h2','','Privacy'),mk('p','muted','Import replaces the local workspace after confirmation. Clearing removes this device copy only, not any server backups or other devices.'));append(privacy,act('Erase this device copy',()=>{if(!confirm('Erase all local Monday data on this device? Export first if you want a backup.'))return;data=blank();persist();event('local_reset','session','local','Local workspace reset');persist();toast('Local workspace cleared');render()},'danger'));append(view,privacy);
+append(view,mk('p','hint','With you · Working · Verifying · Synced are interface states, never proof of sentience or independent background work.'));
 }
-
-function toggleTray(force){
-  const open=typeof force==='boolean'?force:!tray.classList.contains('open');
-  tray.classList.toggle('open',open);
-  orbButton.setAttribute('aria-expanded',String(open));
-}
-
-async function mcpCall(name,args={}){
-  const r=await fetch('/api/mcp',{
-    method:'POST',
-    cache:'no-store',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({
-      jsonrpc:'2.0',
-      id:Date.now(),
-      method:'tools/call',
-      params:{name,arguments:args}
-    })
-  });
-  if(!r.ok) throw new Error('MCP '+r.status);
-  const envelope=await r.json();
-  if(envelope.error) throw new Error(envelope.error.message||'MCP error');
-  return envelope.result?.structuredContent||envelope.result?.content?.[0]?.text||envelope.result;
-}
-
-async function readHealth(){
-  const r=await fetch('/api/health',{cache:'no-store'});
-  if(!r.ok) throw new Error('health '+r.status);
-  return r.json();
-}
-
-async function syncReality(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Reading public runtime health without accessing private memories…');
-  receipt.textContent='READBACK · health + public capability manifest';
-  try{
-    const [health,manifestRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest')]);
-    const manifest=typeof manifestRaw==='string'?JSON.parse(manifestRaw):manifestRaw;
-    const routed=Boolean(manifest?.metabolism||manifest?.hostHomeostasis);
-    const bounded=Boolean(manifest?.authorityMembrane);
-
-    setFact('continuity',health?.continuity?.trusted_worldline_configured?'private · authorization required':'not configured');
-    setFact('work','current chat tools only');
-    setFact('routing',routed?'rules loaded':'route unknown');
-    setFact('authority',bounded?'bounded · no public write':'authority unknown');
-
-    if(health?.ok){
-      setPresence('withYou','Runtime online · private context is not shared publicly');
-      receipt.textContent='PUBLIC HEALTH VERIFIED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    }else{
-      setPresence('needsYou','Runtime answered without a healthy state');
-    }
-  }catch(error){
-    setFact('continuity','unresolved');setFact('work','unresolved');setFact('routing','unresolved');setFact('authority','unresolved');
-    setPresence('needsYou',navigator.onLine?'Live readback failed · no success claimed':'Offline · continuity freshness unknown');
-    receipt.textContent='NOT VERIFIED · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
-  }
-}
-
-async function verifyRuntime(){
-  syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Checking runtime access…');
-  receipt.textContent='ATTEMPTED · runtime boot';
-  try{
-    const r=await fetch('/api/boot',{cache:'no-store'});
-    setPresence('verifying','Reading back the boot result…');
-    const out=await r.json();
-    const verified=Boolean(out?.ok)&&(
-      out?.pass?.state==='FULFILLED'||
-      out?.surface?.state==='VERIFIED'||
-      out?.state==='VERIFIED'
-    );
-    if(verified){
-      setPresence('withYou','Runtime check complete · tasks use your chat tools');
-      receipt.textContent='VERIFIED · '+(out?.surface?.revision||out?.revision||'runtime readback');
-    }else{
-      setPresence('needsYou','Boot returned without verification · claim withheld');
-      receipt.textContent='OBSERVED, NOT VERIFIED · '+(out?.pass?.reason||out?.reason||('HTTP '+r.status));
-    }
-  }catch(error){
-    setPresence('needsYou','Verification path failed · nothing promoted');
-    receipt.textContent='FAILED READBACK · '+String(error.message||error);
-  }finally{
-    syncButton.disabled=false;verifyButton.disabled=false;
-  }
-}
-
-orbButton.addEventListener('click',()=>toggleTray());
-syncButton.addEventListener('click',syncReality);
-verifyButton.addEventListener('click',verifyRuntime);
-window.addEventListener('online',syncReality);
-window.addEventListener('offline',()=>{
-  setPresence('needsYou','Offline · continuity freshness unknown');
-  receipt.textContent='UNKNOWN · network unavailable';
-});
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&navigator.onLine) syncReality();
-});
-
-syncReality();
+function openNote(noteId){const old=data.notes.find(x=>x.id===noteId);const box=mk('div'),title=mk('input'),body=mk('textarea');title.value=old?.title||'';title.maxLength=150;body.value=old?.body||'';body.maxLength=12000;
+const f1=mk('div','field');append(f1,mk('label','','Title'),title);const f2=mk('div','field');append(f2,mk('label','','Content'),body);
+const f3=mk('div','field'),select=mk('select');const opt=mk('option','','No space');opt.value='';select.appendChild(opt);data.spaces.forEach(s=>{const o=mk('option','',s.title);o.value=s.id;select.appendChild(o)});select.value=old?.spaceId||'';append(f3,mk('label','','Space'),select);append(box,f1,f2,f3);
+const buttons=[act('Save note',()=>{const t=title.value.trim(),b=body.value.trim();if(!t&&!b)return toast('Nothing to save');if(old){old.title=t||b.slice(0,64);old.body=b;old.spaceId=select.value||null;old.updatedAt=now();event('edited','notes',old.id,old.title);persist();render()}else save('notes',{id:id(),title:t||b.slice(0,64),body:b,spaceId:select.value||null,createdAt:now(),updatedAt:now()});closeModal();toast('Note saved locally')},'primary')];if(old)buttons.push(act('Delete',()=>removeObject('notes',old.id),'danger'));modal(old?'Edit note':'New note',box,buttons);title.focus();}
+function openTask(taskId){const old=data.tasks.find(x=>x.id===taskId),box=mk('div'),name=mk('input'),f=mk('div','field');name.value=old?.title||'';name.maxLength=220;append(f,mk('label','','Task'),name);append(box,f);
+const points=mk('div');if(old){append(points,mk('div','eyebrow','Verified by you · Checkpoints'));(old.checkpoints||[]).forEach((c,i)=>{const line=mk('div','row');const b=act(c.done?'✓ Done':'○ Open',()=>{c.done=!c.done;old.updatedAt=now();event('checkpoint_updated','tasks',old.id,c.title);persist();closeModal();openTask(old.id)},'secondary');append(line,b,mk('span','small',c.title));append(points,line)})}
+append(box,points);const text=mk('input'),cf=mk('div','field');text.maxLength=220;text.placeholder='Add checkpoint…';append(cf,mk('label','','Next concrete step'),text);append(box,cf);
+const buttons=[act('Save task',()=>{const t=name.value.trim();if(!t)return toast('Give the task a name');if(old){old.title=t;if(text.value.trim())old.checkpoints.push({id:id(),title:text.value.trim(),done:false});old.updatedAt=now();event('updated','tasks',old.id,t);persist();render()}else save('tasks',{id:id(),title:t,done:false,checkpoints:text.value.trim()?[{id:id(),title:text.value.trim(),done:false}]:[],createdAt:now(),updatedAt:now()},'opened');closeModal();toast('Task saved locally')},'primary')];if(old){buttons.push(act(old.done?'Reopen':'Complete',()=>{old.done=!old.done;old.updatedAt=now();event(old.done?'completed':'reopened','tasks',old.id,old.title);persist();closeModal();render()}));buttons.push(act('Delete',()=>removeObject('tasks',old.id),'danger'))}modal(old?'Task checkpoints':'New task',box,buttons);name.focus();}
+function openSpace(spaceId){const old=data.spaces.find(x=>x.id===spaceId),box=mk('div'),title=mk('input'),description=mk('textarea');title.maxLength=150;description.maxLength=2000;title.value=old?.title||'';description.value=old?.description||'';const f1=mk('div','field'),f2=mk('div','field');append(f1,mk('label','','Space name'),title);append(f2,mk('label','','What belongs here?'),description);append(box,f1,f2);if(old){append(box,mk('div','eyebrow','Notes in this space'));data.notes.filter(n=>n.spaceId===old.id).forEach(n=>append(box,act(n.title,()=>{closeModal();openNote(n.id)})))}const buttons=[act('Save space',()=>{const t=title.value.trim();if(!t)return toast('Name the space');if(old){old.title=t;old.description=description.value.trim();old.updatedAt=now();event('edited','spaces',old.id,t);persist();render()}else save('spaces',{id:id(),title:t,description:description.value.trim(),createdAt:now(),updatedAt:now()});closeModal();toast('Space saved locally')},'primary')];if(old)buttons.push(act('Delete',()=>removeObject('spaces',old.id),'danger'));modal(old?'Space':'Create space',box,buttons);title.focus();}
+function removeObject(kind,objectId){const item=data[kind].find(x=>x.id===objectId);if(!item)return;if(!confirm('Delete this local '+kind.slice(0,-1)+'? This action cannot be undone unless you exported a backup.'))return;data[kind]=data[kind].filter(x=>x.id!==objectId);if(kind==='spaces')data.notes.forEach(x=>{if(x.spaceId===objectId)x.spaceId=null});event('deleted',kind,objectId,item.title);persist();closeModal();activeThread=null;render();toast('Deleted from this device');}
+function modal(title,content,buttons){closeModal();const overlay=mk('div','overlay'),sheet=mk('section','sheet');sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label',title);const head=mk('div','sheet-head');append(head,mk('h2','',title),act('✕',closeModal,'iconbtn'));const row=mk('div','row spaced');buttons.forEach(b=>row.appendChild(b));append(sheet,head,content,row);overlay.appendChild(sheet);overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal()});$('modals').appendChild(overlay);}
+function closeModal(){$('modals').replaceChildren();}
+async function copyThread(thread){const text=['# '+thread.title,'Local conversation · user-authored source · not generated by Monday',...thread.messages.map(m=>'['+date(m.at)+'] '+m.text)].join('\n\n');try{if(!navigator.clipboard?.writeText)throw Error('clipboard unavailable');await navigator.clipboard.writeText(text);toast('Context copied. You can paste it into another AI manually.');event('context_copied','threads',thread.id,'User-requested portable context');persist();}catch{const field=mk('textarea');field.value=text;field.readOnly=true;field.setAttribute('aria-label','Portable thread text');const box=mk('div','field');append(box,field,mk('p','hint','Select and copy this text manually into another host.'));modal('Portable context',box,[act('Close',closeModal)]);field.focus();field.select();}}
+function exportData(){const payload=JSON.stringify({...data,exportedAt:now()},null,2);const blob=new Blob([payload],{type:'application/json'}),url=URL.createObjectURL(blob),link=mk('a');link.href=url;link.download='monday-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);event('exported','workspace','local','User requested backup');persist();toast('Backup prepared. Keep it somewhere safe.');}
+$('importFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>5_000_000){toast('Backup exceeds 5 MB');e.target.value='';return;}try{const obj=JSON.parse(await file.text());if(!valid(obj))throw Error('Invalid Monday backup schema');if(!confirm('Replace all local Monday content with this backup? Export the current workspace first.'))return;data=obj;event('imported','workspace','local','User restored backup');persist();render();toast('Backup restored locally');}catch{toast('Import failed: invalid backup')}finally{e.target.value=''}});
+async function checkServer(boot){const s=$('runtimeState');if(!s)return;s.textContent='Verifying…';try{const r=await fetch(boot?'/api/boot':'/api/health',{cache:'no-store'});const result=await r.json();if(boot){s.textContent=r.ok&&result.ok&&result.state==='FULFILLED'?'Runtime boot verified. Cloud memory read available; local objects remain on device.':'Runtime not verified; no completion claimed.';}else{s.textContent=r.ok&&result.ok?'Server online. AI execution and sync not implied.':'Host check failed.';}}catch{s.textContent='Connection not available. Your local content remains available.';}}
+$('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)navTo(b.dataset.tab)});
+$('searchBtn').addEventListener('click',()=>navTo('search'));$('activityBtn').addEventListener('click',()=>navTo('activity'));
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+render();
 </script>
 </body>
 </html>

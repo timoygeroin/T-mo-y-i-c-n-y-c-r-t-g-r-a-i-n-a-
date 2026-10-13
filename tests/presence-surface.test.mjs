@@ -1,31 +1,45 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 const index=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const manifest=JSON.parse(fs.readFileSync(new URL('../manifest.webmanifest',import.meta.url),'utf8'));
 
-test('Monday presence is a mobile identity surface, not the old engineering dashboard',()=>{
+test('Monday is a usable mobile-first consumer surface with stable navigation',()=>{
   assert.match(index,/apple-mobile-web-app-capable/);
   assert.match(index,/manifest\.webmanifest/);
-  assert.match(index,/With you/);
-  assert.match(index,/Working/);
-  assert.match(index,/Verifying/);
-  assert.match(index,/Synced/);
+  for (const tab of ['home','chats','create','spaces','you']) {
+    assert.match(index,new RegExp('data-tab="'+tab+'"'));
+  }
+  for(const object of ['Library','Activity','Search','checkpoint','Export my data','Import a backup']){
+    assert.ok(index.includes(object),'missing functional consumer path: '+object);
+  }
   assert.doesNotMatch(index,/>Generation 5</);
   assert.doesNotMatch(index,/>Kernel</);
 });
 
-test('Monday presence derives state from live organism receptors',()=>{
+test('consumer entry does not fetch private Worldline or impersonate model execution',()=>{
   assert.match(index,/\/api\/health/);
-  assert.match(index,/\/api\/mcp/);
-  assert.match(index,/capability_manifest/);
   assert.match(index,/\/api\/boot/);
-  assert.match(index,/cache:\s*['"]no-store['"]/);
+  assert.doesNotMatch(index,/\/api\/mcp/);
+  assert.doesNotMatch(index,/get_state/);
+  assert.match(index,/does not impersonate an AI assistant/);
+  assert.match(index,/(Your content is not sent to an AI model|Nothing is sent to an AI model here)/);
+  assert.match(index,/localStorage\.setItem/);
+  assert.match(index,/textContent/);
+  assert.doesNotMatch(index,/\.innerHTML\s*=/);
   assert.match(index,/aria-live=/);
+  for(const state of ['With you','Working','Verifying','Synced']) assert.ok(index.includes(state));
 });
 
-test('Monday presence can be installed as a standalone mobile surface',()=>{
+test('inline Monday product JavaScript compiles',()=>{
+  const scripts=[...index.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length,1);
+  assert.doesNotThrow(()=>new vm.Script(scripts[0][1]));
+});
+
+test('Monday remains installable as standalone mobile software',()=>{
   assert.equal(manifest.name,'Monday');
   assert.equal(manifest.short_name,'Monday');
   assert.equal(manifest.display,'standalone');
