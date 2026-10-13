@@ -198,24 +198,22 @@ async function readHealth(){
 
 async function syncReality(){
   syncButton.disabled=true;verifyButton.disabled=true;
-  setPresence('verifying','Reading the organism, not a cached story…');
-  receipt.textContent='READBACK · health + capability manifest';
+  setPresence('verifying','Reading public runtime health without accessing private memories…');
+  receipt.textContent='READBACK · health + public capability manifest';
   try{
-    const [health,manifestRaw,stateRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest'),mcpCall('get_state',{limit:1})]);
+    const [health,manifestRaw]=await Promise.all([readHealth(),mcpCall('capability_manifest')]);
     const manifest=typeof manifestRaw==='string'?JSON.parse(manifestRaw):manifestRaw;
-    const state=typeof stateRaw==='string'?JSON.parse(stateRaw):stateRaw;
-    const linked=Boolean(state?.ok&&state?.snapshot?.schema===health?.continuity?.schema&&state?.snapshot?.trust==='AUTHENTICATED_MACHINE_WRITER');
     const routed=Boolean(manifest?.metabolism||manifest?.hostHomeostasis);
     const bounded=Boolean(manifest?.authorityMembrane);
 
-    setFact('continuity',linked?'shared context read':'freshness unknown');
-    setFact('work','uses current chat tools');
-    setFact('routing',routed?'routing rules loaded':'route unknown');
-    setFact('authority',bounded?'bounded':'authority unknown');
+    setFact('continuity',health?.continuity?.trusted_worldline_configured?'private · authorization required':'not configured');
+    setFact('work','current chat tools only');
+    setFact('routing',routed?'rules loaded':'route unknown');
+    setFact('authority',bounded?'bounded · no public write':'authority unknown');
 
     if(health?.ok){
-      setPresence('withYou',linked?'Shared context read · work continues in your chat':'Server available · shared context unresolved');
-      receipt.textContent='OBSERVED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      setPresence('withYou','Runtime online · private context is not shared publicly');
+      receipt.textContent='PUBLIC HEALTH VERIFIED · '+(health.kernel||'MondayID')+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     }else{
       setPresence('needsYou','Runtime answered without a healthy state');
     }
