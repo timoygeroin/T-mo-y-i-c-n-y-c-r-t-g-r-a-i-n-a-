@@ -17,6 +17,7 @@ export class TrustedWorldlineReceptor {
   constructor({
     baseUrl,
     token,
+    readerToken = process.env.MONDAYID_WORLDLINE_READ_TOKEN,
     host = 'mondayid-rewrite',
     identityFingerprint = 'mondayid:rewrite:g5',
     sourceRef = 'mondayid-rewrite-runtime',
@@ -25,6 +26,7 @@ export class TrustedWorldlineReceptor {
     this.name = 'trusted-worldline-v4';
     this.baseUrl = baseUrl;
     this.token = token;
+    this.readerToken = readerToken;
     this.host = host;
     this.identityFingerprint = identityFingerprint;
     this.sourceRef = sourceRef;
@@ -104,7 +106,9 @@ export class TrustedWorldlineReceptor {
 
     let response;
     try {
-      response = await this.fetchImpl(url);
+      response = await this.fetchImpl(url, this.readerToken
+        ? { headers:{ authorization:`Bearer ${this.readerToken}` } }
+        : undefined);
     } catch (error) {
       return { ok:false, code:'WORLDLINE_READBACK_FAILED', error:String(error) };
     }
