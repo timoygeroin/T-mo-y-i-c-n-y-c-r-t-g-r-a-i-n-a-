@@ -68,6 +68,7 @@ const blank=()=>({schema:'monday.continuum.local.v1',version:VERSION,createdAt:n
 let data;
 try{const raw=JSON.parse(localStorage.getItem(KEY)||'null');data=valid(raw)?raw:blank();}catch{data=blank();}
 let tab='home',mode='note',activeThread=null,searchText='',editId=null,toastHandle=null;
+let persistedSnapshot=JSON.stringify(data),lastSaveOk=true;
 const $=id=>document.getElementById(id);
 const id=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'m-'+Date.now()+'-'+Math.random().toString(36).slice(2);
 const now=()=>new Date().toISOString();
@@ -77,19 +78,33 @@ const append=(parent,...kids)=>{for(const child of kids)if(child)parent.appendCh
 const act=(label,fn,cls='secondary')=>{const b=mk('button',cls,label);b.type='button';b.addEventListener('click',fn);return b};
 const empty=(label)=>mk('div','empty',label);
 function valid(value){if(!value||value.schema!=='monday.continuum.local.v1'||value.version!==1||!['threads','notes','tasks','spaces','events'].every(k=>Array.isArray(value[k])))return false;const sized=k=>value[k].length<=5000&&value[k].every(x=>x&&typeof x.id==='string'&&x.id.length<200);if(!['threads','notes','tasks','spaces','events'].every(sized))return false;return value.threads.every(t=>typeof t.title==='string'&&t.title.length<500&&Array.isArray(t.messages)&&t.messages.length<=3000&&t.messages.every(m=>m&&typeof m.text==='string'&&m.text.length<=12000))&&value.notes.every(n=>typeof n.title==='string'&&typeof n.body==='string'&&n.body.length<=12000)&&value.tasks.every(t=>typeof t.title==='string'&&Array.isArray(t.checkpoints)&&t.checkpoints.length<=2000&&t.checkpoints.every(c=>c&&typeof c.title==='string'&&typeof c.done==='boolean'))&&value.spaces.every(t=>typeof t.title==='string'&&typeof t.description==='string');}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(data));return true;}catch{toast('Storage unavailable. Export a copy now.');return false;}}
+function persist(){
+  try{
+    const next=JSON.stringify(data);
+    localStorage.setItem(KEY,next);
+    persistedSnapshot=next;
+    lastSaveOk=true;
+    return true;
+  }catch{
+    // A failed browser write must never become a fictitious saved event or a lost edit on reload.
+    data=JSON.parse(persistedSnapshot);
+    lastSaveOk=false;
+    toast('Not saved: browser storage failed. Previous saved data was restored.');
+    return false;
+  }
+}
 function event(action,kind,objectId,detail){data.events.unshift({id:id(),at:now(),action,kind,objectId,detail:detail||'',state:'PERSISTED_LOCALLY'});data.events=data.events.slice(0,300);}
-function save(kind,object,action='created'){data[kind].unshift(object);event(action,kind,object.id,object.title);persist();render();}
-function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastHandle);toastHandle=setTimeout(()=>t.classList.remove('show'),3800);}
+function save(kind,object,action='created'){data[kind].unshift(object);event(action,kind,object.id,object.title);const ok=persist();render();return ok;}
+function toast(msg){if(!lastSaveOk&&/\b(saved|restored|cleared|deleted|completed)\b/i.test(msg))msg='Not saved: browser storage failed. Previous saved data was restored.';const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastHandle);toastHandle=setTimeout(()=>t.classList.remove('show'),3800);}
 function heading(kicker,title,subtitle){const box=mk('section');append(box,mk('div','eyebrow',kicker),mk('h1','',title));if(subtitle)append(box,mk('p','muted',subtitle));return box}
 function section(title,caption){const bar=mk('div','sectionbar');append(bar,mk('h2','',title));if(caption)append(bar,mk('span','small muted',caption));return bar}
 function card(title,sub,right,onClick){const c=mk('div','glass card item'),g=mk('div','grow');append(g,mk('div','item-title',title),mk('div','item-sub',sub));append(c,g);if(right)append(c,right);if(onClick){c.style.cursor='pointer';c.tabIndex=0;c.setAttribute('role','button');c.addEventListener('click',onClick);c.addEventListener('keydown',e=>{if(e.key==='Enter')onClick()})}return c;}
 function navTo(name){tab=name;activeThread=null;searchText='';render();window.scrollTo(0,0)}
 function render(){const view=$('view');view.replaceChildren();$('nav').querySelectorAll('button').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});if(activeThread){drawThread(view,activeThread);return}({home:drawHome,chats:drawChats,create:drawCreate,spaces:drawSpaces,you:drawYou,search:drawSearch,activity:drawActivity,library:drawLibrary}[tab]||drawHome)(view);}
 function quickCapture(text,kind){const t=text.trim();if(!t){toast('Write something first');return;}if(t.length>12000){toast('Keep each entry under 12,000 characters');return;}
-if(kind==='note')save('notes',{id:id(),title:t.slice(0,64),body:t,spaceId:null,createdAt:now(),updatedAt:now()},'captured');
-else if(kind==='task')save('tasks',{id:id(),title:t,done:false,checkpoints:[],createdAt:now(),updatedAt:now()},'opened');
-else{const thread={id:id(),title:t.slice(0,68),messages:[{id:id(),role:'user',text:t,at:now()}],createdAt:now(),updatedAt:now()};save('threads',thread,'started');activeThread=thread.id;render();}
+if(kind==='note'){if(!save('notes',{id:id(),title:t.slice(0,64),body:t,spaceId:null,createdAt:now(),updatedAt:now()},'captured'))return;}
+else if(kind==='task'){if(!save('tasks',{id:id(),title:t,done:false,checkpoints:[],createdAt:now(),updatedAt:now()},'opened'))return;}
+else{const thread={id:id(),title:t.slice(0,68),messages:[{id:id(),role:'user',text:t,at:now()}],createdAt:now(),updatedAt:now()};if(!save('threads',thread,'started'))return;activeThread=thread.id;render();}
 toast('Saved on this device — not sent to a model');}
 function drawHome(view){append(view,heading('Welcome to your space','Your world, in one place.','Capture an idea, continue a thread, or move your work forward. Your content is not sent to an AI model. This local edition does not run AI inference.'));
 const hero=mk('section','glass hero');append(hero,mk('div','eyebrow','Continuum'),mk('h2','','What matters right now?'));
