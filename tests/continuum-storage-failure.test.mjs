@@ -29,3 +29,10 @@ test('failed local save does not become a phantom success',()=>{
  assert.equal(vm.runInContext("save('notes',{id:'c',title:'C',body:'new'},'captured')",context),true);
  assert.equal(JSON.parse(value).notes.length,2);
 });
+test('note, task and space editors stay open when browser storage refuses the save',()=>{
+ for(const name of ['Note','Task','Space']){
+   assert.ok(html.includes("if(!ok)return;closeModal();toast('"+name+" saved locally')"),name+' editor must remain open when unsaved');
+ }
+ assert.match(html,/if\(!persist\(\)\)return;render\(\)/);
+ assert.match(html,/const current=data\.threads\.find\(x=>x\.id===threadId\)/);
+});
