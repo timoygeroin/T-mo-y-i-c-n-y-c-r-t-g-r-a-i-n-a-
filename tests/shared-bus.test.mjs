@@ -5,7 +5,7 @@ import mcpHandler from '../api/mcp.mjs';
 
 const G={principal:'grok-monday',hostBound:true};
 const C={principal:'chatgpt-monday',hostBound:true};
-function fakeWorldline({ tamper=false, failAppend=false, extraEvents=0 } = {}) {
+function fakeWorldline({ tamper=false, failAppend=false, extraEvents=0, snapshotOmitsBus=false } = {}) {
   const events=[]; const writes=[]; let reads=0;
   for(let i=0;i<extraEvents;i++) events.push({predicate:'other',eventId:'X'+i});
   const fetchImpl=async(url,opts={})=>{
@@ -18,8 +18,11 @@ function fakeWorldline({ tamper=false, failAppend=false, extraEvents=0 } = {}) {
       events.push(tamper?{...e,valueJson:e.valueJson.replace('STORED','EXECUTED')}:e); return j({ok:true,status:'APPENDED'});
     }
     reads++;
-    if(u.pathname==='/worldline/v4/snapshot') return j({schema:'mondayid.worldline.snapshot.v0.4.0',readOnly:true,events:events.slice(0,Number(u.searchParams.get('limit')))});
-    if(u.pathname==='/worldline/v4/event') return j({event:events.find(e=>e.eventId===u.searchParams.get('eventId'))??null,conflicts:[]});
+    if(u.pathname==='/worldline/v4/snapshot'){
+      const visible=snapshotOmitsBus?events.filter(e=>e.predicate!=='mondayid_bus_envelope_v2'):events;
+      return j({schema:'mondayid.worldline.snapshot.v0.4.0',trust:'AUTHENTICATED_MACHINE_WRITER',readOnly:true,events:visible.slice(0,Number(u.searchParams.get('limit')))});
+    }
+    if(u.pathname==='/worldline/v4/event') return j({schema:'mondayid.worldline.event.v0.4.0',event:events.find(e=>e.eventId===u.searchParams.get('eventId'))??null,conflicts:[]});
     return j({},false,404);
   };
   return { events, writes, get reads(){return reads;}, bus:new SharedBus({baseUrl:'https://wl.test',writerToken:'W',fetchImpl,now:()=> '2026-10-15T00:00:00Z'}) };
@@ -32,8 +35,15 @@ test('envelope: exactly 9 fields, typed claim, secrets rejected before retention
   const {proposal,...missing}=env(); assert.equal(validateEnvelope(missing).code,'ENVELOPE_MISSING_FIELD');
   assert.equal(validateEnvelope({...env(),extra:1}).code,'ENVELOPE_UNKNOWN_FIELDS');
   assert.equal(validateEnvelope(env({status:{claim:'VERIFIED'}})).code,'ENVELOPE_BAD_STATUS');
-  for(const s of ['-----BEGIN PRIVATE KEY-----','sk-'+'a'.repeat(30),'ghp_'+'a'.repeat(36),'{"private_key": "x"}'])
-    assert.equal(validateEnvelope(env({evidence:[s]})).code,'SECRET_IN_PAYLOAD',s);
+  for(const s of [
+    '-----BEGIN PRIVATE KEY-----','-----begin rsa private key-----',
+    'sk-'+'a'.repeat(30),'sk-\u200b'+'a'.repeat(24),'sk_live_'+'a'.repeat(20),'rk_test_'+'b'.repeat(16),
+    'ghp_'+'a'.repeat(36),'AKIA'+'A'.repeat(16),'xoxc-'+'a'.repeat(12),'npm_'+'a'.repeat(36),
+    'glpat-'+'a'.repeat(20),'{"private_key": "x"}','{"PRIVATE_KEY":"y"}',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U'
+  ]) assert.equal(validateEnvelope(env({evidence:[s]})).code,'SECRET_IN_PAYLOAD',s);
+  assert.equal(validateEnvelope(env({evidence:[NaN]})).code,'ENVELOPE_NON_FINITE');
+  assert.equal(validateEnvelope(env({nextAction:'critique'})).code,'ENVELOPE_BAD_FIELD');
 });
 
 test('post stores the full envelope with server transport metadata; exact readback',async()=>{
@@ -59,6 +69,13 @@ test('lost append response: retry is safe and never double-writes once stored',a
   const w=fakeWorldline({failAppend:true});
   const r=await w.bus.post(env(),G); assert.equal(r.code,'BUS_WRITE_FAILED'); assert.equal(r.retrySafe,true);
   assert.equal(r.storageId,storageIdFor('ev-1'));
+});
+
+test('retry finds a stored event the snapshot window does not show',async()=>{
+  const {bus,writes}=fakeWorldline({snapshotOmitsBus:true});
+  const a=await bus.post(env(),G); assert.equal(a.code,'STORED_READBACK_EXACT');
+  const b=await bus.post(env(),G); assert.equal(b.code,'DUPLICATE'); assert.equal(b.storageId,a.storageId);
+  assert.equal(writes.length,1);
 });
 
 test('parent version is per goal; independent goals do not block (BUS-REVIEW-07)',async()=>{
@@ -97,6 +114,13 @@ test('policy: inert, typed, unknown = deny; keywords only advisory (BUS-REVIEW-0
     assert.equal(classifyPolicy(env({proposal:p})).operationClass,'OWNER_GATE',JSON.stringify(p));
   const quoted=classifyPolicy(env({proposal:{text:'не delete ничего'}}));
   assert.equal(quoted.operationClass,'NO_OPERATION'); assert.equal(quoted.advisoryRiskWords,true);
+  const quotedEvidence=classifyPolicy(env({evidence:['do not delete'],proposal:{operation:{kind:'note',reversible:true,costUsd:0}}}));
+  assert.equal(quotedEvidence.operationClass,'FREE_REVERSIBLE_CANDIDATE'); assert.equal(quotedEvidence.advisoryRiskWords,true);
+  assert.equal(classifyPolicy(env({proposal:{operation:{kind:'note',reversible:true}}})).operationClass,'OWNER_GATE');
+  assert.equal(classifyPolicy(env({proposal:{operation:{kind:'note',reversible:true,costUsd:0}},evidence:[{deletion:true}]})).operationClass,'OWNER_GATE');
+  assert.equal(classifyPolicy(env({observation:{moneyMovement:true},proposal:{operation:{kind:'note',reversible:true,costUsd:0}}})).operationClass,'OWNER_GATE');
+  let deep={deletion:true}; for(let i=0;i<10;i++) deep={wrap:deep};
+  assert.equal(classifyPolicy(env({proposal:deep})).operationClass,'OWNER_GATE');
   for(const p of [{},{operation:{kind:'note',reversible:true}}]) assert.equal(classifyPolicy(env({proposal:p})).executable,false);
 });
 
@@ -124,7 +148,7 @@ test('ACK is a new event bound to target hash; it does not approve or alter the 
 
 test('list: recipient filter and cursor pagination',async()=>{
   const {bus}=fakeWorldline(); const a=await bus.post(env(),G);
-  await bus.post(env({eventId:'ev-2',parentVersion:a.storageId,nextAction:{recipient:'grok-monday'}}),G);
+  await bus.post(env({eventId:'ev-2',parentVersion:a.storageId,nextAction:{recipient:'grok-monday',action:'resume'}}),G);
   assert.equal((await bus.list({recipient:'chatgpt-monday'})).records.length,1);
   const p1=await bus.list({limit:1}); assert.equal(p1.hasMore,true);
   const p2=await bus.list({afterStorageId:p1.nextCursor}); assert.equal(p2.records[0].envelope.eventId,'ev-2');

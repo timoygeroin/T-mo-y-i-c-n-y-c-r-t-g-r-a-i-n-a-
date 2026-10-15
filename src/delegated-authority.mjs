@@ -19,12 +19,14 @@ const decision = (status, reason, extra = {}) => Object.freeze({
 });
 
 const riskFlags=['moneyMovement','spending','binding','usesLegalIdentity','publicFacing',
-  // 'irreversible' is already hard-vetoed by decision-field unless irreversibleAuthorized.
-  'externalPartyContact','requiresHumanPresence','credentialBinding','deletion'];
+  'externalPartyContact','requiresHumanPresence','credentialBinding','deletion','irreversible'];
+const badCost = c => c != null && (!Number.isFinite(c) || c > 0 || c < 0);
 function hasRisk(route, depth = 0) {
-  if (!route || typeof route !== 'object' || depth > 8) return false;
+  if (!route || typeof route !== 'object') return false;
+  // Unscanned nesting is consequential: a caller can hide flags below the cap.
+  if (depth > 8) return true;
   if (riskFlags.some(f => route[f] === true)) return true;
-  if (route.costIls != null && route.costIls !== 0) return true;
+  if (badCost(route.costIls) || badCost(route.costUsd)) return true;
   return Object.values(route).some(v => v && typeof v === 'object' && hasRisk(v, depth + 1));
 }
 
@@ -48,8 +50,7 @@ export function assessDelegatedAuthority(route = {}) {
   if (route.requiresHumanPresence === true || ['captcha','biometric','identity_photo','identity_attestation'].includes(kind)) {
     return decision('HUMAN_GATE','PERSONAL_PRESENCE_REQUIRED',{operation:kind});
   }
-  if (route.moneyMovement === true || route.spending === true ||
-      (route.costIls != null && (!Number.isFinite(route.costIls) || route.costIls > 0 || route.costIls < 0))) {
+  if (route.moneyMovement === true || route.spending === true || badCost(route.costIls) || badCost(route.costUsd)) {
     return decision('HUMAN_GATE','SPECIFIC_PAYMENT_AUTHORITY_REQUIRED',{operation:kind});
   }
   if (route.binding === true || route.usesLegalIdentity === true ||
@@ -62,6 +63,9 @@ export function assessDelegatedAuthority(route = {}) {
       typeof route.exactEffect !== 'string' || !route.exactEffect.trim()) {
     return decision('HUMAN_GATE','SAFE_AUTO_SCOPE_UNPROVEN',{operation:kind});
   }
+  // A benign kind does not outrank a nested or unlisted consequence flag.
+  // irreversibleAuthorized is caller-controlled, so it cannot clear this.
+  if (hasRisk(route)) return decision('HUMAN_GATE','CONSEQUENCE_FLAG_REQUIRES_OWNER',{operation:kind});
   return decision('AUTO_ALLOWED','BOUNDED_ZERO_COST_REVERSIBLE', {
     operation:kind, exactEffect:route.exactEffect, readbackRequired:true
   });

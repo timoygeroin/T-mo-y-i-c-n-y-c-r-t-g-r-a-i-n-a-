@@ -30,15 +30,28 @@ function bearer(req) {
   return typeof auth === 'string' && auth.startsWith('Bearer ') ? auth.slice(7) : null;
 }
 
+const HOST_NAME = /^[a-z0-9][a-z0-9._-]{0,63}$/;
+
+function hostTokenMap(env) {
+  try {
+    const parsed = JSON.parse(env?.MONDAYID_BUS_HOST_TOKENS || '{}');
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
 // Server-derived principal (BUS-REVIEW-04). Per-host tokens come from
 // MONDAYID_BUS_HOST_TOKENS = JSON {"grok-monday":"<token>","chatgpt-monday":"<token>"}.
 // The legacy shared MONDAYID_HOST_TOKEN maps to principal "shared" (host not proven).
+// Host names are an allowlist of identifiers; a bad map cannot throw or bind
+// a principal the server did not name.
 export function resolvePrincipal(req = {}, env = process.env) {
   const supplied = bearer(req);
   if (!supplied) return null;
-  let perHost = {};
-  try { perHost = JSON.parse(env?.MONDAYID_BUS_HOST_TOKENS || '{}') || {}; } catch { perHost = {}; }
-  for (const [host, token] of Object.entries(perHost)) {
+  for (const [host, token] of Object.entries(hostTokenMap(env))) {
+    if (!HOST_NAME.test(host)) continue;
     if (typeof token === 'string' && token.length >= 16 && same(supplied, token)) return { principal:host, hostBound:true };
   }
   const shared = env?.MONDAYID_HOST_TOKEN;

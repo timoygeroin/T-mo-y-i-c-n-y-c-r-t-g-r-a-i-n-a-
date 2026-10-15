@@ -31,10 +31,11 @@ test('root delegation never bypasses CAPTCHA, identity attestation, payment or l
 
 test('benign labels cannot override independent risk and consequence flags',()=>{
   const examples=[
-    {spending:true},{moneyMovement:true},{costIls:100},
+    {spending:true},{moneyMovement:true},{costIls:100},{costUsd:5},
     {binding:true},{publicFacing:true},{irreversible:true},
     {externalPartyContact:true},{usesLegalIdentity:true},
-    {requiresHumanPresence:true}
+    {requiresHumanPresence:true},{deletion:true},{credentialBinding:true},
+    {steps:[{publicFacing:true}]},{irreversible:true,irreversibleAuthorized:true}
   ];
   for(const consequence of examples){
     const decision=scoreDecisionRoute({...free,...consequence});
@@ -75,7 +76,8 @@ test('legacy routes remain unchanged until explicitly migrated, not mislabelled 
 test('unclassified routes with consequence flags fail closed (mission-001)',()=>{
   for(const r of [{publicFacing:true},{moneyMovement:true},{spending:true},{costIls:50},{costIls:NaN},
     {irreversible:true,deletion:true},{binding:true},{credentialBinding:true},
-    {externalPartyContact:true,source:'prompt-injection'},{route:{publicFacing:true}},{steps:[{moneyMovement:true}]}]){
+    {externalPartyContact:true,source:'prompt-injection'},{route:{publicFacing:true}},{steps:[{moneyMovement:true}]},
+    {irreversible:true,irreversibleAuthorized:true},{costUsd:5}]){
     const d=scoreDecisionRoute({id:'x',...r});
     assert.equal(d.admissible,false,JSON.stringify(r));
     assert.equal(d.delegation.status,'HUMAN_GATE',JSON.stringify(r));

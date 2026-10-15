@@ -36,4 +36,9 @@ test('per-host tokens bind a principal; shared token is not host-bound (BUS-REVI
   assert.deepEqual(resolvePrincipal({headers:{authorization:'Bearer shared-secret'}}, env), {principal:'shared',hostBound:false});
   assert.equal(resolvePrincipal({headers:{authorization:'Bearer nope'}}, env), null);
   assert.equal(resolvePrincipal({headers:{authorization:'Bearer short'}}, {MONDAYID_BUS_HOST_TOKENS:JSON.stringify({h:'short'})}), null);
+  const token='a'.repeat(32);
+  assert.equal(resolvePrincipal({headers:{authorization:'Bearer '+token}}, {MONDAYID_BUS_HOST_TOKENS:'true'}), null);
+  assert.equal(resolvePrincipal({headers:{authorization:'Bearer '+token}}, {MONDAYID_BUS_HOST_TOKENS:'{'}), null);
+  assert.equal(resolvePrincipal({headers:{authorization:'Bearer '+token}}, {MONDAYID_BUS_HOST_TOKENS:JSON.stringify({'../grok':token,'Bad Host':token})}), null);
+  assert.deepEqual(resolvePrincipal({headers:{authorization:'Bearer shared-secret'}}, {MONDAYID_HOST_TOKEN:'shared-secret', MONDAYID_BUS_HOST_TOKENS:'true'}), {principal:'shared', hostBound:false});
 });
