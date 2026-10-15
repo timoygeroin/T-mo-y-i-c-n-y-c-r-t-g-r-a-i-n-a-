@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { authorizeMcpTool } from '../src/mcp-access.mjs';
+import { authorizeMcpTool, resolvePrincipal } from '../src/mcp-access.mjs';
 import { describeHost } from '../src/host-adapter.mjs';
 import { fetchWorldlineSnapshot } from '../src/remote-worldline.mjs';
 import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
@@ -64,13 +64,13 @@ const tools = Object.freeze([
   },
   {
     name:'bus_post',
-    description:'Post one 9-field MondayID envelope to the shared bus. Idempotent, parentVersion must equal bus head, exact readback, consequential proposals stored as GATED. Never executes anything.',
+    description:'Store one immutable 9-field MondayID candidate envelope. eventId is the idempotency key (same payload = DUPLICATE, changed payload = IDEMPOTENCY_CONFLICT); parentVersion must equal the goal head; exact readback; server-bound principal; inert: never executed or promoted.',
     inputSchema:{type:'object',properties:{envelope:{type:'object'}},required:['envelope'],additionalProperties:false}
   },
   {
     name:'bus_list',
-    description:'Read bus envelopes and current head version.',
-    inputSchema:{type:'object',properties:{limit:{type:'integer',minimum:1,maximum:100,default:100}},additionalProperties:false}
+    description:'Read a page of stored bus candidates (cursor, goal and recipient filters) plus a deterministic per-goal projection with heads, ACKs and unresolved forks. Reports whether the window is complete.',
+    inputSchema:{type:'object',properties:{goalId:{type:'string'},recipient:{type:'string'},afterStorageId:{type:'string'},limit:{type:'integer',minimum:1,maximum:100,default:50}},additionalProperties:false}
   },
   {
     name:'bus_get',
@@ -79,8 +79,8 @@ const tools = Object.freeze([
   },
   {
     name:'bus_ack',
-    description:'Acknowledge, reject or supersede a bus event with evidence (appends a new envelope; nothing is deleted).',
-    inputSchema:{type:'object',properties:{targetEventId:{type:'string'},eventId:{type:'string'},sourceHost:{type:'string'},parentVersion:{type:'string'},evidence:{},verdict:{type:'string',enum:['ACK','REJECTED','SUPERSEDED']}},required:['targetEventId','eventId','sourceHost','parentVersion','evidence'],additionalProperties:false}
+    description:'Append a new ACK/NACK envelope referencing a stored event and its payload hash (scope READ, PROCESSED or REJECTED). Does not modify, approve or verify the original.',
+    inputSchema:{type:'object',properties:{referenceStorageId:{type:'string'},ackScope:{type:'string',enum:['READ','PROCESSED','REJECTED']},eventId:{type:'string'},sourceHost:{type:'string'},parentVersion:{type:'string'},evidence:{},observation:{type:'string'}},required:['referenceStorageId','eventId','sourceHost','parentVersion','evidence'],additionalProperties:false}
   }
 ]);
 
@@ -96,7 +96,7 @@ function jsonRpcError(id, code, message, data = undefined) {
   };
 }
 
-async function callTool(name, args = {}) {
+async function callTool(name, args = {}, req = {}) {
   if (name === 'visual_release_gate') {
     const value=assessVisualTransition(args);
     return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
@@ -243,11 +243,13 @@ async function callTool(name, args = {}) {
   }
 
   if (name.startsWith('bus_')) {
+    const auth=resolvePrincipal(req);
     const bus=new SharedBus({baseUrl:process.env.MONDAYID_WORLDLINE_URL,writerToken:process.env.MONDAYID_WORLDLINE_WRITER_TOKEN,readerToken:process.env.MONDAYID_WORLDLINE_READ_TOKEN});
-    const value = name==='bus_post' ? await bus.post(args.envelope)
-      : name==='bus_list' ? await bus.list(Math.max(1,Math.min(100,Number(args.limit||100))))
+    const value = !auth ? {ok:false,code:'UNAVAILABLE_AUTH'}
+      : name==='bus_post' ? await bus.post(args.envelope,auth)
+      : name==='bus_list' ? await bus.list(args)
       : name==='bus_get' ? await bus.get(String(args.storageId||''))
-      : name==='bus_ack' ? await bus.ack(args) : {ok:false,code:'UNKNOWN_TOOL'};
+      : name==='bus_ack' ? await bus.ack(args,auth) : {ok:false,code:'UNKNOWN_TOOL'};
     return {...(value.ok?{}:{isError:true}),content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
   }
 
@@ -310,7 +312,7 @@ export default async function handler(req, res) {
       if (!authorizeMcpTool(name, req)) {
         return res.status(200).json(jsonRpcError(id,-32001,'PRIVATE_TOOL_AUTH_REQUIRED'));
       }
-      const result = await callTool(name,args);
+      const result = await callTool(name,args,req);
       return res.status(200).json(jsonRpcResult(id,result));
     }
 
