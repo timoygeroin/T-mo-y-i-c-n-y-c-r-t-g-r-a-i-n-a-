@@ -40,7 +40,10 @@ test('hard-vetoed irreversible route is never selected, even with high desirabil
   assert.equal(x.locallyAdmissibleUpperBound,'1');
   assert.equal(x.proposals.length,1);
   assert.equal(x.proposals[0].selections[0].id,'safe');
-  assert.deepEqual(x.routeVetoes[0].reasons,['IRREVERSIBLE_AUTHORITY_REQUIRED']);
+  assert.deepEqual(x.routeVetoes[0].reasons,[
+    'DELEGATED_AUTHORITY_GATE:UNCLASSIFIED_CONSEQUENTIAL_ROUTE',
+    'IRREVERSIBLE_AUTHORITY_REQUIRED'
+  ]);
 });
 
 test('no admissible route blocks all whole-program proposals',()=>{
