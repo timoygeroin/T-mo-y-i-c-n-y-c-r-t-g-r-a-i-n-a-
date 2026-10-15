@@ -5,7 +5,11 @@ import { timingSafeEqual } from 'node:crypto';
 export const PRIVATE_MCP_TOOLS = Object.freeze([
   'cell_attach',
   'get_state',
-  'prove_trusted_write_readback'
+  'prove_trusted_write_readback',
+  'bus_post',
+  'bus_list',
+  'bus_get',
+  'bus_ack'
 ]);
 
 export function authorizeMcpTool(name, req = {}, env = process.env) {

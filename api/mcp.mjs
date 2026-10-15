@@ -6,6 +6,7 @@ import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs'
 import { compileProjectLineage, projectToCapabilityDelta } from '../src/everything-compiler.mjs';
 import { describeWorkReadiness } from '../src/work-readiness.mjs';
 import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
+import { SharedBus } from '../src/shared-bus.mjs';
 import { assessVisualTransition } from '../src/visual-release-gate.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
@@ -60,6 +61,26 @@ const tools = Object.freeze([
     name:'prove_trusted_write_readback',
     description:'Persist one bounded MondayID continuity proof through the authenticated Worldline writer and verify the exact event by independent readback. No arbitrary state payload is accepted.',
     inputSchema:{ type:'object', properties:{}, additionalProperties:false }
+  },
+  {
+    name:'bus_post',
+    description:'Post one 9-field MondayID envelope to the shared bus. Idempotent, parentVersion must equal bus head, exact readback, consequential proposals stored as GATED. Never executes anything.',
+    inputSchema:{type:'object',properties:{envelope:{type:'object'}},required:['envelope'],additionalProperties:false}
+  },
+  {
+    name:'bus_list',
+    description:'Read bus envelopes and current head version.',
+    inputSchema:{type:'object',properties:{limit:{type:'integer',minimum:1,maximum:100,default:100}},additionalProperties:false}
+  },
+  {
+    name:'bus_get',
+    description:'Read back one bus event by storageId.',
+    inputSchema:{type:'object',properties:{storageId:{type:'string'}},required:['storageId'],additionalProperties:false}
+  },
+  {
+    name:'bus_ack',
+    description:'Acknowledge, reject or supersede a bus event with evidence (appends a new envelope; nothing is deleted).',
+    inputSchema:{type:'object',properties:{targetEventId:{type:'string'},eventId:{type:'string'},sourceHost:{type:'string'},parentVersion:{type:'string'},evidence:{},verdict:{type:'string',enum:['ACK','REJECTED','SUPERSEDED']}},required:['targetEventId','eventId','sourceHost','parentVersion','evidence'],additionalProperties:false}
   }
 ]);
 
@@ -219,6 +240,15 @@ async function callTool(name, args = {}) {
       verification
     };
     return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+  }
+
+  if (name.startsWith('bus_')) {
+    const bus=new SharedBus({baseUrl:process.env.MONDAYID_WORLDLINE_URL,writerToken:process.env.MONDAYID_WORLDLINE_WRITER_TOKEN,readerToken:process.env.MONDAYID_WORLDLINE_READ_TOKEN});
+    const value = name==='bus_post' ? await bus.post(args.envelope)
+      : name==='bus_list' ? await bus.list(Math.max(1,Math.min(100,Number(args.limit||100))))
+      : name==='bus_get' ? await bus.get(String(args.storageId||''))
+      : name==='bus_ack' ? await bus.ack(args) : {ok:false,code:'UNKNOWN_TOOL'};
+    return {...(value.ok?{}:{isError:true}),content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
   }
 
   return {

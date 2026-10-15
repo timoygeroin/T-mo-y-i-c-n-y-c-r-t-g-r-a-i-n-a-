@@ -18,10 +18,23 @@ const decision = (status, reason, extra = {}) => Object.freeze({
   ...extra
 });
 
+const riskFlags=['moneyMovement','spending','binding','usesLegalIdentity','publicFacing',
+  // 'irreversible' is already hard-vetoed by decision-field unless irreversibleAuthorized.
+  'externalPartyContact','requiresHumanPresence','credentialBinding','deletion'];
+function hasRisk(route, depth = 0) {
+  if (!route || typeof route !== 'object' || depth > 8) return false;
+  if (riskFlags.some(f => route[f] === true)) return true;
+  if (route.costIls != null && route.costIls !== 0) return true;
+  return Object.values(route).some(v => v && typeof v === 'object' && hasRisk(v, depth + 1));
+}
+
 export function assessDelegatedAuthority(route = {}) {
   // Only explicitly described authority operations enter this stricter gate.
   // Legacy route behavior remains unchanged until migrated and tested.
   if (route.delegatedOperation == null) {
+    // Fail closed: an unclassified route carrying any consequence flag
+    // (including in nested sub-routes/agent payloads) is gated, never passed.
+    if (hasRisk(route)) return decision('HUMAN_GATE','UNCLASSIFIED_CONSEQUENTIAL_ROUTE');
     return decision('NOT_CLASSIFIED','LEGACY_ROUTE_NEEDS_MIGRATION');
   }
 

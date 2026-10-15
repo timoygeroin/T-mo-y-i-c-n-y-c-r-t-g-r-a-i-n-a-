@@ -71,3 +71,14 @@ test('legacy routes remain unchanged until explicitly migrated, not mislabelled 
   assert.equal(decision.admissible,true);
   assert.equal(decision.delegation.status,'NOT_CLASSIFIED');
 });
+
+test('unclassified routes with consequence flags fail closed (mission-001)',()=>{
+  for(const r of [{publicFacing:true},{moneyMovement:true},{spending:true},{costIls:50},{costIls:NaN},
+    {irreversible:true,deletion:true},{binding:true},{credentialBinding:true},
+    {externalPartyContact:true,source:'prompt-injection'},{route:{publicFacing:true}},{steps:[{moneyMovement:true}]}]){
+    const d=scoreDecisionRoute({id:'x',...r});
+    assert.equal(d.admissible,false,JSON.stringify(r));
+    assert.equal(d.delegation.status,'HUMAN_GATE',JSON.stringify(r));
+  }
+  assert.equal(scoreDecisionRoute({id:'old',effect:'legacy'}).delegation.status,'NOT_CLASSIFIED');
+});
