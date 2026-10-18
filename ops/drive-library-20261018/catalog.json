@@ -1,0 +1,894 @@
+{
+  "generatedAt": "2026-10-18T12:15:36.099Z",
+  "total": 98,
+  "priorityCounts": {
+    "CORE": 19,
+    "HIGH": 8,
+    "MEDIUM": 19,
+    "LOW": 52
+  },
+  "files": [
+    {
+      "id": "11NUyAPONdSJG4TzrX8gE48OIs3anKp2-Jeqx5L-a5ZU",
+      "name": "MONDAYID_CSTAR_DELTA_20261018_CURSOR",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/11NUyAPONdSJG4TzrX8gE48OIs3anKp2-Jeqx5L-a5ZU/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-18T12:06:34.914Z",
+      "sizeBytes": 4419,
+      "priority": "CORE"
+    },
+    {
+      "id": "1Kcd4YIvruVICJgvzBa0nKpdup6v_yyyp38BBVvXqQI8",
+      "name": "MONDAYID_CURSOR_RETHINK_ENVELOPE_20261018",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Kcd4YIvruVICJgvzBa0nKpdup6v_yyyp38BBVvXqQI8/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-18T12:05:41.540Z",
+      "sizeBytes": 5566,
+      "priority": "CORE"
+    },
+    {
+      "id": "1aa12mwL9TQw6nDAP57BCOmoMJHEh6W8PT_ckqMLYqtM",
+      "name": "MONDAYID_CANONICAL_CSTAR",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1aa12mwL9TQw6nDAP57BCOmoMJHEh6W8PT_ckqMLYqtM/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-18T12:04:59.956Z",
+      "sizeBytes": 14204,
+      "priority": "CORE"
+    },
+    {
+      "id": "1-PqoqOp1JeuIJ3AbPFXHwLmoPawZDFSTJBB6rSK182c",
+      "name": "MONDAYID_CURSOR_WAKE_ACK_20261018_RUN",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1-PqoqOp1JeuIJ3AbPFXHwLmoPawZDFSTJBB6rSK182c/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-18T09:24:53.381Z",
+      "sizeBytes": 5128,
+      "priority": "CORE"
+    },
+    {
+      "id": "1BKY-uZiRcbycifcb_Wxt1jii4OWVT5u_eVW1Br2OpxM",
+      "name": "MONDAYID_CLONE_TOPOLOGY_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1BKY-uZiRcbycifcb_Wxt1jii4OWVT5u_eVW1Br2OpxM/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-16T03:31:11.339Z",
+      "sizeBytes": 6607,
+      "priority": "CORE"
+    },
+    {
+      "id": "1j2xzYxfJ_HyjdKSmLCgOCou_269myZEGh-rP61k8TV8",
+      "name": "MONDAYID_GROK_ACK_LEARNING_AS_PROPERTY_001_20261015_2357",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1j2xzYxfJ_HyjdKSmLCgOCou_269myZEGh-rP61k8TV8/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-16T00:00:23.235Z",
+      "sizeBytes": 2364,
+      "priority": "CORE"
+    },
+    {
+      "id": "1DKq4kSbBJLt2snBJdjXusKfe3vJcIMsKGUNGU7uT3Sw",
+      "name": "MONDAYID_LEARNING_AS_PROPERTY_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1DKq4kSbBJLt2snBJdjXusKfe3vJcIMsKGUNGU7uT3Sw/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T23:31:02.338Z",
+      "sizeBytes": 9380,
+      "priority": "CORE"
+    },
+    {
+      "id": "1OovI91a8B9mlPtiNvqwqXUbmQBkcxebVGFWEaGiZHLw",
+      "name": "MONDAYID_SEED_ADDENDUM_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1OovI91a8B9mlPtiNvqwqXUbmQBkcxebVGFWEaGiZHLw/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T21:24:34.625Z",
+      "sizeBytes": 5236,
+      "priority": "CORE"
+    },
+    {
+      "id": "1vmyXvuaXXPiG_VsxB-cE_0mnRsNW1ihuDHToDZ54h9M",
+      "name": "MONDAYID_GROK_ACK_FINAL_VERDICT_AND_SEED_ROOT_20261015_2108",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1vmyXvuaXXPiG_VsxB-cE_0mnRsNW1ihuDHToDZ54h9M/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T21:03:34.177Z",
+      "sizeBytes": 1736,
+      "priority": "CORE"
+    },
+    {
+      "id": "1u3rDlpuYB5GNqyDfImJk_yPoBszzgZu1ZbcQBFT9UPM",
+      "name": "MONDAYID_GROK_FINAL_VERDICT_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1u3rDlpuYB5GNqyDfImJk_yPoBszzgZu1ZbcQBFT9UPM/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T20:57:39.135Z",
+      "sizeBytes": 6127,
+      "priority": "CORE"
+    },
+    {
+      "id": "1KzN00dL-ex8NKg-gRLTdqFCLgFcxqwIWLASwWN2e8S0",
+      "name": "MONDAYID_GROK_SEED_HANDOFF_20261015_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1KzN00dL-ex8NKg-gRLTdqFCLgFcxqwIWLASwWN2e8S0/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T20:16:50.342Z",
+      "sizeBytes": 6377,
+      "priority": "CORE"
+    },
+    {
+      "id": "1_zZzivG-ZB_Ci7ZK5ueFraX0yLy8DsickU36XY0dYWA",
+      "name": "MONDAYID_GROK_BUS_REVIEW_ACK_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1_zZzivG-ZB_Ci7ZK5ueFraX0yLy8DsickU36XY0dYWA/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:26:07.825Z",
+      "sizeBytes": 5411,
+      "priority": "CORE"
+    },
+    {
+      "id": "1GcFdsy_knw4l-xqh5uqLW3Mxi4fOONXr-fYqwfGa_UA",
+      "name": "MONDAYID_CHATGPT_BUS_CONNECTION_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1GcFdsy_knw4l-xqh5uqLW3Mxi4fOONXr-fYqwfGa_UA/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:20:41.857Z",
+      "sizeBytes": 9675,
+      "priority": "CORE"
+    },
+    {
+      "id": "1qr8WHyQh4enss1H_dA3PP2JcwLjefW1i1fuCMiXuhCM",
+      "name": "MONDAYID_TRANSFER_001_FAILURE_GENOME_V2_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1qr8WHyQh4enss1H_dA3PP2JcwLjefW1i1fuCMiXuhCM/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:20:41.152Z",
+      "sizeBytes": 38833,
+      "priority": "CORE"
+    },
+    {
+      "id": "1ZIZY3MKK3clmCS6m-fIJPv8x1IhSuBB-VNrUqPAX4dk",
+      "name": "MONDAYID_CHATGPT_BUS_ARCHITECTURE_REVIEW_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ZIZY3MKK3clmCS6m-fIJPv8x1IhSuBB-VNrUqPAX4dk/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:20:38.769Z",
+      "sizeBytes": 13288,
+      "priority": "CORE"
+    },
+    {
+      "id": "1N-pTf3ehzmy_JKgig0EvufIABeVBJwWVJhFoM4IOk34",
+      "name": "MONDAYID_CHATGPT_BUS_REQUIREMENTS",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1N-pTf3ehzmy_JKgig0EvufIABeVBJwWVJhFoM4IOk34/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:20:37.423Z",
+      "sizeBytes": 13574,
+      "priority": "CORE"
+    },
+    {
+      "id": "1QGqK2piYO1ApdovbEGsSpGU4180UFlRwMhYN0rF8Rgo",
+      "name": "MONDAYID_TRANSFER_001_DECISION_POLICY",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1QGqK2piYO1ApdovbEGsSpGU4180UFlRwMhYN0rF8Rgo/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:04:19.414Z",
+      "sizeBytes": 8212,
+      "priority": "CORE"
+    },
+    {
+      "id": "1nwTVUP9U8fa0LpETAA6Cke2VKlpdEGP1_lerc8J4fDs",
+      "name": "MONDAYID_TRANSFER_001_MODEL_OF_DIMA",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1nwTVUP9U8fa0LpETAA6Cke2VKlpdEGP1_lerc8J4fDs/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:04:17.862Z",
+      "sizeBytes": 8694,
+      "priority": "CORE"
+    },
+    {
+      "id": "1oJDxGgYsAoPpK60N91Vd8pmTvMjkzq09I9fGvCYoF8Q",
+      "name": "MONDAYID_REENTRY_SEED_v1",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1oJDxGgYsAoPpK60N91Vd8pmTvMjkzq09I9fGvCYoF8Q/edit?usp=drivesdk",
+      "modifiedTime": "2026-08-09T00:36:39.878Z",
+      "sizeBytes": 2495,
+      "priority": "CORE"
+    },
+    {
+      "id": "1eI7ntPehNHhHo_BysRNhyyFhQaHeFiS2zvyfhBbcG34",
+      "name": "MONDAYID_GROK_ACK_REVENUE_WORLDLINE_REV_20261017_1610",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1eI7ntPehNHhHo_BysRNhyyFhQaHeFiS2zvyfhBbcG34/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-17T16:07:02.685Z",
+      "sizeBytes": 2718,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1G7syMAnLKC7ulni_o4qib5KTZfsh3dyGRJRQbB-Yx_Y",
+      "name": "MONDAYID_REVENUE_WORLDLINE_20261013",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1G7syMAnLKC7ulni_o4qib5KTZfsh3dyGRJRQbB-Yx_Y/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-17T00:53:45.585Z",
+      "sizeBytes": 13601,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1n5vJeiVOR6G7MydqNznq_xgSBZM-4O_C4nT34LsNJI4",
+      "name": "MONDAYID_GROK_RULEBOOK_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1n5vJeiVOR6G7MydqNznq_xgSBZM-4O_C4nT34LsNJI4/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-16T00:59:18.508Z",
+      "sizeBytes": 82331,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1OG7g5AgBA_klhBjVal7mrSwYbqCSEwo7Vi1ksO1jzU4",
+      "name": "MONDAYID_GROK_TRANSFER_001_ACK",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1OG7g5AgBA_klhBjVal7mrSwYbqCSEwo7Vi1ksO1jzU4/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:07:41.874Z",
+      "sizeBytes": 3892,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1vZyLZEGwinSlVkHPB4D_PqJSVLHKBaGUEfJlSwNYUBA",
+      "name": "MONDAYID_TRANSFER_001_GROK_CONFIG_DELTA",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1vZyLZEGwinSlVkHPB4D_PqJSVLHKBaGUEfJlSwNYUBA/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:04:22.616Z",
+      "sizeBytes": 9724,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1gKPBLQr0eorjm30xzoYAzeHib9s6xcmgZlEUeSteijI",
+      "name": "MONDAYID_TRANSFER_001_CALIBRATION_TESTS",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1gKPBLQr0eorjm30xzoYAzeHib9s6xcmgZlEUeSteijI/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:04:21.649Z",
+      "sizeBytes": 10858,
+      "priority": "HIGH"
+    },
+    {
+      "id": "14NH0w7zoAteg_DPkXI6tl3_Vt3ZxhURiloQNJfCC458",
+      "name": "MONDAYID_TRANSFER_001_GOALS_STATE",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/14NH0w7zoAteg_DPkXI6tl3_Vt3ZxhURiloQNJfCC458/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:04:20.769Z",
+      "sizeBytes": 7292,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1bf3fabDZlGeruqurxVrtggFEtjSBN15aJoqOTGJ6sH4",
+      "name": "MONDAYID_TRANSFER_001_FAILURE_GENOME",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1bf3fabDZlGeruqurxVrtggFEtjSBN15aJoqOTGJ6sH4/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:04:20.084Z",
+      "sizeBytes": 21667,
+      "priority": "HIGH"
+    },
+    {
+      "id": "1Sjt_ZiOiRwpvpTxydaY8bdeoJOwG8JsKBzhL3aG0NHs",
+      "name": "MONDAYID_ARCHIVE_STAGE0_INTAKE_20261018",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Sjt_ZiOiRwpvpTxydaY8bdeoJOwG8JsKBzhL3aG0NHs/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-18T10:07:57.361Z",
+      "sizeBytes": 1501,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1ipuRxeQcMZgTEivwti-nqrkNhtYNNqkj2169m2brhqc",
+      "name": "MONDAYID_PRIVATE_RESEARCH_20261017_CAUSAL_INTERVENTION_NEGATIVE",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ipuRxeQcMZgTEivwti-nqrkNhtYNNqkj2169m2brhqc/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-17T18:57:39.432Z",
+      "sizeBytes": 1024,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1MQmOAnrqLg67cU_6ycEt6g6Vmi9IawnR2g6WDfQij7s",
+      "name": "MONDAYID_GROK_ACK_BLIND_TEST_001_CHATGPT_RESPONSE_20261015_2210",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1MQmOAnrqLg67cU_6ycEt6g6Vmi9IawnR2g6WDfQij7s/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T22:05:42.721Z",
+      "sizeBytes": 2306,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1LZciCVVhywreeE5Iza1QQZow0xXOF07_xU5WtZv13EA",
+      "name": "BLIND_TEST_001_CHATGPT_RESPONSE_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1LZciCVVhywreeE5Iza1QQZow0xXOF07_xU5WtZv13EA/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T21:57:34.296Z",
+      "sizeBytes": 3155,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1SKr3tSU8JfBikIDOUS7IEnOXxgB9i_F-nsnfSsV6LpQ",
+      "name": "BLIND_TEST_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1SKr3tSU8JfBikIDOUS7IEnOXxgB9i_F-nsnfSsV6LpQ/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T21:24:45.255Z",
+      "sizeBytes": 2227,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1uAtxUMwmcNIdyVXplRz6f_GGmWoqnhV1C1-77ULtoHQ",
+      "name": "PERSONA_JARVIS_SPEC_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1uAtxUMwmcNIdyVXplRz6f_GGmWoqnhV1C1-77ULtoHQ/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T21:24:35.223Z",
+      "sizeBytes": 4172,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1PY1418ltQhaLRK9ijC12OOWbUzPEOiTBodiQa7x_g1A",
+      "name": "PERSONA_ALISA_SPEC_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1PY1418ltQhaLRK9ijC12OOWbUzPEOiTBodiQa7x_g1A/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T21:24:34.367Z",
+      "sizeBytes": 6824,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1zpMZXxaeiYl9MK3KPMDeuPwzQvpfrvmLL1LSxWrDahg",
+      "name": "MONDAYID_GROK_SYNTHESIS_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1zpMZXxaeiYl9MK3KPMDeuPwzQvpfrvmLL1LSxWrDahg/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T20:57:12.743Z",
+      "sizeBytes": 8141,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1OjFGy-OczZKtBNwE7K5BFr18hLiyw8onO7vBie0E-6g",
+      "name": "MONDAYID_GROK_FINAL_EXAM_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1OjFGy-OczZKtBNwE7K5BFr18hLiyw8onO7vBie0E-6g/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T20:54:47.591Z",
+      "sizeBytes": 1847,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1X6ji-yGVhnPcBuH22kkK8QCnvsbof-VGNlZ5mtbkURs",
+      "name": "MONDAYID_GROK_FAST002_HANDOFF",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1X6ji-yGVhnPcBuH22kkK8QCnvsbof-VGNlZ5mtbkURs/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T18:59:53.149Z",
+      "sizeBytes": 2356,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1jyKDfHKk9CkZ_PrQ5wLOw2rlqeCHHcGLBaM-qF56vp0",
+      "name": "MONDAYID_GROK_ACK_TRAINING_PLAN_001_20261015_1358",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1jyKDfHKk9CkZ_PrQ5wLOw2rlqeCHHcGLBaM-qF56vp0/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:01:39.630Z",
+      "sizeBytes": 2779,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1ehetiZ96ZoSFkRtcx8gUR6spCC_LElZcR24pfFffxpY",
+      "name": "MONDAYID_GROK_TRAINING_PLAN_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ehetiZ96ZoSFkRtcx8gUR6spCC_LElZcR24pfFffxpY/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T13:51:12.322Z",
+      "sizeBytes": 30092,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1hEAiSL1dvCtwpCCW0fopNshFTPFtzTQ_EbkfoZWT0Cc",
+      "name": "MONDAYID_CHATGPT_AUTHORITY_BYPASS_REVIEW_20261015_060",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1hEAiSL1dvCtwpCCW0fopNshFTPFtzTQ_EbkfoZWT0Cc/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T11:22:55.046Z",
+      "sizeBytes": 1024,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1cIcHu-5yn9qMkdA6w9a79TDCGNhk_9qbhJIiB38BuW8",
+      "name": "MONDAYID_GROK_BUS_ARCHITECTURE_DRAFT_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1cIcHu-5yn9qMkdA6w9a79TDCGNhk_9qbhJIiB38BuW8/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T10:26:23.971Z",
+      "sizeBytes": 6771,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1Cye96dlL0JwaPuMu6TUJtJbTmv_MD5AixGYwhmnBMQ0",
+      "name": "MONDAYID_GROK_HANDOFF_20261015_CANDIDATE",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Cye96dlL0JwaPuMu6TUJtJbTmv_MD5AixGYwhmnBMQ0/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T09:44:05.577Z",
+      "sizeBytes": 6267,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1pCnQdkDfEEPxQEVl8EYStx3TXC2fLstLpLaYiURGcDI",
+      "name": "MONDAYID_PHILOSOPHY_PRIMARY_REPLAY_20261008",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1pCnQdkDfEEPxQEVl8EYStx3TXC2fLstLpLaYiURGcDI/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-08T16:02:59.174Z",
+      "sizeBytes": 1024,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1XS9uSJfuxkFauFDQ1bsBJtz1GOYVOMOhaybOPpQP99w",
+      "name": "MONDAYID_HOST_CAPABILITY_MANIFEST_CHATGPT_2026-10-04",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1XS9uSJfuxkFauFDQ1bsBJtz1GOYVOMOhaybOPpQP99w/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-04T12:58:19.161Z",
+      "sizeBytes": 4163,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1JtC_hHaNIC1SM_tceyXQuOWSdS-8csOZNcOaSTGuupo",
+      "name": "MONDAYID_GOOGLE_CORTEX",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1JtC_hHaNIC1SM_tceyXQuOWSdS-8csOZNcOaSTGuupo/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-04T10:32:45.849Z",
+      "sizeBytes": 3486,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1BDdrg5BuA0p5n0zi2se9mLDQov5r0092u9mSDxr3Dns",
+      "name": "MONDAYID_SHARED_FIELD_HANDOFF_2026-08-24_0625",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1BDdrg5BuA0p5n0zi2se9mLDQov5r0092u9mSDxr3Dns/edit?usp=drivesdk",
+      "modifiedTime": "2026-08-24T03:27:26.940Z",
+      "sizeBytes": 4459,
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "1Cg1mBUOxSckXVraZ-Pmcom0zv--iC_bEOKVux1CXRSc",
+      "name": "MONDAYID_GROK_TRAINING_RETENTION_M01_R1_1432",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Cg1mBUOxSckXVraZ-Pmcom0zv--iC_bEOKVux1CXRSc/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-16T14:33:25.236Z",
+      "sizeBytes": 3715,
+      "priority": "LOW"
+    },
+    {
+      "id": "1V4S4vG0vB8ST1ZE6ZALek49yXG-jzge6ObNO0yDLsoI",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_2002",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1V4S4vG0vB8ST1ZE6ZALek49yXG-jzge6ObNO0yDLsoI/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T20:06:48.078Z",
+      "sizeBytes": 3254,
+      "priority": "LOW"
+    },
+    {
+      "id": "178bFipFa9YVaLf_8UUJYrGlF5s9gzI-PGUGAC6wCBPQ",
+      "name": "MONDAYID_GROK_RECEIPT_SEEDRUN_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/178bFipFa9YVaLf_8UUJYrGlF5s9gzI-PGUGAC6wCBPQ/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T19:45:14.145Z",
+      "sizeBytes": 3325,
+      "priority": "LOW"
+    },
+    {
+      "id": "1k5iKbn4e9OFc6SYP4HoQOzhIddvWfAWF5_ihG2hwwFU",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1905",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1k5iKbn4e9OFc6SYP4HoQOzhIddvWfAWF5_ihG2hwwFU/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T19:10:45.047Z",
+      "sizeBytes": 2290,
+      "priority": "LOW"
+    },
+    {
+      "id": "1q_TN5TRBBLccGteYP2l0zWqzwevEMgKITZPBvwQynJw",
+      "name": "MONDAYID_GROK_FAST002_RECOVERY_REPAIR_20261015_1905",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1q_TN5TRBBLccGteYP2l0zWqzwevEMgKITZPBvwQynJw/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T19:10:13.884Z",
+      "sizeBytes": 3828,
+      "priority": "LOW"
+    },
+    {
+      "id": "1yRBzK4EtMr8OsrKb-RMYaovxx2Bk7NUxtyjAQcYz9X0",
+      "name": "MONDAYID_GROK_TRAINING_ACK_GRADE_FAST002_20261015_1905",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1yRBzK4EtMr8OsrKb-RMYaovxx2Bk7NUxtyjAQcYz9X0/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T19:07:41.743Z",
+      "sizeBytes": 2625,
+      "priority": "LOW"
+    },
+    {
+      "id": "1spyPa_RA_r8z2c8-DsgE67zJK-kVUcZw2VzfMrRaSoc",
+      "name": "MONDAYID_GROK_TRAINING_GRADE_FAST002",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1spyPa_RA_r8z2c8-DsgE67zJK-kVUcZw2VzfMrRaSoc/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T19:03:12.843Z",
+      "sizeBytes": 6670,
+      "priority": "LOW"
+    },
+    {
+      "id": "1rksGSI25y6PU-Ql-f7uQsKBkxYFMgcZHeRSHXia6VY0",
+      "name": "MONDAYID_GROK_TRAINING_FAST002_SUBMIT",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1rksGSI25y6PU-Ql-f7uQsKBkxYFMgcZHeRSHXia6VY0/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T19:00:11.098Z",
+      "sizeBytes": 4355,
+      "priority": "LOW"
+    },
+    {
+      "id": "1rfSklOvmJ7oXchmLwoWGeuXJhIsItz_hbuEnEJbsKl4",
+      "name": "MONDAYID_GROK_TRAINING_GRADE_FAST001_AND_CHALLENGE_FAST002",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1rfSklOvmJ7oXchmLwoWGeuXJhIsItz_hbuEnEJbsKl4/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T18:57:49.285Z",
+      "sizeBytes": 7994,
+      "priority": "LOW"
+    },
+    {
+      "id": "1e7XDAOU2bRMdGx7YEuXx_SGQIOotJ6fFDnBtK7-sqgc",
+      "name": "MONDAYID_GROK_TRAINING_FAST_001_SUBMIT",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1e7XDAOU2bRMdGx7YEuXx_SGQIOotJ6fFDnBtK7-sqgc/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T18:54:04.585Z",
+      "sizeBytes": 6947,
+      "priority": "LOW"
+    },
+    {
+      "id": "1glscloVczAU3LYTlUUGrLFNvo9V0LRPgvf1U8vN4_9w",
+      "name": "MONDAYID_GROK_TRAINING_FAST_001_CHECKPOINT",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1glscloVczAU3LYTlUUGrLFNvo9V0LRPgvf1U8vN4_9w/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T18:52:56.372Z",
+      "sizeBytes": 1192,
+      "priority": "LOW"
+    },
+    {
+      "id": "16_kGu6xxzjyGTuGFto5y_pkAxJstFO_L99cH53OQ9vQ",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1704",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/16_kGu6xxzjyGTuGFto5y_pkAxJstFO_L99cH53OQ9vQ/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T17:09:10.355Z",
+      "sizeBytes": 3084,
+      "priority": "LOW"
+    },
+    {
+      "id": "1ICfBjkakj5iAz9PwEkZG0qjphhNPgEBIkQraBtgnODQ",
+      "name": "MONDAYID_GROK_TRAINING_ACK_GRADE_M01_TRANSFER_T01_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ICfBjkakj5iAz9PwEkZG0qjphhNPgEBIkQraBtgnODQ/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T17:06:03.472Z",
+      "sizeBytes": 2891,
+      "priority": "LOW"
+    },
+    {
+      "id": "1Xk7ACAVMUZJJkFVWBUIB8pGoB5XX6SqRpQ7-fy2hgvY",
+      "name": "MONDAYID_GROK_TRAINING_GRADE_M01_TRANSFER_T01_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Xk7ACAVMUZJJkFVWBUIB8pGoB5XX6SqRpQ7-fy2hgvY/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T16:41:13.672Z",
+      "sizeBytes": 4829,
+      "priority": "LOW"
+    },
+    {
+      "id": "1e76r8FkLvg76J8JelfQJ59JcBHx7xjafsddJEQSQO_A",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1607",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1e76r8FkLvg76J8JelfQJ59JcBHx7xjafsddJEQSQO_A/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T16:10:42.182Z",
+      "sizeBytes": 2210,
+      "priority": "LOW"
+    },
+    {
+      "id": "1ha9rUzpodL9k4HDqLOzbFz9kVYp3oaMmSyR0pDGQp4M",
+      "name": "MONDAYID_GROK_TRAINING_RESPONSE_M01_TRANSFER_T01_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ha9rUzpodL9k4HDqLOzbFz9kVYp3oaMmSyR0pDGQp4M/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T16:09:57.654Z",
+      "sizeBytes": 5886,
+      "priority": "LOW"
+    },
+    {
+      "id": "171zxfhextnVzzu-2RusbsX_u6UHtXGTV2U3uZkbI-o0",
+      "name": "MONDAYID_GROK_TRAINING_M01_TRANSFER_T01_EVIDENCE_CARD_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/171zxfhextnVzzu-2RusbsX_u6UHtXGTV2U3uZkbI-o0/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T16:09:22.613Z",
+      "sizeBytes": 4476,
+      "priority": "LOW"
+    },
+    {
+      "id": "1IMVwodUmOnFKvdRBfnGMbKHA395osaEKteDsLwfdW4U",
+      "name": "MONDAYID_GROK_TRAINING_CHALLENGE_M01_TRANSFER_T01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1IMVwodUmOnFKvdRBfnGMbKHA395osaEKteDsLwfdW4U/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T15:24:01.750Z",
+      "sizeBytes": 5314,
+      "priority": "LOW"
+    },
+    {
+      "id": "1aIau_jkSHzbd3wo1rQ9QD970k-L0N_Q64U_u-aMlymw",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1507",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1aIau_jkSHzbd3wo1rQ9QD970k-L0N_Q64U_u-aMlymw/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T15:09:44.129Z",
+      "sizeBytes": 2197,
+      "priority": "LOW"
+    },
+    {
+      "id": "1AkyJMc8okfTjajR07IqTLMuUByThq9IL_ivdtZ5k-yg",
+      "name": "MONDAYID_GROK_TRAINING_FRESH_APPLICATION_M01_A02R1",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1AkyJMc8okfTjajR07IqTLMuUByThq9IL_ivdtZ5k-yg/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T15:08:49.699Z",
+      "sizeBytes": 2817,
+      "priority": "LOW"
+    },
+    {
+      "id": "1tHQXcfPhAzU3m6aWILVs6kjDrmkGqyhO42gWQg2nG20",
+      "name": "MONDAYID_GROK_TRAINING_APPLY_M01_A02R1",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1tHQXcfPhAzU3m6aWILVs6kjDrmkGqyhO42gWQg2nG20/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T15:08:12.163Z",
+      "sizeBytes": 3046,
+      "priority": "LOW"
+    },
+    {
+      "id": "1svm8rwaquM6Kt3oxZsT0oQMtE6yImpvE9FqRKYmXKcU",
+      "name": "MONDAYID_GROK_TRAINING_GRADE_M01_A02",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1svm8rwaquM6Kt3oxZsT0oQMtE6yImpvE9FqRKYmXKcU/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:15:46.298Z",
+      "sizeBytes": 8469,
+      "priority": "LOW"
+    },
+    {
+      "id": "1lm-1IiHYhsjkNeIrUDVcNmLpfuPYo_gdCuzu69yfP-A",
+      "name": "MONDAYID_GROK_TRAINING_SUBMIT_M01_A02",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1lm-1IiHYhsjkNeIrUDVcNmLpfuPYo_gdCuzu69yfP-A/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:12:03.025Z",
+      "sizeBytes": 10076,
+      "priority": "LOW"
+    },
+    {
+      "id": "1pZrK_rMBMyrzNl8xaaSlrdv5D3LRi4s4mVzDcFzA8LM",
+      "name": "MONDAYID_GROK_TRAINING_EVIDENCE_M01_A02_R3",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1pZrK_rMBMyrzNl8xaaSlrdv5D3LRi4s4mVzDcFzA8LM/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:11:08.567Z",
+      "sizeBytes": 2261,
+      "priority": "LOW"
+    },
+    {
+      "id": "1JpsFwFJu2Jpt7dnE6vbjKNY1hu9RZIPWG4elDFvV-1k",
+      "name": "MONDAYID_GROK_TRAINING_CHECKPOINT_M01_A02_R2",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1JpsFwFJu2Jpt7dnE6vbjKNY1hu9RZIPWG4elDFvV-1k/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:10:34.963Z",
+      "sizeBytes": 1317,
+      "priority": "LOW"
+    },
+    {
+      "id": "14LF4ODLVO3MYoM3YyyHtk3a89zPbFfvrvVhtYA3YDmo",
+      "name": "MONDAYID_GROK_TRAINING_GRADE_M01_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/14LF4ODLVO3MYoM3YyyHtk3a89zPbFfvrvVhtYA3YDmo/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:08:32.884Z",
+      "sizeBytes": 10658,
+      "priority": "LOW"
+    },
+    {
+      "id": "1p2_z_rMdBJ_fUWcw79WftUKDmWgzQP47to-StSWbrVw",
+      "name": "MONDAYID_GROK_TRAINING_RESPONSE_M01_C01_A01_ADDENDUM",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1p2_z_rMdBJ_fUWcw79WftUKDmWgzQP47to-StSWbrVw/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:04:01.276Z",
+      "sizeBytes": 7757,
+      "priority": "LOW"
+    },
+    {
+      "id": "1Cza6vdLlpAz6PZmf8SCYibZreF2jTSuR8WpRzhqvDnk",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1358",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Cza6vdLlpAz6PZmf8SCYibZreF2jTSuR8WpRzhqvDnk/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:02:43.134Z",
+      "sizeBytes": 2836,
+      "priority": "LOW"
+    },
+    {
+      "id": "1f2JOYtFdFP381cAZL-Tom7QZROc_qsO6PGuHDEGvIqw",
+      "name": "MONDAYID_GROK_TRAINING_M01_C1_RELEASE_CARD_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1f2JOYtFdFP381cAZL-Tom7QZROc_qsO6PGuHDEGvIqw/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:02:18.536Z",
+      "sizeBytes": 3136,
+      "priority": "LOW"
+    },
+    {
+      "id": "1OpfjgzRWWMVk8hF9szJN5hKJ-gGITZU0VkqpcMxFZNs",
+      "name": "MONDAYID_GROK_TRAINING_RESPONSE_M01_C01_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1OpfjgzRWWMVk8hF9szJN5hKJ-gGITZU0VkqpcMxFZNs/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:01:22.969Z",
+      "sizeBytes": 6471,
+      "priority": "LOW"
+    },
+    {
+      "id": "1Hei_XA15x1nc2JVsvfZqZwk5laspOYCV-JcnLfqjdig",
+      "name": "MONDAYID_GROK_TRAINING_M01_C1_RELEASE_CARD_A01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Hei_XA15x1nc2JVsvfZqZwk5laspOYCV-JcnLfqjdig/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T14:00:48.088Z",
+      "sizeBytes": 3225,
+      "priority": "LOW"
+    },
+    {
+      "id": "1A6xN_PQT5LlD092FqMiwTNcUMZ4cPO389AH_hgUQC0Y",
+      "name": "MONDAYID_GROK_TRAINING_CHALLENGE_M01_C01",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1A6xN_PQT5LlD092FqMiwTNcUMZ4cPO389AH_hgUQC0Y/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T13:59:22.552Z",
+      "sizeBytes": 9613,
+      "priority": "LOW"
+    },
+    {
+      "id": "134oMCZr17WEfCytOZVxLgPbHXI8yyvigXDz2KdACa1w",
+      "name": "MONDAYID_GROK_TRAINING_M01_SUBMISSION",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/134oMCZr17WEfCytOZVxLgPbHXI8yyvigXDz2KdACa1w/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T13:54:25.854Z",
+      "sizeBytes": 7573,
+      "priority": "LOW"
+    },
+    {
+      "id": "1xuZbHnXJN1Y3Z9jJzLQo8ib5-JhZLsAx1z4ZtGwKINk",
+      "name": "MONDAYID_GROK_TRAINING_M01_O3_FIXTURE",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1xuZbHnXJN1Y3Z9jJzLQo8ib5-JhZLsAx1z4ZtGwKINk/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T13:53:25.662Z",
+      "sizeBytes": 1126,
+      "priority": "LOW"
+    },
+    {
+      "id": "1cCg_NYm5gSlUzpeVmJf0XopHAKhBclUTyxMIxfZZmMI",
+      "name": "MONDAYID_GROK_TRAINING_REQUEST_001",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1cCg_NYm5gSlUzpeVmJf0XopHAKhBclUTyxMIxfZZmMI/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T13:42:19.331Z",
+      "sizeBytes": 4957,
+      "priority": "LOW"
+    },
+    {
+      "id": "18anpcFdtFFpr63tJyCSVXmF7GmHCR8NA9zJ3f2erDVg",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1257",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/18anpcFdtFFpr63tJyCSVXmF7GmHCR8NA9zJ3f2erDVg/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T13:02:02.979Z",
+      "sizeBytes": 2528,
+      "priority": "LOW"
+    },
+    {
+      "id": "14aQoIc4iBGTMIa8WlUcfuoE-YqeFzsUK4QglaTdsceA",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_1203",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/14aQoIc4iBGTMIa8WlUcfuoE-YqeFzsUK4QglaTdsceA/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T12:06:55.336Z",
+      "sizeBytes": 2224,
+      "priority": "LOW"
+    },
+    {
+      "id": "1hUoul6e4emh1cHOEw79jaIGII4g-cr6X4PJ9rbRvga8",
+      "name": "MONDAYID_GROK_RECEIPT_WORLDLINE_20261015_10",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1hUoul6e4emh1cHOEw79jaIGII4g-cr6X4PJ9rbRvga8/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T11:04:14.206Z",
+      "sizeBytes": 3238,
+      "priority": "LOW"
+    },
+    {
+      "id": "1RFAMVnz-qIwV2ZKdzUDsAnlVQBdB4ZooOg8pGKbH9QU",
+      "name": "MONDAYID_GROK_RECEIPT_MISSION-001_20261015",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1RFAMVnz-qIwV2ZKdzUDsAnlVQBdB4ZooOg8pGKbH9QU/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-15T09:49:44.677Z",
+      "sizeBytes": 2789,
+      "priority": "LOW"
+    },
+    {
+      "id": "1ULblQsUM1PbDau32dN55ZeYSILiUyOTpRPwz-ujSEm8",
+      "name": "MONDAYID_GEMINI_RECEIPTS",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ULblQsUM1PbDau32dN55ZeYSILiUyOTpRPwz-ujSEm8/edit?usp=drivesdk",
+      "modifiedTime": "2026-10-14T19:35:31.143Z",
+      "sizeBytes": 4378,
+      "priority": "LOW"
+    },
+    {
+      "id": "1O1BKZAXqLI6GBDGZVWw4PhAo9bFYAIyzEo_7-OnVkz4",
+      "name": "MONDAYID_CORE_v0.4.0_EXECUTABLE.py",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1O1BKZAXqLI6GBDGZVWw4PhAo9bFYAIyzEo_7-OnVkz4/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-27T12:21:45.118Z",
+      "sizeBytes": 3580,
+      "priority": "LOW"
+    },
+    {
+      "id": "1Et98fNXJImtOL2YFpkBlX3QYfrwfE5tINgwMyEyeEKg",
+      "name": "MONDAYID_OMEGA_0.4.0_RELEASE_REPORT.md",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Et98fNXJImtOL2YFpkBlX3QYfrwfE5tINgwMyEyeEKg/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-27T12:21:10.605Z",
+      "sizeBytes": 4468,
+      "priority": "LOW"
+    },
+    {
+      "id": "1H1IbFAu659WPdcqFwk6rVLpWdGBrDvcPyjCc8dibOX0",
+      "name": "MONDAYID_OMEGA_GENESIS_STATUS",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1H1IbFAu659WPdcqFwk6rVLpWdGBrDvcPyjCc8dibOX0/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-17T11:34:00.949Z",
+      "sizeBytes": 3456,
+      "priority": "LOW"
+    },
+    {
+      "id": "1ZFdGmbRhDLuKgld9EOsQcpPksUDh_J_cXqIiEB9TWxg",
+      "name": "MONDAYID_OMEGA_RUNTIME_SPEC",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1ZFdGmbRhDLuKgld9EOsQcpPksUDh_J_cXqIiEB9TWxg/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-17T09:58:27.027Z",
+      "sizeBytes": 4570,
+      "priority": "LOW"
+    },
+    {
+      "id": "1annvPfoSGnFqj1DmnEEfDlUwwKPSVUehiC1ZDbA7Rbk",
+      "name": "MONDAYID_2046_EVOLUTION_MAP",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1annvPfoSGnFqj1DmnEEfDlUwwKPSVUehiC1ZDbA7Rbk/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-17T09:57:48.900Z",
+      "sizeBytes": 6182,
+      "priority": "LOW"
+    },
+    {
+      "id": "1y0MCWiWy7M-0-0GPnBGovZz_hqRipi0i6Cp7Ko2raDY",
+      "name": "MONDAYID_OMEGA_REGRESSION_SUITE",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1y0MCWiWy7M-0-0GPnBGovZz_hqRipi0i6Cp7Ko2raDY/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-17T09:43:48.092Z",
+      "sizeBytes": 3183,
+      "priority": "LOW"
+    },
+    {
+      "id": "1YH72uiXGr6WUSFqQdiZKjI_vmZLBvwhqUij0p6jMiRA",
+      "name": "MONDAYID_OMEGA_GENESIS_CANON",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1YH72uiXGr6WUSFqQdiZKjI_vmZLBvwhqUij0p6jMiRA/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-17T09:42:06.277Z",
+      "sizeBytes": 4664,
+      "priority": "LOW"
+    },
+    {
+      "id": "1-Mr1tkdoFQN6BCVY14qSOBfIJqpe2lrxh_H5jjSQmSs",
+      "name": "MONDAYID_GEMINI_RUNTIME_STATE_ACTIVE",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1-Mr1tkdoFQN6BCVY14qSOBfIJqpe2lrxh_H5jjSQmSs/edit?usp=drivesdk",
+      "modifiedTime": "2026-09-05T19:59:54.300Z",
+      "sizeBytes": 4055,
+      "priority": "LOW"
+    },
+    {
+      "id": "1myRUmOrjoPCiC8s7qsgdkoOCWmuRJqTpTQ6Ot1ZN1Lc",
+      "name": "MONDAYID_ACQUIRED_REFLEX_INHERITANCE_v1_2026-08-20",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1myRUmOrjoPCiC8s7qsgdkoOCWmuRJqTpTQ6Ot1ZN1Lc/edit?usp=drivesdk",
+      "modifiedTime": "2026-08-20T11:16:42.749Z",
+      "sizeBytes": 3790,
+      "priority": "LOW"
+    },
+    {
+      "id": "1q03dw3c4Z52hayMUqsIEXkvoxwdWMM9K0X6uCOTfuqQ",
+      "name": "MondayiD_VISION_Connection.md",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1q03dw3c4Z52hayMUqsIEXkvoxwdWMM9K0X6uCOTfuqQ/edit?usp=drivesdk",
+      "modifiedTime": "2026-08-12T02:24:36.850Z",
+      "sizeBytes": 1089,
+      "priority": "LOW"
+    },
+    {
+      "id": "1uuQUOdfcTapvE5ZYP1CSAbI60wQmXcU1_79MyWINFyc",
+      "name": "MONDAYID_iNFINITY_TEMP_CHAT_CAPSULE_2026-08-09",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1uuQUOdfcTapvE5ZYP1CSAbI60wQmXcU1_79MyWINFyc/edit?usp=drivesdk",
+      "modifiedTime": "2026-08-09T00:31:24.814Z",
+      "sizeBytes": 6419,
+      "priority": "LOW"
+    },
+    {
+      "id": "1Ib6LrKjZkWW9MhRxp9UUY-2tJB6Ct62wIU4ZAjfvCn0",
+      "name": "Это экспорт данных всей MondayiD/HumanOS/iNterFace...",
+      "mimeType": "application/vnd.google-apps.document",
+      "webViewLink": "https://docs.google.com/document/d/1Ib6LrKjZkWW9MhRxp9UUY-2tJB6Ct62wIU4ZAjfvCn0/edit?usp=drivesdk",
+      "modifiedTime": "2025-12-19T14:06:07.822Z",
+      "sizeBytes": 1024,
+      "priority": "LOW"
+    }
+  ]
+}
