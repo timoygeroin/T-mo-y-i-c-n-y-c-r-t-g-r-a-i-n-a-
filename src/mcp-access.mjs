@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { verifyAccessToken } from './oauth-as.mjs';
 
 // Default deny (BUS-REVIEW-03): only explicitly public, non-sensitive tools pass
 // without a credential. Any other name, including typos and future tools, is private.
@@ -42,9 +43,8 @@ function hostTokenMap(env) {
   }
 }
 
-// Server-derived principal (BUS-REVIEW-04). Per-host tokens come from
-// MONDAYID_BUS_HOST_TOKENS = JSON {"grok-monday":"<token>","chatgpt-monday":"<token>"}.
-// The legacy shared MONDAYID_HOST_TOKEN maps to principal "shared" (host not proven).
+// Server-derived principal (BUS-REVIEW-04 + D2 OAuth).
+// Order: per-host static tokens → OAuth access token (chatgpt-monday) → shared legacy token.
 // Host names are an allowlist of identifiers; a bad map cannot throw or bind
 // a principal the server did not name.
 export function resolvePrincipal(req = {}, env = process.env) {
@@ -54,6 +54,8 @@ export function resolvePrincipal(req = {}, env = process.env) {
     if (!HOST_NAME.test(host)) continue;
     if (typeof token === 'string' && token.length >= 16 && same(supplied, token)) return { principal:host, hostBound:true };
   }
+  const oauth = verifyAccessToken(supplied, env);
+  if (oauth) return { principal: oauth.principal, hostBound: true, auth: 'oauth' };
   const shared = env?.MONDAYID_HOST_TOKEN;
   if (typeof shared === 'string' && shared.length > 0 && same(supplied, shared)) return { principal:'shared', hostBound:false };
   return null;
