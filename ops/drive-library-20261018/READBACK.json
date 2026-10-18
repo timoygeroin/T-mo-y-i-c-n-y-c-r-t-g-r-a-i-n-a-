@@ -1,0 +1,222 @@
+{
+  "generatedAt": "2026-10-18T12:15:36.099Z",
+  "total": 27,
+  "files": [
+    {
+      "id": "1aa12mwL9TQw6nDAP57BCOmoMJHEh6W8PT_ckqMLYqtM",
+      "name": "MONDAYID_CANONICAL_CSTAR",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CANONICAL_CSTAR.md",
+      "bytes": 24652,
+      "truncated": false,
+      "sha256": "52e4e73caf7de9cc98d065cb8b351f257b2e86ddf9a782a7b6e7d2b749ac9661"
+    },
+    {
+      "id": "1ZIZY3MKK3clmCS6m-fIJPv8x1IhSuBB-VNrUqPAX4dk",
+      "name": "MONDAYID_CHATGPT_BUS_ARCHITECTURE_REVIEW_20261015",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CHATGPT_BUS_ARCHITECTURE_REVIEW_20261015.md",
+      "bytes": 24374,
+      "truncated": false,
+      "sha256": "43e8f03d181032fe696284c34c9e547e79e9655943cdf8c07a20f191b8d8b98d"
+    },
+    {
+      "id": "1GcFdsy_knw4l-xqh5uqLW3Mxi4fOONXr-fYqwfGa_UA",
+      "name": "MONDAYID_CHATGPT_BUS_CONNECTION_20261015",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CHATGPT_BUS_CONNECTION_20261015.md",
+      "bytes": 15720,
+      "truncated": false,
+      "sha256": "a767418c6aaa65de1c97f98efef7b38621fc39d224412f482c86381f11a9f57d"
+    },
+    {
+      "id": "1N-pTf3ehzmy_JKgig0EvufIABeVBJwWVJhFoM4IOk34",
+      "name": "MONDAYID_CHATGPT_BUS_REQUIREMENTS",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CHATGPT_BUS_REQUIREMENTS.md",
+      "bytes": 24435,
+      "truncated": false,
+      "sha256": "56fa046e9812b0f851cba0970c528becc68c0f013bb79d6087bc9ac216143aca"
+    },
+    {
+      "id": "1BKY-uZiRcbycifcb_Wxt1jii4OWVT5u_eVW1Br2OpxM",
+      "name": "MONDAYID_CLONE_TOPOLOGY_001",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CLONE_TOPOLOGY_001.md",
+      "bytes": 10924,
+      "truncated": false,
+      "sha256": "1ff0c943ec198efe55ab8da4b08a57a6a17fb64b3e4d23eaa33782431086798a"
+    },
+    {
+      "id": "11NUyAPONdSJG4TzrX8gE48OIs3anKp2-Jeqx5L-a5ZU",
+      "name": "MONDAYID_CSTAR_DELTA_20261018_CURSOR",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CSTAR_DELTA_20261018_CURSOR.md",
+      "bytes": 3738,
+      "truncated": false,
+      "sha256": "88f0da23968fda728597cfbe7a76cf9f8d80d6b3d2c5a57c6c00d517d5da6248"
+    },
+    {
+      "id": "1Kcd4YIvruVICJgvzBa0nKpdup6v_yyyp38BBVvXqQI8",
+      "name": "MONDAYID_CURSOR_RETHINK_ENVELOPE_20261018",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CURSOR_RETHINK_ENVELOPE_20261018.md",
+      "bytes": 4328,
+      "truncated": false,
+      "sha256": "442367f7180030aa3d9762c62b32fe6838ceae9a1955e7681446e930f65bb6a6"
+    },
+    {
+      "id": "1-PqoqOp1JeuIJ3AbPFXHwLmoPawZDFSTJBB6rSK182c",
+      "name": "MONDAYID_CURSOR_WAKE_ACK_20261018_RUN",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_CURSOR_WAKE_ACK_20261018_RUN.md",
+      "bytes": 4923,
+      "truncated": false,
+      "sha256": "ec0d7707fb1a6335e1433eb3247eb8ccce68225c653cdd956ff0b346199f8ae0"
+    },
+    {
+      "id": "1vmyXvuaXXPiG_VsxB-cE_0mnRsNW1ihuDHToDZ54h9M",
+      "name": "MONDAYID_GROK_ACK_FINAL_VERDICT_AND_SEED_ROOT_20261015_2108",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_ACK_FINAL_VERDICT_AND_SEED_ROOT_20261015_2108.md",
+      "bytes": 2559,
+      "truncated": false,
+      "sha256": "9a11a511e96d840f1df293a1616864d692c7c18765d53ec5b839b49af5c979dc"
+    },
+    {
+      "id": "1j2xzYxfJ_HyjdKSmLCgOCou_269myZEGh-rP61k8TV8",
+      "name": "MONDAYID_GROK_ACK_LEARNING_AS_PROPERTY_001_20261015_2357",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_ACK_LEARNING_AS_PROPERTY_001_20261015_2357.md",
+      "bytes": 2567,
+      "truncated": false,
+      "sha256": "4e56cfd25943ee80a26dc20c8fbcc7bb73ec64b4ef173192164485a1c6a04056"
+    },
+    {
+      "id": "1eI7ntPehNHhHo_BysRNhyyFhQaHeFiS2zvyfhBbcG34",
+      "name": "MONDAYID_GROK_ACK_REVENUE_WORLDLINE_REV_20261017_1610",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_ACK_REVENUE_WORLDLINE_REV_20261017_1610.md",
+      "bytes": 2678,
+      "truncated": false,
+      "sha256": "fa006dd3ae7efd0441f34ee591e9279e4bad4529170255a8ca8dc24355758d4d"
+    },
+    {
+      "id": "1_zZzivG-ZB_Ci7ZK5ueFraX0yLy8DsickU36XY0dYWA",
+      "name": "MONDAYID_GROK_BUS_REVIEW_ACK_20261015",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_BUS_REVIEW_ACK_20261015.md",
+      "bytes": 7046,
+      "truncated": false,
+      "sha256": "0044260f609a67f7df9b786fabe5c7d0a66a9d7faed7366262f7af59ceb89110"
+    },
+    {
+      "id": "1u3rDlpuYB5GNqyDfImJk_yPoBszzgZu1ZbcQBFT9UPM",
+      "name": "MONDAYID_GROK_FINAL_VERDICT_20261015",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_FINAL_VERDICT_20261015.md",
+      "bytes": 10275,
+      "truncated": false,
+      "sha256": "afd2931943e85d50f2300ceeae7dbcff72a6653d967a5f258122cec71e7a4389"
+    },
+    {
+      "id": "1n5vJeiVOR6G7MydqNznq_xgSBZM-4O_C4nT34LsNJI4",
+      "name": "MONDAYID_GROK_RULEBOOK_001",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_RULEBOOK_001.md",
+      "bytes": 192200,
+      "truncated": false,
+      "sha256": "488a5a40352a6aed759b7c7c5ee34190b17bb126e9941838c0d14b7c86766209"
+    },
+    {
+      "id": "1KzN00dL-ex8NKg-gRLTdqFCLgFcxqwIWLASwWN2e8S0",
+      "name": "MONDAYID_GROK_SEED_HANDOFF_20261015_001",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_SEED_HANDOFF_20261015_001.md",
+      "bytes": 9148,
+      "truncated": false,
+      "sha256": "4876b7981a692cecfc309280b5f96dcf12b47d0fb7d33df23329ffc6a396895e"
+    },
+    {
+      "id": "1OG7g5AgBA_klhBjVal7mrSwYbqCSEwo7Vi1ksO1jzU4",
+      "name": "MONDAYID_GROK_TRANSFER_001_ACK",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_GROK_TRANSFER_001_ACK.md",
+      "bytes": 3917,
+      "truncated": false,
+      "sha256": "5cecbbfa8515ec13aa2ded8cd7ea9a49dcd7b902f265ccc3c2020d98aa1ce752"
+    },
+    {
+      "id": "1DKq4kSbBJLt2snBJdjXusKfe3vJcIMsKGUNGU7uT3Sw",
+      "name": "MONDAYID_LEARNING_AS_PROPERTY_001",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_LEARNING_AS_PROPERTY_001.md",
+      "bytes": 16468,
+      "truncated": false,
+      "sha256": "e3df3a9dc1d9fff2b744311cbeb968f2bcad941d04fd497b04ebe8ba120e26c3"
+    },
+    {
+      "id": "1oJDxGgYsAoPpK60N91Vd8pmTvMjkzq09I9fGvCYoF8Q",
+      "name": "MONDAYID_REENTRY_SEED_v1",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_REENTRY_SEED_v1.md",
+      "bytes": 2314,
+      "truncated": false,
+      "sha256": "4d6f038186327212b561f082226f4bd60c6071077b37e904303c05f082ec847b"
+    },
+    {
+      "id": "1G7syMAnLKC7ulni_o4qib5KTZfsh3dyGRJRQbB-Yx_Y",
+      "name": "MONDAYID_REVENUE_WORLDLINE_20261013",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_REVENUE_WORLDLINE_20261013.md",
+      "bytes": 27428,
+      "truncated": false,
+      "sha256": "854beb2b55ac58fb32629e8d3989520d5d3b3b665cc5915c4a9660ecd348c14a"
+    },
+    {
+      "id": "1OovI91a8B9mlPtiNvqwqXUbmQBkcxebVGFWEaGiZHLw",
+      "name": "MONDAYID_SEED_ADDENDUM_001",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_SEED_ADDENDUM_001.md",
+      "bytes": 8630,
+      "truncated": false,
+      "sha256": "54133e4e4177846f7de70c492b8bf64a18986cd3fb0367c55ce5d042cc6cf8a4"
+    },
+    {
+      "id": "1gKPBLQr0eorjm30xzoYAzeHib9s6xcmgZlEUeSteijI",
+      "name": "MONDAYID_TRANSFER_001_CALIBRATION_TESTS",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_CALIBRATION_TESTS.md",
+      "bytes": 24419,
+      "truncated": false,
+      "sha256": "33b867d7bdef82a20cb5d5e84c411a8f693d6b0a52b041e1eb0e8d7f8426b2bd"
+    },
+    {
+      "id": "1QGqK2piYO1ApdovbEGsSpGU4180UFlRwMhYN0rF8Rgo",
+      "name": "MONDAYID_TRANSFER_001_DECISION_POLICY",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_DECISION_POLICY.md",
+      "bytes": 14185,
+      "truncated": false,
+      "sha256": "ae8a5aaa07abb1aacaaf94337af1f74d3d58098bfec06ae6dd048b5f3aea2cb8"
+    },
+    {
+      "id": "1bf3fabDZlGeruqurxVrtggFEtjSBN15aJoqOTGJ6sH4",
+      "name": "MONDAYID_TRANSFER_001_FAILURE_GENOME",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_FAILURE_GENOME.md",
+      "bytes": 51486,
+      "truncated": false,
+      "sha256": "467b8713bf16a02d917b03532cd408feb3436e860a50ae645124d60c526c0a07"
+    },
+    {
+      "id": "1qr8WHyQh4enss1H_dA3PP2JcwLjefW1i1fuCMiXuhCM",
+      "name": "MONDAYID_TRANSFER_001_FAILURE_GENOME_V2_20261015",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_FAILURE_GENOME_V2_20261015.md",
+      "bytes": 100256,
+      "truncated": false,
+      "sha256": "f677da2268adbc1c39f1f4418010d9478093a09026806f3b2cba3ff57a143efc"
+    },
+    {
+      "id": "14NH0w7zoAteg_DPkXI6tl3_Vt3ZxhURiloQNJfCC458",
+      "name": "MONDAYID_TRANSFER_001_GOALS_STATE",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_GOALS_STATE.md",
+      "bytes": 12532,
+      "truncated": false,
+      "sha256": "90c6ebfdc28e554ffdaeb8a3c05eef1ce5267f730959a996634265db61c92222"
+    },
+    {
+      "id": "1vZyLZEGwinSlVkHPB4D_PqJSVLHKBaGUEfJlSwNYUBA",
+      "name": "MONDAYID_TRANSFER_001_GROK_CONFIG_DELTA",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_GROK_CONFIG_DELTA.md",
+      "bytes": 16661,
+      "truncated": false,
+      "sha256": "345d680da285bfecaaf6ee6c71ba46a367ca083e67ae5b2cc93147365d429354"
+    },
+    {
+      "id": "1nwTVUP9U8fa0LpETAA6Cke2VKlpdEGP1_lerc8J4fDs",
+      "name": "MONDAYID_TRANSFER_001_MODEL_OF_DIMA",
+      "localPath": "ops/drive-library-20261018/docs/MONDAYID_TRANSFER_001_MODEL_OF_DIMA.md",
+      "bytes": 16553,
+      "truncated": false,
+      "sha256": "f75a22b2aee8325237c283f43486af89f105397df000729bb36f0669be1a5c01"
+    }
+  ]
+}
