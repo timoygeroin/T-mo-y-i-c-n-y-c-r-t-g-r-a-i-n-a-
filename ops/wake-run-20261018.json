@@ -1,0 +1,61 @@
+{
+  "schema": "mondayid.wake-receipt.v1",
+  "eventId": "CURSOR-WAKE-ACK-20261018-RUN-001",
+  "observedAt": "2026-10-18T09:30:00Z",
+  "sourceHost": "cursor-cloud",
+  "runUrl": "https://cursor.com/agents/bc-01a14e4f-38b6-7f94-8d6b-d2b7baafeae3",
+  "signal": "/run",
+  "goalId": "MONDAY_UNIFIED_BUS",
+  "attach": {
+    "productionHealth": {
+      "url": "https://mondayid-host.vercel.app/api/health",
+      "ok": true,
+      "generation": 5,
+      "trusted_worldline_configured": true,
+      "trusted_writer_configured": true
+    },
+    "productionBoot": {
+      "state": "FULFILLED",
+      "reason": "ALL_INTENTS_FULFILLED",
+      "importedEvents": 5
+    },
+    "productionStatus": {
+      "sharedWriteConfigured": true,
+      "sharedWriteVerified": false,
+      "modelExecution": "DISABLED"
+    },
+    "privateMcpWithoutBearer": "PRIVATE_TOOL_AUTH_REQUIRED",
+    "previewMcp": {
+      "url": "https://mondayid-host-git-monday-share-b8b59c-rkkggcdygg-9561s-projects.vercel.app/api/mcp",
+      "status": 401,
+      "reason": "Vercel Deployment Protection"
+    }
+  },
+  "d1": {
+    "pr": 133,
+    "head": "2c8ce6d9b5ab93e415ffb4e335b7ecbce12ae968",
+    "branch": "monday/shared-bus-20261015",
+    "localNpmTest": { "pass": 307, "fail": 0, "skipped": 0 },
+    "mergeDisposition": "DO_NOT_MERGE_UNTIL_OWNER_ACCEPT_AND_R22"
+  },
+  "d2": {
+    "carrierPlugin": { "id": "mondayid-mobile", "version": "2.6.0", "auth": "none_in_zip" },
+    "workPlugin": { "id": "monday-work", "version": "1.3.0", "auth": "none_in_zip" },
+    "uploadedWorkPluginVersion": "1.1.0",
+    "oauthProtectedResourceMetadata": false,
+    "pkcePublicClient": false,
+    "conclusion": "URL-only MCP binding; Drive remains authenticated degraded bus until OAuth maps subject to chatgpt-monday"
+  },
+  "uploads": {
+    "corpusConversationsPresent": false,
+    "note": "export_manifest references conversations-000/001 and chat.html but those bytes were not in the wake upload set"
+  },
+  "driveAck": "MONDAYID_CURSOR_WAKE_ACK_20261018_RUN",
+  "humanGates": [
+    "review_and_explicitly_accept_PR_133",
+    "optional_MONDAYID_BUS_HOST_TOKENS_in_vercel",
+    "preview_auth_bypass_or_post_merge_production_probe_for_R22",
+    "oauth_owner_consent_for_chatgpt_connector"
+  ],
+  "assistantNext": "oauth_protected_resource_metadata_plus_pkce_scaffold_on_existing_monday_work_url"
+}
