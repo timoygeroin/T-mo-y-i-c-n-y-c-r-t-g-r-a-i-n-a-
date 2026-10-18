@@ -40,8 +40,12 @@ test('envelope: exactly 9 fields, typed claim, secrets rejected before retention
     'sk-'+'a'.repeat(30),'sk-\u200b'+'a'.repeat(24),'sk_live_'+'a'.repeat(20),'rk_test_'+'b'.repeat(16),
     'ghp_'+'a'.repeat(36),'AKIA'+'A'.repeat(16),'xoxc-'+'a'.repeat(12),'npm_'+'a'.repeat(36),
     'glpat-'+'a'.repeat(20),'{"private_key": "x"}','{"PRIVATE_KEY":"y"}',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U',
+    'Authorization: Bearer '+ 'a'.repeat(24),'Bearer '+ 'b'.repeat(24),'ya29.'+ 'c'.repeat(24),
+    'https://user:p@ss@example.com/path'
   ]) assert.equal(validateEnvelope(env({evidence:[s]})).code,'SECRET_IN_PAYLOAD',s);
+  assert.equal(validateEnvelope(env({proposal:{access_token:'abcdefghijklmnop'}})).code,'SECRET_IN_PAYLOAD');
+  assert.equal(validateEnvelope(env({status:{claim:'ACK'}})).code,'ACK_VIA_POST_FORBIDDEN');
   assert.equal(validateEnvelope(env({evidence:[NaN]})).code,'ENVELOPE_NON_FINITE');
   assert.equal(validateEnvelope(env({nextAction:'critique'})).code,'ENVELOPE_BAD_FIELD');
 });
@@ -87,17 +91,71 @@ test('parent version is per goal; independent goals do not block (BUS-REVIEW-07)
 });
 
 test('projection keeps forks UNRESOLVED and is independent of other goals order',()=>{
-  const rec=(id,goal,parent)=>({storageId:id,envelope:{goalId:goal,parentVersion:parent,status:'CANDIDATE',proposal:{}},transport:{principal:'p'}});
-  const p=project([rec('a','G1',GENESIS),rec('b','G1','a'),rec('c','G1','a')]);
+  const rec=(id,goal,parent,at='2026-10-15T00:00:00Z')=>({storageId:id,at,envelope:{goalId:goal,parentVersion:parent,status:'CANDIDATE',proposal:{}},transport:{principal:'p'}});
+  const p=project([rec('a','G1',GENESIS,'t1'),rec('b','G1','a','t2'),rec('c','G1','a','t3')]);
   assert.equal(p.goals.G1.conflicts.length,1); assert.equal(p.goals.G1.conflicts[0].status,'UNRESOLVED');
+  assert.equal(p.goals.G1.head,null);
+  // Newest-first input must still tip to the chain end, not the oldest event.
+  const chain=project([rec('c','G1','b','t3'),rec('b','G1','a','t2'),rec('a','G1',GENESIS,'t1')]);
+  assert.equal(chain.goals.G1.head,'c');
   const x=project([rec('a','G1',GENESIS),rec('z','G2',GENESIS),rec('b','G1','a')]);
   const y=project([rec('z','G2',GENESIS),rec('a','G1',GENESIS),rec('b','G1','a')]);
   assert.deepEqual(x.goals,y.goals);
 });
 
-test('truncated snapshot window refuses to write (R16)',async()=>{
+test('truncated snapshot window refuses genesis when goal is invisible (R16)',async()=>{
   const {bus,writes}=fakeWorldline({extraEvents:100});
   assert.equal((await bus.post(env(),G)).code,'PARTIAL_SNAPSHOT'); assert.equal(writes.length,0);
+});
+
+test('unrelated traffic does not brick an already-visible goal head',async()=>{
+  const w=fakeWorldline({extraEvents:0});
+  const a=await w.bus.post(env(),G); assert.equal(a.code,'STORED_READBACK_EXACT');
+  // Fill the snapshot window with non-bus events after the bus tip exists.
+  for(let i=0;i<100;i++) w.events.push({predicate:'other',eventId:'Y'+i,timestampIso:'2026-10-15T01:00:00Z'});
+  // Default limit 100 → truncated, but goal tip is still in the chronological decode set
+  // only if bus events remain inside the window. Force newest-first window that keeps the tip:
+  const prevFetch=w.bus.fetchImpl;
+  w.bus.fetchImpl=async(url,opts={})=>{
+    const u=new URL(url);
+    if(u.pathname==='/worldline/v4/snapshot'){
+      const limit=Number(u.searchParams.get('limit'));
+      const ordered=[...w.events].reverse(); // newest-first
+      return {ok:true,status:200,json:async()=>({schema:'mondayid.worldline.snapshot.v0.4.0',trust:'AUTHENTICATED_MACHINE_WRITER',readOnly:true,events:ordered.slice(0,limit)})};
+    }
+    return prevFetch(url,opts);
+  };
+  // With newest-first + 100 non-bus newest events, bus tip falls out → PARTIAL_SNAPSHOT.
+  assert.equal((await w.bus.post(env({eventId:'ev-2',parentVersion:a.storageId}),G)).code,'PARTIAL_SNAPSHOT');
+  // Larger window recovers the tip and allows the child.
+  w.bus.snapshotLimit=200;
+  assert.equal((await w.bus.post(env({eventId:'ev-2',parentVersion:a.storageId}),G)).code,'STORED_READBACK_EXACT');
+});
+
+test('unresolved fork blocks further descendants',async()=>{
+  const w=fakeWorldline();
+  const first=await w.bus.post(env(),G);
+  const child=await w.bus.post(env({eventId:'ev-b',parentVersion:first.storageId}),G);
+  assert.equal(child.code,'STORED_READBACK_EXACT');
+  // Inject a sibling of `child` (same parent) without going through post().
+  const forkEnv=env({eventId:'ev-fork',parentVersion:first.storageId,evidence:['fork']});
+  w.events.push({
+    eventId:storageIdFor('ev-fork'),
+    timestampIso:'2026-10-15T00:00:01Z',
+    subject:'MONDAY_UNIFIED_BUS',
+    predicate:'mondayid_bus_envelope_v2',
+    valueJson:JSON.stringify({
+      schema:'mondayid.bus.record.v2',
+      envelope:forkEnv,
+      payloadHash:'x'.repeat(64),
+      transport:{principal:'grok-monday',hostBound:true,claimedSourceHost:'grok-monday',receivedAt:'2026-10-15T00:00:01Z'},
+      delivery:'STORED',
+      policy:{executable:false,executor:'NONE',operationClass:'NO_OPERATION',riskFlags:[],advisoryRiskWords:false}
+    }),
+    epistemicStatus:'CANDIDATE'
+  });
+  const blocked=await w.bus.post(env({eventId:'ev-c',parentVersion:child.storageId}),G);
+  assert.equal(blocked.code,'GOAL_UNRESOLVED_FORK');
 });
 
 test('readback mismatch is not success',async()=>{

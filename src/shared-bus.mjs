@@ -31,9 +31,17 @@ const SECRET_SHAPES = [
   /\bnpm_[A-Za-z0-9]{36,}/,
   /\bglpat-[A-Za-z0-9_-]{20,}/,
   /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/,
-  /\\?"private[_-]?key\\?"\s*:/i
+  /\\?"private[_-]?key\\?"\s*:/i,
+  // Opaque bearer / OAuth access tokens and credential-bearing URLs (Codex P1).
+  /\bAuthorization\s*:\s*Bearer\s+[A-Za-z0-9._~+\/-]{16,}/i,
+  /\bBearer\s+[A-Za-z0-9._~+\/-]{20,}/,
+  /\bya29\.[A-Za-z0-9_-]{20,}/,
+  /\bya29a\.[A-Za-z0-9_-]{20,}/,
+  /\b1\/\/[A-Za-z0-9_-]{20,}/,
+  /https?:\/\/[^\/\s]+:[^@\/\s]+@/i
 ];
 const INVISIBLE = /[\u200B-\u200D\uFEFF\u2060\u180E\u202A-\u202E\u2066-\u2069]/g;
+const CREDENTIAL_KEYS = /^(authorization|access[_-]?token|refresh[_-]?token|id[_-]?token|api[_-]?key|client[_-]?secret|password|passwd|secret|token|bearer)$/i;
 
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]`
   : v && typeof v === 'object' ? `{${Object.keys(v).sort().map(k=>`${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}`
@@ -48,6 +56,17 @@ const explicitZero = n => typeof n === 'number' && Number.isFinite(n) && n === 0
 function hasSecret(raw) {
   const text = String(raw).replace(INVISIBLE, '');
   return SECRET_SHAPES.some(re => re.test(text));
+}
+
+function hasCredentialKeyedSecret(v, d = 0) {
+  if (v == null || d > 12) return false;
+  if (typeof v !== 'object') return false;
+  if (Array.isArray(v)) return v.some(x => hasCredentialKeyedSecret(x, d + 1));
+  for (const [k, val] of Object.entries(v)) {
+    if (CREDENTIAL_KEYS.test(k) && typeof val === 'string' && val.length >= 8) return true;
+    if (hasCredentialKeyedSecret(val, d + 1)) return true;
+  }
+  return false;
 }
 
 // JSON.stringify would silently turn NaN/Infinity into null and drop undefined,
@@ -79,7 +98,7 @@ function scan(v, d = 0, acc = { flags:new Set(), words:false, truncated:false })
   return acc;
 }
 
-export function validateEnvelope(env) {
+export function validateEnvelope(env, { allowAck = false } = {}) {
   if (!env || typeof env !== 'object' || Array.isArray(env)) return { ok:false, code:'ENVELOPE_NOT_OBJECT' };
   const extra = Object.keys(env).filter(k => !ENVELOPE_FIELDS.includes(k));
   if (extra.length) return { ok:false, code:'ENVELOPE_UNKNOWN_FIELDS', extra };
@@ -96,7 +115,17 @@ export function validateEnvelope(env) {
   try { raw = JSON.stringify(env); }
   catch { return { ok:false, code:'ENVELOPE_NOT_SERIALIZABLE' }; }
   if (raw.length > 32000) return { ok:false, code:'ENVELOPE_TOO_LARGE' };
-  if (hasSecret(raw)) return { ok:false, code:'SECRET_IN_PAYLOAD' };
+  if (hasSecret(raw) || hasCredentialKeyedSecret(env)) return { ok:false, code:'SECRET_IN_PAYLOAD' };
+  // ACK/NACK must go through SharedBus.ack so reference hash/scope/goal are enforced.
+  const claim = claimOf(env.status);
+  if ((claim === 'ACK' || claim === 'NACK') && !allowAck) return { ok:false, code:'ACK_VIA_POST_FORBIDDEN' };
+  if (allowAck && (claim === 'ACK' || claim === 'NACK')) {
+    const p = env.proposal;
+    if (!p || typeof p !== 'object' || Array.isArray(p)) return { ok:false, code:'ACK_BAD_PROPOSAL' };
+    if (typeof p.referenceEventId !== 'string' || !p.referenceEventId) return { ok:false, code:'ACK_BAD_REFERENCE' };
+    if (typeof p.referencePayloadHash !== 'string' || !/^[a-f0-9]{64}$/.test(p.referencePayloadHash)) return { ok:false, code:'ACK_BAD_HASH' };
+    if (!ACK_SCOPES.includes(p.ackScope)) return { ok:false, code:'BAD_ACK_SCOPE' };
+  }
   return { ok:true };
 }
 
@@ -133,29 +162,52 @@ export function decodeRecords(snapshot) {
     if (rec?.schema !== BUS_SCHEMA || !rec.envelope) continue;
     out.push({ storageId:e.eventId, at:e.timestampIso ?? null, ...rec });
   }
-  return out;
+  return sortBusRecords(out);
+}
+
+function sortBusRecords(records) {
+  // Chronological order: newest-first snapshots must not invert the goal head.
+  // Equal timestamps keep parent before child so cursors and ACK chains stay causal.
+  return [...records].sort((a, b) => {
+    const ta = a.at || '';
+    const tb = b.at || '';
+    if (ta !== tb) return ta < tb ? -1 : 1;
+    if (a.storageId === b.envelope?.parentVersion) return -1;
+    if (b.storageId === a.envelope?.parentVersion) return 1;
+    return String(a.storageId).localeCompare(String(b.storageId));
+  });
 }
 
 // Deterministic per-goal projection (BUS-REVIEW-07/10): global order only for delivery;
 // semantic version is per goal; forks (same parent twice) stay unresolved conflicts.
+// Head is the unique tip (no descendant), never "last iteration of whatever order".
 export function project(records) {
+  const ordered = sortBusRecords(records);
   const goals = {};
-  const byHash = new Map(records.map(r => [r.storageId, r]));
-  for (const r of records) {
+  const byHash = new Map(ordered.map(r => [r.storageId, r]));
+  for (const r of ordered) {
     const g = goals[r.envelope.goalId] ??= { head:GENESIS, events:[], conflicts:[] };
     const sibling = g.events.find(x => x.parentVersion === r.envelope.parentVersion);
     if (sibling) g.conflicts.push({ parentVersion:r.envelope.parentVersion, branches:[sibling.storageId, r.storageId], status:'UNRESOLVED' });
     g.events.push({ storageId:r.storageId, parentVersion:r.envelope.parentVersion, claim:claimOf(r.envelope.status) });
-    g.head = r.storageId;
+  }
+  for (const g of Object.values(goals)) {
+    const tips = g.events.filter(e => !g.events.some(x => x.parentVersion === e.storageId));
+    if (g.conflicts.length || tips.length !== 1) g.head = null;
+    else g.head = tips[0]?.storageId ?? GENESIS;
   }
   const acks = {};
-  for (const r of records) {
+  for (const r of ordered) {
     const ref = r.envelope.proposal?.referenceEventId;
     if (['ACK','NACK'].includes(claimOf(r.envelope.status)) && byHash.has(ref)) (acks[ref] ??= []).push({ by:r.transport?.principal, scope:r.envelope.proposal.ackScope, storageId:r.storageId });
   }
   return { goals, acks };
 }
-export const goalHead = (records, goalId) => project(records).goals[goalId]?.head ?? GENESIS;
+export const goalHead = (records, goalId) => {
+  const g = project(records).goals[goalId];
+  if (!g) return GENESIS;
+  return g.head ?? null;
+};
 
 export class SharedBus {
   constructor({ baseUrl, writerToken, readerToken, fetchImpl = globalThis.fetch, now = () => new Date().toISOString(), snapshotLimit = 100 } = {}) {
@@ -193,26 +245,37 @@ export class SharedBus {
     const conflicts = Array.isArray(b.conflicts) ? b.conflicts : [];
     return { ok:rec?.schema === BUS_SCHEMA, code:rec?.schema === BUS_SCHEMA ? undefined : 'NOT_BUS_RECORD', event:b.event, record:rec, conflicts };
   }
-  async post(envelope, auth = null) {
+  async post(envelope, auth = null, { allowAck = false } = {}) {
     if (!auth?.principal) return { ok:false, code:'UNAVAILABLE_AUTH' };
-    const v = validateEnvelope(envelope); if (!v.ok) return v;
+    const v = validateEnvelope(envelope, { allowAck }); if (!v.ok) return v;
     if (auth.hostBound && envelope.sourceHost !== auth.principal) return { ok:false, code:'SOURCE_HOST_MISMATCH', principal:auth.principal, claimed:envelope.sourceHost };
     if (!this.writerToken) return { ok:false, code:'NO_WORLDLINE_WRITER_TOKEN' };
     const storageId = storageIdFor(envelope.eventId);
     const payloadHash = payloadHashOf(envelope);
     const cur = await this.records(); if (!cur.ok) return cur;
-    const prior = cur.records.find(r => r.storageId === storageId);
-    if (prior) return idempotencyResult(prior, payloadHash, storageId);
-    // Snapshot windows can hide a write whose response was lost. The point read
-    // is the idempotency source of truth before any second append.
+    // Always consult the point-read (and its conflicts) before DUPLICATE (Codex P1).
     const looked = await this.get(storageId);
     if (looked.code !== 'NOT_FOUND') {
       if (!looked.ok || !looked.record) return { ok:false, code:looked.code || 'BUS_READBACK_FAILED', storageId, retrySafe:true };
       if (looked.conflicts.length) return { ok:false, code:'IDEMPOTENCY_CONFLICT', storageId, payloadHash };
       return idempotencyResult(looked.record, payloadHash, storageId);
     }
-    if (!cur.complete) return { ok:false, code:'PARTIAL_SNAPSHOT', note:'cannot prove uniqueness or goal head from a truncated window' };
-    const head = goalHead(cur.records, envelope.goalId);
+    const proj = project(cur.records);
+    const goal = proj.goals[envelope.goalId];
+    if (goal?.conflicts?.length) {
+      return { ok:false, code:'GOAL_UNRESOLVED_FORK', goalId:envelope.goalId, conflicts:goal.conflicts };
+    }
+    const head = goal?.head ?? GENESIS;
+    if (head == null) return { ok:false, code:'GOAL_UNRESOLVED_FORK', goalId:envelope.goalId };
+    // Truncated global windows must not permanently brick the bus on unrelated
+    // traffic, but an invisible goal in a truncated view cannot prove head/genesis.
+    if (!cur.complete && !goal) {
+      return { ok:false, code:'PARTIAL_SNAPSHOT', note:'truncated window with no in-window goal events; cannot prove head or genesis' };
+    }
+    if (!cur.complete && head !== GENESIS) {
+      const parentRead = await this.get(head);
+      if (!parentRead.ok) return { ok:false, code:'PARTIAL_SNAPSHOT', note:'truncated window; claimed head not readable by point-read' };
+    }
     if (envelope.parentVersion !== head) return { ok:false, code:'STALE_PARENT', goalId:envelope.goalId, expected:head, got:envelope.parentVersion };
     const record = {
       schema:BUS_SCHEMA, envelope, payloadHash,
@@ -239,6 +302,6 @@ export class SharedBus {
       proposal:{ referenceEventId:referenceStorageId, referencePayloadHash:target.record.payloadHash, ackScope },
       nextAction:{ recipient:target.record.transport.principal, action:'none' },
       status:{ claim:ackScope === 'REJECTED' ? 'NACK' : 'ACK' }
-    }, auth);
+    }, auth, { allowAck:true });
   }
 }
