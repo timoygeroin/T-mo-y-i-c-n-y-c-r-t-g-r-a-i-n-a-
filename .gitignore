@@ -1,0 +1,4 @@
+
+# Archive pipeline intermediate uncompressed streams (commit .gz instead)
+ops/archive-pipeline-20261018/messages_stream.jsonl
+ops/archive-pipeline-20261018/dima_messages.jsonl

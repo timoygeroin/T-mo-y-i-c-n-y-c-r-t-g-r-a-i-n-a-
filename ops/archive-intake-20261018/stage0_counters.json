@@ -1,23 +1,46 @@
 {
-  "files_seen": 24,
-  "files_opened": 24,
-  "archives_unpacked": 8,
-  "chat_sources_detected": 0,
-  "raw_chats_detected": 0,
-  "unique_chats": 0,
-  "total_messages": 0,
-  "dima_messages": 0,
-  "assistant_messages": 0,
-  "unread_or_failed": 3,
+  "stage": "0+1+2+3_partial",
+  "files_seen": 31,
+  "files_opened": 31,
+  "archives_unpacked": 12,
+  "raw_parts_present": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "raw_parts_missing": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    11,
+    12,
+    13
+  ],
+  "chat_sources_detected": 4,
+  "raw_chats_detected": 200,
+  "unique_chats": 200,
+  "total_messages": 22214,
+  "dima_messages": 9257,
+  "assistant_messages": 11550,
+  "unread_or_failed": 11,
+  "coverage_percent": 30.77,
+  "ready_allowed": false,
   "artifacts_created": [
+    "ops/archive-pipeline-20261018/messages_stream.jsonl",
+    "ops/archive-pipeline-20261018/dima_messages.jsonl",
+    "ops/archive-pipeline-20261018/conversations_index.csv",
     "ops/archive-intake-20261018/intake_ledger.json",
-    "ops/archive-intake-20261018/unpack_tree.json",
-    "ops/archive-intake-20261018/unpack_errors.json",
     "ops/archive-intake-20261018/source_detection_report.json",
-    "ops/archive-intake-20261018/validation_report.json"
+    "ops/archive-intake-20261018/validation_report.json",
+    "ops/archive-pipeline-20261018/normalize_errors.json",
+    "ops/archive-pipeline-20261018/part_sha_report.json"
   ],
   "blockers": [
-    "RAW_ACCESS_INSUFFICIENT"
+    "MISSING_RAW_PARTS_01_06_AND_11_13"
   ],
-  "next_executable_action": "upload one exact raw source listed in validation_report.exact_missing_sources"
+  "next_executable_action": "upload 03_RAW_CHATS_PART_01..06 and 11..13 (or outer MAXPACK v7 PART_01+02)"
 }

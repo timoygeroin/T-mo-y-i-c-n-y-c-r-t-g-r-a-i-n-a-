@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.archive.intake_ledger.v1",
-  "observedAt": "2026-10-18T09:32:49.868887+00:00",
+  "observedAt": "2026-10-18T10:07:31.655876+00:00",
   "host": "cursor-cloud",
   "files": [
     {
@@ -266,6 +266,83 @@
       "role_guess": "navigation",
       "error": null,
       "zip_entry_count": null
+    },
+    {
+      "filename": "MONDAY_AIG_RUNTIME_STATE_FROM_MAXPACK_v7_v1_f0a1.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAY_AIG_RUNTIME_STATE_FROM_MAXPACK_v7_v1_f0a1.json",
+      "size": 2295,
+      "sha256": "601e0d71bb76d91d358c5f4d2b384b0954676dbfc6ce3fc4731de8633a150a21",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "MONDAY_AIG_UNFOLD_REPORT_v1_ad08.md",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAY_AIG_UNFOLD_REPORT_v1_ad08.md",
+      "size": 4752,
+      "sha256": "309f2a532bd2a178e2e76d6590b2c3ddb223a820a915572c88227fe3066a45f1",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_MANIFEST_4ea7.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_MANIFEST_4ea7.json",
+      "size": 2131,
+      "sha256": "b0b966c635d3b1d87a250d282592d735ac081f7e225885e180b4f9f16c08e75d",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "03_RAW_CHATS_PART_07_OF_13_v6_cda8.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/03_RAW_CHATS_PART_07_OF_13_v6_cda8.zip",
+      "size": 3541598,
+      "sha256": "b6ac2680ab88e508657a570b5c86cbfeb97c1d0b45400f62d6dfb9d12f2e0d45",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "raw_corpus",
+      "error": null,
+      "zip_entry_count": 2
+    },
+    {
+      "filename": "03_RAW_CHATS_PART_08_OF_13_v6_c349.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/03_RAW_CHATS_PART_08_OF_13_v6_c349.zip",
+      "size": 1178203,
+      "sha256": "d05736c97127602fce592a6eed3185d43ec1d3fabd468283fe48a2ab9041e68e",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "raw_corpus",
+      "error": null,
+      "zip_entry_count": 2
+    },
+    {
+      "filename": "03_RAW_CHATS_PART_09_OF_13_v6_5d58.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/03_RAW_CHATS_PART_09_OF_13_v6_5d58.zip",
+      "size": 3202481,
+      "sha256": "dc32a8009245af37bc7631a7523e7f64ce1da8e88a03a216db9e4d68e706e3b4",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "raw_corpus",
+      "error": null,
+      "zip_entry_count": 2
+    },
+    {
+      "filename": "03_RAW_CHATS_PART_10_OF_13_v6_6644.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/03_RAW_CHATS_PART_10_OF_13_v6_6644.zip",
+      "size": 3921397,
+      "sha256": "e62398a3730ecbf6fbc67fe0d4d9e189a67bff76265ca92f5c7010e344eea747",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "raw_corpus",
+      "error": null,
+      "zip_entry_count": 2
     }
   ]
 }

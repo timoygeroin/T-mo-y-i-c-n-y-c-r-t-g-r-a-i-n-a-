@@ -1,108 +1,86 @@
 {
   "schema": "mondayid.archive.source_detection.v1",
-  "observedAt": "2026-10-18T09:32:49.868855+00:00",
-  "raw_corpus_files_present": [],
-  "raw_named_in_manifest_but_missing_bytes": [
+  "observedAt": "2026-10-18T10:07:31.655876+00:00",
+  "verdict": "PARTIAL_RAW_CORPUS",
+  "raw_parts_present": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "raw_parts_missing": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    11,
+    12,
+    13
+  ],
+  "raw_parts_sha_ok": true,
+  "part_reports": [
     {
-      "path": "chat.html",
-      "size_bytes": 482852352,
-      "present_in_upload": false
+      "part_no": 7,
+      "chat_start_index": 301,
+      "chat_end_index": 350,
+      "chat_count": 50,
+      "jsonl_file": "/tmp/monday-raw/part_07/raw_chats_07_301-350.jsonl",
+      "jsonl_sha256_manifest": "c30d36d89eec08e879cc6ff3f0e91c340e10dc57349d0f455a94a19a6c0ac7ac",
+      "jsonl_sha256_observed": "c30d36d89eec08e879cc6ff3f0e91c340e10dc57349d0f455a94a19a6c0ac7ac",
+      "sha_ok": true,
+      "titles_in_manifest": 50
     },
     {
-      "path": "conversations-000.json",
-      "size_bytes": 354540462,
-      "present_in_upload": false
+      "part_no": 8,
+      "chat_start_index": 351,
+      "chat_end_index": 400,
+      "chat_count": 50,
+      "jsonl_file": "/tmp/monday-raw/part_08/raw_chats_08_351-400.jsonl",
+      "jsonl_sha256_manifest": "7542193168079043604c8e74a1e83ee8c2294cb5def808f00860448ba8ad4a57",
+      "jsonl_sha256_observed": "7542193168079043604c8e74a1e83ee8c2294cb5def808f00860448ba8ad4a57",
+      "sha_ok": true,
+      "titles_in_manifest": 50
     },
     {
-      "path": "conversations-001.json",
-      "size_bytes": 171695204,
-      "present_in_upload": false
+      "part_no": 9,
+      "chat_start_index": 401,
+      "chat_end_index": 450,
+      "chat_count": 50,
+      "jsonl_file": "/tmp/monday-raw/part_09/raw_chats_09_401-450.jsonl",
+      "jsonl_sha256_manifest": "5e3c14c051e12edf452eaec168b139378cb385c8410a49e2981836d9442f29b5",
+      "jsonl_sha256_observed": "5e3c14c051e12edf452eaec168b139378cb385c8410a49e2981836d9442f29b5",
+      "sha_ok": true,
+      "titles_in_manifest": 50
+    },
+    {
+      "part_no": 10,
+      "chat_start_index": 451,
+      "chat_end_index": 500,
+      "chat_count": 50,
+      "jsonl_file": "/tmp/monday-raw/part_10/raw_chats_10_451-500.jsonl",
+      "jsonl_sha256_manifest": "edeaec2229e5c1395e4669035a328f3fa1cb486fa9553cce8695fd667cfded8c",
+      "jsonl_sha256_observed": "edeaec2229e5c1395e4669035a328f3fa1cb486fa9553cce8695fd667cfded8c",
+      "sha_ok": true,
+      "titles_in_manifest": 50
     }
   ],
-  "raw_inside_uploaded_zips": [],
-  "controllers": [
-    {
-      "filename": "MONDAYID_AGENT_FIELD_HANDOFF_v2_b827.zip",
-      "sha256": "983850ec63dc3342f3bc2da3b3499c045d29ea54a9c7c0ab8003d2897694f3a7"
-    }
+  "expected_total_chats_navigation": 650,
+  "observed_chats_this_pass": 200,
+  "maxpack_outer_parts_present": false,
+  "exact_missing_files": [
+    "03_RAW_CHATS_PART_01_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_02_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_03_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_04_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_05_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_06_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_11_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_12_OF_13_v6.zip",
+    "03_RAW_CHATS_PART_13_OF_13_v6.zip",
+    "MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_PART_01_OF_02.zip",
+    "MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_PART_02_OF_02.zip"
   ],
-  "runtime_seeds": [
-    {
-      "filename": "MONDAY_UNIVERSITY_v1_3__3b4d.zip",
-      "sha256": "8d227baecd5c489185c83d329d3ad8b60a495a2c5fe77d9308bc0688cdc0ebd7"
-    },
-    {
-      "filename": "SKILL_42b7.md",
-      "sha256": "fc3aefa6ea6b5fb64a986736d8f2492c8ffff6150b05e598b58613a21f40c0c5"
-    },
-    {
-      "filename": "SKILL_5cbe.md",
-      "sha256": "1a056a520010dd329c37feb10000617a55f9056e2749259458da42a9454fde0d"
-    },
-    {
-      "filename": "SKILL_bd96.md",
-      "sha256": "25ba427d1989444ebb840a23990b32501a869c3f3dddf6f36b7c5ecabb89073e"
-    },
-    {
-      "filename": "SKILL_dee8.md",
-      "sha256": "9918c30086822e1163bd7e32a35e1d01ebbba12a2ddf0303153e23d6a0b4d99d"
-    },
-    {
-      "filename": "monday-work-plugin_cd7c.zip",
-      "sha256": "c78311883e65bb1752755416a55c17a33d88f0323782659982932d667ce895e4"
-    },
-    {
-      "filename": "monday-work_5d86.zip",
-      "sha256": "8fde610ec5471f72f7d0cd43f4a6325abc439dde982161bbd7cef320a39b3db7"
-    },
-    {
-      "filename": "mondayid-continuity-0.1.0_df57.zip",
-      "sha256": "452eb77fe70bef553afe600ad1f929989cb487839ff8105584a4438065a30553"
-    },
-    {
-      "filename": "mondayid-core_a6e7.zip",
-      "sha256": "d2198039480839c5a11ca837fb679c0f9aa18f110613d4fd2e67fc185cf815ca"
-    }
-  ],
-  "navigation_only": [
-    {
-      "filename": "MONDAYID_ACQUIRED_REFLEX_INHERITANCE_v1_2026-08-20_925f.gdoc",
-      "role_guess": "knowledge_base"
-    },
-    {
-      "filename": "MONDAYID_DISTILLED_POLICY_V1_6591.json",
-      "role_guess": "knowledge_base"
-    },
-    {
-      "filename": "conversation_asset_file_names_7cb6.json",
-      "role_guess": "navigation"
-    },
-    {
-      "filename": "export_manifest_b080.json",
-      "role_guess": "navigation"
-    },
-    {
-      "filename": "message_feedback_7479.json",
-      "role_guess": "navigation"
-    },
-    {
-      "filename": "mondayid-continuity-1789329062194_b943.json",
-      "role_guess": "navigation"
-    },
-    {
-      "filename": "shared_conversations_bb69.json",
-      "role_guess": "navigation"
-    },
-    {
-      "filename": "user_settings_859d.json",
-      "role_guess": "navigation"
-    }
-  ],
-  "verdict": "RAW_ACCESS_INSUFFICIENT",
-  "inspected_non_raw": {
-    "shared_conversations_bb69.json": "3 share-metadata rows only; no message bodies",
-    "mondayid-continuity-1789329062194_b943.json": "empty turns state",
-    "message_feedback_7479.json": "ratings metadata, not message stream",
-    "export_manifest_b080.json": "names conversations-000/001 + chat.html as missing bytes"
-  }
+  "note": "Parts 07-10 are authentic ChatGPT mapping JSONL. Outer MAXPACK zips still absent; only inner raw parts uploaded."
 }

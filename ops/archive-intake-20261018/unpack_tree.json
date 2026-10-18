@@ -1,6 +1,71 @@
 {
   "schema": "mondayid.archive.unpack_tree.v1",
+  "observedAt": "2026-10-18T10:07:56.556818+00:00",
   "archives": [
+    {
+      "archive": "03_RAW_CHATS_PART_07_OF_13_v6_cda8.zip",
+      "sha256": "b6ac2680ab88e508657a570b5c86cbfeb97c1d0b45400f62d6dfb9d12f2e0d45",
+      "entries": [
+        {
+          "name": "part_07/MANIFEST_RAW_PART_07.json",
+          "size": 7082,
+          "is_dir": false
+        },
+        {
+          "name": "part_07/raw_chats_07_301-350.jsonl",
+          "size": 16689931,
+          "is_dir": false
+        }
+      ]
+    },
+    {
+      "archive": "03_RAW_CHATS_PART_08_OF_13_v6_c349.zip",
+      "sha256": "d05736c97127602fce592a6eed3185d43ec1d3fabd468283fe48a2ab9041e68e",
+      "entries": [
+        {
+          "name": "part_08/MANIFEST_RAW_PART_08.json",
+          "size": 7316,
+          "is_dir": false
+        },
+        {
+          "name": "part_08/raw_chats_08_351-400.jsonl",
+          "size": 5998463,
+          "is_dir": false
+        }
+      ]
+    },
+    {
+      "archive": "03_RAW_CHATS_PART_09_OF_13_v6_5d58.zip",
+      "sha256": "dc32a8009245af37bc7631a7523e7f64ce1da8e88a03a216db9e4d68e706e3b4",
+      "entries": [
+        {
+          "name": "part_09/MANIFEST_RAW_PART_09.json",
+          "size": 7126,
+          "is_dir": false
+        },
+        {
+          "name": "part_09/raw_chats_09_401-450.jsonl",
+          "size": 15936386,
+          "is_dir": false
+        }
+      ]
+    },
+    {
+      "archive": "03_RAW_CHATS_PART_10_OF_13_v6_6644.zip",
+      "sha256": "e62398a3730ecbf6fbc67fe0d4d9e189a67bff76265ca92f5c7010e344eea747",
+      "entries": [
+        {
+          "name": "part_10/MANIFEST_RAW_PART_10.json",
+          "size": 7252,
+          "is_dir": false
+        },
+        {
+          "name": "part_10/raw_chats_10_451-500.jsonl",
+          "size": 17822592,
+          "is_dir": false
+        }
+      ]
+    },
     {
       "archive": "MONDAYID_AGENT_FIELD_HANDOFF_v2_b827.zip",
       "sha256": "983850ec63dc3342f3bc2da3b3499c045d29ea54a9c7c0ab8003d2897694f3a7",
@@ -8,43 +73,36 @@
         {
           "name": "00_PASTE_THIS_TO_AGENT_MODE.md",
           "size": 5211,
-          "compressed_size": 2631,
           "is_dir": false
         },
         {
           "name": "01_UPLOAD_ORDER_AND_FILE_MAP.md",
           "size": 1893,
-          "compressed_size": 1022,
           "is_dir": false
         },
         {
           "name": "02_FAILURE_PREMORTEM.md",
           "size": 1116,
-          "compressed_size": 625,
           "is_dir": false
         },
         {
           "name": "03_SOURCE_AUTHORITY_LADDER.json",
           "size": 950,
-          "compressed_size": 433,
           "is_dir": false
         },
         {
           "name": "04_SHORT_START_PROMPT.txt",
           "size": 1103,
-          "compressed_size": 694,
           "is_dir": false
         },
         {
           "name": "05_REQUIRED_ARTIFACT_SCHEMAS.json",
           "size": 1474,
-          "compressed_size": 552,
           "is_dir": false
         },
         {
           "name": "README_START_HERE.md",
           "size": 412,
-          "compressed_size": 288,
           "is_dir": false
         }
       ]
@@ -56,49 +114,41 @@
         {
           "name": "ENGINE_CONTRACT.json",
           "size": 721,
-          "compressed_size": 430,
           "is_dir": false
         },
         {
           "name": "wake.sh",
           "size": 675,
-          "compressed_size": 398,
           "is_dir": false
         },
         {
           "name": "README.md",
           "size": 2205,
-          "compressed_size": 1012,
           "is_dir": false
         },
         {
           "name": "tests/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "tests/test_engine.py",
           "size": 4192,
-          "compressed_size": 1329,
           "is_dir": false
         },
         {
           "name": "MANIFEST.json",
           "size": 1101,
-          "compressed_size": 531,
           "is_dir": false
         },
         {
           "name": "TEST_REPORT.md",
           "size": 1398,
-          "compressed_size": 816,
           "is_dir": false
         },
         {
           "name": "mondayid_archive_engine.py",
           "size": 47769,
-          "compressed_size": 11537,
           "is_dir": false
         }
       ]
@@ -110,49 +160,41 @@
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/public/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/public/reality-widget.html",
           "size": 7770,
-          "compressed_size": 3255,
           "is_dir": false
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/package.json",
           "size": 454,
-          "compressed_size": 238,
           "is_dir": false
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/test/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/test/contract.test.js",
           "size": 929,
-          "compressed_size": 443,
           "is_dir": false
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/server.js",
           "size": 13310,
-          "compressed_size": 4168,
           "is_dir": false
         },
         {
           "name": "mnt/data/MONDAYID_REALITY_CHATGPT_APP_v2/README.md",
           "size": 2531,
-          "compressed_size": 1355,
           "is_dir": false
         }
       ]
@@ -164,31 +206,26 @@
         {
           "name": "BOOT.md",
           "size": 4659,
-          "compressed_size": 2423,
           "is_dir": false
         },
         {
           "name": "CURRICULUM.md",
           "size": 2408,
-          "compressed_size": 1244,
           "is_dir": false
         },
         {
           "name": "ENTRANCE_EXAM.json",
           "size": 2109,
-          "compressed_size": 936,
           "is_dir": false
         },
         {
           "name": "MANIFEST.json",
           "size": 347,
-          "compressed_size": 250,
           "is_dir": false
         },
         {
           "name": "TRIGGER.txt",
           "size": 849,
-          "compressed_size": 519,
           "is_dir": false
         }
       ]
@@ -200,25 +237,21 @@
         {
           "name": "monday-work-plugin/READBACK.json",
           "size": 980,
-          "compressed_size": 518,
           "is_dir": false
         },
         {
           "name": "monday-work-plugin/mcp.json",
           "size": 214,
-          "compressed_size": 147,
           "is_dir": false
         },
         {
           "name": "monday-work-plugin/plugin.json",
           "size": 298,
-          "compressed_size": 201,
           "is_dir": false
         },
         {
           "name": "monday-work-plugin/skills/mondayid/SKILL.md",
           "size": 1027,
-          "compressed_size": 558,
           "is_dir": false
         }
       ]
@@ -230,31 +263,26 @@
         {
           "name": ".mcp.json",
           "size": 163,
-          "compressed_size": 115,
           "is_dir": false
         },
         {
           "name": "mcp.json",
           "size": 214,
-          "compressed_size": 147,
           "is_dir": false
         },
         {
           "name": "plugin.json",
           "size": 365,
-          "compressed_size": 229,
           "is_dir": false
         },
         {
           "name": ".codex-plugin/plugin.json",
           "size": 957,
-          "compressed_size": 445,
           "is_dir": false
         },
         {
           "name": "skills/mondayid/SKILL.md",
           "size": 2941,
-          "compressed_size": 1484,
           "is_dir": false
         }
       ]
@@ -266,199 +294,166 @@
         {
           "name": ".codex-plugin/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "assets/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "docs/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/continuation-router/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/continuation-router/agents/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/durable-manifestation/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/durable-manifestation/agents/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/host-workspace-operator/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/host-workspace-operator/agents/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/proof-gate/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/proof-gate/agents/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/sandbox-python-executor/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "skills/sandbox-python-executor/agents/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "submission/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": ".codex-plugin/plugin.json",
           "size": 2395,
-          "compressed_size": 1006,
           "is_dir": false
         },
         {
           "name": "README.md",
           "size": 988,
-          "compressed_size": 559,
           "is_dir": false
         },
         {
           "name": "assets/composer-icon.svg",
           "size": 374,
-          "compressed_size": 246,
           "is_dir": false
         },
         {
           "name": "assets/logo-dark.svg",
           "size": 425,
-          "compressed_size": 259,
           "is_dir": false
         },
         {
           "name": "assets/logo-light.svg",
           "size": 425,
-          "compressed_size": 260,
           "is_dir": false
         },
         {
           "name": "docs/conversion-brief.md",
           "size": 2129,
-          "compressed_size": 1043,
           "is_dir": false
         },
         {
           "name": "skills/continuation-router/SKILL.md",
           "size": 2014,
-          "compressed_size": 973,
           "is_dir": false
         },
         {
           "name": "skills/continuation-router/agents/openai.yaml",
           "size": 309,
-          "compressed_size": 220,
           "is_dir": false
         },
         {
           "name": "skills/durable-manifestation/SKILL.md",
           "size": 1803,
-          "compressed_size": 903,
           "is_dir": false
         },
         {
           "name": "skills/durable-manifestation/agents/openai.yaml",
           "size": 292,
-          "compressed_size": 213,
           "is_dir": false
         },
         {
           "name": "skills/host-workspace-operator/SKILL.md",
           "size": 4667,
-          "compressed_size": 2073,
           "is_dir": false
         },
         {
           "name": "skills/host-workspace-operator/agents/openai.yaml",
           "size": 336,
-          "compressed_size": 231,
           "is_dir": false
         },
         {
           "name": "skills/proof-gate/SKILL.md",
           "size": 1779,
-          "compressed_size": 910,
           "is_dir": false
         },
         {
           "name": "skills/proof-gate/agents/openai.yaml",
           "size": 289,
-          "compressed_size": 208,
           "is_dir": false
         },
         {
           "name": "skills/sandbox-python-executor/SKILL.md",
           "size": 954,
-          "compressed_size": 551,
           "is_dir": false
         },
         {
           "name": "skills/sandbox-python-executor/agents/openai.yaml",
           "size": 280,
-          "compressed_size": 201,
           "is_dir": false
         },
         {
           "name": "submission/listing.json",
           "size": 1460,
-          "compressed_size": 726,
           "is_dir": false
         },
         {
           "name": "submission/reviewer-packet.json",
           "size": 3082,
-          "compressed_size": 1190,
           "is_dir": false
         }
       ]
@@ -470,37 +465,31 @@
         {
           "name": "mondayid-core/",
           "size": 0,
-          "compressed_size": 0,
           "is_dir": true
         },
         {
           "name": "mondayid-core/CORE.md",
           "size": 1078,
-          "compressed_size": 605,
           "is_dir": false
         },
         {
           "name": "mondayid-core/SKILL.md",
           "size": 6942,
-          "compressed_size": 3149,
           "is_dir": false
         },
         {
           "name": "mondayid-core/FAILURE_GATES.md",
           "size": 1048,
-          "compressed_size": 569,
           "is_dir": false
         },
         {
           "name": "mondayid-core/INSTALL.txt",
           "size": 478,
-          "compressed_size": 316,
           "is_dir": false
         },
         {
           "name": "mondayid-core/GLOBAL_INSTRUCTION.txt",
           "size": 451,
-          "compressed_size": 297,
           "is_dir": false
         }
       ]

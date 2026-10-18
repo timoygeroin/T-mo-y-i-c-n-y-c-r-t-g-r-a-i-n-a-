@@ -1,43 +1,114 @@
 {
   "schema": "mondayid.archive.validation_report.v1",
-  "observedAt": "2026-10-18T09:32:49.868875+00:00",
-  "total_files_seen": 24,
-  "total_sources_detected": 0,
-  "total_chats_raw": 0,
-  "total_chats_unique": 0,
-  "total_messages_raw": 0,
-  "total_messages_unique": 0,
-  "dima_messages": 0,
-  "assistant_messages": 0,
+  "observedAt": "2026-10-18T10:07:31.655876+00:00",
+  "total_files_seen": 31,
+  "total_sources_detected": 4,
+  "total_chats_raw": 200,
+  "total_chats_unique": 200,
+  "total_messages_raw": 22214,
+  "total_messages_unique": 22214,
+  "dima_messages": 9257,
+  "assistant_messages": 11550,
+  "system_messages": 0,
+  "other_role_messages": 1407,
   "unread_or_failed_items": [
     {
-      "item": "conversations-000.json",
-      "reason": "named in export_manifest but bytes not uploaded",
-      "size_bytes_hint": 354540462
+      "item": "03_RAW_CHATS_PART_01_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 1,
+        "chat_index_start": 1,
+        "chat_index_end": 50
+      }
     },
     {
-      "item": "conversations-001.json",
-      "reason": "named in export_manifest but bytes not uploaded",
-      "size_bytes_hint": 171695204
+      "item": "03_RAW_CHATS_PART_02_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 2,
+        "chat_index_start": 51,
+        "chat_index_end": 100
+      }
     },
     {
-      "item": "chat.html",
-      "reason": "named in export_manifest but bytes not uploaded",
-      "size_bytes_hint": 482852352
+      "item": "03_RAW_CHATS_PART_03_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 3,
+        "chat_index_start": 101,
+        "chat_index_end": 150
+      }
+    },
+    {
+      "item": "03_RAW_CHATS_PART_04_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 4,
+        "chat_index_start": 151,
+        "chat_index_end": 200
+      }
+    },
+    {
+      "item": "03_RAW_CHATS_PART_05_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 5,
+        "chat_index_start": 201,
+        "chat_index_end": 250
+      }
+    },
+    {
+      "item": "03_RAW_CHATS_PART_06_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 6,
+        "chat_index_start": 251,
+        "chat_index_end": 300
+      }
+    },
+    {
+      "item": "03_RAW_CHATS_PART_11_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 11,
+        "chat_index_start": 501,
+        "chat_index_end": 550
+      }
+    },
+    {
+      "item": "03_RAW_CHATS_PART_12_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 12,
+        "chat_index_start": 551,
+        "chat_index_end": 600
+      }
+    },
+    {
+      "item": "03_RAW_CHATS_PART_13_OF_13_v6.zip",
+      "reason": "not uploaded",
+      "chat_index_range": {
+        "part": 13,
+        "chat_index_start": 601,
+        "chat_index_end": 650
+      }
+    },
+    {
+      "item": "MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_PART_01_OF_02.zip",
+      "reason": "outer package not uploaded"
+    },
+    {
+      "item": "MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_PART_02_OF_02.zip",
+      "reason": "outer package not uploaded"
     }
   ],
-  "coverage_percent": 0,
+  "coverage_percent": 30.77,
   "ready_allowed": false,
-  "status": "RAW_ACCESS_INSUFFICIENT",
-  "exact_missing_sources": [
-    "canonical ChatGPT export containing conversations.json (or conversations-000.json + conversations-001.json)",
-    "OR MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_PART_01_OF_02.zip + PART_02_OF_02.zip",
-    "OR 00_AUTO_START_READ_FIRST__MND_AIG_v12_SINGLE_ARCHIVE_FULL_MEMORY.zip",
-    "OR 00_AUTO_START_READ_FIRST__MND_AIG_v13_2150_CANONICAL_CONTROLLER.zip with raw payloads"
-  ],
-  "notes": [
-    "message_feedback / conversation_asset_file_names / export_manifest are navigation only",
-    "uploaded plugin/SKILL packs are older or parallel donors vs current repo carrier 2.6.0 / work 1.3.0 \u2014 not raw truth",
-    "mondayid-continuity-1789329062194 is empty turns state, not corpus"
-  ]
+  "status": "PARTIAL_RAW_CORPUS",
+  "normalize_errors": 0,
+  "artifacts": {
+    "messages_stream": "ops/archive-pipeline-20261018/messages_stream.jsonl",
+    "dima_messages": "ops/archive-pipeline-20261018/dima_messages.jsonl",
+    "conversations_index": "ops/archive-pipeline-20261018/conversations_index.csv"
+  }
 }
