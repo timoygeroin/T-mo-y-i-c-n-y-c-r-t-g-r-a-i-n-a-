@@ -1,0 +1,271 @@
+{
+  "schema": "mondayid.archive.intake_ledger.v1",
+  "observedAt": "2026-10-18T09:32:49.868887+00:00",
+  "host": "cursor-cloud",
+  "files": [
+    {
+      "filename": "MONDAYID_ACQUIRED_REFLEX_INHERITANCE_v1_2026-08-20_925f.gdoc",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAYID_ACQUIRED_REFLEX_INHERITANCE_v1_2026-08-20_925f.gdoc",
+      "size": 63629,
+      "sha256": "457f5d4c21dfd9827559fe5db18b533105125995eae3a3dc62d77396a5e46e2e",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "knowledge_base",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "MONDAYID_AGENT_FIELD_HANDOFF_v2_b827.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAYID_AGENT_FIELD_HANDOFF_v2_b827.zip",
+      "size": 7185,
+      "sha256": "983850ec63dc3342f3bc2da3b3499c045d29ea54a9c7c0ab8003d2897694f3a7",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "controller",
+      "error": null,
+      "zip_entry_count": 7
+    },
+    {
+      "filename": "MONDAYID_ARCHIVE_ENGINE_V2_2d2d.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAYID_ARCHIVE_ENGINE_V2_2d2d.zip",
+      "size": 17329,
+      "sha256": "36629c410c365059867515bfb00eb20abbc6d698499df0104ca0a64ac630aeb5",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "archive_container",
+      "error": null,
+      "zip_entry_count": 8
+    },
+    {
+      "filename": "MONDAYID_DISTILLED_POLICY_V1_6591.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAYID_DISTILLED_POLICY_V1_6591.json",
+      "size": 5282,
+      "sha256": "f8252dc3bc3816e4996b6d5bacaa82162e84173e5023608b4d327a830a546f34",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "knowledge_base",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "MONDAYID_REALITY_CHATGPT_APP_v2_b65a.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAYID_REALITY_CHATGPT_APP_v2_b65a.zip",
+      "size": 11339,
+      "sha256": "d373dcea72e720fe01f82e65f0e87268eae04d221c10a9dbc554b980b3c75ae5",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "archive_container",
+      "error": null,
+      "zip_entry_count": 8
+    },
+    {
+      "filename": "MONDAY_UNIVERSITY_v1_3__3b4d.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/MONDAY_UNIVERSITY_v1_3__3b4d.zip",
+      "size": 5898,
+      "sha256": "8d227baecd5c489185c83d329d3ad8b60a495a2c5fe77d9308bc0688cdc0ebd7",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": 5
+    },
+    {
+      "filename": "SKILL_42b7.md",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/SKILL_42b7.md",
+      "size": 4484,
+      "sha256": "fc3aefa6ea6b5fb64a986736d8f2492c8ffff6150b05e598b58613a21f40c0c5",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "SKILL_5cbe.md",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/SKILL_5cbe.md",
+      "size": 4602,
+      "sha256": "1a056a520010dd329c37feb10000617a55f9056e2749259458da42a9454fde0d",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "SKILL_bd96.md",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/SKILL_bd96.md",
+      "size": 7420,
+      "sha256": "25ba427d1989444ebb840a23990b32501a869c3f3dddf6f36b7c5ecabb89073e",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "SKILL_dee8.md",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/SKILL_dee8.md",
+      "size": 2941,
+      "sha256": "9918c30086822e1163bd7e32a35e1d01ebbba12a2ddf0303153e23d6a0b4d99d",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "conversation_asset_file_names_7cb6.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/conversation_asset_file_names_7cb6.json",
+      "size": 73926,
+      "sha256": "10bf7e88e042c8a67ed8f4580958d75c377cd014bdb09170ea8c27f5c421f514",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "export_manifest_b080.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/export_manifest_b080.json",
+      "size": 354495,
+      "sha256": "0409a245a7f1f939c3fafb81a7a14348f8d51291bb09b504f9de24f0cd983b38",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "mcp_bd46.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/mcp_bd46.json",
+      "size": 214,
+      "sha256": "87084064e09b5fec23986d48542119023c07462cfeee1799feaf67e10641e0d0",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "code_reference",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "message_feedback_7479.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/message_feedback_7479.json",
+      "size": 196119,
+      "sha256": "176051db9cdcc9fe928951eda30fc6d62f3cc557d08a06ab2c66ad8a184c5a32",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "monday-work-plugin_cd7c.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/monday-work-plugin_cd7c.zip",
+      "size": 2014,
+      "sha256": "c78311883e65bb1752755416a55c17a33d88f0323782659982932d667ce895e4",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": 4
+    },
+    {
+      "filename": "monday-work_5d86.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/monday-work_5d86.zip",
+      "size": 2976,
+      "sha256": "8fde610ec5471f72f7d0cd43f4a6325abc439dde982161bbd7cef320a39b3db7",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": 5
+    },
+    {
+      "filename": "mondayid-continuity-0.1.0_df57.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/mondayid-continuity-0.1.0_df57.zip",
+      "size": 16162,
+      "sha256": "452eb77fe70bef553afe600ad1f929989cb487839ff8105584a4438065a30553",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": 33
+    },
+    {
+      "filename": "mondayid-continuity-1789329062194_b943.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/mondayid-continuity-1789329062194_b943.json",
+      "size": 136,
+      "sha256": "e080a2cbdb938a804e7707497205369e4362aa9f406e10247fefff05777016a9",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "mondayid-core_a6e7.zip",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/mondayid-core_a6e7.zip",
+      "size": 6022,
+      "sha256": "d2198039480839c5a11ca837fb679c0f9aa18f110613d4fd2e67fc185cf815ca",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "runtime_seed",
+      "error": null,
+      "zip_entry_count": 6
+    },
+    {
+      "filename": "plugin_4317.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/plugin_4317.json",
+      "size": 471,
+      "sha256": "4c69c9f77f26e9ef9e288026f2d4f4fd3f9b78b1f1d92e84188e123068778f4c",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "code_reference",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "plugin_502a.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/plugin_502a.json",
+      "size": 365,
+      "sha256": "00efac7d9c4441e7f484f238bb19928381477edd0dbef266a88e6bb2b36b1336",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "code_reference",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "plugin_b68a.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/plugin_b68a.json",
+      "size": 471,
+      "sha256": "4c69c9f77f26e9ef9e288026f2d4f4fd3f9b78b1f1d92e84188e123068778f4c",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "code_reference",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "shared_conversations_bb69.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/shared_conversations_bb69.json",
+      "size": 833,
+      "sha256": "29bceafd7d83c86451d7feb8fdc03bfa16891a8a95bea4c7da8d04debc75ad10",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    },
+    {
+      "filename": "user_settings_859d.json",
+      "path_or_file_id": "/home/ubuntu/.cursor/projects/workspace/uploads/user_settings_859d.json",
+      "size": 6574,
+      "sha256": "5dcd0fbddbb84a27c5c99a65b8e835d44117d3b8782ceaf2b77c4d5517010764",
+      "opened": true,
+      "parseable": true,
+      "role_guess": "navigation",
+      "error": null,
+      "zip_entry_count": null
+    }
+  ]
+}

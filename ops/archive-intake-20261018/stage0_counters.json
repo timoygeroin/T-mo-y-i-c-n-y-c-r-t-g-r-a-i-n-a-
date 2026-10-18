@@ -1,0 +1,23 @@
+{
+  "files_seen": 24,
+  "files_opened": 24,
+  "archives_unpacked": 8,
+  "chat_sources_detected": 0,
+  "raw_chats_detected": 0,
+  "unique_chats": 0,
+  "total_messages": 0,
+  "dima_messages": 0,
+  "assistant_messages": 0,
+  "unread_or_failed": 3,
+  "artifacts_created": [
+    "ops/archive-intake-20261018/intake_ledger.json",
+    "ops/archive-intake-20261018/unpack_tree.json",
+    "ops/archive-intake-20261018/unpack_errors.json",
+    "ops/archive-intake-20261018/source_detection_report.json",
+    "ops/archive-intake-20261018/validation_report.json"
+  ],
+  "blockers": [
+    "RAW_ACCESS_INSUFFICIENT"
+  ],
+  "next_executable_action": "upload one exact raw source listed in validation_report.exact_missing_sources"
+}

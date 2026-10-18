@@ -1,0 +1,43 @@
+{
+  "schema": "mondayid.archive.validation_report.v1",
+  "observedAt": "2026-10-18T09:32:49.868875+00:00",
+  "total_files_seen": 24,
+  "total_sources_detected": 0,
+  "total_chats_raw": 0,
+  "total_chats_unique": 0,
+  "total_messages_raw": 0,
+  "total_messages_unique": 0,
+  "dima_messages": 0,
+  "assistant_messages": 0,
+  "unread_or_failed_items": [
+    {
+      "item": "conversations-000.json",
+      "reason": "named in export_manifest but bytes not uploaded",
+      "size_bytes_hint": 354540462
+    },
+    {
+      "item": "conversations-001.json",
+      "reason": "named in export_manifest but bytes not uploaded",
+      "size_bytes_hint": 171695204
+    },
+    {
+      "item": "chat.html",
+      "reason": "named in export_manifest but bytes not uploaded",
+      "size_bytes_hint": 482852352
+    }
+  ],
+  "coverage_percent": 0,
+  "ready_allowed": false,
+  "status": "RAW_ACCESS_INSUFFICIENT",
+  "exact_missing_sources": [
+    "canonical ChatGPT export containing conversations.json (or conversations-000.json + conversations-001.json)",
+    "OR MONDAY_AIG_FINAL_SAVE_MAXPACK_v7_PART_01_OF_02.zip + PART_02_OF_02.zip",
+    "OR 00_AUTO_START_READ_FIRST__MND_AIG_v12_SINGLE_ARCHIVE_FULL_MEMORY.zip",
+    "OR 00_AUTO_START_READ_FIRST__MND_AIG_v13_2150_CANONICAL_CONTROLLER.zip with raw payloads"
+  ],
+  "notes": [
+    "message_feedback / conversation_asset_file_names / export_manifest are navigation only",
+    "uploaded plugin/SKILL packs are older or parallel donors vs current repo carrier 2.6.0 / work 1.3.0 \u2014 not raw truth",
+    "mondayid-continuity-1789329062194 is empty turns state, not corpus"
+  ]
+}
