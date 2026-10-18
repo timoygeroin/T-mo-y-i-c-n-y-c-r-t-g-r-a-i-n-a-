@@ -4,11 +4,28 @@
   "env": {
     "MONDAYID_WORLDLINE_URL": "https://adamant-raven-783.eu-west-1.convex.site"
   },
+  "rewrites": [
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/api/.well-known/oauth-protected-resource"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/api/.well-known/oauth-authorization-server"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/.well-known/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=60" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
       ]
     }
   ]
