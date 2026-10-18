@@ -2,10 +2,12 @@
   "schema": "mondayid.wake-receipt.v1",
   "eventId": "CURSOR-WAKE-ACK-20261018-RUN-001",
   "observedAt": "2026-10-18T09:30:00Z",
+  "updatedAt": "2026-10-18T12:06:00Z",
   "sourceHost": "cursor-cloud",
   "runUrl": "https://cursor.com/agents/bc-01a14e4f-38b6-7f94-8d6b-d2b7baafeae3",
   "signal": "/run",
-  "goalId": "MONDAY_UNIFIED_BUS",
+  "goalId": "mondayid-one-organism",
+  "activeProjection": ["bus_pr_133_135", "d2_oauth", "archive_held_out"],
   "attach": {
     "productionHealth": {
       "url": "https://mondayid-host.vercel.app/api/health",
@@ -33,9 +35,10 @@
   },
   "d1": {
     "pr": 133,
+    "stackedP1": 135,
     "head": "2c8ce6d9b5ab93e415ffb4e335b7ecbce12ae968",
     "branch": "monday/shared-bus-20261015",
-    "localNpmTest": { "pass": 307, "fail": 0, "skipped": 0 },
+    "localNpmTest": { "pass": 309, "fail": 0, "skipped": 0, "note": "after P1 stack" },
     "mergeDisposition": "DO_NOT_MERGE_UNTIL_OWNER_ACCEPT_AND_R22"
   },
   "d2": {
@@ -48,14 +51,45 @@
   },
   "uploads": {
     "corpusConversationsPresent": false,
+    "archivePartial": {
+      "rawParts": ["07", "08", "09", "10"],
+      "missing": ["01", "02", "03", "04", "05", "06", "11", "12", "13"],
+      "chatsNormalized": "200/650",
+      "ready_allowed": false
+    },
     "note": "export_manifest references conversations-000/001 and chat.html but those bytes were not in the wake upload set"
+  },
+  "driveBus": {
+    "role": "authenticated_degraded_inter_host_bus",
+    "cstar": {
+      "id": "1aa12mwL9TQw6nDAP57BCOmoMJHEh6W8PT_ckqMLYqtM",
+      "url": "https://docs.google.com/document/d/1aa12mwL9TQw6nDAP57BCOmoMJHEh6W8PT_ckqMLYqtM/edit",
+      "bodyRewrite": false,
+      "commentPosted": true
+    },
+    "docs": {
+      "wakeAck": "https://docs.google.com/document/d/1-PqoqOp1JeuIJ3AbPFXHwLmoPawZDFSTJBB6rSK182c/edit",
+      "archiveStage0": "https://docs.google.com/document/d/1Sjt_ZiOiRwpvpTxydaY8bdeoJOwG8JsKBzhL3aG0NHs/edit",
+      "rethinkEnvelope": "https://docs.google.com/document/d/1Kcd4YIvruVICJgvzBa0nKpdup6v_yyyp38BBVvXqQI8/edit",
+      "cstarDelta": "https://docs.google.com/document/d/11NUyAPONdSJG4TzrX8gE48OIs3anKp2-Jeqx5L-a5ZU/edit"
+    },
+    "peerAckRequested": ["grok-monday", "chatgpt-monday"]
   },
   "driveAck": "MONDAYID_CURSOR_WAKE_ACK_20261018_RUN",
   "humanGates": [
-    "review_and_explicitly_accept_PR_133",
+    "review_and_explicitly_accept_PR_133_and_135",
     "optional_MONDAYID_BUS_HOST_TOKENS_in_vercel",
     "preview_auth_bypass_or_post_merge_production_probe_for_R22",
-    "oauth_owner_consent_for_chatgpt_connector"
+    "oauth_owner_consent_for_chatgpt_connector",
+    "optional_remaining_raw_parts_only_if_genome_track_chosen"
   ],
-  "assistantNext": "oauth_protected_resource_metadata_plus_pkce_scaffold_on_existing_monday_work_url"
+  "assistantNext": "await_peer_ack_on_drive_envelope_then_oauth_scaffold_on_existing_monday_work_url",
+  "nonClaims": [
+    "no_merge",
+    "no_deploy",
+    "no_spend",
+    "no_LEARNED",
+    "no_full_corpus",
+    "no_cstar_body_wholesale_rewrite"
+  ]
 }
