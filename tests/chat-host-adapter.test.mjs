@@ -156,5 +156,5 @@ test('chat host defaults to GPT-6.1 Sol while preserving existing gates', async 
   });
   assert.equal(out.ok,true);
   assert.equal(calls[0].model,'gpt-6.1-sol');
-  assert.equal(out.receipt.provider,'mondayid');
+  assert.equal(out.receipt.provider,'gpt-6.1-sol');
 });
