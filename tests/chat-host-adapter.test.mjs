@@ -25,7 +25,7 @@ const liveEnv={
   MONDAYID_MAX_PARALLEL_PATHS:'2',
   MONDAYID_MAX_CRITICS:'1',
   MONDAYID_WORLDLINE_URL:'https://worldline.test',
-  MONDAYID_OPENAI_MODEL:'gpt-5.6-sol'
+  MONDAYID_OPENAI_MODEL:'gpt-6.1-sol'
 };
 
 test('chat host is disabled by default so deployment cannot silently spend API credits', async () => {
@@ -131,4 +131,30 @@ test('fulfilled chat host returns a durable normalized receipt for native client
   assert.ok(out.receipt.revision.length>0);
   assert.ok(out.receipt.provider);
   assert.equal(out.surface.message,'Bound native response');
+});
+
+
+test('chat host defaults to GPT-6.1 Sol while preserving existing gates', async () => {
+  const calls=[];
+  const {MONDAYID_OPENAI_MODEL, ...env}=liveEnv;
+  const provider={
+    async generate(request){
+      calls.push(request);
+      return {ok:true,text:'Continue MondayID with verified current Worldline.'};
+    },
+    async critique(){return {ok:true,score:1,reasons:[]};}
+  };
+  assert.equal(MONDAYID_OPENAI_MODEL,'gpt-6.1-sol');
+  const blocked=await runChatHost({signal:{text:'continue'},env:{...env,MONDAYID_API_SPEND_ENABLED:'false'},provider});
+  assert.equal(blocked.code,'API_SPEND_NOT_AUTHORIZED');
+  assert.equal(calls.length,0);
+  const out=await runChatHost({
+    signal:{id:'gpt6',text:'continue',computeTier:'LOW'},
+    env,
+    fetchImpl:worldlineFetch,
+    provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(calls[0].model,'gpt-6.1-sol');
+  assert.equal(out.receipt.provider,'mondayid');
 });
