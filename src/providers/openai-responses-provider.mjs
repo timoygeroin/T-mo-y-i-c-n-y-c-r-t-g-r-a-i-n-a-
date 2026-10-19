@@ -29,7 +29,7 @@ export class OpenAIResponsesProvider {
     apiKey = process.env.OPENAI_API_KEY,
     baseUrl = DEFAULT_BASE_URL,
     fetchImpl = globalThis.fetch,
-    defaultModel = 'gpt-5.6-sol',
+    defaultModel = 'gpt-6.1-sol',
     reasoningMode = 'standard',
     reasoningContext = 'all_turns',
     store = false,

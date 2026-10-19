@@ -121,3 +121,26 @@ test('HTTP errors remain blockers with the upstream reason intact', async () => 
     /OPENAI_RESPONSES_HTTP_429:credit_balance_exhausted/
   );
 });
+
+
+test('provider defaults to GPT-6.1 Sol without network calls until explicitly invoked', async () => {
+  const calls=[];
+  const provider=new OpenAIResponsesProvider({
+    apiKey:'test-key',
+    fetchImpl:async (url,init)=>{
+      calls.push({url,body:JSON.parse(init.body)});
+      return fakeResponse({
+        id:'resp_gpt6',
+        model:'gpt-6.1-sol',
+        output:[{type:'message',content:[{type:'output_text',text:'Monday continuity preserved'}]}]
+      });
+    }
+  });
+  assert.equal(provider.defaultModel,'gpt-6.1-sol');
+  assert.equal(calls.length,0);
+  const result=await provider.generate({input:'continue',instructions:'preserve Worldline',reasoningEffort:'max'});
+  assert.equal(calls[0].body.model,'gpt-6.1-sol');
+  assert.equal(calls[0].body.reasoning.effort,'max');
+  assert.equal(calls[0].body.store,false);
+  assert.equal(result.evidence.model,'gpt-6.1-sol');
+});
