@@ -67,11 +67,28 @@
     "full archive corpus reconciled with provenance",
     "user-approved paid inference only if explicitly authorized"
   ],
-  "status": "GPT6_HOST_ADAPTER_CANDIDATE_AWAITING_EVIDENCE",
+  "status": "GPT6_HOST_DEFAULT_MERGED_CI_PASS_LIVE_UNVERIFIED",
   "safety": {
     "no_new_spend": true,
     "no_secrets_committed": true,
     "no_global_chat_mode_switch_claim": true,
     "no_mutation_of_trusted_worldline_by_manifest": true
+  },
+  "merge_evidence": {
+    "pr": 138,
+    "pr_merged": true,
+    "merge_sha": "b126831b49ed69814d6f3162a2fd0ebdf4e624f9",
+    "workflow": "MondayID system proof",
+    "workflow_run_id": 39308821519,
+    "ci_job": "success",
+    "ci_proof_steps": [
+      "npm test",
+      "npm run boot",
+      "worldline anonymous-denial proof",
+      "Monday Host public route and private-tool denial"
+    ],
+    "main_model_fallback_readback": "gpt-6.1-sol",
+    "live_gpt6_paid_inference": "NOT_RUN",
+    "production_model_runtime_delivery": "UNVERIFIED"
   }
 }
