@@ -83,7 +83,7 @@ export async function runChatHost({
   const modelProvider = provider || createOpenAIResponsesProvider({
     apiKey:env.OPENAI_API_KEY,
     fetchImpl,
-    defaultModel:env.MONDAYID_OPENAI_MODEL || 'gpt-5.6-sol',
+    defaultModel:env.MONDAYID_OPENAI_MODEL || 'gpt-6.1-sol',
     reasoningMode:env.MONDAYID_REASONING_MODE || 'standard',
     reasoningContext:'all_turns',
     store:false,
@@ -94,7 +94,7 @@ export async function runChatHost({
 
   const modelReceptor = createModelReceptor({
     provider:modelProvider,
-    model:env.MONDAYID_OPENAI_MODEL || 'gpt-5.6-sol',
+    model:env.MONDAYID_OPENAI_MODEL || 'gpt-6.1-sol',
     name:'monday-openai-attractor-receptor',
     maxParallelPaths,
     maxCritics
