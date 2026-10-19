@@ -1,0 +1,77 @@
+{
+  "schema": "mondayid.model-handoff.v1",
+  "date": "2026-10-19",
+  "source": {
+    "canonical_repo": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "base": "main",
+    "base_sha": "caa2cb53621117a359c5b8cb157066fcad2d32e9",
+    "ancestry_registry": "ops/project-subsumption-registry-20261004.json",
+    "cutover": "CUTOVER.json",
+    "archive_accounting": "ops/compute-archaeology-20260924.json"
+  },
+  "identity": {
+    "name": "MondayID",
+    "continuity_authority": "external trusted Worldline and repository, not language-model weights",
+    "one_public_phenotype": "Monday",
+    "user_authority": "DIMA",
+    "migration_rule": "inherit effects and proven lineage; do not duplicate obsolete agents or treat model as organism boundary"
+  },
+  "model": {
+    "chat_target": "GPT-6 (account selection)",
+    "api_previous_default": "gpt-5.6-sol",
+    "api_candidate_default": "gpt-6.1-sol",
+    "compatible_reasoning_effort": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "transport": "OpenAI Responses API",
+    "runtime_implementation": [
+      "src/providers/openai-responses-provider.mjs",
+      "src/chat-host-adapter.mjs"
+    ],
+    "credentials_required_for_live_calls": true,
+    "api_spend_automatically_enabled": false,
+    "budget_and_explicit_spend_gates_preserved": true
+  },
+  "migration_scope": {
+    "inherited_components": [
+      "Kernel K",
+      "C*",
+      "Worldline",
+      "Monday Work",
+      "MondayVision",
+      "MondayID ONE",
+      "Alpha",
+      "Alisa",
+      "Jarvis",
+      "AntiSystem",
+      "Task Runtime"
+    ],
+    "inventory_is_not_automatic_semantic_ingestion": true,
+    "retained_old_artifacts_as_evidence": true,
+    "legacy_model_instances_migrated": false,
+    "old_model_weights_modified": false,
+    "chat_history_semantic_completeness": "NOT_PROVEN",
+    "new_model_runtime_execution": "UNVERIFIED",
+    "current_production_switch": "NOT_CLAIMED"
+  },
+  "exit_gates": [
+    "CI tests on candidate branch must pass",
+    "PR reviewed and merged to main",
+    "production model contract/configuration readback",
+    "external trusted Worldline readback",
+    "cross-host continuity proof",
+    "full archive corpus reconciled with provenance",
+    "user-approved paid inference only if explicitly authorized"
+  ],
+  "status": "GPT6_HOST_ADAPTER_CANDIDATE_AWAITING_EVIDENCE",
+  "safety": {
+    "no_new_spend": true,
+    "no_secrets_committed": true,
+    "no_global_chat_mode_switch_claim": true,
+    "no_mutation_of_trusted_worldline_by_manifest": true
+  }
+}
