@@ -67,7 +67,7 @@
     "full archive corpus reconciled with provenance",
     "user-approved paid inference only if explicitly authorized"
   ],
-  "status": "GPT6_HOST_DEFAULT_MERGED_CI_PASS_LIVE_UNVERIFIED",
+  "status": "GPT6_HOST_CODE_DEPLOYED_READY_LIVE_INFERENCE_UNVERIFIED",
   "safety": {
     "no_new_spend": true,
     "no_secrets_committed": true,
@@ -89,6 +89,16 @@
     ],
     "main_model_fallback_readback": "gpt-6.1-sol",
     "live_gpt6_paid_inference": "NOT_RUN",
-    "production_model_runtime_delivery": "UNVERIFIED"
+    "production_model_runtime_delivery": "UNVERIFIED",
+    "production_deployment": {
+      "project": "mondayid-host",
+      "deployment_id": "dpl_3fARrcGpbCzmkPVhJS5hyYfYR2Pe",
+      "state": "READY",
+      "observed_github_sha": "1cc62776a85b2017eab92053fbe06b8f057ddfac",
+      "alias": "mondayid-host.vercel.app",
+      "alias_points_to_this_deployment": true,
+      "api_response_readback": "NOT_RUN",
+      "paid_inference": "NOT_AUTHORIZED"
+    }
   }
 }
