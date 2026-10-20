@@ -18,8 +18,17 @@ const runtime = new MondayRuntime({
   capabilities: {
     general: {
       name: 'local-proof-receptor',
-      execute: async (action) => ({ effect: action.effect, accepted: true }),
-      verify: async (result) => ({ ok: result.accepted === true })
+      // Diagnostic only: a local echo is not an independently observed effect.
+      // Keep the action unresolved until a real receptor and readback exist.
+      execute: async (action) => ({
+        ok: false,
+        code: 'BOOT_DIAGNOSTIC_ONLY_NO_REAL_EFFECT',
+        requestedEffect: action.effect
+      }),
+      verify: async () => ({
+        ok: false,
+        code: 'INDEPENDENT_EFFECT_READBACK_REQUIRED'
+      })
     }
   }
 });
