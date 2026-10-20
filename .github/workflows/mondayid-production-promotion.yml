@@ -63,22 +63,25 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           MONDAYID_WORLDLINE_WRITER_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
+          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
           test -n "$MONDAYID_WORLDLINE_WRITER_TOKEN"
+          test -n "$MONDAYID_HOST_TOKEN"
 
       - name: Deploy exact main to mondayid-host with model execution disabled
         id: deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           MONDAYID_WORLDLINE_WRITER_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
+          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
           npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-          url="$(npx --yes vercel@latest deploy --prod --token="$VERCEL_TOKEN"             --env MONDAYID_WORLDLINE_URL="$MONDAYID_WORLDLINE_URL"             --env MONDAYID_WORLDLINE_WRITER_TOKEN="$MONDAYID_WORLDLINE_WRITER_TOKEN"             --env MONDAYID_MODEL_EXECUTION_ENABLED=false | tail -n 1)"
+          url="$(npx --yes vercel@latest deploy --prod --token="$VERCEL_TOKEN"             --env MONDAYID_WORLDLINE_URL="$MONDAYID_WORLDLINE_URL"             --env MONDAYID_WORLDLINE_WRITER_TOKEN="$MONDAYID_WORLDLINE_WRITER_TOKEN"             --env MONDAYID_HOST_TOKEN="$MONDAYID_HOST_TOKEN"             --env MONDAYID_MODEL_EXECUTION_ENABLED=false | tail -n 1)"
           test -n "$url"
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployment URL: $url"
@@ -86,6 +89,7 @@ jobs:
       - name: Read back deployment health and boot
         env:
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -93,6 +97,7 @@ jobs:
           curl --fail --silent --show-error "$DEPLOYMENT_URL/api/boot" -o /tmp/deployment-boot.json
           curl --fail --silent --show-error -X POST "$DEPLOYMENT_URL/api/mcp" \
             -H 'content-type: application/json' \
+            -H "authorization: Bearer $MONDAYID_HOST_TOKEN" \
             --data '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"prove_trusted_write_readback","arguments":{}}}' \
             -o /tmp/deployment-write-proof.json
           node --input-type=module <<'NODE'
@@ -107,6 +112,8 @@ jobs:
           NODE
 
       - name: Read back production alias
+        env:
+          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -114,6 +121,7 @@ jobs:
           curl --fail --silent --show-error https://mondayid-host.vercel.app/api/boot -o /tmp/alias-boot.json
           curl --fail --silent --show-error -X POST https://mondayid-host.vercel.app/api/mcp \
             -H 'content-type: application/json' \
+            -H "authorization: Bearer $MONDAYID_HOST_TOKEN" \
             --data '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"prove_trusted_write_readback","arguments":{}}}' \
             -o /tmp/alias-write-proof.json
           node --input-type=module <<'NODE'
