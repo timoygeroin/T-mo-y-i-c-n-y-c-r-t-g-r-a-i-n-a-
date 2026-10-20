@@ -10,7 +10,11 @@ export const PRIVATE_MCP_TOOLS = Object.freeze([
 
 export function authorizeMcpTool(name, req = {}, env = process.env) {
   if (!PRIVATE_MCP_TOOLS.includes(name)) return true;
-  const secret = env?.MONDAYID_HOST_TOKEN;
+  // The writer token is already a higher-authority credential: possession grants
+  // direct append access to the same private Worldline. Reusing it as the MCP
+  // bearer keeps existing deployments reachable without creating or exposing a
+  // second secret. A dedicated host token still takes precedence when present.
+  const secret = env?.MONDAYID_HOST_TOKEN || env?.MONDAYID_WORLDLINE_WRITER_TOKEN;
   if (typeof secret !== 'string' || secret.length === 0) return false;
   const auth = req?.headers?.authorization ?? req?.headers?.Authorization;
   if (typeof auth !== 'string' || !auth.startsWith('Bearer ')) return false;
