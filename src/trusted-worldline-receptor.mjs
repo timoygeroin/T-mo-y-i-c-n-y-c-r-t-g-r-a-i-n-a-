@@ -116,11 +116,21 @@ export class TrustedWorldlineReceptor {
     const body = await parseJson(response);
     const event = body?.event;
     const conflicts = Array.isArray(body?.conflicts) ? body.conflicts : [];
+    // Exact readback must include original provenance and authenticated writer attribution.
+    const fields = [
+      'eventId', 'timestampIso', 'subject', 'predicate', 'valueJson',
+      'epistemicStatus', 'sourceRef', 'host', 'identityFingerprint'
+    ];
+    const exact = fields.every(field =>
+      typeof result.event[field] === 'string' &&
+      event?.[field] === result.event[field]
+    );
+    const attributed = typeof event?.writerKeyId === 'string' &&
+      event.writerKeyId.trim().length > 0;
     const same =
       response?.ok &&
       body?.schema === 'mondayid.worldline.event.v0.4.0' &&
-      event?.eventId === result.event.eventId &&
-      event?.valueJson === result.event.valueJson &&
+      exact && attributed &&
       event?.identityFingerprint === this.identityFingerprint &&
       conflicts.length === 0;
 
