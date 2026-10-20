@@ -54,11 +54,9 @@ jobs:
       - name: Prove canonical runtime before deploy
         run: npm test
 
-      - name: Prove trusted Worldline boot before deploy
-        env:
-          MONDAYID_WORLDLINE_URL: ${{ env.MONDAYID_WORLDLINE_URL }}
-        run: npm run boot
-
+      # The Actions runner intentionally has no Worldline reader secret.
+      # Trusted boot is proved after deployment inside Vercel, where the private
+      # reader is configured, and is required before promotion can pass.
       - name: Require Vercel deployment credential
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
