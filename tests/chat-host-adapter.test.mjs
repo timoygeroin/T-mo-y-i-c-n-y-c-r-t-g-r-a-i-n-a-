@@ -127,6 +127,8 @@ test('fulfilled chat host returns a durable normalized receipt for native client
   });
   assert.equal(out.ok,true);
   assert.equal(out.receipt.id,'action:native:general');
+  assert.equal(out.receipt.durable,false);
+  assert.equal(out.receipt.persistence,'NOT_VERIFIED');
   assert.equal(typeof out.receipt.revision,'string');
   assert.ok(out.receipt.revision.length>0);
   assert.ok(out.receipt.provider);
@@ -157,4 +159,80 @@ test('chat host defaults to GPT-6.1 Sol while preserving existing gates', async 
   assert.equal(out.ok,true);
   assert.equal(calls[0].model,'gpt-6.1-sol');
   assert.equal(out.receipt.provider,'gpt-6.1-sol');
+});
+
+test('authenticated external write and exact readback are needed for durable chat receipt', async () => {
+  const writes=[];
+  let stored;
+  const provider={
+    async generate(){return {ok:true,text:'Bound native response',evidence:{provider:'mock-provider'}};}
+  };
+  const fetchImpl=async (url,init)=>{
+    const u=new URL(String(url));
+    if(u.pathname==='/worldline/v4/snapshot') return {
+      ok:true,status:200,json:async()=>trustedSnapshot
+    };
+    if(u.pathname==='/worldline/v4/append'){
+      assert.equal(init.headers.authorization,'Bearer writer-secret');
+      stored=JSON.parse(init.body);
+      writes.push(stored);
+      return {ok:true,status:201,json:async()=>({ok:true,status:'INSERTED'})};
+    }
+    if(u.pathname==='/worldline/v4/event'){
+      assert.equal(init.headers.authorization,'Bearer reader-secret');
+      return {ok:true,status:200,json:async()=>({
+        schema:'mondayid.worldline.event.v0.4.0',
+        event:{...stored,writerKeyId:'trusted-key-1'},
+        conflicts:[]
+      })};
+    }
+    throw new Error('Unexpected URL: '+u.pathname);
+  };
+  const out=await runChatHost({
+    signal:{id:'durable-1',text:'private request',computeTier:'LOW'},
+    env:{...liveEnv,MONDAYID_WORLDLINE_WRITER_TOKEN:'writer-secret',
+      MONDAYID_WORLDLINE_READ_TOKEN:'reader-secret'},
+    fetchImpl,provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(out.receipt.durable,true);
+  assert.equal(out.receipt.persistence,'EXTERNAL_EXACT_READBACK');
+  assert.equal(out.receipt.verification.writerKeyId,'trusted-key-1');
+  assert.equal(writes.length,1);
+  assert.equal(JSON.stringify(writes).includes('private request'),false);
+  assert.equal(JSON.stringify(writes).includes('Bound native response'),false);
+  assert.equal(JSON.stringify(writes).includes('writer-secret'),false);
+});
+
+test('a successful write without matching independent readback is not durable', async () => {
+  let stored;
+  const provider={async generate(){return {ok:true,text:'Bound native response'};}};
+  const fetchImpl=async (url,init)=>{
+    const u=new URL(String(url));
+    if(u.pathname==='/worldline/v4/snapshot') return {
+      ok:true,status:200,json:async()=>trustedSnapshot
+    };
+    if(u.pathname==='/worldline/v4/append'){
+      stored=JSON.parse(init.body);
+      return {ok:true,status:201,json:async()=>({ok:true,status:'INSERTED'})};
+    }
+    if(u.pathname==='/worldline/v4/event') return {
+      ok:true,status:200,json:async()=>({
+        schema:'mondayid.worldline.event.v0.4.0',
+        event:{...stored,valueJson:'tampered',writerKeyId:'trusted-key-1'},
+        conflicts:[]
+      })
+    };
+    throw new Error('Unexpected URL');
+  };
+  const out=await runChatHost({
+    signal:{id:'durable-2',text:'private request',computeTier:'LOW'},
+    env:{...liveEnv,MONDAYID_WORLDLINE_WRITER_TOKEN:'writer-secret',
+      MONDAYID_WORLDLINE_READ_TOKEN:'reader-secret'},
+    fetchImpl,provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(out.receipt.durable,false);
+  assert.equal(out.receipt.persistence,'UNVERIFIED');
+  assert.equal(out.receipt.verification,null);
 });

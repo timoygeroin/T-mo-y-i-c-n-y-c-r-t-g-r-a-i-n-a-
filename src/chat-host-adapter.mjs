@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { TrustedWorldlineReceptor } from './trusted-worldline-receptor.mjs';
 import { MondayRuntime } from './runtime.mjs';
 import { recoverWorldline } from './remote-worldline.mjs';
 import { renderVerifiedCandidateSurface } from './interface.mjs';
@@ -133,12 +135,56 @@ export async function runChatHost({
 
   const providerEvidence=surface?.evidence?.provider || {};
   const revision=pass.final?.revision || null;
-  const receipt=surface.released === true ? {
+
+  // A validated model answer and a local runtime revision are NOT proof of
+  // cross-host durability. Only an authenticated external exact readback is.
+  let receipt = surface.released === true ? {
     id:surface?.evidence?.actionId || (revision ? `revision:${revision}` : 'mondayid:surface'),
     provider:providerEvidence.model || providerEvidence.provider || 'mondayid',
     revision:revision || 'unknown',
-    verification:surface?.evidence?.verification?.mode || null
+    durable:false,
+    persistence:'NOT_VERIFIED',
+    verification:null
   } : null;
+
+  if (receipt && env.MONDAYID_WORLDLINE_WRITER_TOKEN) {
+    // Persist a privacy-preserving receipt identifier, never raw user text,
+    // the model answer, or any provider credential.
+    const digest=createHash('sha256').update(JSON.stringify({
+      signalId:incoming.id,
+      revision:receipt.revision,
+      response:String(surface.message || '')
+    })).digest('hex').slice(0,32);
+    const receptor=new TrustedWorldlineReceptor({
+      baseUrl:env.MONDAYID_WORLDLINE_URL,
+      token:env.MONDAYID_WORLDLINE_WRITER_TOKEN,
+      readerToken:env.MONDAYID_WORLDLINE_READ_TOKEN,
+      host:'mondayid-chat-host',
+      identityFingerprint:'mondayid:rewrite:g5',
+      sourceRef:'mondayid-chat-host:response-receipt',
+      fetchImpl
+    });
+    const write=await receptor.execute({
+      objectiveId:`chat-response:${digest}`,
+      sourceSignal:`chat-response:${digest}`,
+      domain:'continuity',
+      effect:'persist bounded response receipt (content excluded)'
+    });
+    const proof=write.ok ? await receptor.verify(write) : null;
+    receipt={
+      ...receipt,
+      durable:proof?.ok === true,
+      persistence:proof?.ok === true ? 'EXTERNAL_EXACT_READBACK' : 'UNVERIFIED',
+      verification:proof?.ok === true ? {
+        mode:proof.mode,
+        evidenceRef:proof.eventId,
+        writerKeyId:proof.writerKeyId
+      } : null,
+      persistenceFailure:proof?.ok === true ? null : (
+        write.ok ? (proof?.code || 'EXACT_READBACK_FAILED') : (write.code || 'WRITE_FAILED')
+      )
+    };
+  }
 
   return {
     ok:pass.ok === true && pass.state === 'FULFILLED' && surface.released === true,
