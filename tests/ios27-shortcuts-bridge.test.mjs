@@ -29,7 +29,7 @@ test('error and cancellation cannot fabricate a Monday response',()=>{
 });
 test('model is user-selected in native Shortcuts; no paid API key required',()=>{
   assert.match(script,/Apple Intelligence → Use Model/);
-  assert.match(script,/On-Device model/);
+  assert.match(script,/Choose On-Device/);
   assert.match(script,/Stop and Output is NOT needed/);
   assert.match(script,/Shortcuts action editor, NOT Describe a Shortcut/);
   assert.match(script,/insert the blue Shortcut Input magic variable/);
