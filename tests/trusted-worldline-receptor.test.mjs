@@ -63,3 +63,32 @@ test('writer token never appears in generated event payload', () => {
   const event=receptor.eventFor({objectiveId:'o',effect:'x'});
   assert.equal(JSON.stringify(event).includes('top-secret-token'),false);
 });
+
+test('exact readback rejects altered provenance and missing writer attribution', async () => {
+  const receptor = new TrustedWorldlineReceptor({
+    baseUrl:'https://example.test', token:'secret', identityFingerprint:'id-1'
+  });
+  const event = receptor.eventFor({
+    objectiveId:'o1', sourceSignal:'s1', domain:'continuity', effect:'persist state'
+  });
+  const result = {ok:true,event};
+  for (const field of [
+    'eventId','timestampIso','subject','predicate','valueJson',
+    'epistemicStatus','sourceRef','host','identityFingerprint'
+  ]) {
+    const changed={...event,[field]:event[field]+'-tampered',writerKeyId:'k1'};
+    receptor.fetchImpl=async()=>({
+      ok:true,status:200,
+      json:async()=>({schema:'mondayid.worldline.event.v0.4.0',event:changed,conflicts:[]})
+    });
+    assert.equal((await receptor.verify(result)).ok,false,field);
+  }
+  for (const writerKeyId of [undefined,'','  ']) {
+    receptor.fetchImpl=async()=>({
+      ok:true,status:200,
+      json:async()=>({schema:'mondayid.worldline.event.v0.4.0',
+        event:{...event,writerKeyId},conflicts:[]})
+    });
+    assert.equal((await receptor.verify(result)).ok,false,'writer attribution');
+  }
+});
