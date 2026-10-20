@@ -1,0 +1,35 @@
+{
+  "schema": "mondayid.ios27-siri-shortcuts-reentry.v1",
+  "date": "2026-10-20",
+  "root_goal": "iPhone-first Monday that can replace ChatGPT only after independent same-device complete workflow proof",
+  "reentry": "Continuation of MONDAYID — REENTRY (2026-08/31 Shortcuts route), NOT a new identity or fully autonomous Siri replacement",
+  "sources": {
+    "apple_siri_ai": "https://support.apple.com/guide/iphone/get-started-with-siri-ai-iphv6zwrg8jvfgr/27/ios/27",
+    "shortcuts_models": "https://support.apple.com/guide/shortcuts/use-apple-intelligence-in-shortcuts-tpg3vrvwmclv/ios",
+    "shortcut_creation": "https://support.apple.com/en-az/guide/shortcuts/apd84c576f8c/ios",
+    "shortcut_callback": "https://support.apple.com/en-ph/guide/shortcuts/apdcd7f20a6f/ios",
+    "beta_limitation": "https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-27_2-release-notes"
+  },
+  "verified": [
+    "Canonical public Monday PWA opens without authentication in an independent remote browser (prior to bridge addition)",
+    "PR #146 merged to Generation-5 main as e2d1c0be9cc5dc8ff2f5250c6be8e7143bcd47d2",
+    "GitHub test suite passed at PR head f013b87441532fbfc566fef6353088eb56dad77d",
+    "Vercel Monday host production deploy READY at e2d1c0be9cc5dc8ff2f5250c6be8e7143bcd47d2",
+    "PWA code includes user-initiated Ask Monday → x-callback to Apple Shortcuts → matching pending ID / result saved in same thread",
+    "PWA You section includes a Shortcuts setup dialog copying exact shortcut recipe and opening native Shortcuts creator"
+  ],
+  "not_verified": [
+    "Siri AI actual personal responses or hidden weights",
+    "iPhone Air physical Shortcuts action execution and x-callback return into same Safari context",
+    "On-Device and Cloud Pro model output fidelity/availability for this Apple Account",
+    "Cross-device PWA memory synchronization (browser local only)",
+    "Independent full ChatGPT replacement and native signed iPhone app distribution"
+  ],
+  "safety": [
+    "No paid API use requested or enabled; On-Device chosen in recipe",
+    "No arbitrary Siri system takeover or sign/billing bypass",
+    "Callback provides transcript only, not verified external action; never auto-executes remote commands",
+    "Never claim Apple Intelligence model used until actual iPhone Shortcut proof"
+  ],
+  "next_exact_human_gate": "On physical iPhone Air using Safari: open public Monday → You → Set up Apple Shortcuts → Copy instructions → Create in Shortcuts → save MONDAYID — REENTRY → return Chats and tap Ask Monday. Accept only real model output and return callback as device proof."
+}
