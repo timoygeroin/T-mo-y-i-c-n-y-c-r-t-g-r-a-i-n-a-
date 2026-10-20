@@ -64,9 +64,9 @@ code{font-size:12px}a{color:#bdd3ff}
 <script>
 'use strict';
 const KEY='monday.continuum.local.v1', VERSION=1;
-const MONDAY_SHORTCUT='MONDAYID REENTRY', BRIDGE_PENDING='monday.shortcut.pending.v1';
+const MONDAY_SHORTCUT='MONDAYID — REENTRY', BRIDGE_PENDING='monday.shortcut.pending.v1';
 const SHORTCUT_RECIPE=[
-'Create a shortcut named MONDAYID REENTRY.',
+'Create a shortcut named MONDAYID — REENTRY.',
 'Receive Shortcut Input as text. If no input is provided, ask for text.',
 'Use the Apple Intelligence Use Model action, initially with the On-Device model. Set Follow Up off.',
 'Prompt: You are Monday, a practical, warm, truthful personal assistant. The input contains recent conversation and the new message. Answer the most recent message in the same language, including Russian where possible. Do not invent memories or claim actions occurred without evidence. Return only the answer, without extra formatting.',
@@ -141,7 +141,7 @@ function bridgeSetup(){
   const box=mk('section');
   append(box,mk('p','muted','Use Apple Intelligence in Shortcuts without an API key or an Apple Developer account. iOS 27.2 may fail to create from description; in that case manually add Shortcut Input → Use Model → Stop and Output.'));
   append(box,act('1 · Copy build instructions',copyShortcutRecipe,'primary'),act('2 · Create in Shortcuts',()=>{window.location.href='shortcuts://create-shortcut'},'secondary'));
-  append(box,mk('p','hint','After the shortcut is saved with the exact name MONDAYID REENTRY, return to Chats and tap Ask Monday. An actual iPhone run must still be checked. Apple model availability and limits depend on device and region.'));
+  append(box,mk('p','hint','After the shortcut is saved with the exact name MONDAYID — REENTRY, return to Chats and tap Ask Monday. An actual iPhone run must still be checked. Apple model availability and limits depend on device and region.'));
   modal('Connect Apple Intelligence',box,[act('Close',closeModal)]);
 }
 function askShortcuts(thread,raw){
