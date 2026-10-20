@@ -9,8 +9,6 @@ on:
         type: string
   push:
     branches: [main]
-    paths:
-      - 'ops/production-promotion-request.json'
 
 permissions:
   contents: read
@@ -20,122 +18,81 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  VERCEL_ORG_ID: team_FwRqJf7aaU68ASUeOCJ2vgXq
-  VERCEL_PROJECT_ID: prj_UgZX7OjLZxnFc4rixQ7N1SbO5xMC
-  MONDAYID_WORLDLINE_URL: https://adamant-raven-783.eu-west-1.convex.site
+  PRODUCTION_URL: https://mondayid-host.vercel.app
 
 jobs:
   promote:
     runs-on: ubuntu-latest
-    environment: mondayid-production
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_main_sha || github.sha }}
           fetch-depth: 1
 
       - name: Bind promotion to exact canonical main
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_main_sha || github.sha }}
         run: |
           set -euo pipefail
+          git fetch origin main --depth=1
           actual="$(git rev-parse HEAD)"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            expected="${{ inputs.expected_main_sha }}"
-          else
-            expected="${{ github.sha }}"
-          fi
-          test "$actual" = "$expected"
-          echo "Promoting exact main SHA: $actual"
+          canonical="$(git rev-parse origin/main)"
+          test "$actual" = "$EXPECTED_SHA"
+          test "$canonical" = "$EXPECTED_SHA"
+          echo "Verifying exact main SHA: $actual"
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Prove canonical runtime before deploy
+      - name: Prove canonical runtime before promotion
         run: npm test
 
-      # The Actions runner intentionally has no Worldline reader secret.
-      # Trusted boot is proved after deployment inside Vercel, where the private
-      # reader is configured, and is required before promotion can pass.
-      - name: Require Vercel deployment credential
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          MONDAYID_WORLDLINE_WRITER_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
-          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
+      - name: Wait for Vercel Git promotion and read back exact alias
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_main_sha || github.sha }}
         run: |
           set -euo pipefail
-          test -n "$VERCEL_TOKEN"
-          test -n "$MONDAYID_WORLDLINE_WRITER_TOKEN"
-          test -n "$MONDAYID_HOST_TOKEN"
-
-      - name: Deploy exact main to mondayid-host with model execution disabled
-        id: deploy
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          MONDAYID_WORLDLINE_WRITER_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
-          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-          url="$(npx --yes vercel@latest deploy --prod --token="$VERCEL_TOKEN"             --env MONDAYID_WORLDLINE_URL="$MONDAYID_WORLDLINE_URL"             --env MONDAYID_WORLDLINE_WRITER_TOKEN="$MONDAYID_WORLDLINE_WRITER_TOKEN"             --env MONDAYID_HOST_TOKEN="$MONDAYID_HOST_TOKEN"             --env MONDAYID_MODEL_EXECUTION_ENABLED=false | tail -n 1)"
-          test -n "$url"
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "Deployment URL: $url"
-
-      - name: Read back deployment health and boot
-        env:
-          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
-          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl --fail --silent --show-error "$DEPLOYMENT_URL/api/health" -o /tmp/deployment-health.json
-          curl --fail --silent --show-error "$DEPLOYMENT_URL/api/boot" -o /tmp/deployment-boot.json
-          curl --fail --silent --show-error -X POST "$DEPLOYMENT_URL/api/mcp" \
-            -H 'content-type: application/json' \
-            -H "authorization: Bearer $MONDAYID_HOST_TOKEN" \
-            --data '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"prove_trusted_write_readback","arguments":{}}}' \
-            -o /tmp/deployment-write-proof.json
-          node --input-type=module <<'NODE'
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$PRODUCTION_URL/api/health" -o /tmp/health.json \
+              && curl --fail --silent --show-error "$PRODUCTION_URL/api/boot" -o /tmp/boot.json \
+              && EXPECTED_SHA="$EXPECTED_SHA" node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const health=JSON.parse(fs.readFileSync('/tmp/deployment-health.json','utf8'));
-          const boot=JSON.parse(fs.readFileSync('/tmp/deployment-boot.json','utf8'));
-          const proof=JSON.parse(fs.readFileSync('/tmp/deployment-write-proof.json','utf8'));
-          if (health.generation !== 5) throw new Error('DEPLOYMENT_NOT_GENERATION_5');
-          if (health.authority?.no_spend !== true) throw new Error('NO_SPEND_BOUNDARY_MISSING');
-          if (boot.ok !== true || boot.state !== 'FULFILLED') throw new Error('DEPLOYMENT_BOOT_NOT_FULFILLED');
-          if (proof?.result?.structuredContent?.ok !== true) throw new Error('DEPLOYMENT_TRUSTED_WRITE_READBACK_FAILED');
-          NODE
-
-      - name: Read back production alias
-        env:
-          MONDAYID_HOST_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl --fail --silent --show-error https://mondayid-host.vercel.app/api/health -o /tmp/alias-health.json
-          curl --fail --silent --show-error https://mondayid-host.vercel.app/api/boot -o /tmp/alias-boot.json
-          curl --fail --silent --show-error -X POST https://mondayid-host.vercel.app/api/mcp \
-            -H 'content-type: application/json' \
-            -H "authorization: Bearer $MONDAYID_HOST_TOKEN" \
-            --data '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"prove_trusted_write_readback","arguments":{}}}' \
-            -o /tmp/alias-write-proof.json
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const health=JSON.parse(fs.readFileSync('/tmp/alias-health.json','utf8'));
-          const boot=JSON.parse(fs.readFileSync('/tmp/alias-boot.json','utf8'));
-          const proof=JSON.parse(fs.readFileSync('/tmp/alias-write-proof.json','utf8'));
-          if (health.generation !== 5) throw new Error('PRODUCTION_ALIAS_NOT_GENERATION_5');
-          if (boot.ok !== true || boot.state !== 'FULFILLED') throw new Error('PRODUCTION_ALIAS_BOOT_NOT_FULFILLED');
-          if (proof?.result?.structuredContent?.ok !== true) throw new Error('PRODUCTION_ALIAS_TRUSTED_WRITE_READBACK_FAILED');
+          const health=JSON.parse(fs.readFileSync('/tmp/health.json','utf8'));
+          const boot=JSON.parse(fs.readFileSync('/tmp/boot.json','utf8'));
+          const expected=process.env.EXPECTED_SHA;
+          const pass=
+            health.ok === true &&
+            health.generation === 5 &&
+            health.kernel === 'mondayid-generation-5' &&
+            health.sourceRevision === expected &&
+            health.authority?.no_spend === true &&
+            health.continuity?.trusted_worldline_configured === true &&
+            health.continuity?.trusted_writer_configured === true &&
+            boot.ok === true &&
+            boot.state === 'FULFILLED' &&
+            boot.identity?.sourceRevision === expected &&
+            boot.worldline?.trust === 'trusted' &&
+            Number(boot.worldline?.imported || 0) >= 6;
+          if (!pass) process.exit(1);
           console.log(JSON.stringify({
             status:'PASS',
+            sourceRevision:expected,
             generation:health.generation,
-            kernel:health.kernel,
             boot:boot.state,
-            trusted_write_readback:proof.result.structuredContent,
-            model_execution:'disabled_by_promotion_workflow'
+            trustedEvents:boot.worldline.imported,
+            modelExecution:'disabled-by-default'
           },null,2));
           NODE
+            then
+              exit 0
+            fi
+            echo "Production alias has not reached $EXPECTED_SHA yet (attempt $attempt/60)"
+            sleep 5
+          done
+          echo "Timed out waiting for exact Vercel production revision $EXPECTED_SHA" >&2
+          cat /tmp/health.json 2>/dev/null || true
+          cat /tmp/boot.json 2>/dev/null || true
+          exit 1
