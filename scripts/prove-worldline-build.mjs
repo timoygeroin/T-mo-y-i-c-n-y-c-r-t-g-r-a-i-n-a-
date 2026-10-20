@@ -1,7 +1,9 @@
 import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
 
+const trustedWorldlineUrl = process.env.MONDAYID_WORLDLINE_URL || 'https://adamant-raven-783.eu-west-1.convex.site';
+
 const receptor = new TrustedWorldlineReceptor({
-  baseUrl: process.env.MONDAYID_WORLDLINE_URL,
+  baseUrl: trustedWorldlineUrl,
   token: process.env.MONDAYID_WORLDLINE_WRITER_TOKEN,
   host: 'mondayid-vercel-build-proof',
   identityFingerprint: 'mondayid:rewrite:g5',
