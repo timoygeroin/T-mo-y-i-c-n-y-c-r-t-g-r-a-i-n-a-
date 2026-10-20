@@ -22,6 +22,7 @@ test('trusted snapshot read sends reader bearer from server configuration only',
 
 test('exact event readback sends reader bearer instead of public anonymous GET',async()=>{
   const requests=[];
+  let originalEvent;
   const receptor=new TrustedWorldlineReceptor({
     baseUrl:'https://worldline.example.test',
     readerToken:'read-only-secret',
@@ -30,12 +31,13 @@ test('exact event readback sends reader bearer instead of public anonymous GET',
       requests.push({url:String(url),options});
       return {ok:true,status:200,json:async()=>({
         schema:'mondayid.worldline.event.v0.4.0',
-        event:{eventId:'proof:1',valueJson:'{}',identityFingerprint:'mondayid:rewrite:g5'},
+        event:{...originalEvent,writerKeyId:'authenticated-writer-1'},
         conflicts:[]
       })};
     }
   });
-  const result=await receptor.verify({ok:true,event:{eventId:'proof:1',valueJson:'{}'}});
+  originalEvent=receptor.eventFor({objectiveId:'proof:1',effect:'verify authenticated readback'});
+  const result=await receptor.verify({ok:true,event:originalEvent});
   assert.equal(result.ok,true);
   assert.equal(requests.length,1);
   assert.equal(requests[0].options.headers.authorization,'Bearer read-only-secret');
