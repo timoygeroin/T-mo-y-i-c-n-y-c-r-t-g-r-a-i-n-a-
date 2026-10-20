@@ -21,6 +21,14 @@ test('host identity proves generation 5 and no legacy runtime dependency', () =>
   assert.equal(out.runtime_dependency_on_legacy,false);
   assert.equal(out.kernel,'mondayid-generation-5');
   assert.equal(out.authority.no_spend,true);
+  assert.equal(out.sourceRevision,null);
+});
+
+test('host identity exposes the exact immutable Vercel source revision', () => {
+  const out = describeHost({
+    env:{VERCEL_GIT_COMMIT_SHA:'0123456789abcdef0123456789abcdef01234567'}
+  });
+  assert.equal(out.sourceRevision,'0123456789abcdef0123456789abcdef01234567');
 });
 
 test('host boot fails closed when trusted worldline is missing', async () => {
