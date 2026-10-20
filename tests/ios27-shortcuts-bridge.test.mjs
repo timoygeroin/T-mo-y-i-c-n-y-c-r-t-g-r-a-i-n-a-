@@ -28,7 +28,7 @@ test('error and cancellation cannot fabricate a Monday response',()=>{
   assert.match(script,/not independently verified model provenance/);
 });
 test('model is user-selected in native Shortcuts; no paid API key required',()=>{
-  assert.match(script,/Apple Intelligence Use Model action/);
+  assert.match(script,/Apple Intelligence → Use Model/);
   assert.match(script,/On-Device model/);
   assert.match(script,/Stop and Output is NOT needed/);
   assert.match(script,/Shortcuts action editor, NOT Describe a Shortcut/);
