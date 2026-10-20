@@ -52,6 +52,7 @@ export function describeHost({ env = process.env } = {}) {
     runtime_dependency_on_legacy: system.runtime_dependency_on_legacy === true,
     kernel: 'mondayid-generation-5',
     runtime: 'vercel-node-function',
+    sourceRevision: env.VERCEL_GIT_COMMIT_SHA || null,
     continuity: {
       trusted_worldline_configured: Boolean(env.MONDAYID_WORLDLINE_URL),
       trusted_writer_configured: Boolean(env.MONDAYID_WORLDLINE_WRITER_TOKEN),
