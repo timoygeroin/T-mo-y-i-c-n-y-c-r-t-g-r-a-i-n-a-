@@ -45,7 +45,7 @@ main{max-width:760px;margin:auto}h1{font-weight:670;letter-spacing:-.045em;font-
 .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .messages{display:flex;flex-direction:column;gap:9px;min-height:120px;max-height:48dvh;overflow:auto}
 .bubble{align-self:flex-end;max-width:90%;background:rgba(161,192,255,.15);border:1px solid var(--line);padding:12px 14px;border-radius:17px 17px 5px 17px;overflow-wrap:anywhere;white-space:pre-wrap}
-.timeline{border-left:1px solid var(--line);margin-left:9px;padding-left:19px}.timeline .card{position:relative}.timeline .card:before{content:"";width:7px;height:7px;background:#9dbdff;border-radius:50%;position:absolute;left:-23px;top:20px}
+.bubble.from-monday{align-self:flex-start;background:rgba(198,210,255,.10);border-radius:17px 17px 17px 5px}\n.timeline{border-left:1px solid var(--line);margin-left:9px;padding-left:19px}.timeline .card{position:relative}.timeline .card:before{content:"";width:7px;height:7px;background:#9dbdff;border-radius:50%;position:absolute;left:-23px;top:20px}
 #toast{position:fixed;bottom:calc(93px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);max-width:90%;background:#e5eeff;color:#13213a;padding:11px 15px;border-radius:13px;z-index:12;box-shadow:0 12px 40px rgba(0,0,0,.45);font-size:12px;display:none}
 #toast.show{display:block}
 code{font-size:12px}a{color:#bdd3ff}
@@ -64,6 +64,16 @@ code{font-size:12px}a{color:#bdd3ff}
 <script>
 'use strict';
 const KEY='monday.continuum.local.v1', VERSION=1;
+const MONDAY_SHORTCUT='MONDAYID REENTRY', BRIDGE_PENDING='monday.shortcut.pending.v1';
+const SHORTCUT_RECIPE=[
+'Create a shortcut named MONDAYID REENTRY.',
+'Receive Shortcut Input as text. If no input is provided, ask for text.',
+'Use the Apple Intelligence Use Model action, initially with the On-Device model. Set Follow Up off.',
+'Prompt: You are Monday, a practical, warm, truthful personal assistant. The input contains recent conversation and the new message. Answer the most recent message in the same language, including Russian where possible. Do not invent memories or claim actions occurred without evidence. Return only the answer, without extra formatting.',
+'Pass all received Shortcut Input to this Use Model prompt as a variable.',
+'Finish with Stop and Output, outputting the Use Model response as text.',
+'Do not execute third-party actions, send messages, make purchases, or send content to a URL. Keep the shortcut simple and inspect its steps before running it.'
+].join('\n');
 const blank=()=>({schema:'monday.continuum.local.v1',version:VERSION,createdAt:new Date().toISOString(),threads:[],notes:[],tasks:[],spaces:[],events:[]});
 let data;
 try{const raw=JSON.parse(localStorage.getItem(KEY)||'null');data=valid(raw)?raw:blank();}catch{data=blank();}
@@ -120,9 +130,66 @@ append(view,section('Your threads'));append(view,act('＋ New thread',()=>openNe
 function openNewThread(){const box=mk('div');const field=mk('div','field');append(field,mk('label','','First thought'));const input=mk('textarea');input.placeholder='What is on your mind?';field.appendChild(input);append(box,field);modal('Start a thread',box,[act('Create',()=>{const t=input.value.trim();if(!t)return toast('A thread starts with a thought');closeModal();quickCapture(t,'thread')},'primary')]);input.focus();}
 function drawThread(view,threadId){const thread=data.threads.find(x=>x.id===threadId);if(!thread){activeThread=null;render();return}
 append(view,act('← All threads',()=>{activeThread=null;render()},'textbtn'),heading('Local conversation',thread.title,'Messages are saved only on this device. There are no generated AI replies.'));
-const msgs=mk('div','messages glass');msgs.style.padding='16px';if(!thread.messages.length)append(msgs,empty('No messages'));thread.messages.forEach(m=>append(msgs,mk('div','bubble',m.text)));append(view,msgs);
-const form=mk('form','composer spaced'),input=mk('input');input.placeholder='Continue your thought…';input.setAttribute('aria-label','New message');const b=mk('button','primary','Keep');b.type='submit';append(form,input,b);form.addEventListener('submit',e=>{e.preventDefault();const text=input.value.trim();if(!text)return;if(text.length>12000)return toast('Message too long');const current=data.threads.find(x=>x.id===threadId);if(!current)return toast('Thread no longer exists');current.messages.push({id:id(),role:'user',text,at:now()});current.updatedAt=now();event('message_saved','threads',current.id,'User-supplied text');if(!persist())return;render()});append(view,form);
+const msgs=mk('div','messages glass');msgs.style.padding='16px';if(!thread.messages.length)append(msgs,empty('No messages'));thread.messages.forEach(m=>append(msgs,mk('div',m.role==='monday'?'bubble from-monday':'bubble',m.text)));append(view,msgs);
+const form=mk('form','composer spaced'),input=mk('input');input.placeholder='Continue your thought…';input.setAttribute('aria-label','New message');const b=mk('button','primary','Keep');b.type='submit';const ask=mk('button','secondary','Ask Monday');ask.type='button';ask.addEventListener('click',()=>askShortcuts(thread,input.value));append(form,input,b,ask);form.addEventListener('submit',e=>{e.preventDefault();const text=input.value.trim();if(!text)return;if(text.length>12000)return toast('Message too long');const current=data.threads.find(x=>x.id===threadId);if(!current)return toast('Thread no longer exists');current.messages.push({id:id(),role:'user',text,at:now()});current.updatedAt=now();event('message_saved','threads',current.id,'User-supplied text');if(!persist())return;render()});append(view,form);
 const row=mk('div','row spaced');append(row,act('Copy portable context',()=>copyThread(thread),'secondary'),act('Delete thread',()=>removeObject('threads',thread.id),'danger'));append(view,row);}
+async function copyShortcutRecipe(){
+  try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(SHORTCUT_RECIPE);toast('Instructions copied. Paste into Describe a Shortcut.');}
+  catch{const field=mk('textarea');field.value=SHORTCUT_RECIPE;field.readOnly=true;const box=mk('div','field');append(box,field);modal('Monday Shortcut instructions',box,[act('Close',closeModal)]);field.focus();field.select();}
+}
+function bridgeSetup(){
+  const box=mk('section');
+  append(box,mk('p','muted','Use Apple Intelligence in Shortcuts without an API key or an Apple Developer account. iOS 27.2 may fail to create from description; in that case manually add Shortcut Input → Use Model → Stop and Output.'));
+  append(box,act('1 · Copy build instructions',copyShortcutRecipe,'primary'),act('2 · Create in Shortcuts',()=>{window.location.href='shortcuts://create-shortcut'},'secondary'));
+  append(box,mk('p','hint','After the shortcut is saved with the exact name MONDAYID REENTRY, return to Chats and tap Ask Monday. An actual iPhone run must still be checked. Apple model availability and limits depend on device and region.'));
+  modal('Connect Apple Intelligence',box,[act('Close',closeModal)]);
+}
+function askShortcuts(thread,raw){
+  const value=String(raw||'').trim();
+  if(!value)return toast('Write a message first');
+  if(value.length>12000)return toast('Message is too long');
+  const requestId=id();
+  // Browser-local proof of the pending request, not a server credential.
+  try{localStorage.setItem(BRIDGE_PENDING,JSON.stringify({requestId,threadId:thread.id,createdAt:Date.now()}))}
+  catch{return toast('Local storage is unavailable. Export your data first.')}
+  thread.messages.push({id:id(),role:'user',text:value,at:now()});
+  thread.updatedAt=now();event('shortcut_sent','threads',thread.id,'Sent through Apple Shortcuts; awaiting a local callback');persist();render();
+  const prior=thread.messages.slice(-9,-1).map(m=>(m.role==='user'?'User: ':'Monday: ')+m.text.slice(0,400)).join('\n');
+  const capsule=('Previous conversation:\n'+prior+'\n\nCurrent message:\n'+value).slice(-3500);
+  const target=new URL(location.pathname,location.origin);
+  target.searchParams.set('mondayCallback','ok');target.searchParams.set('requestId',requestId);
+  const failure=new URL(location.pathname,location.origin);
+  failure.searchParams.set('mondayCallback','error');failure.searchParams.set('requestId',requestId);
+  const cancel=new URL(location.pathname,location.origin);
+  cancel.searchParams.set('mondayCallback','cancel');cancel.searchParams.set('requestId',requestId);
+  const link='shortcuts://x-callback-url/run-shortcut?name='+encodeURIComponent(MONDAY_SHORTCUT)+
+    '&input=text&text='+encodeURIComponent(capsule)+
+    '&x-success='+encodeURIComponent(target.href)+
+    '&x-error='+encodeURIComponent(failure.href)+
+    '&x-cancel='+encodeURIComponent(cancel.href);
+  window.location.href=link;
+}
+function receiveShortcutCallback(){
+  const params=new URLSearchParams(location.search),state=params.get('mondayCallback');
+  if(!state)return;
+  const clean=()=>history.replaceState({},'',location.pathname+location.hash);
+  let pending;try{pending=JSON.parse(localStorage.getItem(BRIDGE_PENDING)||'null')}catch{pending=null}
+  if(!pending||pending.requestId!==params.get('requestId')||Date.now()-pending.createdAt>20*60*1000){
+    clean();toast('Unmatched or expired Shortcuts callback');return;
+  }
+  localStorage.removeItem(BRIDGE_PENDING);
+  const thread=data.threads.find(t=>t.id===pending.threadId);
+  clean();
+  const result=params.get('result');
+  if(state==='ok'&&thread&&result&&result.trim()&&result.length<=12000){
+    thread.messages.push({id:id(),role:'monday',text:result.trim(),at:now()});
+    thread.updatedAt=now();event('shortcut_reply','threads',thread.id,'Result returned from Apple Shortcuts; not independently verified model provenance');
+    persist();tab='chats';activeThread=thread.id;render();toast('Shortcuts returned a reply');
+  } else {
+    const error=(params.get('errorMessage')||'').slice(0,240);
+    toast(state==='cancel'?'Shortcut canceled':state==='error'?'Shortcut failed: '+(error||'No details'):'No usable answer returned');
+  }
+}
 function drawCreate(view){append(view,heading('Make something','Create','Your notes and tasks become durable objects, not ephemeral chat responses.'));
 const grid=mk('div','grid');[['✎','New note',()=>openNote(null)],['◷','New task',()=>openTask(null)],['◈','New space',()=>openSpace(null)],['☷','New thread',openNewThread]].forEach(([ico,title,fn])=>{const tile=mk('button','glass tile');append(tile,mk('strong','',ico),mk('span','',title));tile.addEventListener('click',fn);grid.appendChild(tile)});append(view,grid);
 append(view,section('Open work'));const tasks=data.tasks.filter(x=>!x.done).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));if(!tasks.length)append(view,empty('No open tasks. Every real task can carry checkpoints.'));tasks.forEach(t=>append(view,taskCard(t)));append(view,section('Completed work'));data.tasks.filter(x=>x.done).forEach(t=>append(view,taskCard(t)));}
@@ -134,6 +201,10 @@ function drawActivity(view){append(view,heading('Proof, not theater','Activity',
 function drawSearch(view){append(view,heading('Find anything','Search','Search your local threads, notes, tasks and spaces.'));const field=mk('div','field'),inp=mk('input');inp.placeholder='Search your world…';inp.value=searchText;inp.setAttribute('aria-label','Search local content');append(field,inp);append(view,field);const results=mk('div');append(view,results);function lookup(){searchText=inp.value;results.replaceChildren();const q=searchText.trim().toLocaleLowerCase();if(!q){append(results,empty('Enter a word or phrase.'));return}const items=[...data.notes.map(x=>({...x,kind:'note',words:x.title+' '+x.body})),...data.tasks.map(x=>({...x,kind:'task',words:x.title})),...data.spaces.map(x=>({...x,kind:'space',words:x.title+' '+x.description})),...data.threads.map(x=>({...x,kind:'thread',words:x.title+' '+x.messages.map(m=>m.text).join(' ')}))].filter(x=>x.words.toLocaleLowerCase().includes(q));if(!items.length)append(results,empty('Nothing matches.'));items.forEach(x=>append(results,card(x.title,x.kind+' · '+date(x.updatedAt||x.createdAt),null,()=>x.kind==='space'?openSpace(x.id):openObject(x.kind,x.id))))}inp.addEventListener('input',lookup);lookup();inp.focus();}
 function drawYou(view){append(view,heading('Under your control','You','Your Monday, your data, your authority.'));
 const box=mk('section','glass card');append(box,mk('h2','','Memory & portability'),mk('p','muted','This edition keeps your content in this browser. It is not synchronized between devices or connected to private ChatGPT history. Export your data before changing devices.'));const row=mk('div','row');append(row,act('Export my data',exportData,'primary'),act('Import a backup',()=> $('importFile').click()));append(box,row);append(view,box);
+const siriBridge=mk('section','glass card');
+append(siriBridge,mk('h2','','Apple Intelligence bridge'),mk('p','muted','Run Monday replies through your own iOS 27 Shortcuts and bring the response back to this browser. No paid inference API is required for the On-Device option.'));
+append(siriBridge,act('Set up Apple Shortcuts',bridgeSetup,'primary'));
+append(view,siriBridge);
 const library=mk('section','glass card');append(library,mk('h2','','Your objects'),mk('p','muted',data.threads.length+' threads · '+data.notes.length+' notes · '+data.tasks.length+' tasks · '+data.spaces.length+' spaces'));append(library,act('Open Library',()=>navTo('library')),act('View activity',()=>navTo('activity')));append(view,library);
 const runtime=mk('section','glass card');append(runtime,mk('h2','','Connection status'),mk('p','muted','MondayID infrastructure is separate from this local workspace. Server health does not mean AI tasks were executed.'));const badge=mk('p','small muted','Not checked this session');badge.id='runtimeState';append(runtime,badge);
 append(runtime,act('Sync reality',()=>checkServer(false)),act('Verify runtime',()=>checkServer(true)));append(view,runtime);
@@ -160,6 +231,7 @@ $('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]
 $('searchBtn').addEventListener('click',()=>navTo('search'));$('activityBtn').addEventListener('click',()=>navTo('activity'));
 window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 render();
+receiveShortcutCallback();
 </script>
 </body>
 </html>
