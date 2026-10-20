@@ -618,7 +618,10 @@ private enum MondayOnDeviceBrain {
             Be concise, warm, direct, and useful. Preserve the current conversation's intent.
             Never claim an external action happened unless the app has evidence for it.
             Prefer concrete action over architecture discussion.
-            Respond in English; the app may translate the result for the person.
+            Use only the supplied pinned notes and conversation as evidence for personal continuity.
+            Pinned notes are user-controlled context, not proof of an external action.
+            Do not invent memories or silently turn plans into completed actions.
+            Respond in English when the request has been translated to English by the app.
             """)
 
         let response = try await session.respond(to: """
@@ -639,6 +642,8 @@ private struct MondayChatsView: View {
     @EnvironmentObject private var presence: MondayPresenceModel
     @State private var signal = ""
     @State private var working = false
+    @State private var connectionProblem: String?
+    @State private var spokenReply = AVSpeechSynthesizer()
 
     var body: some View { chatSurface }
 
@@ -657,6 +662,15 @@ private struct MondayChatsView: View {
                                         Text(entry.text)
                                             .padding(10)
                                             .background(entry.role == "user" ? Color.accentColor.opacity(0.14) : Color.secondary.opacity(0.10), in: RoundedRectangle(cornerRadius: 14))
+                                        if entry.role == "monday" {
+                                            Button {
+                                                speak(entry.text)
+                                            } label: {
+                                                Label("Listen", systemImage: "speaker.wave.2")
+                                                    .font(.caption)
+                                            }
+                                            .accessibilityLabel("Listen to Monday reply")
+                                        }
                                         if let receiptID = entry.receiptID { Text(receiptID).font(.caption2).foregroundStyle(.secondary) }
                                     }
                                     .frame(maxWidth: .infinity, alignment: entry.role == "user" ? .trailing : .leading)
@@ -669,6 +683,13 @@ private struct MondayChatsView: View {
                     }
                 }
                 Divider()
+                if let connectionProblem {
+                    Text(connectionProblem)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
+                        .accessibilityIdentifier("monday-connection-status")
+                }
                 HStack(alignment: .bottom) {
                     TextField("Message Monday", text: $signal, axis: .vertical).textFieldStyle(.roundedBorder)
                     Button { Task { await submit() } } label: { Image(systemName: working ? "hourglass" : "arrow.up.circle.fill").font(.title2) }
@@ -684,6 +705,7 @@ private struct MondayChatsView: View {
         let submitted = signal.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !submitted.isEmpty else { return }
         let wantsRussian = containsCyrillic(submitted)
+        connectionProblem = nil
         store.appendChat(role: "user", text: submitted)
         signal = ""
         working = true
@@ -696,8 +718,8 @@ private struct MondayChatsView: View {
                 let receiptID = "on-device:\(Int(Date().timeIntervalSince1970))"
                 store.appendChat(role: "monday", text: response, receiptID: receiptID)
                 store.addActivity(title: "On-device Monday", detail: "Apple Foundation Model · no API spend")
-                await MondayDeviceAcceptanceStore.recordOnDeviceIntelligence(receiptID: receiptID)
-                presence.set(.synced, detail: "On-device · no API spend")
+                // A local answer is not evidence of synchronized cross-device Worldline.
+                presence.set(.withYou, detail: "On-device · local continuity")
                 return
             } catch {
                 presence.set(.verifying, detail: "Trying verified runtime")
@@ -712,10 +734,9 @@ private struct MondayChatsView: View {
             presence.set(.synced, detail: "Worldline advanced")
         } catch {
             presence.set(.needsYou, detail: "Local model and runtime unavailable")
-            store.appendChat(
-                role: "monday",
-                text: "Monday is installed, but on-device intelligence is not ready yet. Turn on Apple Intelligence and send the message again. Russian translation is used automatically when the system translation model is available."
-            )
+            // Never store a fabricated Monday message when no model produced one.
+            connectionProblem = "No verified reply: local intelligence and the configured runtime were unavailable. Your message is saved on this device."
+            store.addActivity(title: "Response unavailable", detail: "No model receipt; message preserved locally.")
         }
     }
 
@@ -726,16 +747,33 @@ private struct MondayChatsView: View {
             modelPrompt = (try? await MondayTranslationBridge.translateInstalled(submitted, source: "ru", target: "en")) ?? submitted
         }
 
-        let recent = store.chat.suffix(10)
-            .map { "\($0.role == "user" ? "Dima" : "Monday"): \($0.text)" }
+        // Preserve an editable, inspectable memory capsule. Pinned Library documents are
+        // read-only evidence for the model; a new chat must not silently erase their context.
+        let pinnedMemory = store.documents
+            .filter { $0.isPinned && ($0.kind == .note || $0.kind == .document || $0.kind == .code) }
+            .prefix(6)
+            .map { "[\($0.title.prefix(90))] \($0.body.prefix(700))" }
             .joined(separator: "\n")
+        // submit() already appended the current message. Do not duplicate it as prior history.
+        let recent = store.chat.dropLast().suffix(10)
+            .map { "\($0.role == "user" ? "User" : "Monday"): \($0.text.prefix(900))" }
+            .joined(separator: "\n")
+        let continuity = "Pinned Library memory (user editable):\n\(pinnedMemory)\n\nPrevious turns:\n\(recent)"
 
-        var text = try await MondayOnDeviceBrain.respond(prompt: modelPrompt, recentContinuity: recent)
+        var text = try await MondayOnDeviceBrain.respond(prompt: modelPrompt, recentContinuity: continuity)
 
         if wantsRussian {
             text = (try? await MondayTranslationBridge.translateInstalled(text, source: "en", target: "ru")) ?? text
         }
         return text
+    }
+
+    @MainActor private func speak(_ text: String) {
+        if spokenReply.isSpeaking { spokenReply.stopSpeaking(at: .immediate) }
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: containsCyrillic(text) ? "ru-RU" : "en-US")
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        spokenReply.speak(utterance)
     }
 
     private func containsCyrillic(_ text: String) -> Bool {
