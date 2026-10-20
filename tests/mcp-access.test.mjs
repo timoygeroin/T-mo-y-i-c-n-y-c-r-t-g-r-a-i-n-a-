@@ -14,6 +14,19 @@ for (const name of PRIVATE_MCP_TOOLS) {
     assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer real-secret'}}, env), true);
     assert.equal(authorizeMcpTool(name, {headers:{Authorization:'Bearer real-secret'}}, env), true);
   });
+  test(`${name}: accept the existing writer credential when no dedicated host token exists`, () => {
+    const env={MONDAYID_WORLDLINE_WRITER_TOKEN:'writer-secret'};
+    assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer writer-secret'}}, env), true);
+    assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer wrong'}}, env), false);
+  });
+  test(`${name}: dedicated host token takes precedence over the writer credential`, () => {
+    const env={
+      MONDAYID_HOST_TOKEN:'host-secret',
+      MONDAYID_WORLDLINE_WRITER_TOKEN:'writer-secret'
+    };
+    assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer host-secret'}}, env), true);
+    assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer writer-secret'}}, env), false);
+  });
 }
 
 test('non-private introspection remains available without a token', () => {
