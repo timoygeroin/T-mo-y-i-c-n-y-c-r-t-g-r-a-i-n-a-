@@ -65,14 +65,16 @@ code{font-size:12px}a{color:#bdd3ff}
 'use strict';
 const KEY='monday.continuum.local.v1', VERSION=1;
 const MONDAY_SHORTCUT='MONDAYID — REENTRY', BRIDGE_PENDING='monday.shortcut.pending.v1';
-const SHORTCUT_RECIPE=[
-'Create a shortcut named MONDAYID — REENTRY.',
-'Receive Shortcut Input as text. If no input is provided, ask for text.',
-'Use the Apple Intelligence Use Model action, initially with the On-Device model. Set Follow Up off.',
-'Prompt: You are Monday, a practical, warm, truthful personal assistant. The input contains recent conversation and the new message. Answer the most recent message in the same language, including Russian where possible. Do not invent memories or claim actions occurred without evidence. Return only the answer, without extra formatting.',
-'Pass all received Shortcut Input to this Use Model prompt as a variable.',
-'Finish with Stop and Output, outputting the Use Model response as text.',
-'Do not execute third-party actions, send messages, make purchases, or send content to a URL. Keep the shortcut simple and inspect its steps before running it.'
+// Only the model instructions are copied. The user adds the native Shortcut Input
+// magic variable manually in the Shortcuts editor; prose cannot create an iOS action.
+const SHORTCUT_RECIPE='You are Monday, a helpful and truthful personal assistant. The user input contains recent conversation followed by a current message. Respond to the current message in the same language. Use the supplied context only as evidence; do not invent memories or claim an external action was performed without verification. Return only the answer.\n\nConversation and current message: ';
+const SHORTCUT_MANUAL_GUIDE=[
+'1. Open the regular Shortcuts action editor, NOT Describe a Shortcut. On iOS 27, Settings → Apps → Shortcuts → Open Shortcuts To → Editor can change the default.',
+'2. Name the shortcut exactly MONDAYID — REENTRY (including the long dash).',
+'3. Add one action from Apple Intelligence → Use Model. Choose On-Device and turn Follow Up off.',
+'4. Paste the copied Monday prompt into the Use Model prompt field. At the end insert the blue Shortcut Input magic variable (do not just type its name).',
+'5. The final Use Model action outputs the response automatically. Stop and Output is NOT needed. Test with a short input first.',
+'6. Return to Monday → Chats and use Ask Monday; the existing x-callback-url bridge will receive the text.'
 ].join('\n');
 const blank=()=>({schema:'monday.continuum.local.v1',version:VERSION,createdAt:new Date().toISOString(),threads:[],notes:[],tasks:[],spaces:[],events:[]});
 let data;
@@ -134,14 +136,16 @@ const msgs=mk('div','messages glass');msgs.style.padding='16px';if(!thread.messa
 const form=mk('form','composer spaced'),input=mk('input');input.placeholder='Continue your thought…';input.setAttribute('aria-label','New message');const b=mk('button','primary','Keep');b.type='submit';const ask=mk('button','secondary','Ask Monday');ask.type='button';ask.addEventListener('click',()=>askShortcuts(thread,input.value));append(form,input,b,ask);form.addEventListener('submit',e=>{e.preventDefault();const text=input.value.trim();if(!text)return;if(text.length>12000)return toast('Message too long');const current=data.threads.find(x=>x.id===threadId);if(!current)return toast('Thread no longer exists');current.messages.push({id:id(),role:'user',text,at:now()});current.updatedAt=now();event('message_saved','threads',current.id,'User-supplied text');if(!persist())return;render()});append(view,form);
 const row=mk('div','row spaced');append(row,act('Copy portable context',()=>copyThread(thread),'secondary'),act('Delete thread',()=>removeObject('threads',thread.id),'danger'));append(view,row);}
 async function copyShortcutRecipe(){
-  try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(SHORTCUT_RECIPE);toast('Instructions copied. Paste into Describe a Shortcut.');}
-  catch{const field=mk('textarea');field.value=SHORTCUT_RECIPE;field.readOnly=true;const box=mk('div','field');append(box,field);modal('Monday Shortcut instructions',box,[act('Close',closeModal)]);field.focus();field.select();}
+  try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(SHORTCUT_RECIPE);toast('Monday model prompt copied. Paste into Use Model, then insert Shortcut Input.');}
+  catch{const field=mk('textarea');field.value=SHORTCUT_RECIPE;field.readOnly=true;const box=mk('div','field');append(box,field);modal('Monday model prompt',box,[act('Close',closeModal)]);field.focus();field.select();}
 }
 function bridgeSetup(){
   const box=mk('section');
-  append(box,mk('p','muted','Use Apple Intelligence in Shortcuts without an API key or an Apple Developer account. iOS 27.2 may fail to create from description; in that case manually add Shortcut Input → Use Model → Stop and Output.'));
-  append(box,act('1 · Copy build instructions',copyShortcutRecipe,'primary'),act('2 · Create in Shortcuts',()=>{window.location.href='shortcuts://create-shortcut'},'secondary'));
-  append(box,mk('p','hint','After the shortcut is saved with the exact name MONDAYID — REENTRY, return to Chats and tap Ask Monday. An actual iPhone run must still be checked. Apple model availability and limits depend on device and region.'));
+  append(box,mk('p','muted','The iOS 27 Describe a Shortcut generator may fail to locate real Apple actions. Use the built-in manual Editor: only ONE Use Model action is needed.'));
+  const steps=mk('p','hint',SHORTCUT_MANUAL_GUIDE);steps.style.whiteSpace='pre-line';steps.style.lineHeight='1.7';append(box,steps);
+  append(box,act('1 · Copy Monday model prompt',copyShortcutRecipe,'primary'),act('2 · Open Shortcuts editor',()=>{window.location.href='shortcuts://create-shortcut'},'secondary'));
+  append(box,mk('p','hint','If the action is not listed under Apple Intelligence, first check Settings → Apple Intelligence & Siri. Device and Siri languages must be supported. The Shortcuts app language alone does not prove model availability.'));
+  append(box,mk('p','hint','After saving MONDAYID — REENTRY, return to Chats and tap Ask Monday. Actual model execution requires a test on this iPhone.'));
   modal('Connect Apple Intelligence',box,[act('Close',closeModal)]);
 }
 function askShortcuts(thread,raw){
