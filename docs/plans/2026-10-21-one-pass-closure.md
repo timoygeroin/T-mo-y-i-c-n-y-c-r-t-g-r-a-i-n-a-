@@ -1,0 +1,97 @@
+# MondayID one-pass closure: verified execution plan (2026-10-21)
+
+> **For agentic workers:** Use the host's available task-by-task implementation workflow. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Close the Generation-5 MondayID cross-host organism and required iPhone experience with fresh, independently reproducible evidence.
+
+**Architecture:** Generation-5 `main` remains the only runtime authority. Historical pull requests are donor evidence, not replacement roots; port compatibility-checked changes into G5. Trusted Worldline is the cross-host causal record. Candidate bus submissions never execute or promote automatically.
+
+**Tech Stack:** Node 22 ESM, `node:test`, GitHub Actions, Vercel `mondayid-host`, Worldline v4, existing SwiftUI iPhone consumer surface.
+
+## Global constraints
+
+No spend or billing changes without explicit new authorization. Never export or reveal credentials. Do not merge divergent donor branches into the rewritten runtime blindly. `READY` is not an observed user effect; simulated tests are not live cross-host proof. Physical iPhone acceptance is required. Any incomplete gate must remain BLOCKED/UNKNOWN, not 100%.
+
+## Evidence at entry
+
+- Production Vercel deployment `dpl_9YvjsWpaG78jobwer1SCaUyKHLJo` is READY and matches `main` SHA `0ba4895705e9f02a4bf4fbffcd572cfa06db3a12`.
+- `package.json` is `2.0.0-rewrite.0`; `src/boot.mjs` has a diagnostic, deliberately non-effectful receptor.
+- `src/transfer-harness.mjs` can prove actual trusted write/readback when authorized; `tests/clean-host-transfer.test.mjs` currently uses a mock Worldline.
+- Sensitive Vercel environment keys `MONDAYID_WORLDLINE_WRITER_TOKEN` and `MONDAYID_WORLDLINE_READ_TOKEN` exist; their presence alone does not verify current live write.
+- OAuth donor branch diverges: 8 ahead/17 behind `main`. Open PRs #120/#125/#132–137 require compatibility adjudication.
+- Historical `ops/final-seal-20261004.json` and `ops/adversarial-acceptance-20260924.json` cannot certify current production.
+
+---
+
+### Task 1: Prevent false-positive capability promotion
+
+**Files:** modify `src/capability-discovery.mjs`, add `tests/capability-discovery-contract.test.mjs`.
+
+**Interfaces:** consumes `discoverCapabilities(adapters)` with `probe` and `receptor.execute/verify`; returns original manifest schema and only structurally executable+verifiable capabilities.
+
+- [x] Add adversarial tests for a positive probe on missing, visible-only and execute-only receptors, plus a valid receptor and a throwing probe.
+- [x] Confirm old logic could report `state: AVAILABLE` while lacking the required receptor methods.
+- [x] Clamp probe-proclaimed `AVAILABLE` to the structural state; attach `STRUCTURAL_RECEPTOR_CONTRACT_MISSING` evidence.
+- [x] Focused `node --test tests/capability-discovery-contract.test.mjs`: five passing tests in isolated Node 22 workspace.
+- [ ] Run `npm test` in complete repository on exact branch SHA; demand zero failures.
+- [ ] Merge only when the full CI status is verified.
+
+### Task 2: Candidate shared bus with fail-closed authorization
+
+**Files:** port/adapt donor `src/shared-bus.mjs`, `api/mcp.mjs`, `src/mcp-access.mjs`; tests `tests/shared-bus.test.mjs`, `tests/mcp-api.test.mjs`.
+
+**Interfaces:** `bus_post/list/get/ack` consume host-bound principals and 9-field envelopes (`eventId,sourceHost,parentVersion,goalId,observation,evidence,proposal,nextAction,status`). Output must be versioned `CANDIDATE` events, never automatic execution.
+
+- [ ] Compare PR #133 and security fix #135 to current G5 `main` before porting.
+- [ ] Preserve point-read idempotency, stale revision refusal, fork hold, ACK/hash scope, secret screening, and no-effect transport.
+- [ ] Tests must reject duplicate ID/different payload, truncated snapshot, forks, invalid parent, credential-shaped content and unbound principal.
+- [ ] Independently read back exact record hash from an authenticated preview transport; network success alone is insufficient.
+
+### Task 3: OAuth host binding to the existing MCP endpoint
+
+**Files:** adapt PR #136 `src/oauth-as.mjs`, `api/oauth/*.mjs`, `api/.well-known/*.mjs`, `vercel.json`, `src/mcp-access.mjs`. Tests: `tests/oauth-as.test.mjs`.
+
+**Interfaces:** PKCE S256 consent yields scoped host principal on `/api/mcp`; no second canonical endpoint.
+
+- [ ] Reject expired/replayed tokens, invalid PKCE, issuer mismatch, bad consent and host impersonation in tests.
+- [ ] Provision issuer secret only through protected Vercel environment (never in repository/chat).
+- [ ] Prove authorized `bus_list` and bounded `bus_post` through ChatGPT connector and another host. Real user identity consent is an allowed external gate.
+
+### Task 4: Causal migration of historical archive
+
+**Files:** inspect PR #137 `ops/drive-library-20261018/catalog.json`; create a dated, sourced import receipt and reuse existing lineage import tests.
+
+**Interfaces:** source text/id/date + correction/supersession edges -> canonical versioned projection.
+
+- [ ] Reconcile 98 catalogued Drive docs and 27 priority copies against available original conversation corpus.
+- [ ] Import only source-backed facts and corrections; preserve conflict and UNKNOWN for missing originals.
+- [ ] Prove that a second fresh cell inherits the exact corrected rule and provenance, without user repetition.
+
+### Task 5: Consumer iPhone acceptance
+
+**Files:** inspect PR #120/#125 donor paths and existing SwiftUI build workflow before any forward-port; preserve G5 current app and Siri/Shortcuts integration.
+
+**Interfaces:** truthful Home/Chats/Create/Spaces/You + local/offline distinctions; trusted state requires network readback.
+
+- [ ] Validate simulator build and screen behavior on fresh CI.
+- [ ] Sign/install/launch on a real iPhone, exercise restart/offline/online state, record receipt. Physical device and Apple signing/account verification may require a human-only gate.
+
+### Task 6: Live release proof and controlled promotion
+
+**Files:** `src/transfer-harness.mjs`, `.github/workflows/clean-host-transfer.yml`, new dated release receipt; preserve older receipts unchanged.
+
+**Interfaces:** exact SHA + current CI + production deployment + authenticated write/readback + second-host inheritance + iPhone acceptance -> VERIFIED/BLOCKED.
+
+- [ ] Run full `npm test` plus existing boot and current security/authority checks on candidate SHA.
+- [ ] Run real clean-host transfer: authorized external event, independent exact readback, fresh cell inheritance. Simulated tests alone cannot pass.
+- [ ] Confirm two distinct provider surfaces inherit a verified Worldline version, and iPhone acceptance succeeds.
+- [ ] Deploy approved SHA, independently read back deployed revision and observed user effect, preserve rollback.
+- [ ] Publish new dated superseding final seal only when every required gate is independently verified.
+
+## Externally observable unresolved decisions
+
+Native delivery format (TestFlight/App Store vs signed personal install) has not been redefined by the user; maintain real-device acceptance as the minimum. Google/Grok/Gemini identity consent cannot be impersonated. Source material absent from the raw archive remains UNKNOWN. Paid inference remains OFF.
+
+## Execution ledger
+
+2026-10-21: branch `monday/one-pass-proof-20261021` created from current production SHA. Capability truth fix implemented and five focused tests passed in isolated Node 22. Full CI, bus/OAuth live proof, original archive completeness, secondary-host transfer and physical iPhone sign/install still require current verification.
