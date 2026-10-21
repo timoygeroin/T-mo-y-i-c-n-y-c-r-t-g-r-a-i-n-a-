@@ -216,3 +216,6 @@ input::placeholder,textarea::placeholder{color:var(--muted)}
 .quiet-layout .recent-row:nth-of-type(n+4){display:none}
 .quiet-layout .sidebar-recent .recent-link:nth-of-type(n+3){display:none}
 .quiet-layout .meta-footer{display:none}
+/* ADHD focus mode removes continuous decorative motion without hiding work. */
+.quiet-layout .presence-path-a,.quiet-layout .presence-path-b{animation:none!important}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.nav-item:active,.outline-btn:active,.continue-cta:active{transform:scale(.985)}}
