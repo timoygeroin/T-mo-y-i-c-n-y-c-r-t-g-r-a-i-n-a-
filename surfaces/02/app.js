@@ -31,10 +31,13 @@ function readRoute(){
 }
 function restoreRoute(){
  const route=readRoute();view=route?.view||'home';threadId=view==='thread'?route.id:null;goalId=view==='goal'?route.id:null;
+ // Replace stale/deleted local targets, never add a phantom history entry.
+ if(!route)try{window.history?.replaceState?.({monday:true},'',routeHash())}catch{}
  render();window.scrollTo(0,0);
 }
 const initialRoute=readRoute();
 if(initialRoute){view=initialRoute.view;threadId=view==='thread'?initialRoute.id:null;goalId=view==='goal'?initialRoute.id:null}
+else if(window.location?.hash){view='home';threadId=null;goalId=null}
 
 
 const icons={focus:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/>',layers:'<path d="m12 3 8 5-8 5-8-5 8-5zM4 13l8 5 8-5M4 18l8 5 8-5"/>',home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/>',chat:'<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 9 9 0 0 1-3-.5L3 21l1.7-5.4A8.5 8.5 0 1 1 21 11.5z"/>',work:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 5V3h8v2M3 12h18"/>',spaces:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',library:'<path d="M4 3h12l4 4v14H4z"/><path d="M16 3v5h4M8 12h8M8 16h7"/>',system:'<circle cx="12" cy="12" r="3"/><path d="M20 12a8 8 0 0 0-.2-1.8l2-1.5-2-3.5-2.4 1A8 8 0 0 0 14 4l-.4-2h-4L9.2 4a8 8 0 0 0-3.4 2.2l-2.4-1-2 3.5 2 1.5A8 8 0 0 0 3.4 14l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 3.4 2.1L9.6 22h4l.4-2a8 8 0 0 0 3.4-2.1l2.4 1 2-3.4-2-1.6A8 8 0 0 0 20 12z"/>',search:'<circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/>',plus:'<path d="M12 5v14M5 12h14"/>',arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',left:'<path d="m15 18-6-6 6-6"/>',mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/>',more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>',close:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="m4 12 5 5L20 6"/>',edit:'<path d="m16 4 4 4-12 12H4v-4z"/>',spark:'<path d="m12 2 2 8 8 2-8 2-2 8-2-8-8-2 8-2z"/>',shield:'<path d="M12 22s8-4 8-11V5L12 2 4 5v6c0 7 8 11 8 11z"/>',menu:'<path d="M4 6h16M4 12h16M4 18h16"/>'};
@@ -227,5 +230,5 @@ window.addEventListener('popstate',restoreRoute);window.addEventListener('hashch
 window.addEventListener('storage',e=>{if(e.key===KEY){try{const x=JSON.parse(e.newValue);if(valid(x)){db=x;render();notify('Обновлено в другой вкладке')}}catch{}}});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
-try{if(!window.location?.hash)window.history?.replaceState?.({monday:true},'',routeHash())}catch{}
+try{if(window.location?.hash!==routeHash())window.history?.replaceState?.({monday:true},'',routeHash())}catch{}
 })();
