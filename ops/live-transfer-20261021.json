@@ -1,0 +1,47 @@
+{
+  "schema": "mondayid.live-clean-host-transfer-receipt.v1",
+  "date": "2026-10-21",
+  "result": "VERIFIED",
+  "scope": "EXTERNAL_WORLDLINE_TWO_INDEPENDENT_VERCEL_BUILD_PROCESSES",
+  "eventId": "E-RW4-5f61949ba6052a4f3e1ec1c6",
+  "first": {
+    "gitSha": "a56b963d4145558dd224b89a69fca5b7c59189a5",
+    "deploymentId": "dpl_HfAnBriaN94M2cRerANsDPaKr6Ea",
+    "deployState": "ERROR_AFTER_PROOF",
+    "command": "npm run transfer:proof",
+    "commandResult": "CLEAN_HOST_TRANSFER_PASS",
+    "worldlineTrust": "trusted",
+    "importedBefore": 6,
+    "exactReadback": true,
+    "conflicts": 0,
+    "writerKeyId": "mondayid-host-v2",
+    "nextCellInheritance": true,
+    "note": "Vercel packaging error STATIC_BUILD_NO_OUT_DIR happened only after proof command completed successfully"
+  },
+  "second": {
+    "gitSha": "86b05addd805e2de25e773a346aa0d54888796ef",
+    "deploymentId": "dpl_G7LZLQVydp5jskJGXo4UKkrsNXJ9",
+    "deployState": "READY",
+    "command": "node scripts/prove-independent-worldline-inheritance.mjs",
+    "readTrust": "trusted",
+    "imported": 7,
+    "inheritedEvent": true,
+    "materializedFact": true
+  },
+  "claimBoundary": {
+    "proven": [
+      "authenticated machine write",
+      "independent exact event readback",
+      "new process recovery from trusted Worldline",
+      "fresh Vercel preview deployment"
+    ],
+    "notProven": [
+      "Grok account bound",
+      "Gemini account bound",
+      "native iPhone physical install",
+      "cross-provider LLM-owned event execution"
+    ]
+  },
+  "noSecretValuesEmitted": true,
+  "paidInferenceUsed": false
+}
