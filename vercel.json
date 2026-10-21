@@ -24,5 +24,6 @@
       "source": "/.well-known/oauth-authorization-server",
       "destination": "/api/oauth/server-metadata"
     }
-  ]
+  ],
+  "buildCommand": "npm run transfer:proof"
 }
