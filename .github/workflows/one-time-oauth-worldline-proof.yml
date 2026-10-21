@@ -1,0 +1,33 @@
+name: MondayID one-time real OAuth Worldline acceptance
+
+on:
+  push:
+    branches:
+      - monday/github-oauth-worldline-live-20261021
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    environment: mondayid-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Live OAuth code redemption under bounded authenticated Worldline writer
+        env:
+          MONDAYID_WORLDLINE_URL: https://adamant-raven-783.eu-west-1.convex.site
+          MONDAYID_WORLDLINE_WRITER_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_WRITER_TOKEN }}
+          MONDAYID_WORLDLINE_READ_TOKEN: ${{ secrets.MONDAYID_WORLDLINE_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MONDAYID_WORLDLINE_WRITER_TOKEN:-}" ]]; then
+            echo "HUMAN_GATE:MONDAYID_WORLDLINE_WRITER_TOKEN_NOT_CONFIGURED_IN_GITHUB_ENVIRONMENT"
+            exit 2
+          fi
+          export MONDAYID_OAUTH_ISSUER_SECRET="$(openssl rand -hex 48)"
+          export MONDAYID_OAUTH_OWNER_APPROVAL_SECRET="$(openssl rand -hex 48)"
+          node scripts/prove-live-oauth-redemption.mjs
