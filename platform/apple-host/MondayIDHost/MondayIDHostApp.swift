@@ -169,16 +169,38 @@ private enum MondayDeviceAcceptanceStore {
         var snapshot = load()
         let now = Date()
         if snapshot.launchCount == 0 { snapshot.firstLaunchAt = now }
+        // Invalidate a prior relaunch receipt on every subsequent process launch.
+        if snapshot.runtimeReceiptID != nil {
+            snapshot.continuityReceiptID = nil
+            snapshot.continuityStateRevision = nil
+            snapshot.continuityVerifiedAt = nil
+        }
         snapshot.launchCount += 1
         snapshot.latestLaunchAt = now
         save(snapshot)
     }
 
     static func isVerified(_ snapshot: MondayDeviceAcceptanceSnapshot) -> Bool {
-        isPhysicalDevice &&
-        snapshot.launchCount >= 2 &&
-        snapshot.runtimeReceiptID != nil &&
-        snapshot.continuityReceiptID != nil
+        guard isPhysicalDevice,
+              snapshot.launchCount >= 2,
+              snapshot.runtimeReceiptID != nil,
+              snapshot.continuityReceiptID != nil,
+              let runtimeAt = snapshot.runtimeVerifiedAt,
+              let continuityAt = snapshot.continuityVerifiedAt else { return false }
+        return snapshot.latestLaunchAt > runtimeAt && continuityAt >= snapshot.latestLaunchAt
+    }
+
+    // A successful local answer revokes old proof before asynchronous host checks.
+    static func beginOnDeviceReceipt(_ receiptID: String) {
+        guard isPhysicalDevice else { return }
+        var snapshot = load()
+        snapshot.runtimeReceiptID = receiptID
+        snapshot.runtimeStateRevision = nil
+        snapshot.runtimeVerifiedAt = nil
+        snapshot.continuityReceiptID = nil
+        snapshot.continuityStateRevision = nil
+        snapshot.continuityVerifiedAt = nil
+        save(snapshot)
     }
 
     @MainActor
@@ -188,7 +210,9 @@ private enum MondayDeviceAcceptanceStore {
             let health = try await canonicalHealth()
             guard health.isReady else { return }
             var snapshot = load()
-            snapshot.runtimeReceiptID = receiptID
+            // A stale health request cannot overwrite a newer local model receipt.
+            guard snapshot.runtimeReceiptID == receiptID,
+                  snapshot.runtimeVerifiedAt == nil else { return }
             snapshot.runtimeStateRevision = "\(health.kernel)|\(health.continuity.schema ?? "schema-unknown")"
             snapshot.runtimeVerifiedAt = Date()
             save(snapshot)
@@ -202,12 +226,24 @@ private enum MondayDeviceAcceptanceStore {
     static func advanceIfPossible() async {
         guard isPhysicalDevice else { return }
         var snapshot = load()
-        guard snapshot.runtimeReceiptID != nil, snapshot.launchCount >= 2, snapshot.continuityReceiptID == nil else { return }
+        guard snapshot.runtimeReceiptID != nil,
+              let runtimeAt = snapshot.runtimeVerifiedAt,
+              snapshot.latestLaunchAt > runtimeAt,
+              snapshot.launchCount >= 2,
+              snapshot.continuityReceiptID == nil else { return }
 
         do {
             let health = try await canonicalHealth()
             guard health.isReady else { return }
-            snapshot.continuityReceiptID = "relaunch:\(Int(Date().timeIntervalSince1970))"
+            // Recheck after await: the launch and on-device answer may have changed.
+            let current = load()
+            guard current.installID == snapshot.installID,
+                  current.latestLaunchAt == snapshot.latestLaunchAt,
+                  current.runtimeReceiptID == snapshot.runtimeReceiptID,
+                  current.runtimeVerifiedAt == runtimeAt,
+                  current.continuityReceiptID == nil else { return }
+            snapshot = current
+            snapshot.continuityReceiptID = "relaunch:\(UUID().uuidString)"
             snapshot.continuityStateRevision = "\(health.kernel)|\(health.continuity.schema ?? "schema-unknown")"
             snapshot.continuityVerifiedAt = Date()
             save(snapshot)
@@ -715,8 +751,10 @@ private struct MondayChatsView: View {
         if #available(iOS 26.0, *) {
             do {
                 let response = try await onDeviceResponse(to: submitted, wantsRussian: wantsRussian)
-                let receiptID = "on-device:\(Int(Date().timeIntervalSince1970))"
+                let receiptID = "on-device:\(UUID().uuidString)"
                 store.appendChat(role: "monday", text: response, receiptID: receiptID)
+                MondayDeviceAcceptanceStore.beginOnDeviceReceipt(receiptID)
+                Task { await MondayDeviceAcceptanceStore.recordOnDeviceIntelligence(receiptID: receiptID) }
                 store.addActivity(title: "On-device Monday", detail: "Apple Foundation Model · no API spend")
                 // A local answer is not evidence of synchronized cross-device Worldline.
                 presence.set(.withYou, detail: "On-device · local continuity")
