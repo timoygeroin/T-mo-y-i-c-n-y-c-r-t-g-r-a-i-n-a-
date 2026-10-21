@@ -89,7 +89,7 @@ test('native installer is blocked until app-owned signing is independently verif
   assert.doesNotMatch(installPage,/itms-services:\/\//,'no direct iOS enterprise installer may be offered');
   assert.doesNotMatch(installPage,/\.ipa(?:["'?<]|$)/,'no IPA download should appear on the public page');
   assert.match(installPage,/Rakuten Securities/i);
-  assert.match(installPage,/установк[ауи] приостановлена|установка приостановлена/i);
+  assert.match(installPage,/Нативная установка MondayID приостановлена|установка.{0,30}приостановлена/i);
   assert.match(installPage,/mondayid-cko9kb\.v2\.appdeploy\.ai/,'point users at existing web app');
   for(const file of [
     'monday-RAKUTEN-SECURITIES-INC.-iSpeed-WidgetApp-Dev.ipa',
