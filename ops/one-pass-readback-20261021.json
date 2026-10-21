@@ -1,0 +1,112 @@
+{
+  "schema": "mondayid.execution-readback.v1",
+  "date": "2026-10-21",
+  "status": "PARTIAL_COMPLETION_EXTERNAL_GATES_REMAIN",
+  "authority": "Observed GitHub PR merge receipts, exact-head GitHub Actions and Vercel deployment metadata",
+  "scope": "one-pass Generation-5 improvement and release",
+  "baseline": {
+    "sha": "0ba4895705e9f02a4bf4fbffcd572cfa06db3a12",
+    "deployment": "dpl_9YvjsWpaG78jobwer1SCaUyKHLJo"
+  },
+  "delivered": [
+    {
+      "change": "capability availability false-positive veto",
+      "pr": 151,
+      "mainSha": "01171a8717f95b69885337e93e54c9cff7b3a94a",
+      "ciRun": 39577078126,
+      "tests": {
+        "passed": 304,
+        "failed": 0
+      }
+    },
+    {
+      "change": "inert host-bound Worldline candidate bus (bus_post/list/get/ack)",
+      "pr": 152,
+      "mainSha": "36ea61a790ae0f426bbf9b9f8a9d6520bc9ceb39",
+      "ciRun": 39577916212,
+      "tests": {
+        "passed": 338,
+        "failed": 0
+      }
+    },
+    {
+      "change": "owner-gated PKCE OAuth scaffold and single-use Worldline redemption (disabled without required secrets)",
+      "pr": 153,
+      "mainSha": "10abac6a9b34e6190008885ea59d3329210ebedd",
+      "ciRun": 39579011897,
+      "tests": {
+        "passed": 343,
+        "failed": 0
+      }
+    }
+  ],
+  "production_readback": {
+    "deployment": "dpl_FK4ar4TzmJs4vwEK8PP5jXCDkimf",
+    "sha": "10abac6a9b34e6190008885ea59d3329210ebedd",
+    "state": "READY",
+    "alias": "mondayid-host.vercel.app",
+    "interpretation": "build/deployment proof; not evidence of independent external user effect"
+  },
+  "verified_boundary": {
+    "observedVercelEnvNames": [
+      "MONDAYID_WORLDLINE_WRITER_TOKEN",
+      "MONDAYID_WORLDLINE_READ_TOKEN"
+    ],
+    "notVerified": "current live writer credential effect/readback; presence of environment variable names cannot prove credential validity"
+  },
+  "active_gates": [
+    {
+      "id": "OAUTH_OWNER_BINDING",
+      "status": "NOT_CONFIGURED",
+      "evidence": "Vercel env inventory contains no MONDAYID_OAUTH_ISSUER_SECRET or MONDAYID_OAUTH_OWNER_APPROVAL_SECRET; endpoints fail closed",
+      "humanGate": "secure credential creation and owner consent",
+      "possibleAutonomousNext": "independent non-sensitive endpoint 503 verification"
+    },
+    {
+      "id": "HOST_BOUND_BUS_AUTH",
+      "status": "NOT_VERIFIED_LIVE",
+      "evidence": "No MONDAYID_BUS_HOST_TOKENS observed; no cross-provider two-principal write/readback recorded",
+      "humanGate": "each provider identity/connector consent",
+      "possibleAutonomousNext": "replay provider-specific proof once credentials are connected"
+    },
+    {
+      "id": "CLEAN_HOST_WORLDLINE_TRANSFER",
+      "status": "UNIT_PROVEN_LIVE_NOT_VERIFIED_THIS_PASS",
+      "evidence": "tests/clean-host-transfer.test.mjs mocks external Worldline; live workflow gated",
+      "possibleAutonomousNext": "real write + exact event GET + fresh-host inheritance with authorized credential"
+    },
+    {
+      "id": "HISTORICAL_CAUSAL_CORPUS",
+      "status": "PARTIAL_UNVERIFIED",
+      "evidence": "PR #137 advertises 98 Google docs catalogued and 27 priority copies; raw three-year conversation corpus not completely verified",
+      "constraint": "public GitHub repository; never merge private raw Drive or chats into public history",
+      "possibleAutonomousNext": "private provenance import to trusted store only"
+    },
+    {
+      "id": "PHYSICAL_IPHONE_CONSUMER",
+      "status": "REQUIRED_NOT_VERIFIED",
+      "evidence": "No current real-device signed install and restart/offline-online acceptance receipt",
+      "humanGate": "Apple signing/install or physical iPhone acceptance",
+      "possibleAutonomousNext": "source review and simulator CI independent of device"
+    },
+    {
+      "id": "GROK_GEMINI_INHERITANCE",
+      "status": "NOT_VERIFIED_LIVE",
+      "evidence": "No independent fresh Grok and Gemini readback of exact accepted common Worldline state",
+      "humanGate": "provider account connection",
+      "possibleAutonomousNext": "two fresh consumer runs"
+    },
+    {
+      "id": "LIVE_PAID_MODEL_API",
+      "status": "OPTIONAL_DISABLED",
+      "constraint": "no spend authorization"
+    }
+  ],
+  "decisions": [
+    "No old divergent PRs merged wholesale into Generation 5",
+    "No secrets exposed to chat or public repository",
+    "No unsupported claim of 100/100",
+    "No historical final-seal overwrite; this dated record supersedes earlier delivery statuses only where fresh evidence exists"
+  ],
+  "releaseRule": "All required gates must have independently observed evidence; READY and mock tests never substitute for cross-host continuity or real iPhone acceptance"
+}
