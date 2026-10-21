@@ -15,7 +15,8 @@ export async function discoverCapabilities(adapters = []) {
     const id=String(adapter?.id || adapter?.domain || adapter?.receptor?.name || 'unknown');
     const domain=String(adapter?.domain || id);
     const receptor=adapter?.receptor || null;
-    let state=structuralState(receptor);
+    const structural=structuralState(receptor);
+    let state=structural;
     let evidence=[];
 
     if(typeof adapter?.probe === 'function'){
@@ -31,6 +32,12 @@ export async function discoverCapabilities(adapters = []) {
         state='UNKNOWN';
         evidence=[String(error)];
       }
+    }
+
+    // A positive host probe cannot manufacture missing execution/verification interfaces.
+    if(state==='AVAILABLE' && structural!=='AVAILABLE'){
+      state=structural;
+      evidence.push('STRUCTURAL_RECEPTOR_CONTRACT_MISSING');
     }
 
     const entry=Object.freeze({
