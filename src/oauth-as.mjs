@@ -179,7 +179,7 @@ export async function exchangeAuthorizationCode({
   }
   const now = Math.floor(Date.now() / 1000);
   const consumed=await consumeAuthorizationCode(claims,{env,fetchImpl});
-  if(!consumed.ok) return {ok:false,error:'invalid_grant',error_description:consumed.code};
+  if(!consumed.ok) return {ok:false,error:'invalid_grant',error_description:consumed.code,writeHttpStatus:consumed.writeHttpStatus??null,writerStatus:consumed.writerStatus??null};
   const accessToken = sign(secret, {
     typ: 'access',
     jti: randomBytes(16).toString('hex'),
@@ -233,7 +233,7 @@ export async function consumeAuthorizationCode(claims,{env=process.env,fetchImpl
     reply=await fetchImpl(new URL('/worldline/v4/append',base),{method:'POST',headers:{authorization:'Bearer '+writer,'content-type':'application/json'},body:JSON.stringify(event)});
   } catch {return {ok:false,code:'OAUTH_REDEMPTION_WRITE_FAILED'};}
   let receipt;try{receipt=await reply.json();}catch{return {ok:false,code:'OAUTH_REDEMPTION_INVALID_RECEIPT'};}
-  if(reply.status!==201 || receipt?.ok!==true || receipt?.status!=='INSERTED') return {ok:false,code:'OAUTH_CODE_REUSED_OR_WRITE_REJECTED'};
+  if(reply.status!==201 || receipt?.ok!==true || receipt?.status!=='INSERTED') return {ok:false,code:'OAUTH_CODE_REUSED_OR_WRITE_REJECTED',writeHttpStatus:reply.status,writerStatus:String(receipt?.status||'missing')};
   const url=new URL('/worldline/v4/event',base);url.searchParams.set('eventId',eventId);
   let check;
   try{check=await fetchImpl(url,{headers:{authorization:'Bearer '+(env?.MONDAYID_WORLDLINE_READ_TOKEN||writer)}});}
