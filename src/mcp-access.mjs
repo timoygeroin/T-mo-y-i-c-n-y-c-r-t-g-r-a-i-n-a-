@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { verifyAccessToken } from './oauth-as.mjs';
 
 // Default deny (BUS-REVIEW-03): only explicitly public, non-sensitive tools pass
 // without a credential. Any other name, including typos and future tools, is private.
@@ -54,6 +55,8 @@ export function resolvePrincipal(req = {}, env = process.env) {
     if (!HOST_NAME.test(host)) continue;
     if (typeof token === 'string' && token.length >= 16 && same(supplied, token)) return { principal:host, hostBound:true };
   }
+  const oauth=verifyAccessToken(supplied,env);
+  if(oauth) return oauth;
   const shared = env?.MONDAYID_HOST_TOKEN || env?.MONDAYID_WORLDLINE_WRITER_TOKEN;
   if (typeof shared === 'string' && shared.length > 0 && same(supplied, shared)) return { principal:'shared', hostBound:false };
   return null;
