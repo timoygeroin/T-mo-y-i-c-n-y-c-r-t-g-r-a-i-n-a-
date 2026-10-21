@@ -1,37 +1,37 @@
-# monday. — Surface 02 · Atmosphere
+# monday. — Surface 02
 
-An iterative visual and interaction upgrade **on top of** MondayID Surface 01, not a replacement of the organism. The original `surfaces/01` remains available for rollback.
+Улучшенная, проверяемая браузерная версия локальной пользовательской оболочки существующего MondayID.
 
-## Visual language
-- Obsidian / Porcelain editorial typography, soft metallic icy-steel accent.
-- Liquid-Glass-inspired chrome reserved for top navigation, mobile floating bar and chat composer; content remains opaque and legible.
-- Motion is subtle and respects `prefers-reduced-motion`; custom glass disables blur with `prefers-reduced-transparency`.
-- A procedural orbit mark represents the *visual identity*, never model activity, agent completion, or verified sync.
-- Adaptive mobile/desktop layout, controls at least 44px, safe-area bottom navigation.
+## Запуск
 
-## Real behavior
-- Local-first thoughts and conversations, messages, notes, goals/steps/proof statements, spaces, timeline, JSON export/import.
-- Home «Точка возврата» uses actual most recently changed local objects, never seeded fictional user data.
-- Keyboard shortcuts, dictated draft only when browser supports recognition, system/quiet mode, mobile nav.
-- Existing storage key `monday.surface.local.v1` is unchanged, so upgrades do not erase browser data.
-- On storage write failure, mutations are rolled back and not announced as saved.
+В папке проекта: `python -m http.server 8000` и открыть http://localhost:8000.
 
-## Run
-```
-cd surfaces/02
-python3 -m http.server 8000
-```
-Visit `http://localhost:8000`. PWA install requires a secure hosting origin; filesystem preview does not register a worker.
+PWA: открыть адрес на HTTPS / локально и установить через Add to Home Screen (iOS), Install (Chrome/Android). Без HTTPS локальное обслуживание может быть ограничено.
 
-## Verification
-- `node --check app.js`: PASS.
-- CSS stylesheet parsing with tinycss2: no syntax errors.
-- Headless JavaScript model with mock localStorage: PASS for home, actual continuation, creation, reload-equivalent persisted data, quiet mode, backup parsing, rollback on failed writes.
-- **Physical iPhone Safari and live hosted visual review are NOT completed**. An attempted local Chromium run was blocked by environment administrator. Do not label such a run as tested.
-- Vercel deployment update attempted October 21, 2026: **blocked by free-tier deployment API limit (402, retry-after 86400)**. Surface 01's existing production URL stays unchanged until deployment can run.
+## Подтверждённые возможности
 
-## Not included
-Actual LLM inference, authenticated MondayID host session, multi-device cloud sync, native SwiftUI or Android binaries, paid tiers. This is the existing organism's independent browser surface, not a fake model.
+- Сохранение мыслей, диалогов и черновиков на устройстве (localStorage)
+- Цели, чеклисты и пользовательские доказательства завершения
+- Пространства, заметки, импорт текстовых файлов
+- История событий, поиск и командное меню
+- Экспорт резервной копии и импорт v1 + совместимый импорт monday.continuum.local.v1
+- Тёмная/светлая темы, адаптивная навигация, reduced-motion, ограниченная диктовка в поддерживаемых браузерах
+- PWA-манифест и офлайн-кэш приложения
 
-## Sources used for design
-Apple Human Interface Guidelines (materials/layout), 2026 xAI Designing Grok Bot, Gemini app updates, Claude Cowork/Artifacts, accessibility research and user feedback.
+## Честные границы
+
+Это интерфейс, а не подмена когнитивного ядра. AI-модель, настоящие межустройственные sync, платёжная система, нативные SwiftUI/Android сборки НЕ подключены; статусы не симулируются. Данные локальные, и их можно потерять при очистке Safari: экспортируйте резервную копию.
+
+## Surface 02 · Visual rules
+- Контрастный Obsidian / Porcelain; Material on navigation and composer only; content readable without blur.
+- One true primary action. Orbital indicator is decorative, NOT a claim of model thinking or sync.
+- Resume shows the actual most recent saved item, no invented data.
+- Native-feeling finger targets, safe-area floating mobile control, reduce motion/transparency support.
+- Existing `monday.surface.local.v1` storage remains unchanged and compatible.
+- No live AI, real cross-device continuity, paid capabilities or native app are claimed.
+- Reproducible smoke tests: `node qa-node.cjs` (local storage rollback, resume, quiet, backup).
+
+## Additional interaction fixes
+- Command palette now filters local objects as text is typed, and Enter activates the first matching item.
+- Attention focus suppresses non-essential extra recent items; switches in the top toolbar.
+- Service worker caches only the app shell and never private API routes.
