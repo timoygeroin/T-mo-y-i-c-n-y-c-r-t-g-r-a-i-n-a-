@@ -110,11 +110,10 @@ export function isAllowedRedirectUri(uri, env = process.env) {
   // ChatGPT / OpenAI connector redirects commonly used in custom MCP OAuth.
   const defaults = [
     'https://chatgpt.com/connector/oauth/',
-    'https://chat.openai.com/connector/oauth/',
-    'http://127.0.0.1/',
-    'http://localhost/'
+    'https://chat.openai.com/connector/oauth/'
   ];
   const list = allow.length > 0 ? allow : defaults;
+  // Production defaults allow HTTPS ChatGPT redirects only; localhost needs an explicit allowlist.
   return list.some((prefix) => uri === prefix || uri.startsWith(prefix));
 }
 
