@@ -36,17 +36,36 @@
     "targetDomain": "https://monday-surface-01.vercel.app",
     "lastReadyDeploymentId": "dpl_EQBTAxXR62UQcnrAa2ATnG7QiG6Q",
     "lastReadyDeploymentContainsSurface02": false,
-    "releaseStatus": "BLOCKED",
+    "releaseStatus": "MIRROR_PUBLISHED_CANONICAL_VERCEL_BLOCKED",
     "blocker": "HTTP 402 api-deployments-free-per-day",
     "providerRetryAfterSeconds": 86400,
     "billingChangeAuthorized": false
   },
   "nextAdmissibleRoute": [
-    "After provider free deployment quota resets, deploy exactly surfaces/02 assets into existing monday-surface-01 Vercel project, without creating a parallel identity.",
-    "Read back live deployment ID, alias, served asset revisions, and test all core interactions on published origin.",
-    "Test installation, safe-area, data export/import and VoiceOver on physical iPhone (human/device gate when needed).",
-    "Only connect secure AI runtime via authenticated server-side relay and explicit approved inference budget; never put host tokens in browser.",
-    "Test two-device recovery with shared Worldline before claiming one Monday everywhere."
+    "Run browser readback on MiniUp mirror: visual responsive state, harmless navigation, client errors, manifest and caching.",
+    "When provider quota resets deploy exact surfaces/02 assets to existing monday-surface-01 project.",
+    "After live readback verify core routes, export/import, storage rollback and device behavior.",
+    "Do not claim live AI or cross-device sync until secure backend relay and two-device recovery pass."
   ],
-  "policy": "Preserve existing live deployment and no-cost gate; avoid aliases/merges that claim VERIFIED_EFFECT without external readback."
+  "policy": "Preserve existing live deployment and no-cost gate; avoid aliases/merges that claim VERIFIED_EFFECT without external readback.",
+  "mirror": {
+    "provider": "MiniUp",
+    "siteId": "aloof-vr",
+    "url": "https://aloof-vr.miniup.app",
+    "siteProtected": false,
+    "listedInGallery": false,
+    "publishedAssets": [
+      "index.html",
+      "app.css",
+      "app.js",
+      "manifest.json",
+      "mark.svg",
+      "sw.js"
+    ],
+    "source": "surfaces/02 on main",
+    "changesFromSource": "Manifest filename rewritten to manifest.json in HTML and service worker for backup-hosting compatibility; no changes to core data schema or AI runtime",
+    "providerPublishConfirmed": true,
+    "browserFunctionalAcceptance": "PENDING_EXTERNAL_READBACK",
+    "canonicalTargetStill": "https://monday-surface-01.vercel.app"
+  }
 }
