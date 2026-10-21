@@ -1,0 +1,45 @@
+{
+  "schema": "mondayid.consumer-release.receipt.v1",
+  "releaseDate": "2026-10-21",
+  "userFacingURL": "https://mondayid-cko9kb.v2.appdeploy.ai/",
+  "appId": "mondayid-cko9kb",
+  "independentHosting": "AppDeploy",
+  "backendProvider": "AppDeploy SDK (auth, database, ai.generate)",
+  "architectureRelation": "EXTERNAL_CONSUMER_BODY: canonical MondayID Generation-5 runtime remains at mondayid-host.vercel.app; the AppDeploy body does NOT automatically sync canonical Worldline",
+  "source": "AppDeploy remote source snapshot, not a deploy of GitHub main",
+  "deploymentStatus": "READY",
+  "latestSnapshotVersion": "1792580930682",
+  "featuresImplemented": [
+    "russian responsive chat UI",
+    "protected POST /api/ask model invocation route",
+    "auth-gated state and model endpoints",
+    "cloud record read/write with revision comparison",
+    "browser local memory and tasks",
+    "local conversation history and import/export",
+    "browser speech synthesis",
+    "privacy and terms pages",
+    "mobile standalone web manifest"
+  ],
+  "verified": [
+    "AppDeploy published deployment READY",
+    "AppDeploy screenshot QA generated for mobile and web",
+    "no detected frontend/network/backend errors in QA snapshot",
+    "server code changed from update-only to initial add then guarded update and redeployed READY"
+  ],
+  "notYetIndependentlyVerified": [
+    "real signed-in AI answer with credits consumed",
+    "real cloud first save and cross-device restore for a signed-in user",
+    "native physical iPhone signed app acceptance",
+    "continuity across ChatGPT/Grok/Gemini with exact shared authorizing and causal deltas",
+    "publishing this same SHA to canonical production Vercel after build-rate-limit 402",
+    "public user onboarding security review and full acceptance"
+  ],
+  "guardrails": [
+    "no paid billing enabled",
+    "no protected credentials exported to frontend",
+    "do not equate browser model persona to canonical cross-host identity",
+    "user 100/100 definition remains unfulfilled"
+  ],
+  "canonicalMainAtTime": "1f988dcc8aac8f9677a360459bd1c6d38a4a0c59",
+  "canonicalProductionAtTime": "8533e323ae2d444e2cec91e060b1b48980ad2e36"
+}
