@@ -108,8 +108,66 @@ function command(q=''){
 }
 function dictate(target){const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Rec)return notify('Диктовка недоступна в этом браузере');try{const rec=new Rec();rec.lang='ru-RU';rec.interimResults=false;rec.maxAlternatives=1;rec.onresult=e=>{const text=e.results[0][0].transcript;const el=$(target==='home'?'#homeDraft':'#chatDraft');if(el){el.value=[el.value,text].filter(Boolean).join(' ');el.dispatchEvent(new Event('input',{bubbles:true}));notify('Текст готов. Отправка — только по твоему нажатию.')}};rec.onerror=()=>notify('Не получилось распознать речь');rec.start();notify('Слушаю…')}catch{notify('Диктовка сейчас недоступна')}}
 function download(){const payload=JSON.stringify({schema:'monday.surface.backup.v1',exportedAt:now(),data:db},null,2);const blob=new Blob([payload],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='monday-continuity-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);notify('Копия подготовлена')}
-function importBackup(input){if(!input||typeof input!=='object')throw Error('Неверный формат');let d;if(input.schema==='monday.surface.backup.v1'&&valid(input.data)){d=input.data}else if(input.schema===LEGACY&&Array.isArray(input.threads)){d=blank();d.threads=input.threads.map(t=>({id:t.id||uid(),title:String(t.title||'Диалог'),messages:Array.isArray(t.messages)?t.messages.map(m=>({id:m.id||uid(),role:m.role==='monday'?'system':'user',text:String(m.text||''),at:m.at||now()})):[],createdAt:t.createdAt||now(),updatedAt:t.updatedAt||now()}));d.goals=(input.tasks||[]).map(t=>({id:t.id||uid(),title:String(t.title||'Задача'),criteria:'',steps:(t.checkpoints||[]).map(c=>({id:c.id||uid(),text:String(c.title||''),done:!!c.done})),state:t.done?'ACTIVE':'DRAFT',proof:'',createdAt:t.createdAt||now(),updatedAt:t.updatedAt||now()}));d.notes=(input.notes||[]).map(n=>({id:n.id||uid(),title:String(n.title||'Заметка'),body:String(n.body||''),createdAt:n.createdAt||now(),updatedAt:n.updatedAt||now()}));d.spaces=(input.spaces||[]).map(s=>({id:s.id||uid(),title:String(s.title||'Пространство'),description:String(s.description||''),createdAt:s.createdAt||now(),updatedAt:s.updatedAt||now()}));}else throw Error('Эта версия копии не поддерживается');if([d.threads,d.goals,d.notes,d.spaces].some(x=>x.length>5000))throw Error('Копия слишком большая');for(const t of d.threads)if(!Array.isArray(t.messages)||t.messages.length>3000)throw Error('Некорректный диалог');return d}
-function importFile(file){if(!file||file.size>3e6)return notify('Файл JSON слишком большой (максимум 3 МБ)');file.text().then(raw=>{let incoming=importBackup(JSON.parse(raw));const ok=update(d=>{const ids=new Set([...d.threads,...d.goals,...d.notes,...d.spaces].map(x=>x.id));for(const c of ['threads','goals','notes','spaces'])for(const x of incoming[c])if(!ids.has(x.id)){d[c].push(x);ids.add(x.id)}},'import',`Импортирована резервная копия`);if(ok){go('home');notify('Объекты импортированы, существующие сохранены')}}).catch(e=>notify('Импорт отклонён: '+String(e.message||e)))}
+const safeImportId=(value,fallback='')=>{
+ if(typeof value==='string'&&/^[A-Za-z0-9_-]{1,160}$/.test(value))return value;
+ const seed=String(value??'')+'|'+String(fallback);let h1=2166136261,h2=16777619;
+ for(let i=0;i<seed.length;i++){const c=seed.charCodeAt(i);h1=Math.imul(h1^c,16777619);h2=Math.imul(h2^c,2246822519)}
+ return 'import_'+(h1>>>0).toString(16).padStart(8,'0')+(h2>>>0).toString(16).padStart(8,'0');
+};
+const safeImportText=(value,max=12000)=>String(value??'').slice(0,max);
+const safeImportDate=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))?value:now();
+function importBackup(input){
+ if(!input||typeof input!=='object')throw Error('Неверный формат');
+ let raw;
+ if(input.schema==='monday.surface.backup.v1'&&valid(input.data))raw=input.data;
+ else if(input.schema===LEGACY&&Array.isArray(input.threads)){
+   raw={...blank(),threads:input.threads,goals:input.tasks||[],notes:input.notes||[],spaces:input.spaces||[],events:input.events||[],prefs:input.prefs||{}};
+ }else throw Error('Эта версия копии не поддерживается');
+ const collections=['threads','goals','notes','spaces'];
+ if(collections.some(k=>!Array.isArray(raw[k])||raw[k].length>5000))throw Error('Некорректный размер копии');
+ const obj=value=>{if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Повреждённый объект в копии');return value};
+ const result=blank();
+ result.threads=raw.threads.map(item=>{
+   const t=obj(item);if(!Array.isArray(t.messages)||t.messages.length>3000)throw Error('Некорректный диалог');
+   return {id:safeImportId(t.id,JSON.stringify(t)),title:safeImportText(t.title||'Диалог',500),messages:t.messages.map(item=>{
+     const m=obj(item);return {id:safeImportId(m.id,JSON.stringify(m)),role:m.role==='system'||m.role==='monday'?'system':'user',text:safeImportText(m.text),at:safeImportDate(m.at||m.createdAt)};
+   }),createdAt:safeImportDate(t.createdAt),updatedAt:safeImportDate(t.updatedAt||t.createdAt)};
+ });
+ result.goals=raw.goals.map(item=>{
+   const g=obj(item),steps=g.steps??g.checkpoints??[];
+   if(!Array.isArray(steps)||steps.length>2000)throw Error('Некорректные шаги цели');
+   const normalizedSteps=steps.map(item=>{const step=obj(item);return {id:safeImportId(step.id,JSON.stringify(step)),text:safeImportText(step.text??step.title,1000),done:step.done===true}});
+   const proof=safeImportText(g.proof||'',12000);
+   const status=['DRAFT','ACTIVE','VERIFIED'].includes(g.state)?g.state:g.done?'ACTIVE':'DRAFT';
+   return {id:safeImportId(g.id,JSON.stringify(g)),title:safeImportText(g.title||'Цель',500),criteria:safeImportText(g.criteria||''),steps:normalizedSteps,state:status==='VERIFIED'&&(!proof||normalizedSteps.some(s=>!s.done))?'ACTIVE':status,proof,createdAt:safeImportDate(g.createdAt),updatedAt:safeImportDate(g.updatedAt||g.createdAt)};
+ });
+ result.notes=raw.notes.map(item=>{const n=obj(item);return {id:safeImportId(n.id,JSON.stringify(n)),title:safeImportText(n.title||'Заметка',500),body:safeImportText(n.body),createdAt:safeImportDate(n.createdAt),updatedAt:safeImportDate(n.updatedAt||n.createdAt)}});
+ result.spaces=raw.spaces.map(item=>{const n=obj(item);return {id:safeImportId(n.id,JSON.stringify(n)),title:safeImportText(n.title||'Пространство',500),description:safeImportText(n.description),createdAt:safeImportDate(n.createdAt),updatedAt:safeImportDate(n.updatedAt||n.createdAt)}});
+ if(raw.events!==undefined&&!Array.isArray(raw.events))throw Error('Некорректная история изменений');
+ result.events=(raw.events||[]).slice(0,300).map(item=>{
+   const e=obj(item);return {id:safeImportId(e.id,JSON.stringify(e)),type:safeImportText(e.type||e.action||e.kind||'imported-event',120),detail:safeImportText(e.detail||e.label||''),at:safeImportDate(e.at),provenance:'IMPORTED',sourceProvenance:safeImportText(e.provenance||'LOCAL',120)};
+ });
+ const theme=raw.prefs?.theme;
+ result.prefs={...result.prefs,theme:['dark','light','system'].includes(theme)?theme:result.prefs.theme,quiet:typeof raw.prefs?.quiet==='boolean'?raw.prefs.quiet:result.prefs.quiet};
+ result.activeGoal=typeof raw.activeGoal==='string'&&result.goals.some(g=>g.id===raw.activeGoal)?raw.activeGoal:null;
+ return result;
+}
+function importFile(file){
+ if(!file||file.size>3e6)return notify('Файл JSON слишком большой (максимум 3 МБ)');
+ file.text().then(raw=>{
+   const incoming=importBackup(JSON.parse(raw));let count=0;
+   const ok=update(d=>{
+     const cleanBefore=!['threads','goals','notes','spaces'].some(k=>d[k].length);
+     for(const collection of ['threads','goals','notes','spaces','events']){
+       const identity=item=>collection==='events'?`${item.at}|${item.type}|${item.detail}`:item.id;
+       const seen=new Set(d[collection].map(identity));
+       for(const item of incoming[collection])if(!seen.has(identity(item))){d[collection].push(item);seen.add(identity(item));count++}
+     }
+     if(cleanBefore){d.prefs=incoming.prefs;d.activeGoal=incoming.activeGoal}
+   },'import','Импортирована резервная копия');
+   if(ok){go('home');notify(count?`Импортировано ${count} записей с историей. Дубликаты пропущены.`:'Новых записей нет; существующие данные не изменены')}
+ }).catch(e=>notify('Импорт отклонён: '+String(e.message||e)))
+}
 function textFile(file){if(!file||file.size>200000)return notify('Текстовый файл должен быть меньше 200 КБ');file.text().then(body=>{const title=file.name.slice(0,150);const ok=update(d=>d.notes.unshift({id:uid(),title,body,createdAt:now(),updatedAt:now()}),'text-import',title);if(ok){go('library');notify('Текст добавлен локально')}}).catch(()=>notify('Файл не прочитан'))}
 document.addEventListener('click',e=>{const navEl=e.target.closest('[data-nav]');if(navEl){if(navEl.dataset.nav==='more'){onDo('more');return}go(navEl.dataset.nav);closeModal();return}const open=e.target.closest('[data-open-thread]');if(open){threadId=open.dataset.openThread;go('thread',threadId);return}const act=e.target.closest('[data-do]');if(act){e.preventDefault();if(act.closest('#commandResults'))closeModal();onDo(act.dataset.do)}});
 document.addEventListener('submit',e=>{const form=e.target;if(form.id==='modalForm'){e.preventDefault();modalSubmit(form);return}if(!form.dataset.form)return;e.preventDefault();const type=form.dataset.form,text=String(new FormData(form).get('text')||'').trim();if(!text)return notify('Напиши хотя бы одну мысль');if(type==='new-thread'){newThread(text);return}if(type==='message'){const id=threadId;const ok=update(d=>{const t=d.threads.find(x=>x.id===id);if(!t)throw Error('Диалог не найден');t.messages.push({id:uid(),role:'user',text,at:now()});t.updatedAt=now();d.drafts.chat=''},'message-saved','Сохранено сообщение пользователя');if(ok)notify('Мысль сохранена локально');return}if(type==='step'){const g=currentGoal();if(!g)return;update(d=>{const x=d.goals.find(z=>z.id===g.id);x.steps.push({id:uid(),text,done:false});x.state='ACTIVE';x.proof='';x.updatedAt=now()},'step-added',`Добавлено действие для ${g.title}`);return}});
