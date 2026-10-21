@@ -40,7 +40,11 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
     'capability_manifest',
     'compile_history',
     'get_state',
-    'prove_trusted_write_readback'
+    'prove_trusted_write_readback',
+    'bus_post',
+    'bus_list',
+    'bus_get',
+    'bus_ack'
   ]);
 });
 
