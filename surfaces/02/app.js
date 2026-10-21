@@ -160,6 +160,17 @@ function importBackup(input){
  const theme=raw.prefs?.theme;
  result.prefs={...result.prefs,theme:['dark','light','system'].includes(theme)?theme:result.prefs.theme,quiet:typeof raw.prefs?.quiet==='boolean'?raw.prefs.quiet:result.prefs.quiet};
  result.activeGoal=typeof raw.activeGoal==='string'&&result.goals.some(g=>g.id===raw.activeGoal)?raw.activeGoal:null;
+ // Portable drafts are normalized, bounded, and tied to normalized thread IDs.
+ const sourceDrafts=raw.drafts&&typeof raw.drafts==='object'&&!Array.isArray(raw.drafts)?raw.drafts:{};
+ result.drafts.home=typeof sourceDrafts.home==='string'?sourceDrafts.home.slice(0,12000):'';
+ result.drafts.chat=typeof sourceDrafts.chat==='string'?sourceDrafts.chat.slice(0,12000):'';
+ const rawMap=sourceDrafts.byThread&&typeof sourceDrafts.byThread==='object'&&!Array.isArray(sourceDrafts.byThread)?sourceDrafts.byThread:{};
+ const importedIds=new Map(raw.threads.map((t,i)=>[String(t.id),result.threads[i].id]));
+ result.drafts.byThread=Object.create(null);
+ for(const [oldId,text] of Object.entries(rawMap).slice(0,5000)){
+   const id=importedIds.get(oldId);
+   if(id&&typeof text==='string')result.drafts.byThread[id]=text.slice(0,12000);
+ }
  return result;
 }
 function importFile(file){
@@ -173,7 +184,17 @@ function importFile(file){
        const seen=new Set(d[collection].map(identity));
        for(const item of incoming[collection])if(!seen.has(identity(item))){d[collection].push(item);seen.add(identity(item));count++}
      }
-     if(cleanBefore){d.prefs=incoming.prefs;d.activeGoal=incoming.activeGoal}
+     d.drafts??={home:'',chat:'',byThread:{}};
+     d.drafts.byThread??={};
+     const knownThreadIds=new Set(d.threads.map(t=>t.id));
+     for(const [id,text] of Object.entries(incoming.drafts.byThread||{})){
+       if(knownThreadIds.has(id)&&!Object.prototype.hasOwnProperty.call(d.drafts.byThread,id)&&typeof text==='string')d.drafts.byThread[id]=text;
+     }
+     if(cleanBefore){
+       d.prefs=incoming.prefs;d.activeGoal=incoming.activeGoal;
+       if(!d.drafts.home)d.drafts.home=incoming.drafts.home;
+       if(!d.drafts.chat)d.drafts.chat=incoming.drafts.chat;
+     }
    },'import','Импортирована резервная копия');
    if(ok){go('home');notify(count?`Импортировано ${count} записей с историей. Дубликаты пропущены.`:'Новых записей нет; существующие данные не изменены')}
  }).catch(e=>notify('Импорт отклонён: '+String(e.message||e)))
