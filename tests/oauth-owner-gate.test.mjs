@@ -79,6 +79,7 @@ test('invalid PKCE and missing durable writer never release a bearer',async()=>{
   assert.equal((await redeem(code,fetchImpl,{...env,MONDAYID_WORLDLINE_WRITER_TOKEN:undefined})).ok,false);
   assert.equal(mint({...env,MONDAYID_OAUTH_ISSUER_SECRET:undefined}).ok,false);
   assert.equal(mintAuthorizationCode({env,clientId:'chatgpt-connector',redirectUri:'https://evil.test/callback',codeChallenge:s256Challenge(verifier)}).ok,false);
+  assert.equal(mintAuthorizationCode({env,clientId:'chatgpt-connector',redirectUri:'http://localhost/callback',codeChallenge:s256Challenge(verifier)}).ok,false);
   assert.equal(mintAuthorizationCode({env,clientId:'chatgpt-connector',redirectUri:'https://chatgpt.com/connector/oauth/callback',codeChallenge:s256Challenge(verifier),scope:'admin'}).ok,false);
 });
 
