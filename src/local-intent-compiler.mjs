@@ -6,7 +6,7 @@
 export const LOCAL_INTENT_SCHEMA='mondayid.local-intent.v1';
 const CONTROL=/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u202a-\u202e\u2066-\u2069\u200b-\u200d\uFEFF]/g;
 const SECRET=[
-  /\b(?:password|пароль|api[_ -]?key|секрет|private[_ -]?key|client[_ -]?secret|access[_ -]?token)\s*[:=]\s*\S{4,}/i,
+  /(?:^|[\s([\{,;])(?:password|пароль|api[_ -]?key|секрет|private[_ -]?key|client[_ -]?secret|access[_ -]?token)\s*[:=]\s*\S{4,}/i,
   /\b(?:sk-[A-Za-z0-9_-]{18,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{22,})/,
   /\bBearer\s+[A-Za-z0-9._~+/-]{15,}/i,
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/
