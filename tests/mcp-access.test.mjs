@@ -11,8 +11,8 @@ for (const name of PRIVATE_MCP_TOOLS) {
     for (const headers of [{}, {authorization:'Bearer fake'}, {authorization:'Basic real-secret'}, {authorization:'Bearer real-secret '}, {authorization:'Bearer real-secre'}]) {
       assert.equal(authorizeMcpTool(name, {headers}, env), false);
     }
-    assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer real-secret'}}, env), true);
-    assert.equal(authorizeMcpTool(name, {headers:{Authorization:'Bearer real-secret'}}, env), true);
+    assert.equal(authorizeMcpTool(name, {headers:{authorization:'Bearer real-secret'}}, env), !['bus_post','bus_ack'].includes(name));
+    assert.equal(authorizeMcpTool(name, {headers:{Authorization:'Bearer real-secret'}}, env), !['bus_post','bus_ack'].includes(name));
   });
   test(`${name}: accept the existing writer credential when no dedicated host token exists`, () => {
     const env={MONDAYID_WORLDLINE_WRITER_TOKEN:'writer-secret'};
