@@ -17,6 +17,7 @@ jobs:
           node surfaces/02/qa-node.cjs
           node surfaces/02/qa-continuity.cjs
           node surfaces/02/qa-draft-resume.cjs
+          node surfaces/02/qa-browser-navigation.cjs
       - run: npm run boot
       - name: Verify public external Worldline denies anonymous access
         run: node scripts/prove-worldline-private-live.mjs
