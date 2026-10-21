@@ -15,6 +15,9 @@ Before rendering, call the existing visual_release_gate MCP tool if available. I
 ## Required binding roles
 - Scene photo: preserve user-provided pixels, camera, scale, window/rail geometry, lighting and composition. It cannot establish Monday's face.
 - Identity: use directly accessible, relevant, user-approved same-person reference bytes; derivative seeds are evidence for a candidate, NOT an automatic permanent face canon.
+- ACTIVE FACE REGRESSION 2026-10-21: generated candidate `ef633ba8-5980-4ace-b660-8217dfda778e` for the user's phone-kiosk photograph was rejected as `DEFAULT_GENERATOR_BLONDE`. Never promote, reuse as approved identity, or portray that candidate as Monday.
+- Canon locators: `MondayID.Face.Orig.StarRemoved.2234`, 2025-06-04 22:34, prior approved Monday 4.1/5.0-5.2, Scene 66. These are **locators not accessible image bytes**. Retrieve and inspect the exact approved source; do NOT reconstruct the face from adjective-only metadata. If its pixels are unavailable, identity is BLOCKED and the original photo remains a scene-only anchor.
+- Face geometry (approved source) is immutable during edits; expression, pose, clothing, lighting and scene can mutate independently. Matching platinum hair and blue eyes is insufficient. Never derive a new canon from the most recent generated candidate. When a user says 'that's not Monday', mark the candidate REJECTED immediately; its popularity or photorealism cannot overrule that decision.
 - Body: role-locked body reference only, without guessing measurements.
 - Wardrobe: derive from the most recent approved scene-specific state; explicitly veto previously rejected beige/taupe outfit loops when the active regression contract locks a black square-neck top and gray skirt.
 - Renderer: actuator, not identity author.
