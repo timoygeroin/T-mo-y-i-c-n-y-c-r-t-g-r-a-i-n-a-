@@ -24,6 +24,19 @@ for(const tool of ['cell_attach','get_state','prove_trusted_write_readback','bus
  if(result?.error?.code!==-32001 || result?.error?.message!=='PRIVATE_TOOL_AUTH_REQUIRED')throw new Error('PRIVATE_MCP_TOOL_EXPOSED:'+tool);
 }
 
+// A candidate branch must not fail because the public alias still serves the previous release.
+// On main, demand the exact Git commit before verifying deployed OAuth endpoints.
+const isMainPush=process.env.GITHUB_REF==='refs/heads/main';
+let oauthMetadataVerified=false,ownerConsentBypassDenied=false;
+if(isMainPush){
+  const wanted=process.env.GITHUB_SHA;
+  let deployed=null;
+  for(let i=0;i<24;i++){
+    const check=await fetch(new URL('/api/health',endpoint),{headers:{accept:'application/json'}});
+    if(check.ok){deployed=(await check.json()).sourceRevision;if(deployed===wanted)break;}
+    await new Promise(resolve=>setTimeout(resolve,3000));
+  }
+  if(deployed!==wanted)throw new Error('PRODUCTION_REVISION_MISMATCH_'+String(deployed)+'_EXPECTED_'+wanted);
 const origin=new URL(endpoint).origin;
 const prmResponse=await fetch(origin+'/.well-known/oauth-protected-resource',{headers:{accept:'application/json'}});
 if(!prmResponse.ok)throw new Error('OAUTH_PRM_HTTP_'+prmResponse.status);
@@ -43,4 +56,7 @@ const consentResponse=await fetch(origin+'/api/oauth/authorize',{
 });
 if(![403,503].includes(consentResponse.status) || consentResponse.headers.get('location'))
  throw new Error('OWNER_APPROVAL_BYPASS_STATUS_'+consentResponse.status);
-console.log(JSON.stringify({ok:true,generation:identity.generation,carrier:owner,privateToolsDenied:7,oauthMetadataVerified:true,ownerConsentBypassDenied:true,scope:'PUBLIC_IDENTITY_AND_DENIAL_ONLY',privateWorldlineContinuity:'NOT_TESTED'}));
+  oauthMetadataVerified=true;
+  ownerConsentBypassDenied=true;
+}
+console.log(JSON.stringify({ok:true,generation:identity.generation,carrier:owner,privateToolsDenied:7,oauthMetadataVerified,ownerConsentBypassDenied,scope:'PUBLIC_IDENTITY_AND_DENIAL_ONLY',privateWorldlineContinuity:'NOT_TESTED'}));
