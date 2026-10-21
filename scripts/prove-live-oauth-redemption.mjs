@@ -19,7 +19,7 @@ const minted=mintAuthorizationCode(params);
 if(!minted.ok)throw new Error('AUTHORIZATION_CODE_MINT_FAILED:'+minted.error);
 const exchange={env,code:minted.code,clientId,redirectUri,codeVerifier:verifier};
 const first=await exchangeAuthorizationCode(exchange);
-if(!first.ok)throw new Error('FIRST_REDEMPTION_FAILED:'+first.error_description);
+if(!first.ok)throw new Error('FIRST_REDEMPTION_FAILED:'+JSON.stringify({code:first.error_description,writeHttpStatus:first.writeHttpStatus,writerStatus:first.writerStatus}));
 const claims=verifyAccessToken(first.token.access_token,env);
 if(claims?.principal!=='chatgpt-monday' || claims?.hostBound!==true)throw new Error('SIGNED_TOKEN_AUDIENCE_UNBOUND');
 const accepted=authorizeMcpTool('bus_post',{headers:{authorization:'Bearer '+first.token.access_token}},env);
