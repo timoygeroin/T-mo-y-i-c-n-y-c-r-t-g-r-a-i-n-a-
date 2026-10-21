@@ -11,6 +11,11 @@ jobs:
         with:
           node-version: 22
       - run: npm test
+      - name: Verify Monday consumer surface data integrity and continuity
+        run: |
+          node --check surfaces/02/app.js
+          node surfaces/02/qa-node.cjs
+          node surfaces/02/qa-continuity.cjs
       - run: npm run boot
       - name: Verify public external Worldline denies anonymous access
         run: node scripts/prove-worldline-private-live.mjs
