@@ -30,10 +30,39 @@
       "per-thread unsent draft isolation",
       "same-tab active conversation recovery",
       "legacy shared draft explicit recovery",
-      "portable backup preserves pending thread drafts"
+      "portable backup preserves pending thread drafts",
+      "independent browser QA 15 PASS / 0 FAIL",
+      "offline reload after SW activation"
     ],
     "externalPhysicalIphoneAcceptance": false,
-    "activeAIAndCrossDeviceSync": false
+    "activeAIAndCrossDeviceSync": false,
+    "browserQa": {
+      "url": "https://aloof-vr.miniup.app/",
+      "date": "2026-10-21",
+      "result": "15 PASS / 0 FAIL",
+      "testType": "isolated browser profile, test localStorage only",
+      "tested": [
+        "create A/B conversations",
+        "keep unsent A/B drafts isolated",
+        "restore B after reload",
+        "restore A after reload",
+        "send A message without clearing B draft",
+        "390px viewport without horizontal overflow",
+        "no page or console errors",
+        "Service Worker activated",
+        "offline reload preserved active view and unsent B draft"
+      ],
+      "evidenceUrls": [
+        "https://aloof-vr.miniup.app/",
+        "https://aloof-vr.miniup.app/app.js",
+        "https://aloof-vr.miniup.app/sw.js"
+      ],
+      "limitations": [
+        "physical iPhone Safari and VoiceOver not tested",
+        "AI execution and cross-device sync not connected",
+        "browser QA tested generated test data only"
+      ]
+    }
   },
   "deployment": {
     "provider": "Vercel",
@@ -48,10 +77,10 @@
     "billingChangeAuthorized": false
   },
   "nextAdmissibleRoute": [
-    "Finish independent public-browser QA: A/B unsent draft isolation, reload resume, errors, offline service worker.",
-    "Only after browser readback mark Surface 02 user flow accepted; physical iPhone Safari/VoiceOver remains a separate human/device gate.",
-    "Try canonical Vercel redeploy when free quota resets; do not change billing or create a second organism.",
-    "Keep AI API execution disabled pending secure server-side authorization and approved inference budget; do not misrepresent local-only data as shared Worldline."
+    "Physical iPhone Safari: install PWA, safe-area, keyboard, dictation, VoiceOver, import/export (needs device-observed acceptance).",
+    "Publish exact Surface 02 assets to existing Monday Vercel domain after 402 free quota resets; confirm alias and served asset sha.",
+    "Design secure authenticated server-side AI relay with explicit inference spend authorization before live answers.",
+    "Verify two-device shared Worldline recovery before claiming one Monday everywhere."
   ],
   "policy": "Preserve existing live deployment and no-cost gate; avoid aliases/merges that claim VERIFIED_EFFECT without external readback.",
   "mirror": {
@@ -71,7 +100,7 @@
     "source": "surfaces/02 on main",
     "changesFromSource": "Manifest filename rewritten to manifest.json in HTML and service worker for backup-hosting compatibility; no changes to core data schema or AI runtime",
     "providerPublishConfirmed": true,
-    "browserFunctionalAcceptance": "IN_PROGRESS_INDEPENDENT_BROWSER_TEST",
+    "browserFunctionalAcceptance": "PASS_15_OF_15",
     "canonicalTargetStill": "https://monday-surface-01.vercel.app",
     "updatedAsset": "app.js",
     "updatedFrom": "a21bc37b418653cd0d0d6ed687e3e0edef7383fb",
@@ -82,6 +111,8 @@
       "manifest.json",
       "mark.svg",
       "sw.js"
-    ]
+    ],
+    "offlinePwaAcceptance": "PASS_BROWSER_SW_OFFLINE_RELOAD",
+    "lastVerifiedSourceCommit": "a21bc37b418653cd0d0d6ed687e3e0edef7383fb"
   }
 }
