@@ -42,3 +42,8 @@ PWA: открыть адрес на HTTPS / локально и установи
 - Refresh resumes the exact active local thread or goal (and its per-thread draft). Missing/deleted or malformed local routes fall back to Home **and replace the stale URL with `#/home` without adding history entries**.
 - An in-tab session cursor complements URL navigation; it does not represent remote synchronization.
 - Regression gates: `node qa-draft-resume.cjs` and `node qa-browser-navigation.cjs`.
+
+## Офлайн-доступ
+- Доступен **после первой успешной онлайн-загрузки и установки/активации Service Worker**; на холодном устройстве без заранее сохранённого app shell запуск офлайн невозможен.
+- В независимой проверке 21 октября: работающий офлайн-кэш — PASS; холодная загрузка без интернета — недоступна по определению, не маскируется статусом «офлайн готов».
+- Локальные черновики сохраняются в рамках браузера и его хранилища; очистка данных удалит их без экспортированной резервной копии.
