@@ -16,3 +16,5 @@ jobs:
         run: node scripts/prove-worldline-private-live.mjs
       - name: Prove live Monday Host public route and private-tool denial
         run: node scripts/prove-carrier-live.mjs
+      - name: Prove deployed OAuth discovery and deny ownerless consent
+        run: node scripts/prove-oauth-public-live.mjs
