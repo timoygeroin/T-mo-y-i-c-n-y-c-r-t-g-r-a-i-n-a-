@@ -15,6 +15,13 @@ export function assessVisualTransition(input={}) {
     return result('HOLD','SCENE_ROLE_OR_GEOMETRY_MISSING');
   if(!identity.assetId || identity.role!=='identity' || identity.approved!==true || identity.bytesAvailable!==true)
     return result('HOLD','IDENTITY_ANCHOR_REQUIRED');
+  // An input photo of the workplace is a WORLD reference, never a usable FACE anchor.
+  // A descriptive blonde, uninspected generated portrait, or metadata-only locator
+  // cannot substitute for accessible approved identity image bytes.
+  if(identity.assetId===scene.assetId || identity.source==='scene' || identity.source==='description' || identity.source==='generated-unapproved')
+    return result('HOLD','IDENTITY_SOURCE_SUBSTITUTION');
+  if(history.lastIdentityFailure==='DEFAULT_GENERATOR_BLONDE' && history.materialRepair!==true)
+    return result('HOLD','DEFAULT_GENERATOR_BLONDE_REPEAT');
   if(history.sameFailedFamily===true && history.materialRepair!==true)
     return result('HOLD','EXHAUSTED_ROUTE_VETO');
   if(Array.isArray(history.rejectedIdentityIds) && history.rejectedIdentityIds.includes(identity.assetId) && history.identityRepairApproved!==true)
@@ -22,6 +29,8 @@ export function assessVisualTransition(input={}) {
   if(!wardrobe.requested || !wardrobe.selected || wardrobe.requested!==wardrobe.selected)
     return result('HOLD','WARDROBE_MISMATCH');
   if(!candidate) return result('READY_TO_RENDER','CONTRACT_READY');
+  if(candidate.id && Array.isArray(history.rejectedCandidateIds) && history.rejectedCandidateIds.includes(candidate.id))
+    return result('HOLD','REJECTED_CANDIDATE_VETO');
   if(candidate.sceneAssetId!==scene.assetId)
     return result('HOLD','POST_RENDER_SCENE_DRIFT');
   if(candidate.identityAssetId!==identity.assetId || candidate.audit?.identity!==true)
