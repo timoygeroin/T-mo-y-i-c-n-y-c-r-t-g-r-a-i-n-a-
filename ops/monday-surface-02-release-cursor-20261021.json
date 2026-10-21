@@ -3,20 +3,22 @@
   "date": "2026-10-21",
   "goal": "One continuing MondayID organism with the responsive Surface 02 as its canonical consumer interface; no independent second identity, no fake AI or sync.",
   "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-  "verifiedSourceCommit": "9f70a4b044e40a292cf38ad2c19f7f74d112328a",
+  "verifiedSourceCommit": "a21bc37b418653cd0d0d6ed687e3e0edef7383fb",
   "mergedPullRequests": [
     159,
     162,
-    163
+    163,
+    165
   ],
   "sourceDirectory": "surfaces/02",
   "verified": {
     "sourceInMain": true,
-    "systemProofOnFixPullRequests": "PASS",
+    "systemProofOnFixPullRequests": "PASS — PR #165 merged after workflow 39626429456 success",
     "qaCommands": [
       "node --check surfaces/02/app.js",
       "node surfaces/02/qa-node.cjs",
-      "node surfaces/02/qa-continuity.cjs"
+      "node surfaces/02/qa-continuity.cjs",
+      "node surfaces/02/qa-draft-resume.cjs"
     ],
     "testedLocally": [
       "storage rollback",
@@ -24,7 +26,11 @@
       "theme/attention",
       "safe import and provenance",
       "duplicate prevention",
-      "desktop/mobile Chromium DOM render"
+      "desktop/mobile Chromium DOM render",
+      "per-thread unsent draft isolation",
+      "same-tab active conversation recovery",
+      "legacy shared draft explicit recovery",
+      "portable backup preserves pending thread drafts"
     ],
     "externalPhysicalIphoneAcceptance": false,
     "activeAIAndCrossDeviceSync": false
@@ -42,10 +48,10 @@
     "billingChangeAuthorized": false
   },
   "nextAdmissibleRoute": [
-    "Run browser readback on MiniUp mirror: visual responsive state, harmless navigation, client errors, manifest and caching.",
-    "When provider quota resets deploy exact surfaces/02 assets to existing monday-surface-01 project.",
-    "After live readback verify core routes, export/import, storage rollback and device behavior.",
-    "Do not claim live AI or cross-device sync until secure backend relay and two-device recovery pass."
+    "Finish independent public-browser QA: A/B unsent draft isolation, reload resume, errors, offline service worker.",
+    "Only after browser readback mark Surface 02 user flow accepted; physical iPhone Safari/VoiceOver remains a separate human/device gate.",
+    "Try canonical Vercel redeploy when free quota resets; do not change billing or create a second organism.",
+    "Keep AI API execution disabled pending secure server-side authorization and approved inference budget; do not misrepresent local-only data as shared Worldline."
   ],
   "policy": "Preserve existing live deployment and no-cost gate; avoid aliases/merges that claim VERIFIED_EFFECT without external readback.",
   "mirror": {
@@ -65,7 +71,17 @@
     "source": "surfaces/02 on main",
     "changesFromSource": "Manifest filename rewritten to manifest.json in HTML and service worker for backup-hosting compatibility; no changes to core data schema or AI runtime",
     "providerPublishConfirmed": true,
-    "browserFunctionalAcceptance": "PENDING_EXTERNAL_READBACK",
-    "canonicalTargetStill": "https://monday-surface-01.vercel.app"
+    "browserFunctionalAcceptance": "IN_PROGRESS_INDEPENDENT_BROWSER_TEST",
+    "canonicalTargetStill": "https://monday-surface-01.vercel.app",
+    "updatedAsset": "app.js",
+    "updatedFrom": "a21bc37b418653cd0d0d6ed687e3e0edef7383fb",
+    "assets": [
+      "index.html",
+      "app.css",
+      "app.js",
+      "manifest.json",
+      "mark.svg",
+      "sw.js"
+    ]
   }
 }
