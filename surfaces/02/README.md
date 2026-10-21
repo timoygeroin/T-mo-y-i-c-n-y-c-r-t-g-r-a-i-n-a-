@@ -35,3 +35,10 @@ PWA: открыть адрес на HTTPS / локально и установи
 - Command palette now filters local objects as text is typed, and Enter activates the first matching item.
 - Attention focus suppresses non-essential extra recent items; switches in the top toolbar.
 - Service worker caches only the app shell and never private API routes.
+
+## Browser navigation / current version
+- Browser Back and Forward traverse real screen history through static-safe `#/...` routes.
+- Threads and goals receive a deep link only when their object is actually present in this browser's local database; a link does not transfer another device's data.
+- Refresh resumes the exact active local thread or goal (and its per-thread draft). Missing/deleted local targets safely fall back to Home.
+- An in-tab session cursor complements URL navigation; it does not represent remote synchronization.
+- Regression gates: `node qa-draft-resume.cjs` and `node qa-browser-navigation.cjs`.
