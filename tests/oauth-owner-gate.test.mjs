@@ -84,7 +84,7 @@ test('invalid PKCE and missing durable writer never release a bearer',async()=>{
 
 test('authorization endpoint never treats GET query or bare POST as consent',async()=>{
   await withEnv(env,async()=>{
-    const req={method:'GET',url:'/api/oauth/authorize?consent=1&client_id=chatgpt-connector',headers:{host:'mondayid-host.vercel.app'}};
+    const req={method:'GET',url:'/api/oauth/authorize?'+new URLSearchParams({consent:'1',client_id:'chatgpt-connector',redirect_uri:'https://chatgpt.com/connector/oauth/callback',code_challenge:s256Challenge(verifier)}).toString(),headers:{host:'mondayid-host.vercel.app'}};
     const get=response();await authorizeHandler(req,get);
     assert.equal(get.statusCode,200);
     assert.ok(String(get.body).includes('owner_approval'));
