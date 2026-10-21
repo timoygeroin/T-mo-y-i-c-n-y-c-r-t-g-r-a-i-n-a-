@@ -82,14 +82,25 @@ test('Apple proof also compiles the real iPhoneOS target and emits an unsigned s
   assert.match(appleWorkflow,/Physical iPhone signing\/install\/runtime acceptance: NOT PROVEN/);
 });
 
-test('direct install fails closed instead of offering a revoked signing identity',()=>{
+test('direct installer matches status table and excludes revoked signing identities',()=>{
   assert.match(appleWorkflow,/Fail closed on revoked or unverified signing identities/);
   assert.match(appleWorkflow,/accepted=new Set\(\['active','good','not_revoked','valid'\]\)/);
   assert.match(appleWorkflow,/usable_count/);
   assert.match(appleWorkflow,/Installation is paused|installation is paused/i);
-  assert.ok(signingTable.split(/\r?\n/).slice(1).filter(Boolean).every(line=>line.endsWith('\trevoked')));
-  assert.match(installPage,/iPhone installation is paused/);
-  assert.doesNotMatch(installPage,/itms-services:/);
+  // The contract is revocation-aware, not tied to yesterday's number of usable identities.
+  // A 'valid' row is an external status assertion, NOT proof of entitlement to distribute.
+  const rows=signingTable.trim().split(/\r?\n/).slice(1).filter(Boolean).map(line=>{
+    const [name,,days,revocation='']=line.split('\t');
+    return {name,days:Number(days),revocation:revocation.trim().toLowerCase()};
+  });
+  assert.ok(rows.length>0,'signing status table must not be empty');
+  const accepted=new Set(['active','good','not_revoked','valid']);
+  const eligible=rows.filter(x=>x.days>0&&accepted.has(x.revocation)).map(x=>x.name).sort();
+  const installerLinks=[...installPage.matchAll(/itms-services:\/\/\?action=download-manifest&amp;url=https:\/\/mondayid-host\.vercel\.app\/install\/monday-([^"<>]+)\.plist/g)].map(x=>x[1]).sort();
+  assert.deepEqual(installerLinks,eligible,'install links must match the currently eligible rows exactly');
+  assert.equal(new Set(installerLinks).size,installerLinks.length,'installer cannot duplicate signing identities');
+  assert.equal((installPage.match(/itms-services:\/\//g)||[]).length,installerLinks.length,'installer cannot hide additional install links');
+  if(!eligible.length)assert.match(installPage,/iPhone installation is paused/);
 });
 
 
