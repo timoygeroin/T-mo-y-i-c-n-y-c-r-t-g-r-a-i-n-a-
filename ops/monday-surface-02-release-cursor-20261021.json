@@ -1,0 +1,52 @@
+{
+  "schema": "mondayid.release-cursor.v1",
+  "date": "2026-10-21",
+  "goal": "One continuing MondayID organism with the responsive Surface 02 as its canonical consumer interface; no independent second identity, no fake AI or sync.",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "verifiedSourceCommit": "9f70a4b044e40a292cf38ad2c19f7f74d112328a",
+  "mergedPullRequests": [
+    159,
+    162,
+    163
+  ],
+  "sourceDirectory": "surfaces/02",
+  "verified": {
+    "sourceInMain": true,
+    "systemProofOnFixPullRequests": "PASS",
+    "qaCommands": [
+      "node --check surfaces/02/app.js",
+      "node surfaces/02/qa-node.cjs",
+      "node surfaces/02/qa-continuity.cjs"
+    ],
+    "testedLocally": [
+      "storage rollback",
+      "resume",
+      "theme/attention",
+      "safe import and provenance",
+      "duplicate prevention",
+      "desktop/mobile Chromium DOM render"
+    ],
+    "externalPhysicalIphoneAcceptance": false,
+    "activeAIAndCrossDeviceSync": false
+  },
+  "deployment": {
+    "provider": "Vercel",
+    "project": "monday-surface-01",
+    "projectId": "prj_ShyRGSC70HT6L8XViwlfju4mbyJE",
+    "targetDomain": "https://monday-surface-01.vercel.app",
+    "lastReadyDeploymentId": "dpl_EQBTAxXR62UQcnrAa2ATnG7QiG6Q",
+    "lastReadyDeploymentContainsSurface02": false,
+    "releaseStatus": "BLOCKED",
+    "blocker": "HTTP 402 api-deployments-free-per-day",
+    "providerRetryAfterSeconds": 86400,
+    "billingChangeAuthorized": false
+  },
+  "nextAdmissibleRoute": [
+    "After provider free deployment quota resets, deploy exactly surfaces/02 assets into existing monday-surface-01 Vercel project, without creating a parallel identity.",
+    "Read back live deployment ID, alias, served asset revisions, and test all core interactions on published origin.",
+    "Test installation, safe-area, data export/import and VoiceOver on physical iPhone (human/device gate when needed).",
+    "Only connect secure AI runtime via authenticated server-side relay and explicit approved inference budget; never put host tokens in browser.",
+    "Test two-device recovery with shared Worldline before claiming one Monday everywhere."
+  ],
+  "policy": "Preserve existing live deployment and no-cost gate; avoid aliases/merges that claim VERIFIED_EFFECT without external readback."
+}
