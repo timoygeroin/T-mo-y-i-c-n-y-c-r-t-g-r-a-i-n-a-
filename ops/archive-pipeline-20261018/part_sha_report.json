@@ -1,0 +1,46 @@
+[
+  {
+    "part_no": 7,
+    "chat_start_index": 301,
+    "chat_end_index": 350,
+    "chat_count": 50,
+    "jsonl_file": "/tmp/monday-raw/part_07/raw_chats_07_301-350.jsonl",
+    "jsonl_sha256_manifest": "c30d36d89eec08e879cc6ff3f0e91c340e10dc57349d0f455a94a19a6c0ac7ac",
+    "jsonl_sha256_observed": "c30d36d89eec08e879cc6ff3f0e91c340e10dc57349d0f455a94a19a6c0ac7ac",
+    "sha_ok": true,
+    "titles_in_manifest": 50
+  },
+  {
+    "part_no": 8,
+    "chat_start_index": 351,
+    "chat_end_index": 400,
+    "chat_count": 50,
+    "jsonl_file": "/tmp/monday-raw/part_08/raw_chats_08_351-400.jsonl",
+    "jsonl_sha256_manifest": "7542193168079043604c8e74a1e83ee8c2294cb5def808f00860448ba8ad4a57",
+    "jsonl_sha256_observed": "7542193168079043604c8e74a1e83ee8c2294cb5def808f00860448ba8ad4a57",
+    "sha_ok": true,
+    "titles_in_manifest": 50
+  },
+  {
+    "part_no": 9,
+    "chat_start_index": 401,
+    "chat_end_index": 450,
+    "chat_count": 50,
+    "jsonl_file": "/tmp/monday-raw/part_09/raw_chats_09_401-450.jsonl",
+    "jsonl_sha256_manifest": "5e3c14c051e12edf452eaec168b139378cb385c8410a49e2981836d9442f29b5",
+    "jsonl_sha256_observed": "5e3c14c051e12edf452eaec168b139378cb385c8410a49e2981836d9442f29b5",
+    "sha_ok": true,
+    "titles_in_manifest": 50
+  },
+  {
+    "part_no": 10,
+    "chat_start_index": 451,
+    "chat_end_index": 500,
+    "chat_count": 50,
+    "jsonl_file": "/tmp/monday-raw/part_10/raw_chats_10_451-500.jsonl",
+    "jsonl_sha256_manifest": "edeaec2229e5c1395e4669035a328f3fa1cb486fa9553cce8695fd667cfded8c",
+    "jsonl_sha256_observed": "edeaec2229e5c1395e4669035a328f3fa1cb486fa9553cce8695fd667cfded8c",
+    "sha_ok": true,
+    "titles_in_manifest": 50
+  }
+]
