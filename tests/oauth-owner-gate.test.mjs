@@ -19,6 +19,7 @@ function worldline(){
     const u=new URL(url);
     if(u.pathname==='/worldline/v4/append'){
       const e=JSON.parse(opts.body);
+      if(e.epistemicStatus!=='VERIFIED')return {ok:false,status:400,json:async()=>({ok:false,status:'INVALID_EPISTEMIC_STATUS'})};
       if(events.has(e.eventId)) return {ok:true,status:200,json:async()=>({ok:true,status:'DUPLICATE'})};
       events.set(e.eventId,e);
       return {ok:true,status:201,json:async()=>({ok:true,status:'INSERTED'})};
@@ -62,6 +63,7 @@ test('real PKCE exchange consumes code durably once and yields audience-scoped b
   const first=await redeem(code,fetchImpl);
   assert.equal(first.ok,true);
   assert.equal(events.size,1);
+  assert.equal([...events.values()][0].epistemicStatus,'VERIFIED');
   assert.deepEqual(resolvePrincipal({headers:{authorization:'Bearer '+first.token.access_token}},env).principal,'chatgpt-monday');
   assert.equal(authorizeMcpTool('bus_post',{headers:{authorization:'Bearer '+first.token.access_token}},env),true);
   assert.equal(verifyAccessToken(first.token.access_token,{...env,MONDAYID_PUBLIC_ORIGIN:'https://other.test'}),null);
