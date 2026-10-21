@@ -227,7 +227,7 @@ export async function consumeAuthorizationCode(claims,{env=process.env,fetchImpl
   if(!base || !writer) return {ok:false,code:'OAUTH_DURABLE_REDEMPTION_UNAVAILABLE'};
   const eventId='E-OAUTH2-'+createHash('sha256').update(claims.jti).digest('hex').slice(0,40);
   const valueJson=JSON.stringify({kind:'oauth_code_redeemed',codeHash:createHash('sha256').update(claims.jti).digest('hex'),clientIdHash:createHash('sha256').update(claims.client_id).digest('hex')});
-  const event={eventId,timestampIso:new Date().toISOString(),subject:'mondayid:oauth-redemption',predicate:'mondayid_oauth_code_redeemed',valueJson,epistemicStatus:'observed',sourceRef:'mondayid:oauth:token',host:'mondayid-oauth',identityFingerprint:'mondayid:g5:oauth'};
+  const event={eventId,timestampIso:new Date().toISOString(),subject:'mondayid:oauth-redemption',predicate:'mondayid_oauth_code_redeemed',valueJson,epistemicStatus:'VERIFIED',sourceRef:'mondayid:oauth:token',host:'mondayid-oauth',identityFingerprint:'mondayid:g5:oauth'};
   let reply;
   try {
     reply=await fetchImpl(new URL('/worldline/v4/append',base),{method:'POST',headers:{authorization:'Bearer '+writer,'content-type':'application/json'},body:JSON.stringify(event)});
