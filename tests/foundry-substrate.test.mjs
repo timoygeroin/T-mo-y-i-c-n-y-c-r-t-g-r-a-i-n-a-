@@ -21,3 +21,20 @@ test('the existing CapabilityFoundry plans effect strategies without spawning a 
   assert.equal(result.status,'VERIFIED');
   assert.equal(executions,1);
 });
+
+
+test('CapabilityFoundry composes local primitives before routing an effect',async()=>{
+  const foundry=new CapabilityFoundry();
+  const readback=async({result})=>({ok:result.value==='DONE:sample',evidence:'test output readback'});
+  const composed=foundry.composeEffectSubstrates({capability:'document.render',sourceType:'input',targetType:'report',
+    input:'sample',readback,primitives:[
+      {id:'render',from:'input',to:'report',pure:true,privacy:'local',quality:'exact',
+        provenance:'owned-renderer',resourceEstimate:{cashUsd:0,workUnits:2,networkBytes:0},
+        apply:async x=>'DONE:'+x}
+    ]});
+  const capsule=makeEffectCapsule({id:'composed:1',intent:'Produce local report',capability:'document.render',maxCostUsd:0});
+  const plan=await foundry.planEffectSubstrate(capsule,composed.routes);
+  assert.equal(plan.selected.method,'deterministic');
+  const result=await executeSubstratePlan(plan);
+  assert.equal(result.status,'VERIFIED');
+});
