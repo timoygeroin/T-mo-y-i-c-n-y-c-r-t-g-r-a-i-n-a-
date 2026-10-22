@@ -10,7 +10,8 @@ src=src.replace(/\}\)\(\);\s*$/,'globalThis.__test={getDb:()=>db,getView:()=>vie
 vm.runInContext(src,ctx,{timeout:3000});
 const t=ctx.__test;
 assert.ok(node.innerHTML.includes('presence-core'), 'orbital mark');
-assert.ok(node.innerHTML.includes('Локальная версия'), 'truthful AI state');
+assert.ok(node.innerHTML.includes('Локальная память и команды работают без сети'), 'truthful local action state');
+assert.ok(node.innerHTML.includes('Генеративный AI и межустройственная синхронизация пока не подключены'), 'truthful model and sync boundary');
 t.go('system');
 assert.ok(node.innerHTML.includes('Офлайн-режим становится доступен после первой успешной онлайн-загрузки'),'honest first-run offline limit');
 t.go('home');
