@@ -1,3 +1,5 @@
+import { planSubstrates } from './substrate-optimizer.mjs';
+
 const normalize = (value) => String(value ?? '').trim();
 
 const hasProvenance = (value) => {
@@ -71,6 +73,12 @@ export class CapabilityFoundry {
   constructor({ builder = null, recover = null } = {}) {
     this.builder = builder;
     this.recover = recover;
+  }
+
+  // Select a strategy for the SAME observable effect before building a new organ.
+  // The provider-independent Effect ABI remains the executor and authorization gate.
+  async planEffectSubstrate(capsule, routes = [], options = {}) {
+    return planSubstrates(capsule, routes, options);
   }
 
   propose(action, available = {}) {
