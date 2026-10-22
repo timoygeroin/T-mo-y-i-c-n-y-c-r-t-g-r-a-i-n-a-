@@ -43,7 +43,8 @@ function boot(vault){
  };
  const localStorage={getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)};
  const sessionStorage={getItem:key=>sessions.get(key)||null,setItem:(key,value)=>sessions.set(key,String(value))};
- const context={window,document,URL,localStorage,sessionStorage,navigator:{},TextEncoder,TextDecoder,Blob,File:NamedFile,
+ class FormData {constructor(form){this.form=form} entries(){return Object.entries(this.form.fields||{})}}
+ const context={window,document,URL,localStorage,sessionStorage,FormData,navigator:{},TextEncoder,TextDecoder,Blob,File:NamedFile,
    Uint8Array,DataView,JSON,Math,Date,crypto:webcrypto,structuredClone,
    matchMedia:()=>({matches:false}),setTimeout:()=>1,clearTimeout(){},console,Event};
  vm.createContext(context);
@@ -51,7 +52,7 @@ function boot(vault){
  vm.runInContext(read('encrypted-capsule.js'),context);
  const source=read('app.js');
  const script=source.replace(/\}\)\(\);\s*$/,
-  'globalThis.__ui={getDb:()=>db,update,go,onDo,importCompleteArchive,exportCompleteArchive};})();');
+  'globalThis.__ui={getDb:()=>db,update,go,onDo,importCompleteArchive,exportCompleteArchive,modalSubmit,setModalAction:x=>{modalAction=x},setPendingEncryptedFile:x=>{pendingEncryptedFile=x}};})();');
  assert.notEqual(script,source);
  vm.runInContext(script,context,{timeout:3000});
  return {context,downloads,notice,node,listeners};
@@ -120,6 +121,41 @@ test('actual Monday UI exports encrypted binary capsule and restores after owner
  const entries=await target.list();
  assert.equal(entries.length,1);
  assert.equal((await target.get(entries[0].id)).blob.size,original.size);
+});
+
+
+test('secure modal refuses mismatched passwords without creating archive',async()=>{
+ const ui=boot(makeVault());
+ ui.context.__ui.setModalAction('secure-export');
+ ui.context.__ui.modalSubmit({fields:{password:'long secure password number one',repeat:'different long secure password'}});
+ assert.equal(ui.downloads.length,0);
+ assert.match(ui.notice.textContent,/Пароли не совпадают/);
+});
+
+test('secure password form creates encrypted archive without saving password in app state',async()=>{
+ const ui=boot(makeVault()),pass='lengthy custom secret passphrase';
+ ui.context.__ui.setModalAction('secure-export');
+ ui.context.__ui.modalSubmit({fields:{password:pass,repeat:pass}});
+ for(let i=0;i<50&&ui.downloads.length===0;i++)await new Promise(resolve=>setTimeout(resolve,20));
+ assert.equal(ui.downloads.length,1);
+ assert.match(ui.downloads[0].name,/\.mondaysecure$/);
+ assert.equal(await ui.context.window.MondayEncryptedCapsule.readSignature(ui.downloads[0].blob),true);
+ assert.ok(!JSON.stringify(ui.context.__ui.getDb()).includes(pass));
+});
+
+test('secure import modal with wrong password never modifies imported state',async()=>{
+ const source=boot(makeVault()),pass='lengthy valid secret for archive';
+ await source.context.__ui.exportCompleteArchive(pass);
+ const blob=source.downloads[0].blob;
+ const target=boot(makeVault());
+ target.context.__ui.setPendingEncryptedFile(blob);
+ target.context.__ui.setModalAction('secure-import');
+ target.context.__ui.modalSubmit({fields:{password:'another long wrong password'}});
+ for(let i=0;i<30&&!target.notice.textContent.includes('Расшифровка не выполнена');i++)
+   await new Promise(resolve=>setTimeout(resolve,20));
+ assert.match(target.notice.textContent,/Расшифровка не выполнена/);
+ assert.equal(target.context.__ui.getDb().notes.length,0);
+ assert.equal((await target.context.window.MondayFiles.list()).length,0);
 });
 
 test('both user-facing pages advertise full capsule actions without replacing JSON backup',()=>{
