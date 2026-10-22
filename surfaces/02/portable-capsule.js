@@ -107,7 +107,7 @@
     return true;
   }
   async function importCapsule(file,{vault,validateState,commitState}={}) {
-    assert(vault&&typeof vault.list==='function'&&typeof vault.add==='function'&&typeof vault.remove==='function','VAULT_UNAVAILABLE');
+    assert(vault&&typeof vault.list==='function'&&typeof vault.get==='function'&&typeof vault.add==='function'&&typeof vault.remove==='function','VAULT_UNAVAILABLE');
     assert(typeof validateState==='function'&&typeof commitState==='function','STATE_HANDLER_REQUIRED');
     const details=await inspectCapsule(file);
     const normalized=await validateState(details.index.backup);
@@ -125,7 +125,13 @@
           const candidate=new File([fragment],entry.name,{type:entry.type});
           const meta=await vault.add(candidate,{archiveIdentity:entry.key});
           assert(meta?.id,'VAULT_IMPORT_FAILED');
-          added.push(meta.id);existing.add(entry.key);
+          // Register rollback before reading back the stored bytes.
+          added.push(meta.id);
+          const persisted=await vault.get(meta.id);
+          assert(persisted?.blob && persisted.blob.size===entry.size,'VAULT_RESTORED_READBACK_FAILED');
+          const observed=await chunkDigests(persisted.blob);
+          assert(observed.length===entry.chunks.length && observed.every((hash,i)=>hash===entry.chunks[i]),'VAULT_RESTORED_INTEGRITY_FAILED');
+          existing.add(entry.key);
         }
         offset+=entry.size;
       }
