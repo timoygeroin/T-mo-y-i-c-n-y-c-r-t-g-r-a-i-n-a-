@@ -240,5 +240,5 @@ test('PWA loads portable module before app, exposes picker, and updates cache',(
  assert.match(sw,/portable-capsule\.js/);
  assert.match(app,/function exportCompleteArchive\(\)/);
  assert.match(app,/function importCompleteArchive\(file\)/);
- assert.match(app,/Архив.*не зашифрован|Архив НЕ зашифрован/);
+ assert.match(app,/защищённый архив|Защищённый архив|Незашифрованный архив/);
 });
