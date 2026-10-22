@@ -33,6 +33,7 @@ jobs:
           test -f surfaces/02/index.html
           test -f surfaces/02/app.js
           test -f surfaces/02/app-compiler.js
+          test -f surfaces/02/local-actions.js
           test -f surfaces/02/work-evidence.js
           test -f surfaces/02/sw.js
           node surfaces/02/qa-node.cjs
