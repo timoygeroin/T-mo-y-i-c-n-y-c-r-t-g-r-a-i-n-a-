@@ -48,6 +48,7 @@ function boot(vault){
    matchMedia:()=>({matches:false}),setTimeout:()=>1,clearTimeout(){},console,Event};
  vm.createContext(context);
  vm.runInContext(read('portable-capsule.js'),context);
+ vm.runInContext(read('encrypted-capsule.js'),context);
  const source=read('app.js');
  const script=source.replace(/\}\)\(\);\s*$/,
   'globalThis.__ui={getDb:()=>db,update,go,onDo,importCompleteArchive,exportCompleteArchive};})();');
@@ -96,11 +97,36 @@ test('UI refuses corrupted archive with no state or file changes',async()=>{
  assert.equal(second.context.__ui.getDb().notes.length,0);
 });
 
+
+
+test('actual Monday UI exports encrypted binary capsule and restores after owner passphrase',async()=>{
+ const source=makeVault(),first=boot(source),pass='A long private Monday passphrase 2026!';
+ const original=new NamedFile([new Uint8Array(1111111).fill(71)],'private-photo.heic',{type:'image/heic'});
+ await source.add(original);
+ first.context.__ui.update(db=>db.notes.push({
+   id:'secure-note',title:'Secret',body:'Private contents',createdAt:'2026-10-22T00:00:00Z',updatedAt:'2026-10-22T00:00:00Z'
+ }),'note','note');
+ await first.context.__ui.exportCompleteArchive(pass);
+ assert.equal(first.downloads.length,1);
+ assert.match(first.downloads[0].name,/\.mondaysecure$/);
+ const encrypted=first.downloads[0].blob;
+ const engine=first.context.window.MondayEncryptedCapsule;
+ assert.equal(await engine.readSignature(encrypted),true);
+ await assert.rejects(engine.decrypt(encrypted,'Incorrect but long passphrase'),/WRONG_PASSPHRASE_OR_TAMPERED_ARCHIVE/);
+ const target=makeVault(),second=boot(target);
+ const clear=await second.context.window.MondayEncryptedCapsule.decrypt(encrypted,pass);
+ await second.context.__ui.importCompleteArchive(clear,true);
+ assert.equal(second.context.__ui.getDb().notes[0].body,'Private contents');
+ const entries=await target.list();
+ assert.equal(entries.length,1);
+ assert.equal((await target.get(entries[0].id)).blob.size,original.size);
+});
+
 test('both user-facing pages advertise full capsule actions without replacing JSON backup',()=>{
  const app=read('app.js'),html=read('index.html');
  assert.match(html,/id="portablePicker"/);
  assert.match(app,/Скачать JSON без файлов/);
- assert.match(app,/Экспорт со всеми файлами/);
+ assert.match(app,/Защищённый архив со всеми файлами/);
  assert.match(app,/Восстановить полный архив/);
- assert.match(app,/Архив.*не зашифрован/);
+ assert.match(app,/Защищённый архив|Незашифрованный архив/);
 });
