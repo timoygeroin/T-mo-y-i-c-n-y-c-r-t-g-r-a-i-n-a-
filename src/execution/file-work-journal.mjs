@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { projectWorkVisibility } from "./work-visibility.mjs";
 
 function freeze(value) {
   return Object.freeze(value);
@@ -120,6 +121,12 @@ export function createFileWorkJournal(path) {
     return freeze(clone(job));
   }
 
+  // Safe projection for a future owner-authenticated UI; no raw task content or provider secrets.
+  async function activity(jobId, options = {}) {
+    const job = await read(jobId);
+    return projectWorkVisibility(job, options);
+  }
+
   async function snapshot() {
     await mutationQueue;
     return freeze(clone(await readState()));
@@ -135,6 +142,7 @@ export function createFileWorkJournal(path) {
     setActiveTask,
     close,
     read,
+    activity,
     snapshot,
   });
 }
