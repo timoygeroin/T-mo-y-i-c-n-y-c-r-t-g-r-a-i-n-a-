@@ -1,0 +1,58 @@
+name: Monday Work — autonomous readback
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/monday-work-cycle.yml'
+      - 'scripts/monday-work-cycle.mjs'
+  pull_request:
+    paths:
+      - '.github/workflows/monday-work-cycle.yml'
+      - 'scripts/monday-work-cycle.mjs'
+      - 'tests/monday-work-cycle.test.mjs'
+      - 'tests/work-cycle-evidence.test.mjs'
+      - 'surfaces/02/work-evidence.js'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monday-work-readback-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  observed-work:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout canonical MondayID
+        uses: actions/checkout@v4
+      - name: Use owned Node runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify local evidence readers and shell syntax
+        id: local
+        run: |
+          node --test tests/monday-work-cycle.test.mjs tests/work-cycle-evidence.test.mjs
+          node --check scripts/monday-work-cycle.mjs
+          node --check surfaces/02/app.js
+          node --check surfaces/02/work-evidence.js
+      - name: Independently read back the public deployment
+        if: github.ref == 'refs/heads/main' && !cancelled()
+        run: |
+          node scripts/monday-work-cycle.mjs \
+            --local-gate '${{ steps.local.outcome }}' \
+            --output '.monday-work/work-cycle.json'
+      - name: Preserve verifiable readback artifact
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: monday-work-readback
+          path: .monday-work/work-cycle.json
+          if-no-files-found: warn
+          retention-days: 14

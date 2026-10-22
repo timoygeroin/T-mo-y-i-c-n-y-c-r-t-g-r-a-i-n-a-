@@ -12,7 +12,7 @@ let view='home',threadId=null,goalId=null,modalAction='',commandQuery='',toastTi
 let fileRecords=[];
 let createdApp=null;
 let pendingEncryptedFile=null;
-let workEvidence=null,workEvidenceBusy=false,workEvidenceAttempted=false;
+let workEvidence=null,workCycles=null,workEvidenceBusy=false,workEvidenceAttempted=false;
 let createSpec={kind:'tasks',name:'Моё приложение',description:'Сделано на моём устройстве',theme:'ice'};
 // Tab-local navigation resumes the active thought without claiming cross-device sync.
 try {
@@ -117,23 +117,49 @@ function workProofHtml(record){
        '<span class="work-proof-arrow" aria-hidden="true">'+ic('arrow',17)+'</span></a>';
    }).join('')+'</div>':'<p class="subtle-note">Пока нет подтверждённых записей.</p>');
 }
+function workCyclesHtml(record){
+ const runs=Array.isArray(record?.runs)?record.runs:[];
+ const labels={SUCCESS:'Проверка успешна',FAILURE:'Обнаружен сбой',RUNNING:'Выполняется проверка',QUEUED:'В очереди',UNKNOWN:'Статус не подтверждён'};
+ const status=record?.source==='github-actions'?'GitHub Actions · получено по запросу':'Нет подтверждённых данных о запуске';
+ const rows=runs.map(run=>{
+   const id=Number(run.id);
+   if(!Number.isSafeInteger(id)||id<1)return '';
+   const state=Object.prototype.hasOwnProperty.call(labels,run.state)?run.state:'UNKNOWN';
+   const at=run.createdAt?new Date(run.createdAt):null;
+   const when=at&&Number.isFinite(at.getTime())?at.toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+   const link='https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/'+id;
+   return '<a class="work-proof-row" href="'+link+'" target="_blank" rel="noopener noreferrer">'+
+     '<span class="work-proof-number">'+ic('shield',17)+'</span>'+
+     '<span class="work-proof-description"><strong>'+labels[state]+'</strong><small>'+esc(when)+' · '+esc(String(id))+'</small></span>'+
+     '<span class="work-proof-arrow">'+ic('arrow',17)+'</span></a>';
+ }).join('');
+ return '<div class="work-proof-meta"><span class="work-proof-source">'+ic('shield',14)+' '+status+'</span></div>'+
+   (rows?'<div class="work-proof-list">'+rows+'</div>':'<p class="subtle-note">Запуск по расписанию пока не подтверждён. Это не означает, что агент работает в фоне.</p>');
+}
 async function refreshWorkProof({silent=false}={}){
  if(workEvidenceBusy)return;
  if(!window.MondayWorkEvidence||typeof window.fetch!=='function'){
-   if(!silent)notify('Нет подключения к источнику. Показан последний проверенный снимок.');
+   if(!silent)notify('Нет подключения к GitHub. Показаны последние подтверждённые данные.');
    return;
  }
  workEvidenceAttempted=true;workEvidenceBusy=true;
  try{
-   const result=await window.MondayWorkEvidence.retrieve(window.fetch.bind(window));
-   workEvidence=result;
+   const fetchImpl=window.fetch.bind(window);
+   const [prs,cycles]=await Promise.allSettled([
+     window.MondayWorkEvidence.retrieve(fetchImpl),
+     window.MondayWorkEvidence.retrieveCycles?.(fetchImpl)??Promise.reject(Error('WORK_CYCLES_NOT_INSTALLED'))
+   ]);
+   if(prs.status==='fulfilled')workEvidence=prs.value;
+   if(cycles.status==='fulfilled')workCycles=cycles.value;
    if(view==='work'){
-     const element=$('#workEvidenceBody');
-     if(element)element.innerHTML=workProofHtml(result);
+     const evidenceElement=$('#workEvidenceBody');
+     if(evidenceElement&&prs.status==='fulfilled')evidenceElement.innerHTML=workProofHtml(prs.value);
+     const cyclesElement=$('#workCyclesBody');
+     if(cyclesElement)cyclesElement.innerHTML=workCyclesHtml(workCycles);
    }
-   if(!silent)notify('Проверены свежие записи публичного GitHub. Это не фоновый агент.');
- }catch(err){
-   if(!silent)notify('GitHub недоступен. Проверенный снимок остался на экране.');
+   if(!silent)notify(prs.status==='fulfilled'||cycles.status==='fulfilled'?
+     'Источники GitHub прочитаны. Автоматические проверки не являются AI-агентом.':
+     'GitHub недоступен. Сохранены ранее подтверждённые данные.');
  }finally{workEvidenceBusy=false}
 }
 function work(){
@@ -152,6 +178,9 @@ function work(){
   action(ic('refresh',15)+' Обновить из GitHub','refresh-work-proof','outline-btn')+'</div>'+
   '<div id="workEvidenceBody" aria-live="polite">'+workProofHtml(evidence)+'</div>'+
   '<p class="work-truth-note">«Обновить» читает публичный GitHub по запросу. Эта лента не запускает новые задачи, не выдаёт открытые PR за опубликованные функции и не показывает работу, которой нет.</p></section>'+
+  '<section class="work-proof work-cycle-proof"><div class="work-proof-title"><div><div class="eyebrow">ПО РАСПИСАНИЮ</div><h2>Проверки без нового сообщения</h2><p>GitHub Actions ежечасно проверяет опубликованные файлы и хранит отчёт. Это автоматическая диагностика, не непрерывно работающая нейросеть.</p></div></div>'+
+  '<div id="workCyclesBody" aria-live="polite">'+workCyclesHtml(workCycles)+'</div>'+
+  '<p class="work-truth-note">Результат каждого запуска можно открыть в GitHub. Изменений кода и расходов без твоего разрешения этот механизм не делает.</p></section>'+
   '<section class="section work-goals"><div class="section-head"><div><div class="eyebrow">ЛОКАЛЬНОЕ ПРОДОЛЖЕНИЕ</div><h2>Твои цели</h2></div>'+action(ic('plus')+' Цель','newgoal')+'</div>'+goals+'</section>',
  {title:'Работа',crumb:'MONDAY / WORK'});
  if(!workEvidenceAttempted)refreshWorkProof({silent:true});
