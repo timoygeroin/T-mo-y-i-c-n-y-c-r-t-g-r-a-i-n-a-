@@ -102,3 +102,11 @@ Before choosing a server, CPU, GPU, model or vendor, separate *the desired obser
 In main: \`src/substrate-optimizer.mjs\` ranks *effect strategies*, not provider brands. It uses the existing \`effect-abi.mjs\` executor rather than inventing another action authority. Estimates (\`cashUsd\`, \`workUnits\`, \`networkBytes\`) are advisory; work units are **not measured joules**. Zero marginal cash never means free energy, unlimited storage or physically absent computation. Approximate fidelity requires explicit opt-in and separate readback; unknown budgets, stale cached artifacts or unapproved delegation are not promoted as success. Never automatically retry after ambiguous execution.
 
 Acceptance: \`node --test tests/substrate-optimizer.test.mjs tests/substrate-integration.test.mjs\`, plus the existing repo's \`npm test\`. The filesystem example proves actual artifact creation, reuse, corruption detection, and local rebuild without calling a mock model; it is **not** a proof that all computation can be eliminated or that a future general local model exists.
+
+
+## Typed primitive composition
+If no single existing organ satisfies the contract, the compiler may assemble a bounded path of **owner-trusted, local, deterministic** primitives. \`src/substrate-composer.mjs\` searches typed input/output links and emits candidate routes for the *same* existing \`planSubstrates\` selector; \`CapabilityFoundry.composeEffectSubstrates()\` is the entry point. The composer itself does not perform any actions, train a model or assert semantic equivalence from type matching.
+
+A path carries each step's provenance, declared resource estimates and exact/approximate quality. Its complete effect must still pass an independently supplied readback. The \`pure:true\` marker is a claim by the trusted primitive registrant, **not** a sandbox that can safely execute downloaded code.
+
+Proof: \`node --test tests/substrate-composer.test.mjs tests/foundry-substrate.test.mjs\`. Cycle-depth and route-count limits make the search bounded; an absent chain returns \`NO_COMPOSITION\` instead of fabricating an AI answer. This preserves REUSE -> COMPOSE -> PATCH/BUILD rather than treating cloud compute as the default.
