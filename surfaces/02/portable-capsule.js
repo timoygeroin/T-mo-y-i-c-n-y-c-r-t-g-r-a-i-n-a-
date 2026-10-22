@@ -107,14 +107,17 @@
     return true;
   }
   async function importCapsule(file,{vault,validateState,commitState}={}) {
-    assert(vault&&typeof vault.list==='function'&&typeof vault.get==='function'&&typeof vault.add==='function'&&typeof vault.remove==='function','VAULT_UNAVAILABLE');
+    assert(vault&&typeof vault.list==='function'&&typeof vault.get==='function'&&typeof vault.add==='function'&&typeof vault.remove==='function'&&typeof vault.finalizeImports==='function','VAULT_UNAVAILABLE');
     assert(typeof validateState==='function'&&typeof commitState==='function','STATE_HANDLER_REQUIRED');
     const details=await inspectCapsule(file);
     const normalized=await validateState(details.index.backup);
     assert(normalized&&typeof normalized==='object','INVALID_BACKUP_STATE');
     // Nothing is written until EVERY content chunk is verified.
     await verifyCapsule(file,details);
-    const existing = new Map((await vault.list()).filter(x=>typeof x.archiveIdentity==='string').map(x=>[x.archiveIdentity,x.id]));
+    const storedEntries=await vault.list();
+    const existing = new Map(storedEntries.filter(x=>typeof x.archiveIdentity==='string').map(x=>[x.archiveIdentity,x.id]));
+    const pending=new Set(storedEntries.filter(x=>x.importPending===true).map(x=>x.id));
+    const toFinalize=[];
     const added=[],skipped=[];
     let offset=details.bodyOffset;
     try {
@@ -127,6 +130,7 @@
           assert(observed.length===entry.chunks.length && observed.every((h,i)=>h===entry.chunks[i]),
             'EXISTING_FILE_INTEGRITY_FAILED');
           skipped.push(entry.name);
+          if (pending.has(existing.get(entry.key))) toFinalize.push(existing.get(entry.key));
         }
         else {
           const fragment=file.slice(offset,offset+entry.size,entry.type);
@@ -140,15 +144,25 @@
           const observed=await chunkDigests(persisted.blob);
           assert(observed.length===entry.chunks.length && observed.every((hash,i)=>hash===entry.chunks[i]),'VAULT_RESTORED_INTEGRITY_FAILED');
           existing.set(entry.key,meta.id);
+          toFinalize.push(meta.id);
         }
         offset+=entry.size;
       }
       assert(await commitState(normalized)===true,'STATE_COMMIT_FAILED');
-      return {filesAdded:added.length,filesSkipped:skipped.length,stateRestored:true};
     } catch(error) {
+      // Before state commit we can safely roll back only files created by this attempt.
       for(const id of added.reverse())try{await vault.remove(id)}catch{}
       throw error;
     }
+    // The state is already durable. NEVER delete files if marker finalization fails;
+    // user can retry the same archive, verifying and finalizing pending files.
+    try {
+      await vault.finalizeImports(toFinalize);
+    } catch {
+      return {filesAdded:added.length,filesSkipped:skipped.length,stateRestored:true,
+        needsRetry:true,reason:'IMPORT_FINALIZATION_PENDING'};
+    }
+    return {filesAdded:added.length,filesSkipped:skipped.length,stateRestored:true,needsRetry:false};
   }
   root.MondayPortable = Object.freeze({exportCapsule,inspectCapsule,verifyCapsule,importCapsule});
 })(window);
