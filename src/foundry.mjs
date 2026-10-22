@@ -1,4 +1,5 @@
 import { planSubstrates } from './substrate-optimizer.mjs';
+import { composePrimitiveRoutes } from './substrate-composer.mjs';
 
 const normalize = (value) => String(value ?? '').trim();
 
@@ -73,6 +74,11 @@ export class CapabilityFoundry {
   constructor({ builder = null, recover = null } = {}) {
     this.builder = builder;
     this.recover = recover;
+  }
+
+  // Type graphs propose strategies only; the existing ABI still executes and verifies.
+  composeEffectSubstrates(spec) {
+    return composePrimitiveRoutes(spec);
   }
 
   // Select a strategy for the SAME observable effect before building a new organ.
