@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { projectWorkVisibility } from "./work-visibility.mjs";
 
 const COMPUTE_FAILURES = new Set([
   "quota",
@@ -483,6 +484,12 @@ export function createWorklessRuntimeV2({
     }
   }
 
+  // Read-only user-visible progress. Recorded state does not certify active background compute.
+  async function readActivity(jobId, options = {}) {
+    const job = await journal.read(jobId);
+    return projectWorkVisibility(job, options);
+  }
+
   async function resume(jobId) {
     const job = await journal.read(jobId);
     if (!job) throw new Error(`unknown workless job: ${jobId}`);
@@ -499,6 +506,7 @@ export function createWorklessRuntimeV2({
     resume,
     steer: journal.steer,
     readJob: journal.read,
+    readActivity,
     journal,
     computeRouter,
     causalController,
