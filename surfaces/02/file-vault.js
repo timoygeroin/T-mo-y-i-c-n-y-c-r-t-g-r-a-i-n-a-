@@ -36,14 +36,17 @@
       });
     } finally { db.close(); }
   }
-  async function add(file) {
+  async function add(file, options = {}) {
     if (!file || typeof file.size !== 'number' || typeof file.name !== 'string')
       throw new Error('Выбери файл для загрузки');
     const id = (root.crypto && root.crypto.randomUUID)
       ? root.crypto.randomUUID() : 'file-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    const identity = options.archiveIdentity;
+    if (identity !== undefined && (typeof identity !== 'string' || !/^[0-9a-f]{64}$/.test(identity)))
+      throw new Error('Некорректный идентификатор переносимого архива');
     const meta = { id, name: file.name.slice(0, 255), size: file.size,
       type: String(file.type || 'application/octet-stream').slice(0, 120),
-      addedAt: new Date().toISOString() };
+      addedAt: new Date().toISOString(), ...(identity ? {archiveIdentity: identity} : {}) };
     // Blob is stored by the browser without base64 or JSON duplication.
     await transact([METADATA, BLOBS], 'readwrite', tx => {
       tx.objectStore(METADATA).put(meta);
