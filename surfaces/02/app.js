@@ -412,7 +412,8 @@ async function importCompleteArchive(file){
      commitState:incoming=>applyImported(incoming)
    });
    await refreshFiles();
-   notify('Перенос выполнен: '+restored.filesAdded+' файлов восстановлено, '+restored.filesSkipped+' дубликатов пропущено.');
+   if(restored.needsRetry)notify('Записи и файлы сохранены, но импорт не завершён. Повтори импорт этого архива для окончательной проверки.');
+   else notify('Перенос выполнен: '+restored.filesAdded+' файлов восстановлено, '+restored.filesSkipped+' дубликатов пропущено.');
  }catch(err){notify('Архив не восстановлен: '+String(err?.message||err))}
 }
 function textFile(file){if(!file||file.size>200000)return notify('Текстовый файл должен быть меньше 200 КБ');file.text().then(body=>{const title=file.name.slice(0,150);const ok=update(d=>d.notes.unshift({id:uid(),title,body,createdAt:now(),updatedAt:now()}),'text-import',title);if(ok){go('library');notify('Текст добавлен локально')}}).catch(()=>notify('Файл не прочитан'))}
