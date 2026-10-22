@@ -38,6 +38,13 @@ jobs:
           node surfaces/02/qa-node.cjs
           node surfaces/02/qa-app-compiler.cjs
           node surfaces/02/qa-browser-navigation.cjs
+      - name: Export exact public app files for offline review
+        uses: actions/upload-artifact@v4
+        with:
+          name: monday-surface02-offline
+          path: surfaces/02/
+          if-no-files-found: error
+          retention-days: 14
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Package only the public app surface
