@@ -29,7 +29,7 @@
   ensurePass(pass);
   const salt=root.crypto.getRandomValues(new Uint8Array(SALT));
   const prefix=root.crypto.getRandomValues(new Uint8Array(PREFIX));
-  const count=Math.ceil(blob.size/BLOCK);
+  const count=Math.max(1,Math.ceil(blob.size/BLOCK));
   if(count>0xffffffff)err('ARCHIVE_TOO_LARGE');
   const header=new Uint8Array(HEADER);
   header.set(enc.encode(MAGIC));header[MAGIC.length]=VERSION;
@@ -53,7 +53,7 @@
    prefix=header.slice(MAGIC.length+1+SALT,HEADER-8);
   const originalLength=new DataView(header.buffer).getBigUint64(HEADER-8,false);
   if(originalLength>BigInt(Number.MAX_SAFE_INTEGER))err('ARCHIVE_TOO_LARGE');
-  const length=Number(originalLength),count=Math.ceil(length/BLOCK);
+  const length=Number(originalLength),count=Math.max(1,Math.ceil(length/BLOCK));
   if(count>0xffffffff)err('ARCHIVE_TOO_LARGE');
   const expected=HEADER+length+count*TAG;
   if(blob.size!==expected)err('ENCRYPTED_ARCHIVE_LENGTH_INVALID');
