@@ -35,5 +35,25 @@
     if(!items.length)throw new Error('NO_MERGED_PRS');
     return Object.freeze({source:'github',asOf:null,checkedAt:new Date().toISOString(),items});
   }
-  root.MondayWorkEvidence=Object.freeze({repository,snapshot,retrieve});
+  // Actual scheduled GitHub Actions runs. A workflow run is infrastructure proof,
+  // not proof that an AI autonomously wrote or merged code.
+  const cycleApi='https://api.github.com/repos/'+repository+
+    '/actions/workflows/monday-work-cycle.yml/runs?per_page=6';
+  const runBase='https://github.com/'+repository+'/actions/runs/';
+  async function retrieveCycles(fetchImpl){
+    if(typeof fetchImpl!=='function')throw Error('WORK_CYCLES_UNAVAILABLE');
+    const response=await fetchImpl(cycleApi,{method:'GET',headers:{Accept:'application/vnd.github+json'}});
+    if(!response?.ok)throw Error('WORK_CYCLES_UNAVAILABLE');
+    const data=await response.json();
+    if(!Array.isArray(data?.workflow_runs))throw Error('WORK_CYCLES_INVALID');
+    const runs=data.workflow_runs.filter(r=>r&&Number.isSafeInteger(r.id)&&r.id>0).slice(0,6)
+      .map(r=>({id:r.id,url:runBase+r.id,
+        state:r.status==='queued'?'QUEUED':r.status==='in_progress'?'RUNNING':
+          r.status==='completed'?(r.conclusion==='success'?'SUCCESS':'FAILURE'):'UNKNOWN',
+        createdAt:typeof r.created_at==='string'&&Number.isFinite(Date.parse(r.created_at))?r.created_at:null,
+      }));
+    return Object.freeze({source:'github-actions',checkedAt:new Date().toISOString(),
+      state:runs.length?'OBSERVED':'NO_RECORDED_RUNS',runs});
+  }
+  root.MondayWorkEvidence=Object.freeze({repository,snapshot,retrieve,retrieveCycles});
 })(window);
