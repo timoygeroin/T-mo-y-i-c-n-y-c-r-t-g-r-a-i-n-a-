@@ -192,6 +192,46 @@ test('unsupported local crypto fails closed before a misleading archive is offer
  await assert.rejects(context.window.MondayPortable.exportCapsule({state:state(),vault}),/CRYPTO_UNAVAILABLE/);
 });
 
+test('browser restart after a partial imported blob can resume without duplication',async()=>{
+ const portable=getPortable(),origin=mockVault(),target=mockVault();
+ await origin.add(file('resume.heic',65537,73));
+ const archive=(await portable.exportCapsule({state:state(),vault:origin})).blob;
+ const details=await portable.inspectCapsule(archive);
+ const entry=details.index.files[0];
+ await target.add(new NamedFile([archive.slice(details.bodyOffset,details.bodyOffset+entry.size)],entry.name,{type:entry.type}),{archiveIdentity:entry.key});
+ assert.equal((await target.pendingImports()).length,1,'partial write remains durably marked pending');
+ let commits=0;
+ const result=await portable.importCapsule(archive,{vault:target,validateState:x=>x.data,
+  commitState:async()=>{commits++;return true}});
+ assert.equal(result.filesAdded,0);
+ assert.equal(result.filesSkipped,1);
+ assert.equal(result.needsRetry,false);
+ assert.equal(commits,1);
+ assert.equal((await target.pendingImports()).length,0,'marker finalized after verified replay');
+ assert.equal(target.counts().current,1,'no duplicated file');
+});
+
+test('failed finalization after state commit must never delete restored content',async()=>{
+ const portable=getPortable(),origin=mockVault(),target=mockVault();
+ await origin.add(file('persistent.dat',400,61));
+ const archive=(await portable.exportCapsule({state:state(),vault:origin})).blob;
+ const finalize=target.finalizeImports;let fail=true;
+ target.finalizeImports=async(ids)=>{if(fail)throw Error('browser interrupted');return finalize(ids)};
+ let commits=0;
+ const opts={vault:target,validateState:x=>x.data,commitState:async()=>{commits++;return true}};
+ const first=await portable.importCapsule(archive,opts);
+ assert.equal(first.needsRetry,true);
+ assert.equal(target.counts().current,1);
+ assert.equal((await target.pendingImports()).length,1);
+ fail=false;
+ const replay=await portable.importCapsule(archive,opts);
+ assert.equal(replay.needsRetry,false);
+ assert.equal(replay.filesAdded,0);
+ assert.equal((await target.pendingImports()).length,0);
+ assert.equal(target.counts().current,1);
+ assert.equal(commits,2,'replayed merge must be idempotent at application boundary');
+});
+
 test('PWA loads portable module before app, exposes picker, and updates cache',()=>{
  const read=n=>fs.readFileSync(new URL('../surfaces/02/'+n,import.meta.url),'utf8');
  const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
