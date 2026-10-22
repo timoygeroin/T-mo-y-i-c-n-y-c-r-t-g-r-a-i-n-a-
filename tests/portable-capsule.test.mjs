@@ -121,6 +121,37 @@ test('a state write failure rolls back newly imported binary attachments',async(
  assert.equal(target.counts().deletes,2);
 });
 
+test('same-length corruption on destination storage must roll back before state commit',async()=>{
+ const portable=getPortable(),sourceVault=mockVault(),target=mockVault();
+ await sourceVault.add(file('proof.dat',8193,18));
+ const archive=(await portable.exportCapsule({state:state(),vault:sourceVault})).blob;
+ const actualAdd=target.add;
+ target.add=async function(input,options){
+   const corrupted=new NamedFile([new Uint8Array(input.size).fill(19)],input.name,{type:input.type});
+   return actualAdd(corrupted,options);
+ };
+ let stateCommitted=false;
+ await assert.rejects(portable.importCapsule(archive,{
+   vault:target,
+   validateState:backup=>backup.data,
+   commitState:async()=>{stateCommitted=true;return true}
+ }),/VAULT_RESTORED_INTEGRITY_FAILED/);
+ assert.equal(stateCommitted,false,'state must never commit after a failed readback');
+ assert.equal(target.counts().current,0,'persisted corrupt blob must be rolled back');
+ assert.equal(target.counts().deletes,1);
+});
+
+test('a destination vault without independent read access fails before any write',async()=>{
+ const portable=getPortable(),source=mockVault(),target=mockVault();
+ await source.add(file('item.bin',10));
+ const archive=(await portable.exportCapsule({state:state(),vault:source})).blob;
+ delete target.get;
+ await assert.rejects(portable.importCapsule(archive,{
+   vault:target,validateState:b=>b.data,commitState:async()=>true
+ }),/VAULT_UNAVAILABLE/);
+ assert.equal(target.counts().puts,0);
+});
+
 test('unsupported local crypto fails closed before a misleading archive is offered',async()=>{
  const context={window:{},TextEncoder,TextDecoder,Blob,File:NamedFile,DataView,Uint8Array,Date,JSON};
  vm.runInNewContext(source,context);
