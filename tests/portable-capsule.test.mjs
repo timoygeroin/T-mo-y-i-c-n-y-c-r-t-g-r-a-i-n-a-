@@ -22,10 +22,12 @@ function mockVault(){
   add:async(file,options={})=>{
    puts++;
    const id='local-'+(++index);
-   const meta={id,name:file.name,size:file.size,type:file.type,archiveIdentity:options.archiveIdentity};
+   const meta={id,name:file.name,size:file.size,type:file.type,archiveIdentity:options.archiveIdentity,importPending:!!options.archiveIdentity};
    entries.set(id,{blob:file,meta});return meta;
   },
   remove:async(id)=>{deletes++;entries.delete(id)},
+  pendingImports:async()=>[...entries.values()].map(x=>x.meta).filter(x=>x.importPending),
+  finalizeImports:async(ids)=>{for(const id of ids){const v=entries.get(id);if(v)v.meta.importPending=false;}},
   counts:()=>({puts,deletes,current:entries.size})
  };
 }
