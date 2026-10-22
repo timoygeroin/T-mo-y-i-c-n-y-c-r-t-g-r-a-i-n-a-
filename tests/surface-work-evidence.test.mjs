@@ -103,6 +103,6 @@ test('static assets load proof module before app and include it in offline cache
  const html=read('index.html'),sw=read('sw.js');
  assert.ok(html.indexOf('work-evidence.js')<html.indexOf('app.js'));
  assert.match(sw,/work-evidence\.js/);
- assert.match(sw,/monday-surface02-shell-v6/);
+ assert.match(sw,/monday-surface02-shell-v[1-9][0-9]*/); // app-shell version changes on feature releases
  assert.match(read('app.css'),/work-stage/);
 });
