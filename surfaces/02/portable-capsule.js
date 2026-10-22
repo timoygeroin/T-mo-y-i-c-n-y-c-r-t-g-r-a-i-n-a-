@@ -4,6 +4,7 @@
   'use strict';
   const MAGIC = 'MONDAYCAPSULE1\n';
   const HEADER_SIZE = MAGIC.length + 4;
+  const CHECKSUM_LENGTH = 64; // ASCII SHA-256 of the entire manifest (incl. notes and drafts).
   const CHUNK_SIZE = 2 * 1024 * 1024;
   const MAX_MANIFEST_BYTES = 16 * 1024 * 1024;
   const MAX_FILES = 2000;
@@ -63,7 +64,8 @@
     assert(manifest.length <= MAX_MANIFEST_BYTES,'MANIFEST_TOO_LARGE');
     const length = new Uint8Array(4);
     new DataView(length.buffer).setUint32(0, manifest.length, true);
-    const blob = new Blob([encoder.encode(MAGIC),length,manifest,...parts],
+    const manifestChecksum = await hash(manifest);
+    const blob = new Blob([encoder.encode(MAGIC),length,manifest,encoder.encode(manifestChecksum),...parts],
       {type:'application/octet-stream'});
     return {blob,files:files.length,totalBytes:blob.size,version:SCHEMA};
   }
@@ -72,14 +74,17 @@
     const header = new Uint8Array(await file.slice(0,HEADER_SIZE).arrayBuffer());
     for(let i=0;i<MAGIC.length;i++)assert(header[i]===MAGIC.charCodeAt(i),'INVALID_ARCHIVE_SIGNATURE');
     const length = new DataView(header.buffer).getUint32(MAGIC.length,true);
-    assert(length>0&&length<=MAX_MANIFEST_BYTES&&HEADER_SIZE+length<=file.size,'INVALID_MANIFEST_LENGTH');
+    assert(length>0&&length<=MAX_MANIFEST_BYTES&&HEADER_SIZE+length+CHECKSUM_LENGTH<=file.size,'INVALID_MANIFEST_LENGTH');
     let index;
-    try { index=JSON.parse(decoder.decode(await file.slice(HEADER_SIZE, HEADER_SIZE+length).arrayBuffer())); }
+    const rawManifest = await file.slice(HEADER_SIZE, HEADER_SIZE+length).arrayBuffer();
+    const storedChecksum = decoder.decode(await file.slice(HEADER_SIZE+length, HEADER_SIZE+length+CHECKSUM_LENGTH).arrayBuffer());
+    assert(/^[a-f0-9]{64}$/.test(storedChecksum) && storedChecksum===await hash(rawManifest),'ARCHIVE_MANIFEST_TAMPERED');
+    try { index=JSON.parse(decoder.decode(rawManifest)); }
     catch { throw Error('INVALID_MANIFEST'); }
     assert(index?.schema===SCHEMA&&index.chunkBytes===CHUNK_SIZE&&Array.isArray(index.files)&&
       index.files.length<=MAX_FILES&&index.backup?.schema==='monday.surface.backup.v1'&&
       index.backup.data&&typeof index.backup.data==='object','INVALID_MANIFEST');
-    let offset=HEADER_SIZE+length;
+    let offset=HEADER_SIZE+length+CHECKSUM_LENGTH;
     for(const entry of index.files) {
       validEntry(entry);
       assert(await keyFor(entry)===entry.key,'INVALID_FILE_KEY');
@@ -87,7 +92,7 @@
       offset+=entry.size;
     }
     assert(offset===file.size,'ARCHIVE_TRAILING_BYTES');
-    return {index,bodyOffset:HEADER_SIZE+length};
+    return {index,bodyOffset:HEADER_SIZE+length+CHECKSUM_LENGTH};
   }
   async function verifyCapsule(file, details) {
     let offset=details.bodyOffset;
