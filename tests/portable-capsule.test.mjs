@@ -65,6 +65,25 @@ test('reimporting the same archive skips binary duplicates and still accepts sta
  assert.equal(updates,2);
 });
 
+test('corrupted notes and drafts inside the manifest cannot restore as valid state',async()=>{
+ const portable=getPortable(),sourceVault=mockVault(),destination=mockVault();
+ const archive=(await portable.exportCapsule({state:state(),vault:sourceVault})).blob;
+ const bytes=new Uint8Array(await archive.arrayBuffer());
+ const needle=new TextEncoder().encode('важная запись');
+ let at=-1;
+ for(let i=0;i<bytes.length-needle.length;i++){
+   if(needle.every((value,j)=>bytes[i+j]===value)){at=i;break}
+ }
+ assert.ok(at>0,'state text present in manifest');
+ bytes[at] ^= 1;
+ let stateTouched=false;
+ await assert.rejects(portable.importCapsule(new Blob([bytes]),{vault:destination,
+   validateState:b=>b.data,commitState:async()=>{stateTouched=true;return true}
+ }),/ARCHIVE_MANIFEST_TAMPERED/);
+ assert.equal(stateTouched,false);
+ assert.equal(destination.counts().current,0);
+});
+
 test('a tampered file fails before writing any state or files',async()=>{
  const portable=getPortable(),vault=mockVault(),destination=mockVault();
  await vault.add(file('private.jpg',1024,9));
