@@ -7,7 +7,8 @@ function eventState(event){
  if(event?.phase==='close')return 'CLOSE_RECORDED';
  return 'OBSERVED';
 }
-function safeCode(v){return typeof v==='string'&&/^[a-zA-Z0-9_.:-]{1,64}$/.test(v)?v:null}
+const PUBLIC_CODES=new Set(['quota','rate_limit','capacity','provider_unavailable','provider_timeout','verification_failed','no_compute_route','unknown_failure']);
+function safeCode(v){return typeof v==='string'&&PUBLIC_CODES.has(v)?v:null}
 export function projectWorkVisibility(job,{after=-1,limit=40}={}) {
  if(!Number.isSafeInteger(after)||after< -1)throw Error('INVALID_CURSOR');
  if(!Number.isSafeInteger(limit)||limit<1||limit>100)throw Error('INVALID_LIMIT');
