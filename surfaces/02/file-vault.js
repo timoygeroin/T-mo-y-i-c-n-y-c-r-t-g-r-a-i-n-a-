@@ -46,7 +46,7 @@
       throw new Error('Некорректный идентификатор переносимого архива');
     const meta = { id, name: file.name.slice(0, 255), size: file.size,
       type: String(file.type || 'application/octet-stream').slice(0, 120),
-      addedAt: new Date().toISOString(), ...(identity ? {archiveIdentity: identity} : {}) };
+      addedAt: new Date().toISOString(), ...(identity ? {archiveIdentity: identity, importPending: true} : {}) };
     // Blob is stored by the browser without base64 or JSON duplication.
     await transact([METADATA, BLOBS], 'readwrite', tx => {
       tx.objectStore(METADATA).put(meta);
@@ -70,11 +70,32 @@
       req.onsuccess = () => done(req.result || null);
     });
   }
+  async function pendingImports() {
+    return (await list()).filter(meta => meta.importPending === true);
+  }
+  async function finalizeImports(ids) {
+    if (!Array.isArray(ids) || !ids.every(id=>typeof id==='string')) throw Error('INVALID_IMPORT_IDS');
+    if (!ids.length) return;
+    // All markers are committed atomically in one IndexedDB transaction.
+    await transact([METADATA], 'readwrite', (tx) => {
+      const store = tx.objectStore(METADATA);
+      for(const id of new Set(ids)) {
+        const req=store.get(id);
+        req.onsuccess=()=>{
+          if (!req.result || req.result.importPending!==true) return;
+          const updated={...req.result,importPending:false};
+          store.put(updated);
+        };
+      }
+    });
+    const remaining=new Set((await pendingImports()).map(item=>item.id));
+    if (ids.some(id=>remaining.has(id))) throw Error('IMPORT_FINALIZATION_NOT_CONFIRMED');
+  }
   function remove(id) {
     return transact([METADATA, BLOBS], 'readwrite', tx => {
       tx.objectStore(METADATA).delete(String(id));
       tx.objectStore(BLOBS).delete(String(id));
     });
   }
-  root.MondayFiles = Object.freeze({ available, add, list, get, remove });
+  root.MondayFiles = Object.freeze({ available, add, list, get, remove, pendingImports, finalizeImports });
 })(window);
