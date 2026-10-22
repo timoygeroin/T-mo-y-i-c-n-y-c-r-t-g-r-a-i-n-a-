@@ -386,7 +386,7 @@ document.addEventListener('input',e=>{if(e.target.id==='homeDraft'||e.target.id=
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();command();return}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='n'){e.preventDefault();newThread();return}if(e.key==='Escape'&&$('#modalroot')){closeModal();return}if(e.key==='Enter'&&!e.shiftKey&&(e.target.id==='chatDraft'||e.target.id==='homeDraft')){e.preventDefault();e.target.closest('form')?.requestSubmit()}if(e.key==='Enter'&&e.target.id==='commandQuery'){e.preventDefault();const first=$('#commandResults [data-command-result]');const key=first?.dataset?.do;if(key){closeModal();onDo(key)}else notify('Ничего не найдено')}});
 window.addEventListener('popstate',restoreRoute);window.addEventListener('hashchange',restoreRoute);
 window.addEventListener('storage',e=>{if(e.key===KEY){try{const x=JSON.parse(e.newValue);if(valid(x)){db=x;render();notify('Обновлено в другой вкладке')}}catch{}}});
-if(window.MondayFiles?.available())refreshFiles();
+if(window.MondayFiles?.available() && window.location?.protocol?.startsWith('http'))refreshFiles();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 try{if(window.location?.hash!==routeHash())window.history?.replaceState?.({monday:true},'',routeHash())}catch{}
