@@ -65,3 +65,22 @@ test('a fresh journal reader streams the same durable session without secret lea
  assert.equal(tail.state,'REPORTED_COMPLETE_UNVERIFIED');
  assert.equal(tail.events[0].phase,'close');
 });
+
+
+test('Workless runtime exposes one real event timeline after a verified-by-provider run, without inventing independent proof',async()=>{
+ const {createWorklessRuntimeV2,createComputeRouter,createMemoryWorkJournal}=await import('../src/execution/workless-runtime-v2.mjs');
+ const journal=createMemoryWorkJournal();
+ const runtime=createWorklessRuntimeV2({
+  journal,computeRouter:createComputeRouter([{id:'local',kind:'deterministic',capabilities:['document.render']}]),
+  policy:{requiredCapabilities:['document.render']},
+  workFactory:{async create(){return {async runUntilBlocker(){return {status:'complete',final:{status:'verified',evidence:'provider-claimed'}}}}}}
+ });
+ const finished=await runtime.run({instruction:'Make the document'});
+ const activity=await runtime.readActivity(finished.jobId,{limit:30});
+ assert.equal(activity.state,'REPORTED_COMPLETE_UNVERIFIED');
+ assert.ok(activity.events.some(e=>e.phase==='compute_route'));
+ assert.ok(activity.events.some(e=>e.phase==='close'));
+ assert.equal(activity.hasMore,false);
+ const encoded=JSON.stringify(activity);
+ assert.ok(!encoded.includes('provider-claimed'));
+});
