@@ -102,5 +102,5 @@ test('both user-facing pages advertise full capsule actions without replacing JS
  assert.match(app,/Скачать JSON без файлов/);
  assert.match(app,/Экспорт со всеми файлами/);
  assert.match(app,/Восстановить полный архив/);
- assert.match(app,/Архив.*не зашифрован/);
+ assert.match(app,/Защищённый архив|Незашифрованный архив/);
 });
