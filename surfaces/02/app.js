@@ -214,7 +214,7 @@ function create(){
   action(ic('download',16)+' Скачать HTML','download-app','outline-btn')+
   action('Сохранить в библиотеку','save-app','outline-btn')+'</div>':'';
  const result=createdApp?'<p class="create-result-label">Готовый результат · '+esc(createdApp.filename)+' · 0 внешних зависимостей</p>'+
-  '<iframe id="generatedPreview" title="Предпросмотр созданного приложения" sandbox="allow-scripts" loading="lazy"></iframe>':
+  '<iframe id="generatedPreview" title="Предпросмотр созданного приложения" sandbox="allow-scripts allow-forms" loading="lazy"></iframe>':
   '<div class="create-empty">Здесь появится живой предпросмотр созданного приложения. Три шаблона работают без AI-кредитов, сервера и подписки.</div>';
  base('<div class="header-row"><div><div class="eyebrow">ЛОКАЛЬНАЯ МАСТЕРСКАЯ</div><h1>Создать</h1></div><span class="tag">0 кредитов</span></div>'+
  '<p class="lead">MondayID сама пишет независимый HTML-файл. Без AppDeploy и внешних библиотек. Это детерминированные мини-приложения, а не генерация сложного продукта по свободному запросу.</p>'+
@@ -386,7 +386,7 @@ document.addEventListener('input',e=>{if(e.target.id==='homeDraft'||e.target.id=
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();command();return}if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='n'){e.preventDefault();newThread();return}if(e.key==='Escape'&&$('#modalroot')){closeModal();return}if(e.key==='Enter'&&!e.shiftKey&&(e.target.id==='chatDraft'||e.target.id==='homeDraft')){e.preventDefault();e.target.closest('form')?.requestSubmit()}if(e.key==='Enter'&&e.target.id==='commandQuery'){e.preventDefault();const first=$('#commandResults [data-command-result]');const key=first?.dataset?.do;if(key){closeModal();onDo(key)}else notify('Ничего не найдено')}});
 window.addEventListener('popstate',restoreRoute);window.addEventListener('hashchange',restoreRoute);
 window.addEventListener('storage',e=>{if(e.key===KEY){try{const x=JSON.parse(e.newValue);if(valid(x)){db=x;render();notify('Обновлено в другой вкладке')}}catch{}}});
-if(window.MondayFiles?.available())refreshFiles();
+if(window.MondayFiles?.available() && window.location?.protocol?.startsWith('http'))refreshFiles();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 try{if(window.location?.hash!==routeHash())window.history?.replaceState?.({monday:true},'',routeHash())}catch{}

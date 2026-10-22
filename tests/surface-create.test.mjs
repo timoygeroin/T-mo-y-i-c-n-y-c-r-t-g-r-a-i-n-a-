@@ -63,3 +63,16 @@ test('shell includes independent compiler before main UI and caches it for offli
  assert.match(sw,/app-compiler\.js/);
  assert.match(sw,/monday-surface02-shell-v[1-9][0-9]*/); // monotonic PWA cache versions are not a Create feature contract
 });
+
+
+test('Create preview permits submit handlers but never grants parent-origin access',()=>{
+ const src=read('app.js');
+ assert.match(src,/id="generatedPreview"[^>]*sandbox="allow-scripts allow-forms"/);
+ assert.doesNotMatch(src,/sandbox="[^"]*allow-same-origin/);
+});
+
+
+test('opening the standalone offline preview never probes restricted file-origin IndexedDB on boot',()=>{
+ const src=read('app.js');
+ assert.match(src,/window\.location\?\.protocol\?\.startsWith\('http'\)/);
+});
