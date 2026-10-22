@@ -1,0 +1,49 @@
+name: Monday Surface — free static preview
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'surfaces/02/**'
+      - '.github/workflows/surface-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: monday-surface-static-preview
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout owned code
+        uses: actions/checkout@v4
+      - name: Validate only public static surface is published
+        run: |
+          test -f surfaces/02/index.html
+          test -f surfaces/02/app.js
+          test -f surfaces/02/app-compiler.js
+          test -f surfaces/02/work-evidence.js
+          test -f surfaces/02/sw.js
+          node surfaces/02/qa-node.cjs
+          node surfaces/02/qa-app-compiler.cjs
+          node surfaces/02/qa-browser-navigation.cjs
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Package only the public app surface
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: surfaces/02
+      - name: Deploy static preview
+        id: deployment
+        uses: actions/deploy-pages@v4
