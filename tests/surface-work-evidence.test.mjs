@@ -7,7 +7,7 @@ const read = name => fs.readFileSync(new URL('../surfaces/02/'+name, import.meta
 
 function start({fetchImpl}={}){
  const node={innerHTML:''},notice={textContent:'',classList:{add(){},remove(){}}};
- const workBody={innerHTML:''};
+ const workBody={innerHTML:''},workCycles={innerHTML:''};
  const local=new Map(),session=new Map();
  const window={location:{hash:'',protocol:'file:'},scrollTo(){},addEventListener(){},
    history:{pushState(){},replaceState(){}}};
@@ -18,6 +18,7 @@ function start({fetchImpl}={}){
      if(sel==='#app')return node;
      if(sel==='#notice')return notice;
      if(sel==='#workEvidenceBody'&&node.innerHTML.includes('id="workEvidenceBody"'))return workBody;
+     if(sel==='#workCyclesBody'&&node.innerHTML.includes('id="workCyclesBody"'))return workCycles;
      return null;
    },addEventListener(){},createElement(){return {}}};
  const localStorage={getItem:key=>local.get(key)||null,setItem:(key,v)=>local.set(key,String(v)),removeItem:key=>local.delete(key)};
@@ -30,7 +31,7 @@ function start({fetchImpl}={}){
     'globalThis.__work={go,work,getView:()=>view,refreshWorkProof,workProofHtml,getDb:()=>db};})();');
  assert.notEqual(src,instrumented);
  vm.runInContext(instrumented,context,{timeout:3000});
- return {context,node,workBody};
+ return {context,node,workBody,workCycles};
 }
 
 test('Work is a distinct premium screen on iPhone and old goals still exist',()=>{
@@ -105,4 +106,24 @@ test('static assets load proof module before app and include it in offline cache
  assert.match(sw,/work-evidence\.js/);
  assert.match(sw,/monday-surface02-shell-v[1-9][0-9]*/); // app-shell version changes on feature releases
  assert.match(read('app.css'),/work-stage/);
+});
+
+
+test('Work screen renders real scheduled Actions receipts and never accepts a forged URL',async()=>{
+ const {context,node,workCycles}=start({fetchImpl:async(url)=>({
+   ok:true,
+   json:async()=>url.includes('/actions/workflows/')?
+     {workflow_runs:[
+       {id:991,status:'completed',conclusion:'success',created_at:'2026-10-22T18:00:00Z',html_url:'javascript:alert(1)'},
+       {id:992,status:'completed',conclusion:'failure',created_at:'2026-10-22T19:00:00Z'}
+     ]}:
+     [{number:189,title:'Protected backups',merged_at:'2026-10-22T18:00:00Z'}]
+ })});
+ context.__work.go('work');
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.match(node.innerHTML,/Проверки без нового сообщения/);
+ assert.match(workCycles.innerHTML,/Проверка успешна/);
+ assert.match(workCycles.innerHTML,/Обнаружен сбой/);
+ assert.match(workCycles.innerHTML,/\/actions\/runs\/991/);
+ assert.doesNotMatch(workCycles.innerHTML,/javascript:/);
 });
