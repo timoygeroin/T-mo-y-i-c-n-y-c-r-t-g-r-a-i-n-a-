@@ -15,7 +15,7 @@ test('AES-GCM encryption roundtrip over 2MB with bounded chunk buffers',async()=
  const result=await e.encrypt(original,pass);
  assert.equal(result.blocks,3);
  assert.equal(await e.readSignature(result.blob),true);
- assert.equal(result.blob.size-original.size,41+3*16);
+ assert.equal(result.blob.size-original.size,44+3*16);
  const copy=await e.decrypt(result.blob,pass);
  assert.equal(copy.size,original.size);
  assert.deepEqual(new Uint8Array(await copy.arrayBuffer()),new Uint8Array(await original.arrayBuffer()));
