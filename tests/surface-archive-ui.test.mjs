@@ -14,9 +14,11 @@ const makeVault=()=>{
    list:async()=>[...items].map(([id,v])=>v.meta),
    get:async id=>items.has(id)?{blob:items.get(id).blob}:null,
    remove:async id=>{items.delete(id)},
+   pendingImports:async()=>[...items.values()].map(x=>x.meta).filter(x=>x.importPending),
+   finalizeImports:async ids=>{for(const id of ids){const v=items.get(id);if(v)v.meta.importPending=false;}},
    add:async (blob,opts={})=>{
      const id='f-'+(++counter);
-     const meta={id,name:blob.name,size:blob.size,type:blob.type,archiveIdentity:opts.archiveIdentity};
+     const meta={id,name:blob.name,size:blob.size,type:blob.type,archiveIdentity:opts.archiveIdentity,importPending:!!opts.archiveIdentity};
      items.set(id,{blob,meta});return meta;
    }
  };
