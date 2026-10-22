@@ -61,5 +61,5 @@ test('shell includes independent compiler before main UI and caches it for offli
  assert.ok(html.indexOf('app-compiler.js')<html.indexOf('app.js'));
  const sw=read('sw.js');
  assert.match(sw,/app-compiler\.js/);
- assert.match(sw,/monday-surface02-shell-v5/);
+ assert.match(sw,/monday-surface02-shell-v[1-9][0-9]*/); // monotonic PWA cache versions are not a Create feature contract
 });

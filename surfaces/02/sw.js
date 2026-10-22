@@ -1,6 +1,6 @@
 // Static app-shell cache only. Never cache private API responses.
-const CACHE='monday-surface02-shell-v5';
-const APP=['./','./index.html','./app.css','./app.js','./file-vault.js','./app-compiler.js','./mark.svg','./manifest.webmanifest'];
+const CACHE='monday-surface02-shell-v6';
+const APP=['./','./index.html','./app.css','./app.js','./file-vault.js','./app-compiler.js','./work-evidence.js','./mark.svg','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('monday-surface')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
