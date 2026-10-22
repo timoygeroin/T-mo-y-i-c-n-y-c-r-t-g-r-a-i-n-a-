@@ -45,6 +45,8 @@ test('password length, API absence and empty archives',async()=>{
  const pass='minimum twelve chars';
  const zero=await e.encrypt(new Blob([]),pass);
  assert.equal((await e.decrypt(zero.blob,pass)).size,0);
+ assert.equal(zero.blocks,1);
+ await assert.rejects(e.decrypt(zero.blob,'a different long password 2026'),/WRONG_PASSPHRASE_OR_TAMPERED_ARCHIVE/);
  const window={crypto:{getRandomValues:x=>x}};
  vm.runInNewContext(code,{window,Blob,Uint8Array,DataView,TextEncoder,BigInt,Number,Math,Error});
  await assert.rejects(window.MondayEncryptedCapsule.encrypt(new Blob(['a']),pass),/CRYPTO_UNAVAILABLE/);
