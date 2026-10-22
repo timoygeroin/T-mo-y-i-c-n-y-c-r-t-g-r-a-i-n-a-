@@ -214,7 +214,7 @@ function create(){
   action(ic('download',16)+' Скачать HTML','download-app','outline-btn')+
   action('Сохранить в библиотеку','save-app','outline-btn')+'</div>':'';
  const result=createdApp?'<p class="create-result-label">Готовый результат · '+esc(createdApp.filename)+' · 0 внешних зависимостей</p>'+
-  '<iframe id="generatedPreview" title="Предпросмотр созданного приложения" sandbox="allow-scripts" loading="lazy"></iframe>':
+  '<iframe id="generatedPreview" title="Предпросмотр созданного приложения" sandbox="allow-scripts allow-forms" loading="lazy"></iframe>':
   '<div class="create-empty">Здесь появится живой предпросмотр созданного приложения. Три шаблона работают без AI-кредитов, сервера и подписки.</div>';
  base('<div class="header-row"><div><div class="eyebrow">ЛОКАЛЬНАЯ МАСТЕРСКАЯ</div><h1>Создать</h1></div><span class="tag">0 кредитов</span></div>'+
  '<p class="lead">MondayID сама пишет независимый HTML-файл. Без AppDeploy и внешних библиотек. Это детерминированные мини-приложения, а не генерация сложного продукта по свободному запросу.</p>'+
