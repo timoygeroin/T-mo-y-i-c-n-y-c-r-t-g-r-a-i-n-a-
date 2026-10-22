@@ -65,6 +65,37 @@ test('reimporting the same archive skips binary duplicates and still accepts sta
  assert.equal(updates,2);
 });
 
+test('re-import must not trust archive identity when existing bytes are corrupt',async()=>{
+ const portable=getPortable(),source=mockVault(),target=mockVault();
+ await source.add(file('family-photo.heic',4096,31));
+ const archive=(await portable.exportCapsule({state:state(),vault:source})).blob;
+ let commits=0;
+ const options={vault:target,validateState:b=>b.data,commitState:async()=>{commits++;return true}};
+ assert.equal((await portable.importCapsule(archive,options)).filesAdded,1);
+ const originalId=(await target.list())[0].id;
+ const oldGet=target.get;
+ target.get=async id=>{
+   const result=await oldGet(id);
+   if(id!==originalId)return result;
+   return {blob:file('family-photo.heic',4096,32)};
+ };
+ await assert.rejects(portable.importCapsule(archive,options),/EXISTING_FILE_INTEGRITY_FAILED/);
+ assert.equal(commits,1,'no second state commit when an existing file is corrupt');
+ assert.equal(target.counts().current,1,'user-owned existing data is never deleted automatically');
+});
+
+test('re-import refuses a missing previously restored blob rather than falsely skipping it',async()=>{
+ const portable=getPortable(),source=mockVault(),target=mockVault();
+ await source.add(file('record.wav',32));
+ const archive=(await portable.exportCapsule({state:state(),vault:source})).blob;
+ let commits=0;
+ const options={vault:target,validateState:b=>b.data,commitState:async()=>{commits++;return true}};
+ await portable.importCapsule(archive,options);
+ target.get=async()=>null;
+ await assert.rejects(portable.importCapsule(archive,options),/EXISTING_FILE_READBACK_FAILED/);
+ assert.equal(commits,1);
+});
+
 test('corrupted notes and drafts inside the manifest cannot restore as valid state',async()=>{
  const portable=getPortable(),sourceVault=mockVault(),destination=mockVault();
  const archive=(await portable.exportCapsule({state:state(),vault:sourceVault})).blob;
