@@ -114,12 +114,20 @@
     assert(normalized&&typeof normalized==='object','INVALID_BACKUP_STATE');
     // Nothing is written until EVERY content chunk is verified.
     await verifyCapsule(file,details);
-    const existing = new Set((await vault.list()).map(x=>x.archiveIdentity).filter(Boolean));
+    const existing = new Map((await vault.list()).filter(x=>typeof x.archiveIdentity==='string').map(x=>[x.archiveIdentity,x.id]));
     const added=[],skipped=[];
     let offset=details.bodyOffset;
     try {
       for(const entry of details.index.files){
-        if(existing.has(entry.key)){skipped.push(entry.name);}
+        if(existing.has(entry.key)){
+          // Identity metadata alone is not proof. Local files can be modified or evicted.
+          const persisted=await vault.get(existing.get(entry.key));
+          assert(persisted?.blob && persisted.blob.size===entry.size,'EXISTING_FILE_READBACK_FAILED');
+          const observed=await chunkDigests(persisted.blob);
+          assert(observed.length===entry.chunks.length && observed.every((h,i)=>h===entry.chunks[i]),
+            'EXISTING_FILE_INTEGRITY_FAILED');
+          skipped.push(entry.name);
+        }
         else {
           const fragment=file.slice(offset,offset+entry.size,entry.type);
           const candidate=new File([fragment],entry.name,{type:entry.type});
@@ -131,7 +139,7 @@
           assert(persisted?.blob && persisted.blob.size===entry.size,'VAULT_RESTORED_READBACK_FAILED');
           const observed=await chunkDigests(persisted.blob);
           assert(observed.length===entry.chunks.length && observed.every((hash,i)=>hash===entry.chunks[i]),'VAULT_RESTORED_INTEGRITY_FAILED');
-          existing.add(entry.key);
+          existing.set(entry.key,meta.id);
         }
         offset+=entry.size;
       }
