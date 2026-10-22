@@ -88,3 +88,17 @@ Before adding a dependency ask:
 "If this provider disappeared tonight, would Monday lose identity, memory, authority, or only one temporary capability?"
 
 Identity/memory/authority loss is an architecture failure. Temporary capability loss is acceptable if another receptor can be attached later.
+
+
+## Effect-first compilation (verified Oct 22, 2026)
+Before choosing a server, CPU, GPU, model or vendor, separate *the desired observable effect* from the usual machinery used to produce it.
+
+1. Recover an input-specific already-proven artifact **only** after an actual read/probe; check again immediately before reuse.
+2. Try an equivalent deterministic local transform or computation using resources already controlled by the device.
+3. Consider a bounded local model or a composition of proven operations if simpler paths cannot satisfy the criterion.
+4. Use remote opportunistic compute only if no admissible local strategy suffices and the user's privacy, explicit consent and cost ceiling allow it.
+5. If nothing can genuinely reproduce the requested result, return a stable blocker. Never substitute plausible text for an actual effect.
+
+In main: \`src/substrate-optimizer.mjs\` ranks *effect strategies*, not provider brands. It uses the existing \`effect-abi.mjs\` executor rather than inventing another action authority. Estimates (\`cashUsd\`, \`workUnits\`, \`networkBytes\`) are advisory; work units are **not measured joules**. Zero marginal cash never means free energy, unlimited storage or physically absent computation. Approximate fidelity requires explicit opt-in and separate readback; unknown budgets, stale cached artifacts or unapproved delegation are not promoted as success. Never automatically retry after ambiguous execution.
+
+Acceptance: \`node --test tests/substrate-optimizer.test.mjs tests/substrate-integration.test.mjs\`, plus the existing repo's \`npm test\`. The filesystem example proves actual artifact creation, reuse, corruption detection, and local rebuild without calling a mock model; it is **not** a proof that all computation can be eliminated or that a future general local model exists.
