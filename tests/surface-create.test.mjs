@@ -66,13 +66,13 @@ test('shell includes independent compiler before main UI and caches it for offli
 
 
 test('Create preview permits submit handlers but never grants parent-origin access',()=>{
- const src=source('app.js');
+ const src=read('app.js');
  assert.match(src,/id="generatedPreview"[^>]*sandbox="allow-scripts allow-forms"/);
  assert.doesNotMatch(src,/sandbox="[^"]*allow-same-origin/);
 });
 
 
 test('opening the standalone offline preview never probes restricted file-origin IndexedDB on boot',()=>{
- const src=source('app.js');
+ const src=read('app.js');
  assert.match(src,/window\.location\?\.protocol\?\.startsWith\('http'\)/);
 });
