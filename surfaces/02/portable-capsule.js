@@ -115,22 +115,31 @@
     // Nothing is written until EVERY content chunk is verified.
     await verifyCapsule(file,details);
     const storedEntries=await vault.list();
-    const existing = new Map(storedEntries.filter(x=>typeof x.archiveIdentity==='string').map(x=>[x.archiveIdentity,x.id]));
+    // One manifest row is one owner file. A content key is NOT a unique file ID.
+    // Preserve source multiplicity while allowing idempotent reimports.
+    const existing = new Map();
+    for (const item of storedEntries) {
+      if (typeof item.archiveIdentity !== 'string') continue;
+      if (!existing.has(item.archiveIdentity)) existing.set(item.archiveIdentity, []);
+      existing.get(item.archiveIdentity).push(item.id);
+    }
     const pending=new Set(storedEntries.filter(x=>x.importPending===true).map(x=>x.id));
     const toFinalize=[];
     const added=[],skipped=[];
     let offset=details.bodyOffset;
     try {
       for(const entry of details.index.files){
-        if(existing.has(entry.key)){
+        const reusable=existing.get(entry.key);
+        if(reusable?.length){
+          const existingId=reusable.shift();
           // Identity metadata alone is not proof. Local files can be modified or evicted.
-          const persisted=await vault.get(existing.get(entry.key));
+          const persisted=await vault.get(existingId);
           assert(persisted?.blob && persisted.blob.size===entry.size,'EXISTING_FILE_READBACK_FAILED');
           const observed=await chunkDigests(persisted.blob);
           assert(observed.length===entry.chunks.length && observed.every((h,i)=>h===entry.chunks[i]),
             'EXISTING_FILE_INTEGRITY_FAILED');
           skipped.push(entry.name);
-          if (pending.has(existing.get(entry.key))) toFinalize.push(existing.get(entry.key));
+          if (pending.has(existingId)) toFinalize.push(existingId);
         }
         else {
           const fragment=file.slice(offset,offset+entry.size,entry.type);
@@ -143,7 +152,7 @@
           assert(persisted?.blob && persisted.blob.size===entry.size,'VAULT_RESTORED_READBACK_FAILED');
           const observed=await chunkDigests(persisted.blob);
           assert(observed.length===entry.chunks.length && observed.every((hash,i)=>hash===entry.chunks[i]),'VAULT_RESTORED_INTEGRITY_FAILED');
-          existing.set(entry.key,meta.id);
+          // Do not reuse a newly restored file for a second identical archive row.
           toFinalize.push(meta.id);
         }
         offset+=entry.size;
