@@ -1,4 +1,4 @@
-import { Worldline } from './worldline.mjs';
+import { Worldline, hash } from './worldline.mjs';
 
 const TRUSTED_SCHEMA = 'mondayid.worldline.snapshot.v0.4.0';
 const LEGACY_SCHEMA = 'mondayid.worldline.snapshot.v0.3.0';
@@ -8,23 +8,35 @@ const parseValue = (value) => {
   try { return JSON.parse(value); } catch { return value; }
 };
 
+// Remote snapshots are evidence *claims*, not proof of external outcomes.
+// Even an authenticated writer attests who wrote an event, not that a payment,
+// deployment, scientific result or other external effect really occurred.
+// Never materialize remote-supplied fact/receipt/intent into canonical state.
 export function externalEventToLocal(event = {}) {
+  const sourceEventId = event.eventId || event.id || null;
+  const sourceKind = event.kind || 'fact';
+  const sourceSubject = event.subject || sourceEventId || 'external';
+  const sourceEpistemic = String(event.epistemicStatus || event.epistemic || 'observed').toLowerCase();
+  const value = parseValue(event.valueJson ?? event.payload ?? null);
+  const claim = {
+    sourceEventId, sourceKind, sourceSubject, sourceEpistemic,
+    predicate:event.predicate ?? null, value, host:event.host ?? null
+  };
   return {
-    id: event.eventId || event.id,
-    at: event.timestampIso || event.at,
-    kind: event.kind || 'fact',
-    subject: event.subject || event.eventId || event.id || 'external',
-    payload: {
-      predicate: event.predicate ?? null,
-      value: parseValue(event.valueJson ?? event.payload ?? null),
-      host: event.host ?? null
+    // Include claim content, not merely remote event ID: conflicting revisions
+    // cannot silently collide with a previously imported canonical event ID.
+    id:'remote-claim:'+hash(claim).slice(0,32),
+    at:event.timestampIso || event.at,
+    kind:'remote_claim',
+    subject:String(sourceSubject),
+    payload:claim,
+    evidence:{
+      sourceRef:event.sourceRef ?? null,
+      verificationReceipt:event.verificationReceipt ?? null,
+      writerKeyId:event.writerKeyId ?? null,
+      provenanceClass:'UNADMITTED_REMOTE_ASSERTION'
     },
-    evidence: {
-      sourceRef: event.sourceRef ?? null,
-      verificationReceipt: event.verificationReceipt ?? null,
-      writerKeyId: event.writerKeyId ?? null
-    },
-    epistemic: String(event.epistemicStatus || event.epistemic || 'observed').toLowerCase()
+    epistemic:'observed'
   };
 }
 
@@ -93,7 +105,7 @@ export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline())
   const conflicts = snapshot?.conflictProbe?.conflicts || [];
   const trusted = snapshot?.schema === TRUSTED_SCHEMA && snapshot?.trust === 'AUTHENTICATED_MACHINE_WRITER';
   const receipt = worldline.append({
-    id: 'remote-snapshot:' + (snapshot?.generatedAtIso || 'unknown'),
+    id: 'remote-snapshot:' + hash({generatedAtIso:snapshot?.generatedAtIso || null, events:snapshot?.events || []}).slice(0,32),
     kind: 'receipt',
     subject: 'remote-worldline-snapshot',
     payload: {
@@ -103,12 +115,15 @@ export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline())
       trust: snapshot?.trust || 'LEGACY_UNAUTHENTICATED_STREAM',
       trusted,
       conflictEventPresent: Boolean(snapshot?.conflictProbe?.event),
-      conflictCount: conflicts.length
+      conflictCount: conflicts.length,
+      claimOnly:true,
+      externalEffectsVerified:false,
+      admission:'QUARANTINED_NOT_MATERIALIZED'
     },
     evidence: {
       transport: trusted ? 'http-trusted-machine-read' : 'http-legacy-readonly'
     },
-    epistemic: 'verified'
+    epistemic: 'observed'
   }, revision);
 
   if (!receipt.ok) return { ...receipt, imported, worldline };
