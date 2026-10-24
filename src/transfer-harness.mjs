@@ -100,12 +100,21 @@ export async function proveCleanHostTransfer({
     return {ok:false,state:'BLOCKED',code:'NEXT_CELL_RECOVERY_FAILED'};
   }
 
-  const nextState=next.worldline.materialize();
-  const inherited=nextState.facts?.[signalId] || null;
-  const inheritedEffect=
-    inherited?.predicate==='verified_external_effect' &&
-    inherited?.value?.sourceSignal===signalId &&
-    inherited?.value?.effect==='prove clean-host transfer with external write/readback';
+  // The snapshot alone is never an effect certificate. It supplies only a
+  // quarantined claim; independently re-read the exact event from the provider.
+  const expected=result.result?.event || null;
+  const inherited=next.worldline.events().find(e=>
+    e.kind==='remote_claim' &&
+    e.payload?.sourceEventId===expected?.eventId &&
+    e.payload?.sourceSubject===expected?.subject &&
+    e.payload?.predicate===expected?.predicate &&
+    e.evidence?.sourceRef===expected?.sourceRef &&
+    JSON.stringify(e.payload?.value)===expected?.valueJson
+  ) || null;
+  const nextHostVerification=expected && inherited
+    ? await receptor.verify({ok:true,event:expected})
+    : {ok:false,code:'NEXT_CELL_EXACT_EVENT_MISSING'};
+  const inheritedEffect=Boolean(inherited && nextHostVerification?.ok===true);
 
   return {
     ok:Boolean(inheritedEffect),
@@ -125,6 +134,9 @@ export async function proveCleanHostTransfer({
         worldlineTrust:next.trust,
         imported:next.imported,
         inheritedEffect:Boolean(inheritedEffect),
+        effectScope:'WORLDLINE_EVENT_PERSISTENCE_ONLY',
+        independentlyVerifiedRealWorldOutcome:false,
+        exactReadback:nextHostVerification,
         inherited
       }
     }
