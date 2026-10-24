@@ -43,10 +43,15 @@ test('trusted snapshot seeds local state and preserves writer provenance', () =>
   assert.equal(out.ok, true);
   assert.equal(out.imported, 1);
   const state = out.worldline.materialize();
-  assert.equal(state.facts.rewrite.value.status, 'ready');
-  assert.equal(state.facts.rewrite.host, 'cell-a');
-  assert.equal(out.worldline.events().find(e=>e.id==='e1').evidence.writerKeyId, 'k1');
+  assert.equal(state.facts.rewrite, undefined); // remote claims cannot become local facts
+  const claim=out.worldline.events().find(e=>e.kind==='remote_claim');
+  assert.equal(claim.payload.value.status, 'ready');
+  assert.equal(claim.payload.host, 'cell-a');
+  assert.equal(claim.payload.sourceEpistemic, 'verified');
+  assert.equal(claim.epistemic, 'observed');
+  assert.equal(claim.evidence.writerKeyId, 'k1');
   assert.equal(state.receipts['remote-worldline-snapshot'].trusted, true);
+  assert.equal(state.receipts['remote-worldline-snapshot'].externalEffectsVerified, false);
 });
 
 test('legacy snapshot requires explicit legacy trust mode', async () => {
