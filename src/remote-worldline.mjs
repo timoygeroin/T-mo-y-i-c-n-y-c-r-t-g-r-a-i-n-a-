@@ -25,7 +25,7 @@ export function externalEventToLocal(event = {}) {
   return {
     // Include claim content, not merely remote event ID: conflicting revisions
     // cannot silently collide with a previously imported canonical event ID.
-    id:'remote-claim:'+hash(claim).slice(0,32),
+    id:sourceEventId ? 'remote-claim:'+hash({claim, sourceRef:event.sourceRef ?? null, writerKeyId:event.writerKeyId ?? null, verificationReceipt:event.verificationReceipt ?? null}).slice(0,32) : null,
     at:event.timestampIso || event.at,
     kind:'remote_claim',
     subject:String(sourceSubject),
