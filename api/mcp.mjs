@@ -8,6 +8,7 @@ import { compileProjectLineage, projectToCapabilityDelta } from '../src/everythi
 import { describeWorkReadiness } from '../src/work-readiness.mjs';
 import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
 import { assessVisualTransition } from '../src/visual-release-gate.mjs';
+import { simulateBoundedDeus0, DEUS_LIMITS, deus0ErrorCode } from '../src/deus-zero-access.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
 const projectRegistry = JSON.parse(fs.readFileSync(new URL('../ops/project-subsumption-registry-20261004.json', import.meta.url), 'utf8'));
@@ -47,6 +48,15 @@ const tools = Object.freeze([
     name:'compile_history',
     description:'Compile historical MondayID project names into current reusable capabilities, roles, donors, failure genes, gates, and explicit unknowns. Project names retain no runtime authority.',
     inputSchema:{ type:'object', properties:{}, additionalProperties:false }
+  },
+  {
+    name:'simulate_counterfactual',
+    description:'Execute a bounded deterministic DEUS-0 numerical what-if model. Produces only hypothetical paths and checksum, never effects, Worldline writes, private history retrieval or inferred facts. Authenticated host required.',
+    inputSchema:{
+      type:'object',
+      properties:{model:{type:'object',description:'Numeric hypothetical scenario with initial state, goals, constraints and delta actions'}},
+      required:['model'],additionalProperties:false
+    }
   },
   {
     name:'get_state',
@@ -165,6 +175,25 @@ async function callTool(name, args = {}, req = {}) {
     const delta=projectToCapabilityDelta(compiled);
     const value={ok:delta.ok===true,compiled,delta};
     return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+  }
+
+  if (name === 'simulate_counterfactual') {
+    let value;
+    try {
+      if (!args || Array.isArray(args) || typeof args !== 'object' ||
+          Object.keys(args).some(key => key !== 'model')) throw Error('MODEL_WRAPPER_REQUIRED');
+      if (Buffer.byteLength(JSON.stringify(args),'utf8') > DEUS_LIMITS.maxBytes) {
+        throw Error('REQUEST_TOO_LARGE');
+      }
+      value={ok:true,report:simulateBoundedDeus0(args.model)};
+    } catch (cause) {
+      value={ok:false,code:deus0ErrorCode(cause)};
+    }
+    return {
+      ...(value.ok ? {} : {isError:true}),
+      content:[{type:'text',text:JSON.stringify(value)}],
+      structuredContent:value
+    };
   }
 
   if (name === 'get_state') {
