@@ -11,8 +11,15 @@ DEUS-0 is a *bounded counterfactual organ of existing MondayID*, not a new ident
 4. The API is stateless and cannot execute tools or call paid inference models. The UI checks `epistemic=hypothetical`, `externalActionsExecuted=0`, `independentRealityReadback=false` before displaying results.
 5. No simulation output is automatically written to trusted Worldline or inserted into user notes. The user can explicitly export the result.
 
+## Host-neutral MCP extension
+- The existing Monday Work `/api/mcp` advertises `simulate_counterfactual` with a numeric `model` argument.
+- This new tool is PRIVATE by default: a valid per-host OAuth/host token or approved legacy credential is necessary. Anonymous callers are rejected before simulation.
+- `src/deus-zero-access.mjs` is the single validation/budget contract for both first-party HTTP and MCP. A valid call is deterministic and returns the same `report`/hash through both transports.
+- No credentials are embedded in the UI. Exposing an MCP capability does not automatically connect ChatGPT, Grok, Gemini or any other host; each still needs an authorized connector path.
+- No MCP tool fetches archived conversation content or writes to Worldline during simulation.
+
 ## Verification
-- `node --test tests/deus-zero.test.mjs tests/deus0-http.test.mjs tests/deus0-iphone.test.mjs`
+- `node --test tests/deus-zero.test.mjs tests/deus0-http.test.mjs tests/deus0-iphone.test.mjs tests/deus0-mcp.test.mjs tests/mcp-api.test.mjs tests/mcp-access.test.mjs`
 - `npm test`
 - `npm run boot`
 - GitHub Actions system proof and Vercel deployment for the exact release SHA.
