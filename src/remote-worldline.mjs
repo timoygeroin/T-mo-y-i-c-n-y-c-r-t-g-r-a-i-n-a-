@@ -105,7 +105,14 @@ export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline())
   const conflicts = snapshot?.conflictProbe?.conflicts || [];
   const trusted = snapshot?.schema === TRUSTED_SCHEMA && snapshot?.trust === 'AUTHENTICATED_MACHINE_WRITER';
   const receipt = worldline.append({
-    id: 'remote-snapshot:' + hash({generatedAtIso:snapshot?.generatedAtIso || null, events:snapshot?.events || []}).slice(0,32),
+    id: 'remote-snapshot:' + hash({
+      schema:snapshot?.schema ?? null,
+      trust:snapshot?.trust ?? null,
+      readOnly:snapshot?.readOnly ?? null,
+      generatedAtIso:snapshot?.generatedAtIso ?? null,
+      events:snapshot?.events ?? [],
+      conflictProbe:snapshot?.conflictProbe ?? null
+    }).slice(0,32),
     kind: 'receipt',
     subject: 'remote-worldline-snapshot',
     payload: {
