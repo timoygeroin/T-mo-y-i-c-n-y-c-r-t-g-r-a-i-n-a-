@@ -39,6 +39,7 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
     'cell_attach',
     'capability_manifest',
     'compile_history',
+    'simulate_counterfactual',
     'get_state',
     'prove_trusted_write_readback',
     'bus_post',
