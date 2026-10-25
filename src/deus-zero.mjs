@@ -8,29 +8,29 @@ import { createHash } from 'node:crypto';
 const SCHEMA = 'mondayid.deus0.simulation.v1';
 const finite = n => typeof n === 'number' && Number.isFinite(n) && Math.abs(n) <= 1_000_000;
 const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
-const canonical = x => Array.isArray(x) ? \`[\${x.map(canonical).join(',')}]\`
-  : x && typeof x === 'object' ? \`{\${Object.keys(x).sort().map(k => \`\${JSON.stringify(k)}:\${canonical(x[k])}\`).join(',')}}\`
+const canonical = x => Array.isArray(x) ? `[${x.map(canonical).join(',')}]`
+  : x && typeof x === 'object' ? `{${Object.keys(x).sort().map(k => `${JSON.stringify(k)}:${canonical(x[k])}`).join(',')}}`
   : JSON.stringify(x);
 const digest = x => createHash('sha256').update(canonical(x)).digest('hex');
 const plain = x => x != null && typeof x === 'object' && !Array.isArray(x) && Object.getPrototypeOf(x) === Object.prototype;
 
-function fail(code) { throw new TypeError(\`DEUS0_\${code}\`); }
+function fail(code) { throw new TypeError(`DEUS0_${code}`); }
 function metrics(obj, name, keys = null) {
-  if (!plain(obj)) fail(\`\${name}_OBJECT_REQUIRED\`);
+  if (!plain(obj)) fail(`${name}_OBJECT_REQUIRED`);
   const result = {};
   for (const [k, v] of Object.entries(obj)) {
-    if (!/^[a-z][a-z\d_]{0,31}$/i.test(k) || (keys && !keys.includes(k)) || !finite(v)) fail(\`\${name}_INVALID_METRIC\`);
+    if (!/^[a-z][a-z\d_]{0,31}$/i.test(k) || (keys && !keys.includes(k)) || !finite(v)) fail(`${name}_INVALID_METRIC`);
     result[k] = v;
   }
   return result;
 }
 function bounds(obj, name, keys) {
-  if (!plain(obj)) fail(\`\${name}_OBJECT_REQUIRED\`);
+  if (!plain(obj)) fail(`${name}_OBJECT_REQUIRED`);
   const result = {};
   for (const [k, b] of Object.entries(obj)) {
     if (!keys.includes(k) || !plain(b) || !Object.keys(b).length || Object.keys(b).some(x=>!['min','max'].includes(x)) ||
         (own(b,'min') && !finite(b.min)) || (own(b,'max') && !finite(b.max)) ||
-        (own(b,'min') && own(b,'max') && b.min > b.max)) fail(\`\${name}_INVALID_BOUND\`);
+        (own(b,'min') && own(b,'max') && b.min > b.max)) fail(`${name}_INVALID_BOUND`);
     result[k] = { ...(own(b,'min') ? {min:b.min} : {}), ...(own(b,'max') ? {max:b.max} : {}) };
   }
   return result;
@@ -137,24 +137,24 @@ export function simulateDeus0(input) {
     independentRealityReadback:false,
     nextGate:'EXTERNAL_OBSERVATION_REQUIRED_FOR_REAL_WORLD_CLAIMS'
   };
-  return { ...body, receipt:\`sha256:\${digest(body)}\` };
+  return { ...body, receipt:`sha256:${digest(body)}` };
 }
 
 /** Explicit opt-in, non-factual Worldline evidence: no facts/policies/capabilities are promoted. */
 export function recordDeus0Hypothesis(worldline, report, expectedRevision = worldline?.revision?.()) {
   if (!worldline || typeof worldline.append !== 'function' || typeof worldline.revision !== 'function') fail('WORLDLINE_REQUIRED');
   if (!plain(report) || report.schema !== SCHEMA || report.epistemic !== 'hypothetical' || !report.receipt ||
-      \`sha256:\${digest(Object.fromEntries(Object.entries(report).filter(([k])=>k!=='receipt')))}\` !== report.receipt) {
+      `sha256:${digest(Object.fromEntries(Object.entries(report).filter(([k])=>k!=='receipt')))}` !== report.receipt) {
     return {ok:false,code:'DEUS0_RECEIPT_INVALID'};
   }
   return worldline.append({
-    id:\`deus0:\${report.receipt.slice(7,31)}\`,
+    id:`deus0:${report.receipt.slice(7,31)}`,
     kind:'simulation',
-    subject:\`deus0:\${report.id}\`,
+    subject:`deus0:${report.id}`,
     epistemic:'hypothetical',
     scope:'simulation',
     payload:{report},
     evidence:{mode:'bounded-counterfactual',receipt:report.receipt,realWorldVerified:false},
-    readSet:[],writeSet:[\`simulation:\${report.id}:\${report.receipt}\`]
+    readSet:[],writeSet:[`simulation:${report.id}:${report.receipt}`]
   },expectedRevision);
 }
