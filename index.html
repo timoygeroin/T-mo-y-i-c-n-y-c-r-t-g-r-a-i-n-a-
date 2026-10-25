@@ -51,6 +51,7 @@ main{max-width:760px;margin:auto}h1{font-weight:670;letter-spacing:-.045em;font-
 code{font-size:12px}a{color:#bdd3ff}
 @media(min-width:700px){.hero{padding:35px}.grid{grid-template-columns:repeat(4,1fr)}.sheet{align-self:center;border-radius:25px}.navinner{max-width:600px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.deus-link{display:inline-block;text-decoration:none;margin-top:9px;min-height:43px}
 </style>
 </head>
 <body>
@@ -122,6 +123,7 @@ function drawHome(view){append(view,heading('Welcome to your space','Your world,
 const hero=mk('section','glass hero');append(hero,mk('div','eyebrow','Continuum'),mk('h2','','What matters right now?'));
 const seg=mk('div','segment');[['note','Note'],['task','Task'],['thread','Thread']].forEach(([key,label])=>{const b=act(label,()=>{mode=key;render()},mode===key?'active':'');seg.appendChild(b)});append(hero,seg);
 const form=mk('form','composer'),inp=mk('input');inp.name='capture';inp.placeholder=mode==='task'?'Something to accomplish…':mode==='thread'?'Start a private thread…':'A thought worth keeping…';inp.setAttribute('aria-label','Capture your thought');const send=mk('button','primary','Save');send.type='submit';append(form,inp,send);form.addEventListener('submit',e=>{e.preventDefault();quickCapture(inp.value,mode)});append(hero,form,mk('p','hint','Local-first. Your data stays in this browser until you export it.'));append(view,hero);
+const deus=mk('section','glass card');append(deus,mk('div','eyebrow','MONDAY WORK / DEUS-0'),mk('h2','','Explore possible futures'),mk('p','muted','A bounded model of alternative paths. Real-world action and AI inference are not implied.'));const deusLink=mk('a','primary deus-link','Open DEUS-0 World Lab');deusLink.href='/deus0';append(deus,deusLink);append(view,deus);
 append(view,section('Your continuum','Right where you left off'));const stats=mk('div','grid');[['Threads',data.threads.length,'chats'],['Open tasks',data.tasks.filter(x=>!x.done).length,'create'],['Notes',data.notes.length,'library'],['Spaces',data.spaces.length,'spaces']].forEach(([name,num,dest])=>{const c=mk('button','glass tile');append(c,mk('span','',name),mk('strong','',num),mk('span','','Open →'));c.addEventListener('click',()=>navTo(dest));stats.appendChild(c)});append(view,stats);
 const all=[...data.threads.map(x=>({...x,kind:'thread'})),...data.notes.map(x=>({...x,kind:'note'})),...data.tasks.map(x=>({...x,kind:'task'}))].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,7);
 append(view,section('Recently touched',all.length+' objects'));if(!all.length)append(view,empty('No history yet. Begin with one meaningful thought.'));else all.forEach(x=>append(view,card(x.title,(x.kind==='task'?(x.done?'Completed':'Open')+' · ':'')+x.kind+' · '+date(x.updatedAt),null,()=>openObject(x.kind,x.id))));
@@ -195,7 +197,7 @@ function receiveShortcutCallback(){
   }
 }
 function drawCreate(view){append(view,heading('Make something','Create','Your notes and tasks become durable objects, not ephemeral chat responses.'));
-const grid=mk('div','grid');[['✎','New note',()=>openNote(null)],['◷','New task',()=>openTask(null)],['◈','New space',()=>openSpace(null)],['☷','New thread',openNewThread]].forEach(([ico,title,fn])=>{const tile=mk('button','glass tile');append(tile,mk('strong','',ico),mk('span','',title));tile.addEventListener('click',fn);grid.appendChild(tile)});append(view,grid);
+const grid=mk('div','grid');[['✎','New note',()=>openNote(null)],['◷','New task',()=>openTask(null)],['◈','New space',()=>openSpace(null)],['☷','New thread',openNewThread],['✧','DEUS-0 World Lab',()=>{window.location.href='/deus0'}]].forEach(([ico,title,fn])=>{const tile=mk('button','glass tile');append(tile,mk('strong','',ico),mk('span','',title));tile.addEventListener('click',fn);grid.appendChild(tile)});append(view,grid);
 append(view,section('Open work'));const tasks=data.tasks.filter(x=>!x.done).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));if(!tasks.length)append(view,empty('No open tasks. Every real task can carry checkpoints.'));tasks.forEach(t=>append(view,taskCard(t)));append(view,section('Completed work'));data.tasks.filter(x=>x.done).forEach(t=>append(view,taskCard(t)));}
 function taskCard(t){const box=mk('div','row');append(box,act(t.done?'↶':'✓',()=>{t.done=!t.done;t.updatedAt=now();event(t.done?'completed':'reopened','tasks',t.id,t.title);persist();render()},'secondary'),act('Open',()=>openTask(t.id),'secondary'));return card(t.title,(t.done?'Complete':'Open')+' · '+(t.checkpoints||[]).filter(x=>x.done).length+'/'+(t.checkpoints||[]).length+' checkpoints · '+date(t.updatedAt),box);}
 function drawSpaces(view){append(view,heading('Give ideas room','Spaces','Organize notes around the things that matter to you.'));append(view,act('＋ Create space',()=>openSpace(null),'primary'));
