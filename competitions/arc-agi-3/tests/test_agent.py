@@ -167,5 +167,48 @@ class AgentContractTests(unittest.TestCase):
         self.assertEqual(action.payload,{'x':32,'y':32})
 
 
+    def test_click_never_targets_hud_on_full_canvas(self):
+        grid=[[3]*64 for _ in range(64)]
+        grid[0]=[7]*64
+        grid[29][38]=11
+        obs=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        positions=[]
+        for _ in range(8):
+            self.agent.choose_action([],obs)
+            positions.append(self.agent._last_position)
+        self.assertTrue(all(1 <= x < 64 and 2 <= y < 61 for x,y in positions))
+
+    def test_click_outcome_tracks_local_causality(self):
+        grid=[[3]*64 for _ in range(64)]
+        grid[29][38]=11
+        obs=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        self.agent.choose_action([],obs)
+        x,y=self.agent._last_position
+        changed=[row[:] for row in grid]
+        changed[y][x]=4
+        after=FrameData(frame=[changed],available_actions=[GameAction.ACTION6])
+        self.agent.choose_action([],after)
+        self.assertEqual(self.agent._click_successes[(0,x,y)],1)
+
+    def test_unchanged_click_penalized(self):
+        grid=[[3]*64 for _ in range(64)]
+        grid[29][38]=11
+        obs=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        self.agent.choose_action([],obs)
+        x,y=self.agent._last_position
+        self.agent.choose_action([],obs)
+        self.assertEqual(self.agent._click_failures[(0,x,y)],1)
+
+    def test_successful_movement_prefers_continuation(self):
+        before=FrameData(
+            frame=[[[0,0],[0,0]]],
+            available_actions=[GameAction.ACTION4])
+        after=FrameData(
+            frame=[[[0,1],[0,0]]],
+            available_actions=[GameAction.ACTION3,GameAction.ACTION4])
+        self.assertEqual(self.agent.choose_action([],before),GameAction.ACTION4)
+        self.assertEqual(self.agent.choose_action([],after),GameAction.ACTION4)
+
+
 if __name__=='__main__':
     unittest.main()
