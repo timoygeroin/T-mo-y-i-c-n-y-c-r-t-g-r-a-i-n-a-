@@ -1,0 +1,35 @@
+name: ARC-AGI-3 public-game smoke
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/**'
+      - '.github/workflows/arc-agent-game-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch official ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official ARC offline environment
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Install MondayID agent into starter
+        run: cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+      - name: Play two public games and record scorecard
+        working-directory: arc-starter
+        run: make verify-local | tee ../arc-agi3-public-game-smoke.log
+      - name: Preserve benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-agi3-public-game-smoke
+          path: arc-agi3-public-game-smoke.log
+          if-no-files-found: ignore
