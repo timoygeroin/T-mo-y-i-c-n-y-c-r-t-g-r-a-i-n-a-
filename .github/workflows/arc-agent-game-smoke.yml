@@ -26,10 +26,14 @@ jobs:
       - name: Play two public games and record scorecard
         working-directory: arc-starter
         run: make verify-local | tee ../arc-agi3-public-game-smoke.log
+      - name: Inspect public-game state transitions
+        run: arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-public-game-diagnostics.log
       - name: Preserve benchmark evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: arc-agi3-public-game-smoke
-          path: arc-agi3-public-game-smoke.log
+          path: |
+            arc-agi3-public-game-smoke.log
+            arc-agi3-public-game-diagnostics.log
           if-no-files-found: ignore
