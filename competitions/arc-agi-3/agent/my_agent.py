@@ -127,6 +127,52 @@ class MyAgent(Agent):
         return [a for a in GameAction if a is not GameAction.RESET and a.name in wanted]
 
     @staticmethod
+    def _objects(grid: list[list[int]]) -> tuple[tuple[int,int,int,int,int,int], ...]:
+        """Compact object descriptors for causal world-model experiments.
+
+        Returns (color, area, min_x, min_y, max_x, max_y) for same-color
+        4-connected non-background components. Full-canvas HUD boundaries
+        are excluded exactly as in state hashing. This is not yet used for
+        action selection; integration is gated on public-game A/B evidence.
+        """
+        if not grid:
+            return ()
+        height=len(grid)
+        width=max((len(row) for row in grid), default=0)
+        full=height==64 and width==64 and all(len(row)==64 for row in grid)
+        x0,y0,x1,y1=(1,2,64,61) if full else (0,0,width,height)
+        cells=[int(grid[y][x]) for y in range(y0,min(y1,height))
+               for x in range(x0,min(x1,len(grid[y])))]
+        if not cells:
+            return ()
+        background=Counter(cells).most_common(1)[0][0]
+        seen:set[tuple[int,int]]=set()
+        out:list[tuple[int,int,int,int,int,int]]=[]
+        for y in range(y0,min(y1,height)):
+            for x in range(x0,min(x1,len(grid[y]))):
+                if (x,y) in seen or int(grid[y][x])==background:
+                    continue
+                color=int(grid[y][x])
+                q=deque([(x,y)])
+                seen.add((x,y))
+                points=[]
+                while q:
+                    px,py=q.popleft()
+                    points.append((px,py))
+                    for nx,ny in ((px-1,py),(px+1,py),(px,py-1),(px,py+1)):
+                        if (nx,ny) in seen or not (y0<=ny<min(y1,height)):
+                            continue
+                        if not (x0<=nx<min(x1,len(grid[ny]))):
+                            continue
+                        if int(grid[ny][nx])!=color:
+                            continue
+                        seen.add((nx,ny)); q.append((nx,ny))
+                if len(points)<=1024:
+                    xs=[p[0] for p in points]; ys=[p[1] for p in points]
+                    out.append((color,len(points),min(xs),min(ys),max(xs),max(ys)))
+        return tuple(sorted(out))
+
+    @staticmethod
     def _salient_points(grids: list[list[list[int]]]) -> list[tuple[int, int]]:
         """Prioritize centers of rare colored connected components.
 
