@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-26T22:11:48.191Z",
+  "updated_at": "2026-10-26T22:13:41.284Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -104,11 +104,18 @@
         "local_seeded_synthetic_scene_pairs": "2000/2000 PASS; synthetic only, not ARC games",
         "github_actions_contract": "SUCCESS",
         "github_actions_system_proof": "SUCCESS",
-        "github_actions_public_game_smoke": "IN_PROGRESS",
-        "github_actions_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40410380110"
+        "github_actions_public_game_smoke": "SUCCESS",
+        "github_actions_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40410380110",
+        "github_actions_public_game_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40410380112",
+        "unchanged_agent_official_public_suite": {
+          "games": 25,
+          "cap": 120,
+          "first_levels_completed": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
       },
       "effect_on_competition_agent": "NONE_NOT_IMPORTED",
-      "public_score_change": "NOT_TESTED; prior 0.5010037315187991 checkpoint remains baseline",
+      "public_score_change": "NONE; official public smoke reran unchanged submission agent with 6 first-level completions and raw local scorecard 0.5010037315187991; no shadow-module performance evidence.",
       "limitations": [
         "Past witnessed reversal is context-specific and does not guarantee safe future reversibility",
         "No held-out game evidence",
