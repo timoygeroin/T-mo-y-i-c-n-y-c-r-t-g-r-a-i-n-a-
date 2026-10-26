@@ -282,14 +282,14 @@ class AgentContractTests(unittest.TestCase):
     def test_level_advancing_action_transfers_to_next_level(self):
         before=FrameData(
             frame=[[[0,0],[0,0]]],
-            available_actions=[GameAction.ACTION2],
+            available_actions=[GameAction.ACTION5],
             levels_completed=0)
-        self.assertEqual(self.agent.choose_action([],before),GameAction.ACTION2)
+        self.assertEqual(self.agent.choose_action([],before),GameAction.ACTION5)
         after=FrameData(
             frame=[[[0,1],[0,0]]],
-            available_actions=[GameAction.ACTION1,GameAction.ACTION2],
+            available_actions=[GameAction.ACTION1,GameAction.ACTION5],
             levels_completed=1)
-        self.assertEqual(self.agent.choose_action([],after),GameAction.ACTION2)
+        self.assertEqual(self.agent.choose_action([],after),GameAction.ACTION5)
 
 
 if __name__=='__main__':
