@@ -131,6 +131,34 @@ class AgentContractTests(unittest.TestCase):
             sequence.append([agent.choose_action([],obs).name for step in range(5)])
         self.assertEqual(sequence[0],sequence[1])
 
+    def test_hud_tick_does_not_create_novel_state(self):
+        clean=[[0]*64 for _ in range(64)]
+        altered=[[0]*64 for _ in range(64)]
+        clean[25][25]=4
+        altered[25][25]=4
+        altered[0][30]=7
+        altered[1][20]=8
+        altered[40][0]=6
+        altered[63][8]=1
+        self.assertEqual(MyAgent._key(0,[clean]),MyAgent._key(0,[altered]))
+        self.assertEqual(MyAgent._delta([clean],[altered]),0)
+
+    def test_terminal_frame_not_animation_length(self):
+        a=[[0,0],[0,0]]
+        b=[[1,0],[0,0]]
+        self.assertEqual(MyAgent._key(0,[a,b]),MyAgent._key(0,[b]))
+
+    def test_global_click_fallback_rotates_targets(self):
+        grid=[[0]*64 for _ in range(64)]
+        grid[12][49]=5
+        grid[13][15]=6
+        obs=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        p=[]
+        for _ in range(3):
+            self.agent.choose_action([],obs)
+            p.append(tuple(GameAction.ACTION6.payload.values()))
+        self.assertNotEqual(p[0],p[1])
+
     def test_without_frame_falls_back_valid_click(self):
         obs=FrameData(frame=[],available_actions=[GameAction.ACTION6])
         obs.frame=[]
