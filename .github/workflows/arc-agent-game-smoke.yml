@@ -25,15 +25,28 @@ jobs:
         run: cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
       - name: Play two public games and record scorecard
         working-directory: arc-starter
-        run: make verify-local | tee ../arc-agi3-public-game-smoke.log
+        run: |
+          set -o pipefail
+          make verify-local | tee ../arc-agi3-public-game-smoke.log
       - name: Enumerate public game suite
         working-directory: arc-starter
-        run: make list-games | tee ../arc-agi3-public-games.log
+        run: |
+          set -o pipefail
+          make list-games | tee ../arc-agi3-public-games.log
       - name: Extended two-game 120-action benchmark
         working-directory: arc-starter
-        run: make play-local GAME=ls20,vc33 STEPS=120 | tee ../arc-agi3-public-game-extended.log
+        run: |
+          set -o pipefail
+          make play-local GAME=ls20,vc33 STEPS=120 | tee ../arc-agi3-public-game-extended.log
       - name: Inspect public-game state transitions
-        run: arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-public-game-diagnostics.log
+        run: |
+          set -o pipefail
+          arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-public-game-diagnostics.log
+      - name: All-public-game benchmark (120 actions per game)
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          make play-local STEPS=120 | tee ../arc-agi3-public-suite.log
       - name: Preserve benchmark evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -44,4 +57,5 @@ jobs:
             arc-agi3-public-game-diagnostics.log
             arc-agi3-public-game-extended.log
             arc-agi3-public-games.log
+            arc-agi3-public-suite.log
           if-no-files-found: ignore
