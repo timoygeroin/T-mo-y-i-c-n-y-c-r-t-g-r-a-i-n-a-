@@ -139,7 +139,7 @@ def main():
             if agent.is_done(agent.frames, after_obs):
                 break
     trace_path = ROOT / "arc-agi3-public-transition-traces.jsonl"
-    trace_path.write_text("".join(json.dumps(row, sort_keys=True) + "\\n"
+    trace_path.write_text("".join(json.dumps(row, sort_keys=True) + "\n"
                                   for row in trace_rows), encoding="utf-8")
     print("PUBLIC_TRACE_RECORDS", len(trace_rows), trace_path.name, flush=True)
     print("PUBLIC_DIAGNOSTIC_COMPLETE", flush=True)
