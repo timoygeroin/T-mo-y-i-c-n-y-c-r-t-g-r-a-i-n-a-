@@ -50,6 +50,8 @@ class MyAgent(Agent):
         self._last_position: tuple[int, int] | None = None
         self._click_visits: Counter[tuple[int, str, int, int]] = Counter()
         self._global_click_visits: Counter[tuple[int, int, int]] = Counter()
+        self._click_successes: Counter[tuple[int, int, int]] = Counter()
+        self._click_failures: Counter[tuple[int, int, int]] = Counter()
         self._steps = 0
         self._seen_full_reset = False
 
@@ -140,12 +142,24 @@ class MyAgent(Agent):
         width = min(64, max((len(row) for row in grid[:height]), default=0))
         if height == 0 or width == 0:
             return [(32, 32)]
-        freq = Counter(int(v) for row in grid[:height] for v in row[:width])
+        # A 64x64 game may draw its HUD on row 0, while buttons and
+        # playable objects live inside the canvas. The old policy spent
+        # many clicks on changing HUD pixels rather than the game.
+        full_canvas = height == 64 and width == 64
+        min_x, min_y = (1, 2) if full_canvas else (0, 0)
+        max_x, max_y = width, (61 if full_canvas else height)
+        freq = Counter(
+            int(grid[y][x])
+            for y in range(min_y, max_y)
+            for x in range(min_x, min(max_x, len(grid[y])))
+        )
+        if not freq:
+            return [(32, 32)]
         background = freq.most_common(1)[0][0]
         seen: set[tuple[int, int]] = set()
         candidates: list[tuple[float, int, int]] = []
-        for y in range(height):
-            for x in range(min(width, len(grid[y]))):
+        for y in range(min_y, max_y):
+            for x in range(min_x, min(max_x, len(grid[y]))):
                 if (x, y) in seen or int(grid[y][x]) == background:
                     continue
                 col = int(grid[y][x])
@@ -156,7 +170,7 @@ class MyAgent(Agent):
                     px, py = q.popleft()
                     component.append((px, py))
                     for nx, ny in ((px-1,py),(px+1,py),(px,py-1),(px,py+1)):
-                        if (nx,ny) not in seen and 0 <= ny < height and 0 <= nx < len(grid[ny]) and int(grid[ny][nx]) == col:
+                        if (nx,ny) not in seen and min_y <= ny < max_y and min_x <= nx < min(max_x, len(grid[ny])) and int(grid[ny][nx]) == col:
                             seen.add((nx,ny))
                             q.append((nx,ny))
                 if len(component) > 700:
@@ -169,14 +183,35 @@ class MyAgent(Agent):
                 candidates.append((rarity + compactness, cx, cy))
         candidates.sort(reverse=True)
         ordered = [(x,y) for _,x,y in candidates[:50]]
-        ordered.extend([(width//2,height//2),(width//4,height//4),(3*width//4,3*height//4)])
-        ordered.extend((x,y) for y in (height//8, height//2, 7*height//8) for x in (width//8,width//2,7*width//8))
+        # Stratified exploration reaches large, uniform interactive
+        # surfaces even when color segmentation has no obvious targets.
+        for yi in range(8):
+            for xi in range(8):
+                x = min_x + ((2*xi+1) * (max_x-min_x)) // 16
+                y = min_y + ((2*yi+1) * (max_y-min_y)) // 16
+                ordered.append((x, y))
         unique=[]
         for x,y in ordered:
             p=(max(0,min(63,x)),max(0,min(63,y)))
             if p not in unique:
                 unique.append(p)
         return unique or [(32,32)]
+
+    @staticmethod
+    def _local_delta(
+        previous: list[list[list[int]]] | None,
+        current: list[list[list[int]]],
+        x: int, y: int, radius: int = 3,
+    ) -> bool:
+        """Check whether the clicked neighborhood visibly changed."""
+        if not previous or not current:
+            return False
+        a, b = previous[-1], current[-1]
+        for row in range(max(0, y-radius), min(len(a), len(b), y+radius+1)):
+            for col in range(max(0, x-radius), min(len(a[row]), len(b[row]), x+radius+1)):
+                if a[row][col] != b[row][col]:
+                    return True
+        return False
 
     def _record_outcome(self, current: tuple[int,str], grids: list[list[list[int]]]) -> None:
         if self._last_observation is None or self._last_move is None:
@@ -185,6 +220,13 @@ class MyAgent(Agent):
         changed = current != previous
         progressed = current[0] > previous[0]
         delta = self._delta(self._last_grids, grids)
+        if self._last_move == 'ACTION6' and self._last_position is not None:
+            x, y = self._last_position
+            click_key = (previous[0], x, y)
+            if progressed or self._local_delta(self._last_grids, grids, x, y):
+                self._click_successes[click_key] += 1
+            else:
+                self._click_failures[click_key] += 1
         key=(previous[0],previous[1],self._last_move)
         self._trials[self._last_move]+=1
         if progressed or changed:
@@ -202,7 +244,12 @@ class MyAgent(Agent):
         for i,(x,y) in enumerate(points):
             visits=self._click_visits[(key[0],key[1],x,y)]
             global_visits=self._global_click_visits[(key[0],x,y)]
-            ranked.append((2*global_visits+visits, i, x, y))
+            causal_key = (key[0], x, y)
+            penalty = 2*global_visits + visits + 2*self._click_failures[causal_key]
+            # A visibly responsive control may require multiple presses.
+            # Cap the reward so one animated object cannot trap the agent.
+            penalty -= 3*min(self._click_successes[causal_key], 2)
+            ranked.append((penalty, i, x, y))
         _,_,x,y = min(ranked)
         self._click_visits[(key[0],key[1],x,y)]+=1
         self._global_click_visits[(key[0],x,y)]+=1
@@ -241,7 +288,14 @@ class MyAgent(Agent):
             if attempt in self._dead_actions:
                 value-=3.0
             if self._last_move==identity:
-                value-=0.10
+                # Continue a successful cardinal movement through unseen
+                # states instead of zig-zagging after every single step.
+                if (identity in ('ACTION1', 'ACTION2', 'ACTION3', 'ACTION4')
+                        and self._last_observation != key
+                        and self._visits[key] == 1):
+                    value += 0.55
+                else:
+                    value -= 0.10
             predicted=self._transitions.get(attempt)
             if predicted:
                 value += 0.9/(1+self._visits[predicted])
