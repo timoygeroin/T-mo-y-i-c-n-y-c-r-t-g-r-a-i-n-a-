@@ -1,6 +1,6 @@
 # MondayID / ARC-AGI-3 offline agent
 
-**Status (2026-10-26):** executable research baseline, **not submitted**, **no verified ARC score**. Contract tests pass locally. No Kaggle token, contest enrollment, live game runs, or prize outcomes were implied by this change.
+**Status (2026-10-26):** executable research baseline, **not submitted**, **no verified ARC score**. 13 contract tests pass locally. Official Python 3.12 public game smoke runs but scores 0.0 on ls20 and vc33 at 50 actions; v2 HUD-filtered exploration is not yet benchmarked. No Kaggle token, contest enrollment, live game runs, or prize outcomes were implied by this change.
 
 ## Goal and physical limits
 
@@ -38,7 +38,7 @@ Final leaderboard submission additionally requires a deliberate `Submit to Compe
 
 1. **Implemented:** code exists and imported through a stub ARC runtime.
 2. **Unit tested:** `python -m unittest discover -s tests -v` passes in this directory.
-3. **Integration tested:** official Python 3.12 starter successfully runs the agent against real environments and produces a scorecard. **Pending.**
+3. **Integration tested:** official Python 3.12 starter successfully runs the agent against real environments and produces a scorecard. **Observed on official two-game smoke: score 0.0. Repeat for v2 pending.**
 4. **Competition accepted:** Kaggle notebook is uploaded, evaluated offline, and received a valid submission status. **Pending.**
 5. **Effective:** baseline is beaten across public games, then verified against hidden leaderboard. **Pending.**
 6. **Prize:** independently adjudicated under current competition rules. **Not claimed.**
