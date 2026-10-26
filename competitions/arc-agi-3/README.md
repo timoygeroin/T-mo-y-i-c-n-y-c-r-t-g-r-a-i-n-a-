@@ -62,3 +62,8 @@ The public-game inspection revealed that `vc33` updates its top-row timer by 1-2
 - This is **one** random control run and a deterministic MondayID run. It is **not** a confidence interval, Kaggle hidden-set performance estimate, or guarantee of any prize.
 - GitHub Actions uses `set -o pipefail` for all piped benchmark commands so a failing game run cannot be misreported as a passing CI job. Raw logs and per-game levels are preserved as workflow artifacts.
 - **Eligibility gate**: user-provided authenticated Kaggle UI evidence now shows the competition rules accepted before the **2026-10-26 23:59 UTC entry deadline**. The remaining Kaggle gates are notebook Phase A completion and a deliberate Phase B competition submission. Prize licensing also requires an explicitly chosen permissive open-source license; a public repository alone is insufficient. Do not choose or apply legal terms without the owner's decision.
+
+
+## Rejected experiment: cross-level action-type transfer (2026-10-26)
+
+A generic prior that boosted an action type after it had advanced a level was implemented through a red/green contract test, then evaluated on the official 25-game public suite at 120 actions/game. It produced **no aggregate improvement**: 6 completed levels and local scorecard **0.5010037315187991**, identical to the pre-experiment checkpoint. In that run, `sp80` ended in `GAME_OVER` after completing one level. Because the feature showed no measured benefit and introduced a plausible downside, it was removed from the active agent. The exact-state proven-transition replay remains; only the broader cross-level action-type prior was rejected.
