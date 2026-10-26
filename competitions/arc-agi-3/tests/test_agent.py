@@ -267,6 +267,18 @@ class AgentContractTests(unittest.TestCase):
             self.assertGreaterEqual(value,0.0)
             self.assertLessEqual(value,1.0)
 
+    def test_proven_level_progress_is_replayed(self):
+        obs=FrameData(
+            frame=[[[0,0],[0,0]]],
+            available_actions=[GameAction.ACTION1,GameAction.ACTION2],
+            levels_completed=0)
+        key=self.agent._key(0,self.agent._grids(obs))
+        self.agent._transitions[(0,key[1],'ACTION2')]=(1,'known-next-level')
+        self.agent._attempts[(0,key[1],'ACTION2')]=8
+        self.agent._trials['ACTION2']=8
+        self.agent._successes['ACTION2']=8
+        self.assertEqual(self.agent.choose_action([],obs),GameAction.ACTION2)
+
 
 if __name__=='__main__':
     unittest.main()
