@@ -29,7 +29,7 @@ class MyAgent(Agent):
       * retain a per-game transition model, without server/model calls.
     """
 
-    MAX_ACTIONS = 160
+    MAX_ACTIONS = 500
     MAX_STATES = 2048
     MAX_CLICKS = 80
 
@@ -49,6 +49,7 @@ class MyAgent(Agent):
         self._last_move: str | None = None
         self._last_position: tuple[int, int] | None = None
         self._click_visits: Counter[tuple[int, str, int, int]] = Counter()
+        self._global_click_visits: Counter[tuple[int, int, int]] = Counter()
         self._steps = 0
         self._seen_full_reset = False
 
@@ -66,28 +67,41 @@ class MyAgent(Agent):
         return raw if isinstance(raw, list) else []
 
     @staticmethod
+    def _playfield(grid: list[list[int]]):
+        """Rows/columns likely to carry game semantics, not engine odometers.
+
+        ARC engine renders HUD timer/counters on boundaries of 64x64
+        canvases. Restrict masking to full-size canvases so small test grids
+        and genuinely small environments are not masked. This heuristic is
+        still not semantic object detection.
+        """
+        is_full = len(grid) == 64 and all(len(row) == 64 for row in grid)
+        for y, row in enumerate(grid):
+            if is_full and (y < 2 or y >= 61):
+                continue
+            yield y, (row[1:] if is_full else row)
+
+    @staticmethod
     def _key(level: int, grids: list[list[list[int]]]) -> tuple[int, str]:
         h = hashlib.blake2b(digest_size=12)
-        for grid in grids:
+        # One action may return multiple animation frames; only compare its
+        # terminal image to avoid treating frame-count as game progress.
+        for grid in grids[-1:]:
             h.update(len(grid).to_bytes(2, 'big'))
-            for row in grid:
+            for _, row in MyAgent._playfield(grid):
                 h.update(len(row).to_bytes(2, 'big'))
                 h.update(bytes(int(v) & 255 for v in row))
         return level, h.hexdigest()
 
     @staticmethod
     def _delta(a: list[list[list[int]]] | None, b: list[list[list[int]]]) -> int:
-        if a is None or len(a) != len(b):
+        if not a or not b:
             return 0
-        count = 0
-        for ga, gb in zip(a, b):
-            if len(ga) != len(gb):
-                return 0
-            for ra, rb in zip(ga, gb):
-                if len(ra) != len(rb):
-                    return 0
-                count += sum(x != y for x, y in zip(ra, rb))
-        return count
+        x = [row for _, row in MyAgent._playfield(a[-1])]
+        y = [row for _, row in MyAgent._playfield(b[-1])]
+        if len(x) != len(y) or any(len(ra) != len(rb) for ra,rb in zip(x,y)):
+            return 0
+        return sum(u != v for ra, rb in zip(x,y) for u,v in zip(ra,rb))
 
     @staticmethod
     def _allowed(obs: FrameData) -> list[GameAction]:
@@ -187,9 +201,11 @@ class MyAgent(Agent):
         ranked=[]
         for i,(x,y) in enumerate(points):
             visits=self._click_visits[(key[0],key[1],x,y)]
-            ranked.append((visits, i, x, y))
+            global_visits=self._global_click_visits[(key[0],x,y)]
+            ranked.append((2*global_visits+visits, i, x, y))
         _,_,x,y = min(ranked)
         self._click_visits[(key[0],key[1],x,y)]+=1
+        self._global_click_visits[(key[0],x,y)]+=1
         return x,y
 
     def choose_action(self, frames: list[FrameData], latest_frame: FrameData) -> GameAction:
@@ -219,8 +235,9 @@ class MyAgent(Agent):
             identity=action.name
             attempt=(level,key[1],identity)
             times=self._attempts[attempt]
-            historical_success=(self._successes[identity]+1)/(self._trials[identity]+2)
-            value=1.0/(1.0+times) + 0.5*historical_success
+            historical_success=(self._successes[identity]+1)/(self._trials[identity]+4)
+            global_exploration=1.0/math.sqrt(1+self._trials[identity])
+            value=1.0/(1.0+times) + 0.42*global_exploration + 0.12*historical_success
             if attempt in self._dead_actions:
                 value-=3.0
             if self._last_move==identity:
