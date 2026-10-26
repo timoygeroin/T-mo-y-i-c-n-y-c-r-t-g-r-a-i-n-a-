@@ -358,7 +358,6 @@ class MyAgent(Agent):
             historical_success=(self._successes[identity]+1)/(self._trials[identity]+4)
             global_exploration=1.0/math.sqrt(1+self._trials[identity])
             value=1.0/(1.0+times) + 0.42*global_exploration + 0.12*historical_success
-            value += 0.20*self._information_gain(self._successes[identity], self._trials[identity])
             if attempt in self._dead_actions:
                 value-=3.0
             if self._last_move==identity:
