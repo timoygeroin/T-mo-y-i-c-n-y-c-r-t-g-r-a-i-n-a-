@@ -279,6 +279,18 @@ class AgentContractTests(unittest.TestCase):
         self.agent._successes['ACTION2']=8
         self.assertEqual(self.agent.choose_action([],obs),GameAction.ACTION2)
 
+    def test_level_advancing_action_transfers_to_next_level(self):
+        before=FrameData(
+            frame=[[[0,0],[0,0]]],
+            available_actions=[GameAction.ACTION2],
+            levels_completed=0)
+        self.assertEqual(self.agent.choose_action([],before),GameAction.ACTION2)
+        after=FrameData(
+            frame=[[[0,1],[0,0]]],
+            available_actions=[GameAction.ACTION1,GameAction.ACTION2],
+            levels_completed=1)
+        self.assertEqual(self.agent.choose_action([],after),GameAction.ACTION2)
+
 
 if __name__=='__main__':
     unittest.main()
