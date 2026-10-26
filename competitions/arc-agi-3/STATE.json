@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-26T23:01:00+02:00",
+  "updated_at": "2026-10-26T22:11:48.191Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,13 +69,14 @@
     }
   ],
   "next_experiment": {
-    "id": "explicit_competing_world_hypotheses",
-    "goal": "Choose one real action by maximizing discrimination among concrete predicted world transitions, not generic action uncertainty.",
+    "id": "collect_real_transition_hypotheses_shadow_then_ab",
+    "goal": "Use actual public-game object transition traces to assess prediction accuracy, action legality, reversibility, and matched-budget action efficiency before any action-policy integration.",
     "constraints": [
       "test-first",
       "reversible",
       "offline",
       "no game-id-specific heuristics",
+      "no regression",
       "retain only if public evidence improves"
     ]
   },
@@ -89,5 +90,31 @@
   "human_gates": {
     "kaggle_phase_b_submission": "Needs exact completed notebook slug/version and deliberate final competition submission; do not guess placeholders or spend a daily submission on an unverified build.",
     "legal_license_publication": "Not authorized by solver work."
+  },
+  "experiments": {
+    "explicit_competing_world_hypotheses": {
+      "status": "CONTRACT_VERIFIED_SHADOW_ONLY",
+      "path": "competitions/arc-agi-3/experiments/causal_hypotheses.py",
+      "test_path": "competitions/arc-agi-3/tests/test_causal_hypotheses.py",
+      "implementation_commit": "b201e77afb71226042d2c5fdc8a1bbfb832faccf",
+      "method": "Observed object-scene transitions induce concrete no-op/translation/recolor hypotheses; rank legal probes by predicted-scene disagreement only if exact same-level A->B->A reversal was witnessed.",
+      "evidence": {
+        "test_first": "Local tests failed before implementation (missing module); passed after implementation.",
+        "local_contract_tests": "10/10 PASS",
+        "local_seeded_synthetic_scene_pairs": "2000/2000 PASS; synthetic only, not ARC games",
+        "github_actions_contract": "SUCCESS",
+        "github_actions_system_proof": "SUCCESS",
+        "github_actions_public_game_smoke": "IN_PROGRESS",
+        "github_actions_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40410380110"
+      },
+      "effect_on_competition_agent": "NONE_NOT_IMPORTED",
+      "public_score_change": "NOT_TESTED; prior 0.5010037315187991 checkpoint remains baseline",
+      "limitations": [
+        "Past witnessed reversal is context-specific and does not guarantee safe future reversibility",
+        "No held-out game evidence",
+        "No agent-policy integration or contest submission",
+        "Posterior-style weights are not calibrated probabilities"
+      ]
+    }
   }
 }
