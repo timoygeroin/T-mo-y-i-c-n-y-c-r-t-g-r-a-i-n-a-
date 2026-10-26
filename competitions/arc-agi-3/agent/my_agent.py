@@ -127,6 +127,21 @@ class MyAgent(Agent):
         return [a for a in GameAction if a is not GameAction.RESET and a.name in wanted]
 
     @staticmethod
+    def _information_gain(successes: int, trials: int) -> float:
+        """Normalized uncertainty of a Bernoulli causal-effect estimate.
+
+        Beta(1,1) is the prior. Posterior variance shrinks as evidence
+        accumulates; multiplying by 12 normalizes the prior maximum to 1.
+        This measures uncertainty about the model, not reward.
+        """
+        failures=max(0,trials-successes)
+        a=max(0,successes)+1
+        b=failures+1
+        total=a+b
+        variance=(a*b)/((total*total)*(total+1))
+        return max(0.0,min(1.0,12.0*variance))
+
+    @staticmethod
     def _objects(grid: list[list[int]]) -> tuple[tuple[int,int,int,int,int,int], ...]:
         """Compact object descriptors for causal world-model experiments.
 
