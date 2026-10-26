@@ -372,6 +372,11 @@ class MyAgent(Agent):
             predicted=self._transitions.get(attempt)
             if predicted:
                 value += 0.9/(1+self._visits[predicted])
+                # Once this exact state/action has demonstrably advanced the
+                # level, replay the learned skill instead of paying again for
+                # exploration. ARC-AGI-3 rewards action efficiency.
+                if predicted[0] > level:
+                    value += 4.0
                 if predicted in list(self._history)[-5:]:
                     value-=0.65
             # Don't regularly undo progress; use ACTION7 only when others
