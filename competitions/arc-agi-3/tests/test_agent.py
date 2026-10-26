@@ -210,5 +210,33 @@ class AgentContractTests(unittest.TestCase):
         self.assertEqual(self.agent.choose_action([],after),GameAction.ACTION4)
 
 
+    def test_remote_click_effect_is_causal(self):
+        grid=[[3]*64 for _ in range(64)]
+        grid[12][49]=5
+        before=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        self.agent.choose_action([],before)
+        x,y=self.agent._last_position
+        changed=[row[:] for row in grid]
+        for ix in range(20,32):
+            changed[40][ix]=7
+        after=FrameData(frame=[changed],available_actions=[GameAction.ACTION6])
+        self.agent.choose_action([],after)
+        self.assertEqual(self.agent._click_successes[(0,x,y)],1)
+        self.assertIn(
+            (0,self.agent._key(0,[grid])[1],f'ACTION6@{x},{y}'),
+            self.agent._transitions)
+
+    def test_failed_click_does_not_blacklist_all_coordinates(self):
+        grid=[[3]*64 for _ in range(64)]
+        grid[12][49]=5
+        obs=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        self.agent.choose_action([],obs)
+        x,y=self.agent._last_position
+        self.agent.choose_action([],obs)
+        key=self.agent._key(0,[grid])
+        self.assertIn((0,key[1],f'ACTION6@{x},{y}'),self.agent._dead_actions)
+        self.assertNotIn((0,key[1],'ACTION6'),self.agent._dead_actions)
+
+
 if __name__=='__main__':
     unittest.main()
