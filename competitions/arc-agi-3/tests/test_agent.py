@@ -237,6 +237,25 @@ class AgentContractTests(unittest.TestCase):
         self.assertIn((0,key[1],f'ACTION6@{x},{y}'),self.agent._dead_actions)
         self.assertNotIn((0,key[1],'ACTION6'),self.agent._dead_actions)
 
+    def test_object_abstraction_ignores_full_canvas_hud(self):
+        a=[[0]*64 for _ in range(64)]
+        b=[[0]*64 for _ in range(64)]
+        a[20][20]=b[20][20]=5
+        b[0][10]=7; b[1][11]=8; b[63][12]=9; b[30][0]=6
+        self.assertEqual(MyAgent._objects(a),MyAgent._objects(b))
+
+    def test_object_abstraction_tracks_motion(self):
+        a=[[0]*8 for _ in range(8)]
+        b=[[0]*8 for _ in range(8)]
+        a[2][2]=4
+        b[2][3]=4
+        self.assertNotEqual(MyAgent._objects(a),MyAgent._objects(b))
+
+    def test_object_abstraction_preserves_shape_bbox(self):
+        g=[[0]*8 for _ in range(8)]
+        g[2][2]=g[2][3]=g[3][2]=9
+        self.assertEqual(MyAgent._objects(g),((9,3,2,2,3,3),))
+
 
 if __name__=='__main__':
     unittest.main()
