@@ -1,6 +1,6 @@
 # MondayID / ARC-AGI-3 offline agent
 
-**Status (2026-10-26 19:01 UTC):** executable research baseline, **not submitted to Kaggle**, **no leaderboard score**. **19 contract tests pass on Python 3.12**. On the official Python 3.12 public engine, the agent completes **6 levels across 25 public games at 120 actions/game**, raw local scorecard **0.5010037315187991**. A single official random-agent comparison with the **same 120-action cap** completes **1 level**, raw scorecard **0.19047619047619047**. These are local public benchmark results, **not** private Kaggle evaluation, statistically established generalization, or prize outcomes. Competition enrollment and rule acceptance remain unverified.
+**Status (2026-10-26 19:01 UTC):** executable research baseline, **not submitted to Kaggle**, **no leaderboard score**. **19 contract tests pass on Python 3.12**. On the official Python 3.12 public engine, the agent completes **6 levels across 25 public games at 120 actions/game**, raw local scorecard **0.5010037315187991**. A single official random-agent comparison with the **same 120-action cap** completes **1 level**, raw scorecard **0.19047619047619047**. These are local public benchmark results, **not** private Kaggle evaluation, statistically established generalization, or prize outcomes. Competition rules were confirmed accepted by the entrant in an authenticated Kaggle UI screenshot supplied on 2026-10-26; this is user-provided evidence, not an API-side enrollment check.
 
 ## Goal and physical limits
 
@@ -39,7 +39,7 @@ Final leaderboard submission additionally requires a deliberate `Submit to Compe
 1. **Implemented:** code exists and imported through a stub ARC runtime.
 2. **Unit tested:** `python -m unittest discover -s tests -v` passes in this directory.
 3. **Integration tested:** official Python 3.12 starter successfully runs the agent against real environments and produces a scorecard. **Observed v3 on public ls20/vc33: 1 completed vc33 level; two-game local scorecard 1.7857142857142856.** [Evidence: run 40382082274](https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40382082274). **All 25 public games at 120 actions: 6 completed levels, score 0.5010037315187991; one official random control: 1 level, score 0.19047619047619047.** [Evidence: run 40382694646](https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40382694646).
-4. **Competition accepted:** Kaggle notebook is uploaded, evaluated offline, and received a valid submission status. **Pending.**
+4. **Competition enrollment:** entrant supplied authenticated Kaggle UI evidence showing `Rules accepted. Good luck!` on 2026-10-26. **Rules accepted; notebook upload/evaluation still pending.**
 5. **Effective:** baseline is beaten across public games, then verified against hidden leaderboard. **Pending.**
 6. **Prize:** independently adjudicated under current competition rules. **Not claimed.**
 
@@ -61,4 +61,4 @@ The public-game inspection revealed that `vc33` updates its top-row timer by 1-2
 - **Official random starter baseline**: same 25 public games and 120 action cap (starter `MAX_ACTIONS` raised from 80 to 120 solely for fair comparison), 1 level in `sp80`. Raw local aggregate scorecard **0.19047619047619047**.
 - This is **one** random control run and a deterministic MondayID run. It is **not** a confidence interval, Kaggle hidden-set performance estimate, or guarantee of any prize.
 - GitHub Actions uses `set -o pipefail` for all piped benchmark commands so a failing game run cannot be misreported as a passing CI job. Raw logs and per-game levels are preserved as workflow artifacts.
-- **Eligibility gate**: Kaggle competition rules must be accepted by the entrant before the **2026-10-26 23:59 UTC entry deadline**. No accepted enrollment is visible here. Prize licensing also requires an explicitly chosen permissive open-source license; a public repository alone is insufficient. Do not choose or apply legal terms without the owner's decision.
+- **Eligibility gate**: user-provided authenticated Kaggle UI evidence now shows the competition rules accepted before the **2026-10-26 23:59 UTC entry deadline**. The remaining Kaggle gates are notebook Phase A completion and a deliberate Phase B competition submission. Prize licensing also requires an explicitly chosen permissive open-source license; a public repository alone is insufficient. Do not choose or apply legal terms without the owner's decision.
