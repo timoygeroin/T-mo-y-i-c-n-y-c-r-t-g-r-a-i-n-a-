@@ -1,0 +1,93 @@
+{
+  "schema": "mondayid.arc-agi3.state.v1",
+  "updated_at": "2026-10-26T23:01:00+02:00",
+  "authority": {
+    "competition": "ARC Prize 2026 — ARC-AGI-3",
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "pull_request": 196,
+    "status": "DRAFT_UNMERGED"
+  },
+  "kaggle": {
+    "rules_accepted": {
+      "status": "SUPPORTED_BY_USER_AUTHENTICATED_UI_SCREENSHOT",
+      "date": "2026-10-26"
+    },
+    "final_submission": "NOT_VERIFIED",
+    "leaderboard_score": "NOT_CLAIMED",
+    "prize": "NOT_CLAIMED",
+    "spend_ils": 0
+  },
+  "verified_public_checkpoint": {
+    "engine": "official ARC-AGI-3 Python 3.12 public engine",
+    "games": 25,
+    "action_cap_per_game": 120,
+    "completed_levels": 6,
+    "raw_local_scorecard": 0.5010037315187991,
+    "solved_level_game_ids": [
+      "vc33",
+      "sp80",
+      "cd82",
+      "r11l",
+      "lf52",
+      "tn36"
+    ],
+    "note": "Local public benchmark only; not Kaggle hidden evaluation or percentage of games solved."
+  },
+  "controls": {
+    "official_random_observed_raw": [
+      0.19047619047619047,
+      0
+    ],
+    "caution": "Random is not a strong control and run-to-run variation is material."
+  },
+  "active_agent": {
+    "object_abstraction": "PRESENT_EXPERIMENTAL_NOT_DRIVING_ACTION_SELECTION",
+    "exact_state_proven_transition_replay": "ACTIVE",
+    "action_information_gain_helper": "PRESENT_TESTED_NOT_DRIVING_ACTION_SELECTION",
+    "online_transition_memory": "ACTIVE",
+    "hud_mask": "ACTIVE"
+  },
+  "rejected_experiments": [
+    {
+      "id": "cross_level_action_type_transfer",
+      "outcome": "NO_IMPROVEMENT",
+      "public_result": {
+        "completed_levels": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "action": "REMOVED"
+    },
+    {
+      "id": "action_level_information_gain_vote",
+      "outcome": "REGRESSION",
+      "public_result": {
+        "completed_levels": 4,
+        "raw_local_scorecard": 0.28170925398031627
+      },
+      "action": "REMOVED"
+    }
+  ],
+  "next_experiment": {
+    "id": "explicit_competing_world_hypotheses",
+    "goal": "Choose one real action by maximizing discrimination among concrete predicted world transitions, not generic action uncertainty.",
+    "constraints": [
+      "test-first",
+      "reversible",
+      "offline",
+      "no game-id-specific heuristics",
+      "retain only if public evidence improves"
+    ]
+  },
+  "sync_protocol": [
+    "READ this file before mutating PR #196",
+    "VERIFY branch head and CI before assuming prior claims",
+    "WRITE only evidence-backed deltas",
+    "REJECT and record regressions instead of accumulating features",
+    "UPDATE C* with compact verified state after material checkpoints"
+  ],
+  "human_gates": {
+    "kaggle_phase_b_submission": "Needs exact completed notebook slug/version and deliberate final competition submission; do not guess placeholders or spend a daily submission on an unverified build.",
+    "legal_license_publication": "Not authorized by solver work."
+  }
+}
