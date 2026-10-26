@@ -47,6 +47,13 @@ jobs:
         run: |
           set -o pipefail
           make play-local STEPS=120 | tee ../arc-agi3-public-suite.log
+      - name: Official random baseline across public games (same 120-step cap)
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          git show HEAD:agent/my_agent.py > agent/my_agent.py
+          sed -i 's/MAX_ACTIONS = 80/MAX_ACTIONS = 120/' agent/my_agent.py
+          make play-local STEPS=120 | tee ../arc-agi3-random-suite.log
       - name: Preserve benchmark evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -58,4 +65,5 @@ jobs:
             arc-agi3-public-game-extended.log
             arc-agi3-public-games.log
             arc-agi3-public-suite.log
+            arc-agi3-random-suite.log
           if-no-files-found: ignore
