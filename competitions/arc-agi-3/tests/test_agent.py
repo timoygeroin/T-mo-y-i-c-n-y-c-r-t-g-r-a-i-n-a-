@@ -279,6 +279,14 @@ class AgentContractTests(unittest.TestCase):
         self.agent._successes['ACTION2']=8
         self.assertEqual(self.agent.choose_action([],obs),GameAction.ACTION2)
 
+    def test_action_choice_uses_information_gain_to_break_close_evidence(self):
+        self.agent._trials['ACTION1']=2
+        self.agent._successes['ACTION1']=2
+        self.agent._trials['ACTION5']=2
+        self.agent._successes['ACTION5']=1
+        obs=FrameData(available_actions=[GameAction.ACTION1,GameAction.ACTION5])
+        self.assertEqual(self.agent.choose_action([],obs),GameAction.ACTION5)
+
 
 if __name__=='__main__':
     unittest.main()
