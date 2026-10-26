@@ -1,0 +1,143 @@
+"""Contract tests without importing heavyweight ARC game dependencies.
+
+These tests verify action legality and offline control logic. They are NOT
+ARC-AGI-3 benchmark scores or evidence of game completion.
+"""
+from __future__ import annotations
+
+from enum import Enum
+import importlib.util
+from pathlib import Path
+import sys
+import types
+import unittest
+
+
+class GameState(Enum):
+    NOT_PLAYED=0
+    NOT_FINISHED=1
+    GAME_OVER=2
+    WIN=3
+
+
+class GameAction(Enum):
+    RESET=0
+    ACTION1=1
+    ACTION2=2
+    ACTION3=3
+    ACTION4=4
+    ACTION5=5
+    ACTION6=6
+    ACTION7=7
+
+    def is_complex(self):
+        return self is GameAction.ACTION6
+
+    def set_data(self, data):
+        self.payload=data
+
+
+class Agent:
+    def __init__(self, *, game_id='ls20', **kwargs):
+        self.game_id=game_id
+
+    @property
+    def name(self):
+        return 'agent'
+
+
+class FrameData:
+    def __init__(self, state=GameState.NOT_FINISHED, frame=None,
+                 available_actions=None, levels_completed=0, full_reset=False):
+        self.state=state
+        self.frame=frame or [[[0]*8 for _ in range(8)]]
+        self.available_actions=available_actions
+        self.levels_completed=levels_completed
+        self.full_reset=full_reset
+
+
+arcengine=types.ModuleType('arcengine')
+arcengine.FrameData=FrameData
+arcengine.GameAction=GameAction
+arcengine.GameState=GameState
+agents=types.ModuleType('agents')
+agents.__path__=[]
+agents_agent=types.ModuleType('agents.agent')
+agents_agent.Agent=Agent
+sys.modules.update({'arcengine':arcengine,'agents':agents,'agents.agent':agents_agent})
+
+SCRIPT=Path(__file__).resolve().parents[1]/'agent'/'my_agent.py'
+spec=importlib.util.spec_from_file_location('monday_arc_agent',SCRIPT)
+assert spec and spec.loader
+module=importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+MyAgent=module.MyAgent
+
+
+class AgentContractTests(unittest.TestCase):
+    def setUp(self):
+        self.agent=MyAgent(game_id='unit-test')
+
+    def test_not_played_requires_reset(self):
+        action=self.agent.choose_action([],FrameData(state=GameState.NOT_PLAYED))
+        self.assertEqual(action, GameAction.RESET)
+
+    def test_death_requires_reset(self):
+        action=self.agent.choose_action([],FrameData(state=GameState.GAME_OVER))
+        self.assertEqual(action, GameAction.RESET)
+
+    def test_win_finishes(self):
+        self.assertTrue(self.agent.is_done([], FrameData(state=GameState.WIN)))
+        self.assertFalse(self.agent.is_done([], FrameData(state=GameState.NOT_FINISHED)))
+
+    def test_only_advertised_simple_actions(self):
+        obs=FrameData(available_actions=[GameAction.ACTION3,GameAction.ACTION4])
+        chosen=[self.agent.choose_action([],obs) for _ in range(10)]
+        self.assertTrue(all(a in (GameAction.ACTION3,GameAction.ACTION4) for a in chosen))
+
+    def test_int_action_ids(self):
+        obs=FrameData(available_actions=[1,2])
+        self.assertIn(self.agent.choose_action([],obs),(GameAction.ACTION1,GameAction.ACTION2))
+
+    def test_noop_action_is_not_immediately_repeated(self):
+        obs=FrameData(available_actions=[GameAction.ACTION1,GameAction.ACTION2])
+        first=self.agent.choose_action([],obs)
+        second=self.agent.choose_action([],obs)
+        self.assertNotEqual(first,second)
+
+    def test_clicked_coordinates_are_in_bounds(self):
+        grid=[[0]*64 for _ in range(64)]
+        grid[12][49]=5
+        obs=FrameData(frame=[grid],available_actions=[GameAction.ACTION6])
+        choice=self.agent.choose_action([],obs)
+        self.assertEqual(choice,GameAction.ACTION6)
+        self.assertTrue(0<=choice.payload['x']<=63)
+        self.assertTrue(0<=choice.payload['y']<=63)
+        self.assertEqual(choice.payload,{'x':49,'y':12})
+
+    def test_change_records_transition(self):
+        before=FrameData(frame=[[[0,0],[0,0]]],available_actions=[GameAction.ACTION1])
+        after=FrameData(frame=[[[0,1],[0,0]]],available_actions=[GameAction.ACTION1])
+        self.agent.choose_action([],before)
+        self.agent.choose_action([],after)
+        self.assertEqual(self.agent._successes['ACTION1'],1)
+        self.assertTrue(self.agent._transitions)
+
+    def test_agent_is_deterministic_per_game(self):
+        sequence=[]
+        for _ in range(2):
+            agent=MyAgent(game_id='unit-test')
+            obs=FrameData(available_actions=[GameAction.ACTION1,GameAction.ACTION2,GameAction.ACTION5])
+            sequence.append([agent.choose_action([],obs).name for step in range(5)])
+        self.assertEqual(sequence[0],sequence[1])
+
+    def test_without_frame_falls_back_valid_click(self):
+        obs=FrameData(frame=[],available_actions=[GameAction.ACTION6])
+        obs.frame=[]
+        action=self.agent.choose_action([],obs)
+        self.assertEqual(action,GameAction.ACTION6)
+        self.assertEqual(action.payload,{'x':32,'y':32})
+
+
+if __name__=='__main__':
+    unittest.main()
