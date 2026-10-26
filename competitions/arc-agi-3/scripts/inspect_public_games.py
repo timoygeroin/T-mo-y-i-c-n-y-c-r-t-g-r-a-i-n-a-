@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections import Counter
 from pathlib import Path
+import json
 import os
 import sys
 
@@ -16,12 +17,14 @@ ROOT = Path(__file__).resolve().parents[3]
 STARTER = ROOT / "arc-starter"
 if not (STARTER / "vendor" / "ARC-AGI-3-Agents").exists():
     raise SystemExit("Official starter is not installed at arc-starter/")
+sys.path.insert(0, str(ROOT / "competitions" / "arc-agi-3" / "experiments"))
 sys.path.insert(0, str(STARTER))
 sys.path.insert(0, str(STARTER / "vendor" / "ARC-AGI-3-Agents"))
 os.chdir(STARTER)
 
 from arc_agi import Arcade, OperationMode
 from agent.my_agent import MyAgent
+from object_model import extract_objects
 
 
 def final_grid(observation):
@@ -53,8 +56,36 @@ def delta_info(before, after):
     return len(points), (min(xs), min(ys), max(xs), max(ys))
 
 
+def scene_objects(grid):
+    return [[o.color, o.area, o.min_x, o.min_y, o.max_x, o.max_y]
+            for o in extract_objects(grid)]
+
+
+def legal_names(advertised):
+    result = []
+    for item in advertised or []:
+        if hasattr(item, "name"):
+            result.append(item.name)
+        elif isinstance(item, int):
+            result.append(f"ACTION{item}")
+        else:
+            value = str(item)
+            result.append(f"ACTION{value}" if value.isdigit() else value)
+    return result
+
+
+def action_key(action):
+    if action.name != "ACTION6":
+        return action.name
+    data = getattr(getattr(action, "action_data", None), "model_dump", lambda: {})()
+    if not isinstance(data, dict) or "x" not in data or "y" not in data:
+        raise RuntimeError("ACTION6 missing coordinate identity")
+    return f"ACTION6@{int(data['x'])},{int(data['y'])}"
+
+
 def main():
     arcade = Arcade(operation_mode=OperationMode.NORMAL)
+    trace_rows = []
     for game_id in ("ls20", "vc33"):
         print("\n===== PUBLIC GAME", game_id, "=====", flush=True)
         env = arcade.make(game_id)
@@ -87,6 +118,16 @@ def main():
                 raise RuntimeError("Invalid ARC frame")
             after = final_grid(after_obs)
             count, box = delta_info(before, after)
+            trace_rows.append({
+                "schema": "arc-agi3.shadow-transition.v1",
+                "game_id": game_id, "turn": turn,
+                "action_key": action_key(action),
+                "level_before": int(observation.levels_completed or 0),
+                "level_after": int(after_obs.levels_completed or 0),
+                "before_scene": scene_objects(before),
+                "after_scene": scene_objects(after),
+                "legal_actions": legal_names(observation.available_actions),
+            })
             print(
                 "TRANSITION", game_id, turn, action.name,
                 "xy", getattr(getattr(action, "action_data", None), "model_dump", lambda: {})(),
@@ -97,6 +138,10 @@ def main():
             agent.append_frame(after_obs)
             if agent.is_done(agent.frames, after_obs):
                 break
+    trace_path = ROOT / "arc-agi3-public-transition-traces.jsonl"
+    trace_path.write_text("".join(json.dumps(row, sort_keys=True) + "\\n"
+                                  for row in trace_rows), encoding="utf-8")
+    print("PUBLIC_TRACE_RECORDS", len(trace_rows), trace_path.name, flush=True)
     print("PUBLIC_DIAGNOSTIC_COMPLETE", flush=True)
 
 
