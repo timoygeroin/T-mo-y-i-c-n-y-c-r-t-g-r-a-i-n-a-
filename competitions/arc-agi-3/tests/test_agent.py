@@ -256,6 +256,17 @@ class AgentContractTests(unittest.TestCase):
         g[2][2]=g[2][3]=g[3][2]=9
         self.assertEqual(MyAgent._objects(g),((9,3,2,2,3,3),))
 
+    def test_information_gain_prefers_uncertain_action(self):
+        uncertain=MyAgent._information_gain(successes=1,trials=2)
+        settled=MyAgent._information_gain(successes=0,trials=20)
+        self.assertGreater(uncertain,settled)
+
+    def test_information_gain_is_bounded(self):
+        for successes,trials in ((0,0),(0,10),(5,10),(10,10)):
+            value=MyAgent._information_gain(successes=successes,trials=trials)
+            self.assertGreaterEqual(value,0.0)
+            self.assertLessEqual(value,1.0)
+
 
 if __name__=='__main__':
     unittest.main()
