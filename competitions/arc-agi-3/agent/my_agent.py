@@ -220,14 +220,22 @@ class MyAgent(Agent):
         changed = current != previous
         progressed = current[0] > previous[0]
         delta = self._delta(self._last_grids, grids)
+        outcome_identity = self._last_move
         if self._last_move == 'ACTION6' and self._last_position is not None:
             x, y = self._last_position
             click_key = (previous[0], x, y)
-            if progressed or self._local_delta(self._last_grids, grids, x, y):
+            outcome_identity = f'ACTION6@{x},{y}'
+            # An interactive control can change a distant region. The
+            # public vc33 game proved that useful clicks may affect >250
+            # pixels away from the click while the HUD timer changes 1-2.
+            if (progressed or delta >= 8
+                    or self._local_delta(self._last_grids, grids, x, y)):
                 self._click_successes[click_key] += 1
             else:
                 self._click_failures[click_key] += 1
-        key=(previous[0],previous[1],self._last_move)
+        # ACTION6 outcomes must be keyed by *coordinate*, not by the
+        # shared enum action, otherwise one dead pixel blacklists all clicks.
+        key=(previous[0],previous[1],outcome_identity)
         self._trials[self._last_move]+=1
         if progressed or changed:
             self._successes[self._last_move]+=1
@@ -249,6 +257,10 @@ class MyAgent(Agent):
             # A visibly responsive control may require multiple presses.
             # Cap the reward so one animated object cannot trap the agent.
             penalty -= 3*min(self._click_successes[causal_key], 2)
+            predicted = self._transitions.get(
+                (key[0], key[1], f'ACTION6@{x},{y}'))
+            if predicted in self._history:
+                penalty += 3  # avoid reversible toggles into known states
             ranked.append((penalty, i, x, y))
         _,_,x,y = min(ranked)
         self._click_visits[(key[0],key[1],x,y)]+=1
