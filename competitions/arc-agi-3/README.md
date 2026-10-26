@@ -67,3 +67,10 @@ The public-game inspection revealed that `vc33` updates its top-row timer by 1-2
 ## Rejected experiment: cross-level action-type transfer (2026-10-26)
 
 A generic prior that boosted an action type after it had advanced a level was implemented through a red/green contract test, then evaluated on the official 25-game public suite at 120 actions/game. It produced **no aggregate improvement**: 6 completed levels and local scorecard **0.5010037315187991**, identical to the pre-experiment checkpoint. In that run, `sp80` ended in `GAME_OVER` after completing one level. Because the feature showed no measured benefit and introduced a plausible downside, it was removed from the active agent. The exact-state proven-transition replay remains; only the broader cross-level action-type prior was rejected.
+
+
+## Rejected experiment: action-level information-gain vote (2026-10-26)
+
+A bounded Bayesian uncertainty signal was added as a small vote in action selection after a genuine RED/GREEN contract cycle. On the official 25-game public suite at 120 actions/game, performance **regressed** from the stable 6-level / **0.5010037315187991** checkpoint to 4 completed levels / **0.28170925398031627**. The action-selection vote was therefore removed immediately. The standalone uncertainty helper remains test-covered for future hypothesis-level experiments, but it does not control actions.
+
+Interpretation: uncertainty over *action identity* is too coarse. Useful active learning must discriminate between explicit competing world-model hypotheses and estimate whether an action's possible outcomes would separate those hypotheses; mere uncertainty is not sufficient information value.
