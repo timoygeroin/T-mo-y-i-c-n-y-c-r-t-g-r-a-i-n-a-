@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-26T22:13:41.284Z",
+  "updated_at": "2026-10-26T23:14:39.981Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,14 @@
     }
   ],
   "next_experiment": {
-    "id": "collect_real_transition_hypotheses_shadow_then_ab",
-    "goal": "Use actual public-game object transition traces to assess prediction accuracy, action legality, reversibility, and matched-budget action efficiency before any action-policy integration.",
+    "id": "falsify_object_abstraction_then_collect_heldout_public_traces",
+    "goal": "Diagnose 1/11 causal predictions vs 1/11 static; measure scene aliasing and coordinate effects, then pre-register broader public-game holdout before policy A/B.",
     "constraints": [
       "test-first",
       "reversible",
       "offline",
       "no game-id-specific heuristics",
-      "no regression",
-      "retain only if public evidence improves"
+      "no policy integration without measured improvement"
     ]
   },
   "sync_protocol": [
@@ -121,6 +120,57 @@
         "No held-out game evidence",
         "No agent-policy integration or contest submission",
         "Posterior-style weights are not calibrated probabilities"
+      ]
+    },
+    "public_transition_prequential_audit": {
+      "status": "REAL_PUBLIC_TRACE_DIAGNOSTIC_NO_PREDICTIVE_GAIN",
+      "implementation_commit": "d423a012f23a039b4781e1f350b5da0335e2fe7c",
+      "paths": [
+        "competitions/arc-agi-3/experiments/shadow_trace.py",
+        "competitions/arc-agi-3/tests/test_shadow_trace.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "test_first": "Local import failed before module; 8/8 new tests passed after implementation.",
+      "ci": {
+        "contract": "SUCCESS 48/48",
+        "contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40418074080",
+        "public_smoke": "SUCCESS",
+        "public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40418074086"
+      },
+      "public_trace": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "turns_per_game": 12,
+        "records": 24,
+        "same_level_records": 23,
+        "eligible_prequential_predictions": 11,
+        "exact_scene_correct": 1,
+        "static_baseline_correct_on_same_subset": 1,
+        "non_static_top_predictions": 0,
+        "witnessed_probe_candidates": 0
+      },
+      "controls": [
+        "No current-outcome leakage",
+        "Per-game/per-level history only",
+        "ACTION6 keyed by exact click x,y",
+        "No policy import or gameplay mutation"
+      ],
+      "interpretation": "No predictive advantage over static scene in this limited two-game 24-turn public trace (1/11 vs 1/11); negative integration evidence, not general failure proof.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "official_public_suite_unchanged": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "limitations": [
+        "Only 2 public games, 12 actions each",
+        "Not held-out or strong matched control",
+        "Object abstraction may alias states",
+        "No Kaggle submission"
       ]
     }
   }
