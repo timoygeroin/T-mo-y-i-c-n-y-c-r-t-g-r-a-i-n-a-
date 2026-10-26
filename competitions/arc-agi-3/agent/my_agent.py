@@ -41,7 +41,6 @@ class MyAgent(Agent):
         self._attempts: Counter[tuple[int, str, str]] = Counter()
         self._successes: Counter[str] = Counter()
         self._trials: Counter[str] = Counter()
-        self._level_progress_actions: Counter[str] = Counter()
         self._dead_actions: set[tuple[int, str, str]] = set()
         self._transitions: dict[tuple[int, str, str], tuple[int, str]] = {}
         self._history: deque[tuple[int, str]] = deque(maxlen=12)
@@ -299,8 +298,6 @@ class MyAgent(Agent):
         # shared enum action, otherwise one dead pixel blacklists all clicks.
         key=(previous[0],previous[1],outcome_identity)
         self._trials[self._last_move]+=1
-        if progressed:
-            self._level_progress_actions[self._last_move]+=1
         if progressed or changed:
             self._successes[self._last_move]+=1
             self._transitions[key]=current
@@ -361,7 +358,6 @@ class MyAgent(Agent):
             historical_success=(self._successes[identity]+1)/(self._trials[identity]+4)
             global_exploration=1.0/math.sqrt(1+self._trials[identity])
             value=1.0/(1.0+times) + 0.42*global_exploration + 0.12*historical_success
-            value += 0.75*min(self._level_progress_actions[identity],2)
             if attempt in self._dead_actions:
                 value-=3.0
             if self._last_move==identity:
