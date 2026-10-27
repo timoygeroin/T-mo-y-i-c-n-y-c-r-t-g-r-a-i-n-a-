@@ -14,6 +14,8 @@ on:
       - 'competitions/arc-agi-3/experiments/projected_donor_consensus_diagnostic.py'
       - 'competitions/arc-agi-3/experiments/conditional_world_conflict_audit.py'
       - 'competitions/arc-agi-3/experiments/history_conditioned_conflicts.py'
+      - 'competitions/arc-agi-3/experiments/relational_world_factorization.py'
+      - 'competitions/arc-agi-3/tests/test_relational_world_factorization.py'
       - 'competitions/arc-agi-3/tests/test_history_conditioned_conflicts.py'
       - 'competitions/arc-agi-3/tests/test_projected_donor_consensus_diagnostic.py'
       - 'competitions/arc-agi-3/tests/test_conditional_world_conflict_audit.py'
@@ -103,6 +105,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/history_conditioned_conflicts.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-history-conflicts.json
+      - name: Compare absolute and anchor-relative causal world forecasts (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relational_world_factorization.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relational-worlds.json
       - name: Preserve public-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -123,5 +129,6 @@ jobs:
             arc-agi3-remaining-public-projected-consensus.json
             arc-agi3-remaining-public-conditional-conflicts.json
             arc-agi3-remaining-public-history-conflicts.json
+            arc-agi3-remaining-public-relational-worlds.json
             arc-agi3-remaining-public-trace.sha256
           if-no-files-found: ignore
