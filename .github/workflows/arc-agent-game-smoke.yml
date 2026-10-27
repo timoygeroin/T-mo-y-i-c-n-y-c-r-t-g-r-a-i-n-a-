@@ -63,6 +63,11 @@ jobs:
           set -o pipefail
           python competitions/arc-agi-3/experiments/spatial_delta_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-disjoint-spatial-metrics.json
           python competitions/arc-agi-3/experiments/scene_alias_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-disjoint-scene-alias-metrics.json
+      - name: Prequential edge-signal predictive controls (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/edge_predictive_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-edge-predictive-diagnostic.json
+          python competitions/arc-agi-3/experiments/edge_predictive_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-edge-predictive-disjoint.json
       - name: All-public-game benchmark (120 actions per game)
         working-directory: arc-starter
         run: |
@@ -91,6 +96,8 @@ jobs:
             arc-agi3-disjoint-public-transition-traces.jsonl
             arc-agi3-disjoint-spatial-metrics.json
             arc-agi3-disjoint-scene-alias-metrics.json
+            arc-agi3-edge-predictive-diagnostic.json
+            arc-agi3-edge-predictive-disjoint.json
             arc-agi3-public-game-extended.log
             arc-agi3-public-games.log
             arc-agi3-public-suite.log
