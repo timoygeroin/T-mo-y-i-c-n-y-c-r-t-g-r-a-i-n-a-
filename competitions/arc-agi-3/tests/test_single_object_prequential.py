@@ -49,8 +49,8 @@ class SingleObjectPrequentialTests(unittest.TestCase):
 
     def test_conflicting_action_effect_abstains_on_unseen_scene(self):
         result = evaluate([row(0, scene(3), scene(4)),
-                           row(1, scene(3), scene(2)),
-                           row(2, scene(12), scene(12))])
+                           row(1, scene(12), scene(11)),
+                           row(2, scene(20), scene(20))])
         self.assertEqual(result['effect_nonstatic'], 1)
         self.assertEqual(result['combined_effect_used'], 1)
         self.assertGreaterEqual(result['ambiguous_effect_abstentions'], 1)
