@@ -231,7 +231,7 @@ test('MCP rejects anonymous state reads and attach before any Worldline network 
 
 test('MCP visual_release_gate blocks a render without approved identity bytes',async()=>{
  const req={method:'POST',body:{jsonrpc:'2.0',id:66,method:'tools/call',params:{name:'visual_release_gate',arguments:{
-  renderRequested:true,scene:{assetId:'terrace',role:'scene',preserveGeometry:true},
+  renderRequested:true,explicitImageIntent:true,scene:{assetId:'terrace',role:'scene',preserveGeometry:true,userPresence:'absent'},
   identity:{role:'identity',approved:false,bytesAvailable:false},
   wardrobe:{requested:'black-square-neck',selected:'black-square-neck'}
  }}}};
