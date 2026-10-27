@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T18:18:56Z",
+  "updated_at": "2026-10-27T19:16:07Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,14 @@
     }
   ],
   "next_experiment": {
-    "id": "action_history_conditional_world_hypotheses",
-    "goal": "Test-first shadow-only compare action-history/scene-change observable context against unconditional static/nonstatic donor contradictions, preserving exact ACTION6, target exclusion and frozen controls. Reject if no independent predictive evidence.",
+    "id": "pre_action_world_factorization_discriminating_gate",
+    "goal": "Do not continue blindly splitting zero-support donor keys. Design test-first falsifiable world-state hypotheses that increase cross-game support using only observable BEFORE-action context, with independent donor games and matched frozen controls; require new disjoint public evidence or intervention before policy A/B.",
     "constraints": [
-      "frozen PUBLIC trace",
+      "one existing PR and canonical C*",
       "no target outcome leakage",
       "no game-ID heuristics",
-      "independent donor games",
-      "no agent change without matched-budget gameplay A/B",
-      "no Kaggle submission/spend"
+      "no automatic policy promotion",
+      "no Kaggle submission/spend/terms/tokens"
     ]
   },
   "sync_protocol": [
@@ -1673,6 +1672,86 @@
         "Donor games may be later in global chronology",
         "Bounding-box collision is conservative and may not represent game semantics",
         "No Kaggle submission, spend, tokens, terms, legal/license/publication decision, prize, novelty or income claim"
+      ]
+    },
+    "history_conditioned_conflicts": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.history-conditioned-donor-conflicts-v1",
+      "hypotheses": [
+        "H0_unconditional",
+        "H1_previous_exact_action",
+        "H2_previous_observed_scene_change",
+        "H3_joint_previous_action_and_scene_change"
+      ],
+      "test_first": {
+        "red_commit": "4c4d3a2f2ef0332ca26bb4f6a6b07ab8fded93df",
+        "red_contract_run": 40567089292,
+        "red_reason": "Expected ModuleNotFoundError for absent history_conditioned_conflicts; 222 discovered tests, 1 import error",
+        "green_candidate_commit": "f12e09efa81d5351af8e6170a52180a34ee30660",
+        "workflow_commit": "44391ee37196939a4ed4567ed52fd683aa55f1dc",
+        "green_tests": "232/232",
+        "contract_run": 40567273907
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40567273893,
+        "official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40567274002,
+        "frozen_nine_public": "SUCCESS",
+        "frozen_run": 40567273750
+      },
+      "public_trace": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "witnesses": 1318,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "per_heldout_target_key_exposures_not_independent_transitions": {
+          "exact": {
+            "mixed": 35,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 7,
+            "prior_action_still_conflicting": 28
+          },
+          "action": {
+            "mixed": 31,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 2,
+            "prior_action_still_conflicting": 29
+          },
+          "role": {
+            "mixed": 32,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 0,
+            "prior_action_still_conflicting": 32
+          },
+          "both": {
+            "mixed": 9,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 0,
+            "prior_action_still_conflicting": 9
+          }
+        },
+        "supported_moving_contexts_all_variants_all_hypotheses": 0
+      },
+      "interpretation": "Pre-action prior exact action, prior observed scene-change, and their joint context did not resolve ANY mixed static/moving donor key with >=2 independent OTHER games in every observed conditional stratum. H1/H2/H3 produced zero supported moving conditional contexts and zero eligible cross-game forecasts. This is negative evidence for these observable history factors on the frozen PUBLIC trace, not proof that history or causal transfer never matters.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "limitations": [
+        "PUBLIC post-hoc key exposures are not independent predictions or a hidden holdout",
+        "Other donor games may be globally later; no randomized intervention",
+        "History derived from prior completed transitions only; RESET/level/turn boundaries clear state",
+        "Zero new gameplay/progress evidence; no Kaggle submission, spending, token request, terms, legal/license/publication decision, prize, novelty or income claim"
       ]
     }
   }
