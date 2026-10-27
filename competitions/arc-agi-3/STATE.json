@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T07:12:17.945Z",
+  "updated_at": "2026-10-27T07:15:19.560Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,16 +69,17 @@
     }
   ],
   "next_experiment": {
-    "id": "readback_frozen_nine_public_replication",
-    "goal": "Verify official CI artifact for the pre-frozen nine public games, validate exact roster/96-turn cap and per-game prediction delta versus replay, record negative generalization or pass gates without automatic policy promotion.",
+    "id": "falsify_cross_game_causal_transfer",
+    "goal": "Before any policy change, evaluate explicit competing action-effect hypotheses with leave-one-public-game-out training versus within-game prequential replay/static on the existing frozen traces. Freeze scoring and abstention rules before evaluating, and report per-game gains/regressions and lack of progress evidence.",
     "constraints": [
-      "do not tune after seeing nine-game trace",
+      "no game-ID-specific heuristics",
+      "no per-game tuning after viewing outcomes",
       "test-first",
-      "no policy change",
+      "no current-outcome leakage",
+      "no policy import",
       "no spend",
       "no Kaggle submission",
-      "record per-game regression",
-      "readback CI and trace SHA256"
+      "reject regression"
     ]
   },
   "sync_protocol": [
@@ -880,7 +881,7 @@
       }
     },
     "remaining_public_replication": {
-      "status": "FROZEN_BEFORE_NEW_TRACE_CI_PENDING",
+      "status": "REAL_PUBLIC_NINE_GAME_REPLICATION_NEGATIVE_GENERALIZATION_GATE_FAILED",
       "protocol": "arc-agi3.remaining-public-v1",
       "sample_games": [
         "su15",
@@ -916,8 +917,89 @@
         "No policy import, no Kaggle action"
       ],
       "caveat": "All 25 games already appeared in public aggregate benchmark; nine detailed games are not hidden or uncontaminated holdout.",
-      "evidence": "Local synthetic contracts only until official public CI readback",
-      "effect_on_agent": "NONE_SHADOW_ONLY"
+      "evidence": {
+        "test_first": "Local import RED then 9/9 GREEN; official Python 3.12 frozen-protocol CI tests 9/9 PASS.",
+        "contract_ci": {
+          "status": "SUCCESS",
+          "tests": "131/131",
+          "run_id": 40465716660,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40465716660"
+        },
+        "system_proof": {
+          "status": "SUCCESS",
+          "run_id": 40465716657,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40465716657"
+        },
+        "public_smoke": {
+          "status": "SUCCESS",
+          "run_id": 40465716818,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40465716818",
+          "unchanged_scorecard": 0.5010037315187991
+        },
+        "frozen_replication_runs": [
+          40465656682,
+          40465716738
+        ],
+        "frozen_replication_status": "SUCCESS_BOTH_INDEPENDENT_CI_RUNS_IDENTICAL_METRICS_AND_TRACE_SHA256",
+        "artifact_ids": [
+          12716237466,
+          12716199260
+        ],
+        "artifact_sha256": [
+          "e5487ded241d3183815666ce47c03ee08e61aae6fe43bccba592187459a1092e",
+          "71886dd8a61504383d6a9654e07986f19f20571e31bba32d62b90a3cf365e3d9"
+        ],
+        "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "caveat": "Artifact ZIP digests differ between CI runs; extracted public trace SHA256 and all reported numerical counters match."
+      },
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "public_trace": {
+        "games": 9,
+        "records": 864,
+        "max_actions_per_game": 96,
+        "reset_records": 7,
+        "level_advance_events": 0,
+        "same_level_records": 857,
+        "matched_correct": {
+          "static": 330,
+          "exact_replay_with_static_fallback": 339,
+          "combined_replay_effect_static": 362
+        },
+        "combined_delta_vs_replay": 23,
+        "nonstatic_effect_forecasts": 25,
+        "nonstatic_effect_correct": 23,
+        "per_game_delta_correct_vs_replay": {
+          "su15": 0,
+          "bp35": 0,
+          "wa30": 0,
+          "ft09": 0,
+          "sk48": 0,
+          "re86": 23,
+          "m0r0": 0,
+          "s5i5": 0,
+          "sb26": 0
+        },
+        "effect_games": 1,
+        "positive_games": 1,
+        "negative_games": 0,
+        "re86": {
+          "same_level": 96,
+          "static_correct": 9,
+          "replay_correct": 9,
+          "combined_correct": 32,
+          "effect_nonstatic": 25,
+          "effect_nonstatic_correct": 23,
+          "delta_correct": 23
+        },
+        "preregistered_gate_result": "REJECT_POLICY_INTEGRATION",
+        "failed_gates": [
+          "positive_games 1 < required 3",
+          "effect_forecasts 25 < required 30",
+          "effect_games 1 < required 3",
+          "progress_events 0 < required 3"
+        ],
+        "interpretation": "Positive aggregate +23 is entirely concentrated in re86, with no gain in eight other public games and no level progress. This is second distinct public-trace concentration (prior sp80 +54, dc22 -2). It does not demonstrate cross-game causal transfer, policy value or hidden Kaggle performance."
+      }
     }
   }
 }
