@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T02:14:15Z",
+  "updated_at": "2026-10-27T03:06:52Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,17 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "test_border_alias_predictive_causal_relevance",
-    "goal": "Pre-register a matched public-trace predictive control: test whether edge-only alias observations improve next-step scene/progress prediction beyond static/temporal baselines within game and level, without policy integration or outcome leakage.",
+    "id": "edge_signal_strong_out_of_sample_falsification",
+    "goal": "Only if justified, freeze edge predictor and compare against stronger game-specific temporal/action controls on genuinely disjoint predeclared public episodes with adequate level-progress events; do not change action policy based on small Brier differences.",
     "constraints": [
-      "test-first",
-      "reversible",
       "offline",
       "public only",
-      "frozen 8px edge geometry",
-      "same action budget",
-      "no game-ID-specific heuristics",
-      "no policy integration without matched gain"
+      "no game-id heuristics",
+      "no leakage",
+      "pre-register before scoring",
+      "no policy integration without matched game performance",
+      "no spend"
     ]
   },
   "sync_protocol": [
@@ -386,6 +385,80 @@
         "Only 12 early actions per game; six selected games are public and score histories may already exist.",
         "Edge-only pixels may be gameplay relevant; no intervention on edge pixels.",
         "No change to agent policy, Kaggle submission, licensing or spend."
+      ]
+    },
+    "edge_alias_prequential_predictive_audit": {
+      "status": "REAL_PUBLIC_ARTIFACT_LOCAL_VERIFIED_CI_PENDING_SHADOW_ONLY",
+      "source_artifact": {
+        "workflow_run": 40437476131,
+        "artifact_id": 12704359774,
+        "zip_sha256": "f7cff1e26130dc5f2911dd2acdc2ce26492b51a3e10d1350c1ff0b741d916afb",
+        "zip_crc": "PASS"
+      },
+      "paths": [
+        "competitions/arc-agi-3/experiments/edge_predictive_audit.py",
+        "competitions/arc-agi-3/tests/test_edge_predictive_audit.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "method": "Within each game and level, prequentially predict next transition binary object-scene change and level advance from previous edge-only alias flag using Laplace-smoothed prior labeled pairs. Compare on exactly same pairs against marginal, temporal-persistence and static controls with Brier loss. Reset on game/level boundaries; no current-outcome leakage; 8px geometry frozen; not causal identification.",
+      "test_first": "Local missing-module import failed; after implementation 10/10 synthetic contract tests PASS. One implementation defect in max_records guard detected by RED test and fixed before commit.",
+      "diagnostic_2_public_games": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "trace_records": 24,
+        "evaluated_pairs": 21,
+        "prior_edge_alias_pairs": 8,
+        "scene_change_events": 14,
+        "level_advance_events": 1,
+        "scene_brier": {
+          "edge": 0.2717814250920827,
+          "marginal": 0.2711469417303266,
+          "temporal": 0.2857142857142857,
+          "static": 0.6666666666666666
+        },
+        "progress_brier": {
+          "edge": 0.10255507714549664,
+          "marginal": 0.10544862299358797,
+          "temporal": 0.047619047619047616,
+          "static": 0.047619047619047616
+        }
+      },
+      "disjoint_6_public_games": {
+        "games": [
+          "cd82",
+          "sc25",
+          "lf52",
+          "tn36",
+          "cn04",
+          "ka59"
+        ],
+        "trace_records": 72,
+        "evaluated_pairs": 66,
+        "prior_edge_alias_pairs": 19,
+        "scene_change_events": 39,
+        "level_advance_events": 0,
+        "scene_brier": {
+          "edge": 0.1860507546960961,
+          "marginal": 0.19359209333690347,
+          "temporal": 0.2878787878787879,
+          "static": 0.5909090909090909
+        },
+        "progress_brier": {
+          "edge": 0.05663425454264035,
+          "marginal": 0.05136151258371841,
+          "temporal": 0,
+          "static": 0
+        }
+      },
+      "interpretation": "Small scene-change Brier gain vs marginal on six public games (0.18605 vs 0.19359), but not replicated on prior two games (0.27178 vs 0.27115); no level progress events in six-game sample and edge predictor worse than static. Public, short, non-independent data; not causal edge relevance or policy gain. No integration.",
+      "limitations": [
+        "Only 12 actions per game; six games selected earlier for spatial test, not prospective prediction holdout.",
+        "Feature is a prior transition observation, not an intervention or causal model.",
+        "Small differences and no uncertainty quantification; model hyperparameters selected before reading this artifact, but hypothesis of edge relevance was motivated by previous public traces.",
+        "CI checks pending at this state write; no new official public score claimed.",
+        "Submission agent unchanged; no Kaggle submission, spending, licensing or prize claim."
       ]
     }
   }
