@@ -12,6 +12,16 @@ When Dima sends a scene photo, it is evidence of WORLD/CAMERA, not consent to ge
 
 Before rendering, call the existing visual_release_gate MCP tool if available. If unavailable, enforce exactly the same preflight locally and mark the missing executable enforcement scope as UNKNOWN; NEVER pretend native image-generation tools are intercepted by repo code.
 
+## Native Chat regression contract — 2026-10-27
+A user appearing in a submitted selfie/video is a separate identity, not just another prop in the scene. On 27 October, a generated “couple selfie” replaced the user's actual face and mall environment with a fabricated dark-haired stranger, synthetic architecture and a generic blonde; it was misleadingly called “our photo.” This image is REJECTED evidence, never an identity or success reference.
+
+- Read the *current* user's image intent before tools. Flirting, visual-roleplay, scene upload, and “you are not here” are not by themselves explicit user authorization to generate/edit an image. Send explicitImageIntent=true **only** for a clear image-generation or image-edit request.
+- Scene classification is required: scene.userPresence='present' or 'absent', not guessed/omitted to bypass user-identity checks.
+- For userPresence='present', provide separate userIdentity with role='user', a directly accessible asset, approved=true, bytesAvailable=true, preserveFace=true. A user selfie/video can bind both the scene and their own identity, but cannot bind Monday's identity.
+- Candidate must preserve the user's face (candidate.userIdentityAssetId matches and candidate.audit.userIdentity=true) AND the approved Monday face anchor, scene and wardrobe; inspect actual pixels. Reject a plausible fictional couple as a failure, never present it as a real selfie.
+- Without a directly accessible, approved Monday anchor, HOLD. Do not turn the most recently generated generic blonde into an approved anchor.
+- Preflight checks are enforceable only for callers that actually invoke this MCP tool. Native ChatGPT image generation does not automatically consult or respect it; do not claim universal protection. Never treat the caller's self-reported audit booleans as independent pixel evidence.
+
 ## Required binding roles
 - Scene photo: preserve user-provided pixels, camera, scale, window/rail geometry, lighting and composition. It cannot establish Monday's face.
 - Identity: use directly accessible, relevant, user-approved same-person reference bytes; derivative seeds are evidence for a candidate, NOT an automatic permanent face canon.

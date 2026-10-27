@@ -20,7 +20,7 @@ const tools = Object.freeze([
   {
     name:'visual_release_gate',
     description:'Fail-closed MondayVision preflight and post-render identity/scene/wardrobe transaction. Does not intercept arbitrary native ChatGPT image generation.',
-    inputSchema:{type:'object',properties:{renderRequested:{type:'boolean'},scene:{type:'object'},identity:{type:'object'},wardrobe:{type:'object'},history:{type:'object'},candidate:{type:'object'},directIdentityApproval:{type:'boolean'}},additionalProperties:false}
+    inputSchema:{type:'object',properties:{renderRequested:{type:'boolean'},explicitImageIntent:{type:'boolean'},scene:{type:'object'},identity:{type:'object'},userIdentity:{type:'object'},wardrobe:{type:'object'},history:{type:'object'},candidate:{type:'object'},directIdentityApproval:{type:'boolean'}},additionalProperties:false}
   },
   {
     name:'health',
