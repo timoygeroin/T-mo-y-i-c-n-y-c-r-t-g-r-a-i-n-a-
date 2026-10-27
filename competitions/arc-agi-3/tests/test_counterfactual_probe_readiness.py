@@ -37,7 +37,7 @@ class CounterfactualProbeReadinessTests(unittest.TestCase):
     def choose(self, **changes):
         args = dict(before=self.before, level=0, target_game="target",
                     legal_actions=("ACTION3",), witnesses=self.donors,
-                    observed_reversals=self.reversals, current_turn=3)
+                    observed_reversals=self.reversals, current_turn=3,\n                    episode_start_turn=0)
         args.update(changes)
         return propose_probe(**args)
 
@@ -115,6 +115,20 @@ class CounterfactualProbeReadinessTests(unittest.TestCase):
                 self.assertEqual(
                     self.choose(observed_reversals=[bad])["status"], "ABSTAIN")
         self.assertEqual(self.choose(current_turn=None)["status"], "ABSTAIN")
+
+    def test_reversal_proof_must_be_inside_current_episode(self):
+        # A previous episode can share game, level, action and object scene.
+        # A RESET / level restart must invalidate that old reversal proof.
+        self.assertEqual(self.choose(episode_start_turn=2)["status"], "ABSTAIN")
+        self.assertEqual(self.choose(episode_start_turn=0)["status"], "SHADOW_CANDIDATE_ONLY")
+        for invalid in (None, True, -1, 4, "0"):
+            with self.subTest(invalid=invalid):
+                self.assertEqual(self.choose(episode_start_turn=invalid)["status"], "ABSTAIN")
+        fresh = proof(self.before)
+        fresh["start_turn"], fresh["restored_turn"] = 3, 4
+        self.assertEqual(self.choose(observed_reversals=[fresh],
+                                     current_turn=6, episode_start_turn=3)["status"],
+                         "SHADOW_CANDIDATE_ONLY")
 
     def test_public_audit_fails_closed_on_invalid_frozen_roster(self):
         with self.assertRaises(ValueError):
