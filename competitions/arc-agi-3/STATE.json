@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T03:06:52Z",
+  "updated_at": "2026-10-27T03:15:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -388,7 +388,7 @@
       ]
     },
     "edge_alias_prequential_predictive_audit": {
-      "status": "REAL_PUBLIC_ARTIFACT_LOCAL_VERIFIED_CI_PENDING_SHADOW_ONLY",
+      "status": "REAL_PUBLIC_TRACE_CI_REPLICATED_SHADOW_ONLY_NO_ROBUST_GAIN",
       "source_artifact": {
         "workflow_run": 40437476131,
         "artifact_id": 12704359774,
@@ -457,9 +457,24 @@
         "Only 12 actions per game; six games selected earlier for spatial test, not prospective prediction holdout.",
         "Feature is a prior transition observation, not an intervention or causal model.",
         "Small differences and no uncertainty quantification; model hyperparameters selected before reading this artifact, but hypothesis of edge relevance was motivated by previous public traces.",
-        "CI checks pending at this state write; no new official public score claimed.",
         "Submission agent unchanged; no Kaggle submission, spending, licensing or prize claim."
-      ]
+      ],
+      "ci": {
+        "contract": {
+          "status": "SUCCESS",
+          "tests": "80/80",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40442957140"
+        },
+        "system_proof": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40442957122"
+        },
+        "public_smoke": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40442957100",
+          "metrics": "Exact Brier values in STATE reproduced in official GitHub Actions log; unchanged 25-game suite raw 0.5010037315187991."
+        }
+      }
     }
   }
 }
