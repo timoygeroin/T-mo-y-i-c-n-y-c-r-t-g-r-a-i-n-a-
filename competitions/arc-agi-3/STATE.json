@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T00:04:00Z",
+  "updated_at": "2026-10-27T00:13:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,8 +69,8 @@
     }
   ],
   "next_experiment": {
-    "id": "readback_scene_alias_public_metrics",
-    "goal": "Read CI scene-alias metrics on real public observations; decide whether abstraction repair is justified; preserve held-out gate before policy A/B.",
+    "id": "localize_pixel_scene_alias_regions",
+    "goal": "Separate HUD/animation-only differences from gameplay-relevant pixels with a preregistered spatial mask and same-budget held-out public trace, before changing causal models or policy.",
     "constraints": [
       "test-first",
       "reversible",
@@ -174,7 +174,7 @@
       ]
     },
     "scene_alias_observation_audit": {
-      "status": "IMPLEMENTED_LOCAL_TESTED_CI_PENDING",
+      "status": "REAL_PUBLIC_TRACE_OBSERVATION_ALIAS_VERIFIED",
       "purpose": "Measure whether raw public observation changes are invisible to the current object-scene abstraction, and whether same-scene/action contexts have divergent observed outcomes.",
       "paths": [
         "competitions/arc-agi-3/experiments/scene_alias_audit.py",
@@ -183,16 +183,48 @@
         ".github/workflows/arc-agent-game-smoke.yml"
       ],
       "evidence": {
-        "test_first": "Local import failed before implementation.",
-        "local_contract_tests": "8/8 PASS (Python 3.13)"
+        "test_first": "Local import failed before implementation; 8/8 new tests passed after implementation.",
+        "local_contract_tests": "8/8 PASS (Python 3.13)",
+        "github_contract": "SUCCESS 56/56",
+        "github_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40424759709",
+        "github_system_proof": "SUCCESS",
+        "github_system_proof_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40424759791",
+        "github_public_smoke": "SUCCESS",
+        "github_public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40424759798",
+        "public_trace": {
+          "games": [
+            "ls20",
+            "vc33"
+          ],
+          "records": 24,
+          "same_level_records": 23,
+          "pixel_changed_scene_static": 8,
+          "scene_alias_groups": 4,
+          "same_scene_action_conflicts": 0,
+          "scene_changed_pixel_static": 0
+        },
+        "causal_shadow_unchanged": {
+          "eligible_predictions": 11,
+          "exact_correct": 1,
+          "static_correct": 1,
+          "non_static_top_predictions": 0
+        },
+        "official_public_suite_unchanged": {
+          "games": 25,
+          "action_cap_per_game": 120,
+          "first_levels_completed": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
       },
       "effect_on_competition_agent": "NONE_SHADOW_ONLY",
-      "interpretation": "Counts visual representation collisions, not hidden state, stochasticity, causal improvement, or Kaggle performance.",
+      "interpretation": "In 8/23 same-level public transitions, visible pixels changed while the six-field object scene did not. Four per-episode/per-level object-scene keys mapped to multiple visible frame hashes. This falsifies full observation sufficiency of the current descriptor on this limited trace; it does not establish hidden-state aliasing, semantic game physics loss, or improved action selection. HUD/animation remain possible causes.",
       "limitations": [
-        "CI and actual public trace results pending",
-        "Visible frame hashes are not hidden environment state",
-        "No policy integration"
-      ]
+        "Only two public games and 24 transitions; not held-out.",
+        "Pixel hashes represent visible frames, not latent environment state.",
+        "HUD, effects, animation, occlusion or discarded geometry may explain differences.",
+        "No policy integration, no Kaggle submission or hidden score."
+      ],
+      "implementation_commit": "f1639bc3ead6138d1648059fd5666196b1de709f"
     }
   }
 }
