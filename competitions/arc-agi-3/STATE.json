@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T20:24:07Z",
+  "updated_at": "2026-10-27T21:16:57.949Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,13 +69,12 @@
     }
   ],
   "next_experiment": {
-    "id": "independent_pre_action_world_evidence_gate",
-    "goal": "Stop projecting zero-supported PUBLIC donor keys. Pre-register a new disjoint evidence/intervention protocol that distinguishes H0 static, H1 absolute movement, H2 relational toward/away anchor using observable BEFORE-action states, with two independent donor games and matched counterfactual forecasts. Do not claim a gain from current reused PUBLIC traces.",
+    "id": "independent_prospective_pre_action_evidence",
+    "goal": "Collect genuinely new, disjoint, pre-registered observable intervention evidence in a controlled PUBLIC environment with explicit H0/H1/H2 counterfactual predictions and matched control; do not reuse current 857 transitions as independent confirmation. First verify safe reversibility and legal action interface; no policy promotion before independent gain.",
     "constraints": [
       "one existing PR and canonical C*",
-      "no target outcome leakage or game-ID heuristics",
-      "test-first and frozen controls",
-      "no policy promotion without held-out gain",
+      "no game-ID heuristics or target-outcome leakage",
+      "test-first, bounded actions, frozen controls, rollback on regression",
       "no Kaggle submission/spend/terms/tokens"
     ]
   },
@@ -1805,6 +1804,54 @@
         "Ambiguous movers and invalid geometry abstain",
         "Donor games may be globally later: not global prequential or hidden holdout",
         "Agent/policy unchanged; no Kaggle submission, money, tokens, terms, license/publication, prize or income claim"
+      ]
+    },
+    "pre_action_three_world_probe_readiness": {
+      "status": "VERIFIED_NEGATIVE_READINESS_GATE_SHADOW_ONLY",
+      "protocol": "arc-agi3.pre-action-three-world-probe-readiness-v1",
+      "hypotheses": [
+        "H0 static scene",
+        "H1 absolute single-object displacement",
+        "H2 nearest-anchor toward/away displacement"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py",
+        "competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "method": "Read-only pre-action gate: H1 and H2 each require >=2 distinct OTHER donor games with unanimous nonstatic effect and static/conflict veto; all three forecasts must be pairwise distinct. Exact legal action, ACTION6 coordinates, unambiguous bounded mover, and a PRIOR same-target episode A->B->A object-scene reversal are required. Never execute candidate actions; object-scene reversal is not proof of latent-state safety.",
+      "test_first": {
+        "red_commit": "dff40799c3abbff451ccaaf11a29815dcd959bb7",
+        "red_contract_run": 40584540784,
+        "red_reason": "expected ModuleNotFoundError",
+        "implementation_commit": "8dfd0255e300c30c3baebab3bcc6b8b276d06c4d",
+        "workflow_commit": "0d3d39cb8a9948237726b889571073ebe46bccb1",
+        "green_contract": "252/252 PASS",
+        "green_contract_run": 40584800931,
+        "system_proof_run": 40584800706,
+        "unchanged_official_public_smoke_run": 40584800710,
+        "frozen_public_replication_run": 40584801090,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "observed_A_B_A_object_scene_reversals": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probe_candidates": 0,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "artifact_id": 12772126040,
+        "artifact_zip_sha256": "a10d73c11a9063a01e1eff352b8e4523dbbfcffcd6a9195b605fbe956846ae48"
+      },
+      "interpretation": "Nine A->B->A object-scene reversals were observed prequentially, but zero independent-donor-supported three-world forecast disagreements were available. This is negative evidence for probe readiness on reused PUBLIC traces; no new independent causal evidence, no agent gain and no intervention. Donor games may be globally later.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "constraints": [
+        "No target outcome used before its action is evaluated",
+        "Two independent OTHER games per nonstatic hypothesis; conflicts/static veto",
+        "Observed object-scene reversal does not guarantee true safe reversibility",
+        "PUBLIC donor chronology post-hoc; no hidden holdout",
+        "No Kaggle submission, money, tokens, terms, license/publication decision, score, prize or income claim"
       ]
     }
   }
