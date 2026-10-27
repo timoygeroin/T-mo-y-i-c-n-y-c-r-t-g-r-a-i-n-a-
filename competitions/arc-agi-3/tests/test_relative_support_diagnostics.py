@@ -57,7 +57,7 @@ class RelativeSupportDiagnosticTests(unittest.TestCase):
         self.assertEqual(report["per_game"][FROZEN_GAMES[2]]["strict_target_key_overlap"], 0)
 
     def test_ambiguous_target_role_blocks_matching_not_donor_learning(self):
-        report = diagnose_relative_support(fixture(duplicate=True))
+        report = diagnose_relative_support(fixture(duplicate=True, target_delta=1))
         self.assertGreater(report["total"]["role_rejections"].get("area_rank_ambiguous", 0), 0)
         self.assertEqual(report["support"]["multi_donor_movement_keys"], 1)
         self.assertEqual(report["per_game"][FROZEN_GAMES[2]]["strict_target_key_overlap"], 0)
