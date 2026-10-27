@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T21:16:57.949Z",
+  "updated_at": "2026-10-27T22:09:32Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -1852,6 +1852,43 @@
         "Observed object-scene reversal does not guarantee true safe reversibility",
         "PUBLIC donor chronology post-hoc; no hidden holdout",
         "No Kaggle submission, money, tokens, terms, license/publication decision, score, prize or income claim"
+      ]
+    },
+    "reversal_chronology_gate": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.reversal-proof-chronology-v1",
+      "purpose": "Prevent future or noncontiguous A->B->A object-scene reversal evidence from authorizing a counterfactual shadow candidate.",
+      "paths": [
+        "competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py",
+        "competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py"
+      ],
+      "behavior": "Every proof must carry integer start_turn/restored_turn, with 0 <= start_turn, restored_turn == start_turn + 1 and restored_turn < current_turn. Missing, malformed, future or nonadjacent proof abstains. Current-turn outcome remains unavailable until after scoring. RESET/level/discontinuity continue to clear episode history.",
+      "test_first": {
+        "red_commit": "71d6b2c3688e736c0b1ac2c9d43d566dd91adc7e",
+        "red_contract_run": 40592052848,
+        "red_result": "EXPECTED_FAILURE; new test call requires missing current_turn parameter",
+        "green_commit": "52e49c58b1f17515744f74f889b142604ceb8a08",
+        "green_contract_run": 40592138219,
+        "green_tests": "254/254 PASS",
+        "system_proof_run": 40592138337,
+        "unchanged_official_public_smoke_run": 40592138146,
+        "frozen_public_replication_run": 40592138255,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "observed_reversal_proofs": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probe_candidates": 0,
+        "comparison": "UNCHANGED_FROM_PRIOR_CHECKPOINT"
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "A real chronological lookahead vulnerability in the shadow probe API is closed by a tested fail-closed pre-action proof contract. No new independent causal evidence, supported probe, score gain, or policy promotion.",
+      "constraints": [
+        "No new game action or policy import",
+        "No hidden Kaggle submission, spend, tokens, terms, license/publication decision, prize or income claim"
       ]
     }
   }
