@@ -8,6 +8,7 @@ Run from the repo root using the official starter's Python environment:
 from __future__ import annotations
 
 from collections import Counter
+from hashlib import sha256
 from pathlib import Path
 import json
 import os
@@ -32,6 +33,12 @@ def final_grid(observation):
     if not frames:
         return []
     return frames[-1]
+
+
+def frame_sha256(grid):
+    """Stable digest of the visible public observation, not hidden game state."""
+    normalized = [[int(pixel) for pixel in row] for row in grid]
+    return sha256(json.dumps(normalized, separators=(',', ':')).encode('utf-8')).hexdigest()
 
 
 def frame_text(grid):
@@ -127,6 +134,9 @@ def main():
                 "before_scene": scene_objects(before),
                 "after_scene": scene_objects(after),
                 "legal_actions": legal_names(observation.available_actions),
+                "before_frame_sha256": frame_sha256(before),
+                "after_frame_sha256": frame_sha256(after),
+                "pixel_changes": count,
             })
             print(
                 "TRANSITION", game_id, turn, action.name,
