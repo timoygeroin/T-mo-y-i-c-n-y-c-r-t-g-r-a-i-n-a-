@@ -68,6 +68,11 @@ jobs:
           set -o pipefail
           python competitions/arc-agi-3/experiments/edge_predictive_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-edge-predictive-diagnostic.json
           python competitions/arc-agi-3/experiments/edge_predictive_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-edge-predictive-disjoint.json
+      - name: Action-conditioned counterfactual edge control (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/action_conditioned_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-action-control-diagnostic.json
+          python competitions/arc-agi-3/experiments/action_conditioned_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-action-control-disjoint.json
       - name: All-public-game benchmark (120 actions per game)
         working-directory: arc-starter
         run: |
@@ -98,6 +103,8 @@ jobs:
             arc-agi3-disjoint-scene-alias-metrics.json
             arc-agi3-edge-predictive-diagnostic.json
             arc-agi3-edge-predictive-disjoint.json
+            arc-agi3-action-control-diagnostic.json
+            arc-agi3-action-control-disjoint.json
             arc-agi3-public-game-extended.log
             arc-agi3-public-games.log
             arc-agi3-public-suite.log
