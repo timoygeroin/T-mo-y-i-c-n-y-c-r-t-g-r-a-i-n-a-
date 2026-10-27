@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T03:15:00Z",
+  "updated_at": "2026-10-27T04:09:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,15 @@
     }
   ],
   "next_experiment": {
-    "id": "edge_signal_strong_out_of_sample_falsification",
-    "goal": "Only if justified, freeze edge predictor and compare against stronger game-specific temporal/action controls on genuinely disjoint predeclared public episodes with adequate level-progress events; do not change action policy based on small Brier differences.",
+    "id": "predeclare_prospective_public_episode_action_causal_controls",
+    "goal": "Pre-register a different public-game sample and sufficient action horizon before observing traces, then test concrete action-conditioned counterfactual predictions with level-progress events and stronger matched controls. Do not promote edge features without replicated improvement.",
     "constraints": [
+      "test-first",
+      "reversible",
       "offline",
-      "public only",
-      "no game-id heuristics",
+      "no game-id-specific heuristics",
       "no leakage",
-      "pre-register before scoring",
-      "no policy integration without matched game performance",
+      "no policy integration without matched gameplay improvement",
       "no spend"
     ]
   },
@@ -475,6 +475,109 @@
           "metrics": "Exact Brier values in STATE reproduced in official GitHub Actions log; unchanged 25-game suite raw 0.5010037315187991."
         }
       }
+    },
+    "action_conditioned_edge_counterfactual_control": {
+      "status": "REAL_PUBLIC_CI_VERIFIED_SHADOW_ONLY_NO_REPLICATED_INCREMENTAL_GAIN",
+      "implementation_commits": [
+        "67384e2dbb2c843f6055eafdaa51132e26a09d84",
+        "76cf833bc6f2b3d7a9a01dc6355beac939f8283f",
+        "a26686ae2d2e763c64f895ff4710ecdb4144a710"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/action_conditioned_audit.py",
+        "competitions/arc-agi-3/tests/test_action_conditioned_audit.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "method": "Same previously observed public traces, same prequential pairs, Laplace-smoothed within-game/level action-only vs joint(action, prior edge-only alias), with edge-only/marginal/temporal/static matched controls. ACTION6 exact coordinates are distinct action identities. Only past labels used; unknown joint contexts fall back to action-only. Episode-wise Brier deltas and support counts are emitted.",
+      "test_first": "Local missing-module import failed before implementation. Local 13/13 synthetic tests passed after implementation, including original edge model parity and no future leakage. GitHub Actions 93/93 tests passed.",
+      "diagnostic_two_public_games": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "evaluated_pairs": 21,
+        "episodes": 3,
+        "seen_action_pairs": 11,
+        "seen_joint_pairs": 7,
+        "scene_change_events": 14,
+        "level_advance_events": 1,
+        "scene_brier": {
+          "action_edge": 0.24908301239366998,
+          "action_only": 0.24445338276404036,
+          "edge_only": 0.2717814250920827,
+          "marginal": 0.2711469417303266,
+          "temporal": 0.2857142857142857,
+          "static": 0.6666666666666666
+        },
+        "progress_brier": {
+          "action_edge": 0.11414237873279824,
+          "action_only": 0.11744925703967654,
+          "edge_only": 0.10255507714549664,
+          "marginal": 0.10544862299358797,
+          "temporal": 0.047619047619047616,
+          "static": 0.047619047619047616
+        }
+      },
+      "disjoint_six_public_games": {
+        "games": [
+          "cd82",
+          "sc25",
+          "lf52",
+          "tn36",
+          "cn04",
+          "ka59"
+        ],
+        "evaluated_pairs": 66,
+        "episodes": 6,
+        "seen_action_pairs": 28,
+        "seen_joint_pairs": 25,
+        "scene_change_events": 39,
+        "level_advance_events": 0,
+        "scene_brier": {
+          "action_edge": 0.1935089864328271,
+          "action_only": 0.19394669687053756,
+          "edge_only": 0.1860507546960961,
+          "marginal": 0.19359209333690347,
+          "temporal": 0.2878787878787879,
+          "static": 0.5909090909090909
+        },
+        "progress_brier": {
+          "action_edge": 0.07206448052247771,
+          "action_only": 0.07098703944503662,
+          "edge_only": 0.05663425454264035,
+          "marginal": 0.05136151258371841,
+          "temporal": 0,
+          "static": 0
+        }
+      },
+      "interpretation": "Incremental edge-after-action scene Brier gain is tiny in six public games (0.193509 vs action-only 0.193947), but regresses in earlier two (0.249083 vs 0.244453). Stronger action-only control itself improves two-game scene Brier vs marginal but not six-game marginal. Joint contexts have prior support in only 25/66 and 7/21 evaluated pairs; sparse. Zero level progress events in six-game sample. This does NOT justify edge-based action selection or causal claims.",
+      "ci": {
+        "contract": {
+          "status": "SUCCESS",
+          "tests": "93/93",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40447929824"
+        },
+        "system_proof": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40447929804"
+        },
+        "official_public_smoke": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40447929823"
+        }
+      },
+      "unchanged_submission_agent": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "limitations": [
+        "These are previously studied PUBLIC traces, not prospective or hidden holdout.",
+        "No policy integration, no causal edge intervention or verified generalization.",
+        "Short within-game episodes and sparse exact action/edge support.",
+        "No Kaggle submission, spending, prize, legal or licensing action."
+      ]
     }
   }
 }
