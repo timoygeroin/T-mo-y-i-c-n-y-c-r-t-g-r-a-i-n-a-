@@ -29,6 +29,7 @@ from object_model import extract_objects
 from spatial_delta_audit import pixel_delta_regions
 from disjoint_public_sample import select_disjoint_games
 from prospective_public_sample import select_prospective_games, HORIZON as PROSPECTIVE_HORIZON
+from remaining_public_sample import select_remaining_games, HORIZON as REMAINING_HORIZON
 
 
 def final_grid(observation):
@@ -97,12 +98,14 @@ def main():
     arcade = Arcade(operation_mode=OperationMode.NORMAL)
     trace_rows = []
     sample = os.environ.get("MONDAYID_ARC_PUBLIC_SAMPLE", "diagnostic")
-    if sample not in ("diagnostic", "disjoint", "prospective"):
+    if sample not in ("diagnostic", "disjoint", "prospective", "remaining"):
         raise ValueError("invalid public diagnostic sample")
     games = (("ls20", "vc33") if sample == "diagnostic" else
              select_disjoint_games() if sample == "disjoint" else
-             select_prospective_games())
-    turn_limit = PROSPECTIVE_HORIZON if sample == "prospective" else 12
+             select_prospective_games() if sample == "prospective" else
+             select_remaining_games())
+    turn_limit = (PROSPECTIVE_HORIZON if sample == "prospective" else
+                  REMAINING_HORIZON if sample == "remaining" else 12)
     print("PUBLIC_SAMPLE", sample, ",".join(games), "HORIZON", turn_limit, flush=True)
     for game_id in games:
         print("\n===== PUBLIC GAME", game_id, "=====", flush=True)
@@ -167,6 +170,7 @@ def main():
         "diagnostic": "arc-agi3-public-transition-traces.jsonl",
         "disjoint": "arc-agi3-disjoint-public-transition-traces.jsonl",
         "prospective": "arc-agi3-prospective-public-transition-traces.jsonl",
+        "remaining": "arc-agi3-remaining-public-transition-traces.jsonl",
     }
     trace_path = ROOT / trace_names[sample]
     trace_path.write_text("".join(json.dumps(row, sort_keys=True) + "\n"
