@@ -5,7 +5,8 @@ toward/away from nearest anchor. H1/H2 must each have unanimous nonstatic
 support from >=2 distinct OTHER donor games. A candidate action is returned
 only if all three BEFORE-action forecasts differ and a matching A->B->A
 object-scene reversal was already witnessed in the target episode, with
-adjacent start/restoration turns strictly preceding the proposed action.
+adjacent start/restoration turns strictly preceding the proposed action
+AND inside the caller-declared current episode (after RESET/level restart).
 
 This is NOT proof of safe reversibility, a live probe, an agent policy, a
 hidden holdout or a Kaggle action. Other PUBLIC donor games may be globally
@@ -35,14 +36,17 @@ def _worlds(before, level, action, absolute, relative):
     return dict(H0_static=before, H1_absolute=h1, H2_anchor_relative=h2)
 
 
-def _matching_reversal(proofs, target, level, action, before, current_turn):
+def _matching_reversal(proofs, target, level, action, before, current_turn,
+                       episode_start_turn):
     """Require a prior same-game, same-level, exact-action A->B->A witness."""
-    if type(current_turn) is not int or current_turn < 2:
+    if (type(current_turn) is not int or current_turn < 2 or
+            type(episode_start_turn) is not int or
+            episode_start_turn < 0 or episode_start_turn > current_turn):
         return False
     for p in proofs:
         start, restored = p.get("start_turn"), p.get("restored_turn")
         if (type(start) is not int or type(restored) is not int or
-                start < 0 or restored != start + 1 or
+                start < episode_start_turn or restored != start + 1 or
                 restored >= current_turn):
             continue
         if (p.get("game") == target and p.get("level") == level and
@@ -55,9 +59,11 @@ def _matching_reversal(proofs, target, level, action, before, current_turn):
 
 
 def propose_probe(before, level, target_game, legal_actions, witnesses,
-                  observed_reversals, current_turn):
+                  observed_reversals, current_turn, episode_start_turn):
     """Choose a deterministic SHADOW candidate; never execute any action.
 
+    The caller must supply the current episode start turn; old-episode
+    proofs are invalid even if game, level and scene match.
     A witnessed object-scene reversal is only a necessary *observational*
     gate; latent state may differ even if the visible object scene returns.
     """
@@ -68,7 +74,8 @@ def propose_probe(before, level, target_game, legal_actions, witnesses,
         if not isinstance(action, str) or action == "RESET":
             continue
         if not _matching_reversal(observed_reversals, target_game, level,
-                                  action, before, current_turn):
+                                  action, before, current_turn,
+                                  episode_start_turn):
             continue
         forecasts = _worlds(before, level, action, absolute, relative)
         if forecasts is not None:
@@ -98,6 +105,7 @@ def audit_frozen_public(records):
         absolute = donor_rules(witnesses, game, "absolute")
         relative = donor_rules(witnesses, game, "relative")
         observed, prior = [], None
+        episode_start_turn = 0
         last_level, last_turn = None, -1
         stats = dict(same_level=0, observed_reversal_proofs=0,
                      supported_three_world_disagreements=0,
@@ -106,9 +114,11 @@ def audit_frozen_public(records):
             level, turn, action = row["level_before"], row["turn"], row["action_key"]
             if level != last_level or turn != last_turn + 1:
                 observed, prior = [], None
+                episode_start_turn = turn
             last_level, last_turn = level, turn
             if action == "RESET" or row["level_after"] != level:
                 observed, prior = [], None
+                episode_start_turn = turn + 1
                 if row["level_after"] != level:
                     last_level = row["level_after"]
                 continue
@@ -118,7 +128,8 @@ def audit_frozen_public(records):
             stats["supported_three_world_disagreements"] += int(
                 _worlds(before, level, action, absolute, relative) is not None)
             decision = propose_probe(before, level, game, (action,), witnesses,
-                                     observed, current_turn=turn)
+                                     observed, current_turn=turn,
+                                     episode_start_turn=episode_start_turn)
             stats["eligible_shadow_candidates"] += int(
                 decision["status"] == "SHADOW_CANDIDATE_ONLY")
             # Learn the current outcome only AFTER scoring this opportunity.
