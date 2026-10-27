@@ -28,6 +28,7 @@ from agent.my_agent import MyAgent
 from object_model import extract_objects
 from spatial_delta_audit import pixel_delta_regions
 from disjoint_public_sample import select_disjoint_games
+from prospective_public_sample import select_prospective_games, HORIZON as PROSPECTIVE_HORIZON
 
 
 def final_grid(observation):
@@ -96,10 +97,13 @@ def main():
     arcade = Arcade(operation_mode=OperationMode.NORMAL)
     trace_rows = []
     sample = os.environ.get("MONDAYID_ARC_PUBLIC_SAMPLE", "diagnostic")
-    if sample not in ("diagnostic", "disjoint"):
+    if sample not in ("diagnostic", "disjoint", "prospective"):
         raise ValueError("invalid public diagnostic sample")
-    games = ("ls20", "vc33") if sample == "diagnostic" else select_disjoint_games()
-    print("PUBLIC_SAMPLE", sample, ",".join(games), flush=True)
+    games = (("ls20", "vc33") if sample == "diagnostic" else
+             select_disjoint_games() if sample == "disjoint" else
+             select_prospective_games())
+    turn_limit = PROSPECTIVE_HORIZON if sample == "prospective" else 12
+    print("PUBLIC_SAMPLE", sample, ",".join(games), "HORIZON", turn_limit, flush=True)
     for game_id in games:
         print("\n===== PUBLIC GAME", game_id, "=====", flush=True)
         env = arcade.make(game_id)
@@ -111,10 +115,10 @@ def main():
             ROOT_URL="http://localhost", record=False, arc_env=env,
             tags=["public-diagnostic"],
         )
-        for turn in range(12):
+        for turn in range(turn_limit):
             observation = agent._convert_raw_frame_data(env.observation_space)
             before = final_grid(observation)
-            if turn in (0, 3, 11):
+            if turn in (0, 3, turn_limit - 1):
                 palette = Counter(int(v) for row in before for v in row)
                 print(
                     "FRAME", game_id, turn, "state", observation.state,
@@ -159,8 +163,12 @@ def main():
             agent.append_frame(after_obs)
             if agent.is_done(agent.frames, after_obs):
                 break
-    trace_path = ROOT / ("arc-agi3-public-transition-traces.jsonl" if sample == "diagnostic"
-                         else "arc-agi3-disjoint-public-transition-traces.jsonl")
+    trace_names = {
+        "diagnostic": "arc-agi3-public-transition-traces.jsonl",
+        "disjoint": "arc-agi3-disjoint-public-transition-traces.jsonl",
+        "prospective": "arc-agi3-prospective-public-transition-traces.jsonl",
+    }
+    trace_path = ROOT / trace_names[sample]
     trace_path.write_text("".join(json.dumps(row, sort_keys=True) + "\n"
                                   for row in trace_rows), encoding="utf-8")
     print("PUBLIC_TRACE_RECORDS", len(trace_rows), trace_path.name, flush=True)
