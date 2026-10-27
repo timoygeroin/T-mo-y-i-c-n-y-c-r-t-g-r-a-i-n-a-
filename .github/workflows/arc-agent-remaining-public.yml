@@ -8,7 +8,9 @@ on:
       - 'competitions/arc-agi-3/experiments/relative_support_diagnostics.py'
       - 'competitions/arc-agi-3/experiments/relative_nonunit_transfer_audit.py'
       - 'competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py'
+      - 'competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py'
       - 'competitions/arc-agi-3/tests/test_nonunit_veto_diagnostics.py'
+      - 'competitions/arc-agi-3/tests/test_relative_area_rank_transfer_audit.py'
       - 'competitions/arc-agi-3/tests/test_relative_support_diagnostics.py'
       - 'competitions/arc-agi-3/tests/test_relative_nonunit_transfer_audit.py'
       - 'competitions/arc-agi-3/tests/test_relative_geometry_transfer_audit.py'
@@ -67,6 +69,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-nonunit-veto.json
+      - name: Falsify area-rank-only relaxed donor hypothesis (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-area-rank.json
       - name: Preserve public-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,5 +87,6 @@ jobs:
             arc-agi3-remaining-public-relative-support.json
             arc-agi3-remaining-public-relative-nonunit.json
             arc-agi3-remaining-public-nonunit-veto.json
+            arc-agi3-remaining-public-area-rank.json
             arc-agi3-remaining-public-trace.sha256
           if-no-files-found: ignore
