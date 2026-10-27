@@ -25,7 +25,7 @@ def proof(before, action="ACTION3", game="target", level=0):
         (1, 1, 12, 10, 12, 10) if o[0] == 1 else o for o in before))
     return dict(game=game, level=level, action=action,
                 before=before, middle=middle, restored=before,
-                inverse_action="ACTION4")
+                inverse_action="ACTION4", start_turn=0, restored_turn=1)
 
 
 class CounterfactualProbeReadinessTests(unittest.TestCase):
@@ -37,7 +37,7 @@ class CounterfactualProbeReadinessTests(unittest.TestCase):
     def choose(self, **changes):
         args = dict(before=self.before, level=0, target_game="target",
                     legal_actions=("ACTION3",), witnesses=self.donors,
-                    observed_reversals=self.reversals)
+                    observed_reversals=self.reversals, current_turn=3)
         args.update(changes)
         return propose_probe(**args)
 
@@ -97,6 +97,24 @@ class CounterfactualProbeReadinessTests(unittest.TestCase):
         before = ((1, 1, 10, 10, 10, 10), (1, 1, 13, 10, 13, 10))
         self.assertEqual(self.choose(before=before,
                          observed_reversals=[proof(before)])["status"], "ABSTAIN")
+
+    def test_reversal_proof_cannot_come_from_the_future(self):
+        # An otherwise valid proof cannot be used at or before its restoration.
+        self.assertEqual(self.choose(current_turn=1)["status"], "ABSTAIN")
+        self.assertEqual(self.choose(current_turn=2)["status"], "SHADOW_CANDIDATE_ONLY")
+        future = proof(self.before)
+        future["start_turn"], future["restored_turn"] = 3, 4
+        self.assertEqual(self.choose(observed_reversals=[future])["status"], "ABSTAIN")
+
+    def test_reversal_proof_requires_adjacent_valid_integer_turns(self):
+        for start, restored in ((0, 2), (-1, 0), (1, 1),
+                                (True, 1), (0, "1")):
+            with self.subTest(start=start, restored=restored):
+                bad = proof(self.before)
+                bad["start_turn"], bad["restored_turn"] = start, restored
+                self.assertEqual(
+                    self.choose(observed_reversals=[bad])["status"], "ABSTAIN")
+        self.assertEqual(self.choose(current_turn=None)["status"], "ABSTAIN")
 
     def test_public_audit_fails_closed_on_invalid_frozen_roster(self):
         with self.assertRaises(ValueError):
