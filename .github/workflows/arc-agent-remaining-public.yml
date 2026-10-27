@@ -10,6 +10,8 @@ on:
       - 'competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py'
       - 'competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py'
       - 'competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py'
+      - 'competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py'
+      - 'competitions/arc-agi-3/tests/test_action_role_counterfactual_audit.py'
       - 'competitions/arc-agi-3/tests/test_unranked_donor_veto.py'
       - 'competitions/arc-agi-3/tests/test_nonunit_veto_diagnostics.py'
       - 'competitions/arc-agi-3/tests/test_relative_area_rank_transfer_audit.py'
@@ -79,6 +81,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-unranked-veto.json
+      - name: Test projected action-versus-role world hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-action-role-counterfactual.json
       - name: Preserve public-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -95,5 +101,6 @@ jobs:
             arc-agi3-remaining-public-nonunit-veto.json
             arc-agi3-remaining-public-area-rank.json
             arc-agi3-remaining-public-unranked-veto.json
+            arc-agi3-remaining-public-action-role-counterfactual.json
             arc-agi3-remaining-public-trace.sha256
           if-no-files-found: ignore
