@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T01:13:33.666Z",
+  "updated_at": "2026-10-27T02:14:15Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,16 +69,17 @@
     }
   ],
   "next_experiment": {
-    "id": "preregister_disjoint_public_spatial_trace",
-    "goal": "Test the same frozen 8px-edge/8x8-tile spatial alias hypothesis on a predeclared set of public games not used in the two-game detailed diagnostic; compare interior-only and edge-only alias transitions without relabeling edge as HUD. No policy integration before independent matched-budget gains.",
+    "id": "test_border_alias_predictive_causal_relevance",
+    "goal": "Pre-register a matched public-trace predictive control: test whether edge-only alias observations improve next-step scene/progress prediction beyond static/temporal baselines within game and level, without policy integration or outcome leakage.",
     "constraints": [
       "test-first",
       "reversible",
       "offline",
-      "no game-id-specific action heuristics",
-      "frozen spatial geometry",
       "public only",
-      "no policy integration without measured gain"
+      "frozen 8px edge geometry",
+      "same action budget",
+      "no game-ID-specific heuristics",
+      "no policy integration without matched gain"
     ]
   },
   "sync_protocol": [
@@ -286,6 +287,105 @@
         "Edge pixels can be gameplay relevant; interior pixels can be HUD.",
         "No latent-state observations or causal advantage.",
         "No policy integration, Kaggle submission, hidden score, or contest result."
+      ]
+    },
+    "disjoint_public_spatial_replication": {
+      "status": "REAL_PUBLIC_DISJOINT_SAMPLE_EDGE_ONLY_ALIAS_REPLICATED_SHADOW_ONLY",
+      "sample_precommitted_before_ci": true,
+      "sample_method": "SHA256('mondayid-arc3-spatial-v1:' + public_game_id) ascending, six lowest after excluding ls20/vc33; public roster from official 25-game list, not selected by score/pixels",
+      "sample_games": [
+        "cd82",
+        "sc25",
+        "lf52",
+        "tn36",
+        "cn04",
+        "ka59"
+      ],
+      "prior_diagnostic_games": [
+        "ls20",
+        "vc33"
+      ],
+      "sample_turns_per_game": 12,
+      "frozen_geometry": {
+        "frame_size": 64,
+        "edge_band_px": 8,
+        "tile_size_px": 8
+      },
+      "paths": [
+        "competitions/arc-agi-3/experiments/disjoint_public_sample.py",
+        "competitions/arc-agi-3/tests/test_disjoint_public_sample.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "evidence": {
+        "test_first": "Isolated local import failed before implementation; 5/5 sample contract tests passed after implementation.",
+        "github_contract": "SUCCESS 70/70",
+        "github_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40437161828",
+        "github_system_proof": "SUCCESS",
+        "github_system_proof_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40437161766",
+        "github_public_smoke": "SUCCESS",
+        "github_public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40437161924",
+        "disjoint_public_trace": {
+          "games": 6,
+          "records": 72,
+          "same_level_records": 72,
+          "pixel_changed_scene_static": 22,
+          "scene_alias_groups": 9,
+          "same_scene_action_conflicts": 0,
+          "alias_transitions": 22,
+          "alias_border_only": 22,
+          "alias_interior_only": 0,
+          "alias_mixed": 0,
+          "alias_border_changed_pixels": 25,
+          "alias_interior_changed_pixels": 0,
+          "top_alias_tiles": [
+            [
+              0,
+              0,
+              8
+            ],
+            [
+              6,
+              0,
+              6
+            ],
+            [
+              1,
+              0,
+              4
+            ],
+            [
+              7,
+              0,
+              4
+            ],
+            [
+              7,
+              7,
+              3
+            ]
+          ]
+        },
+        "original_two_game_trace_unchanged": {
+          "records": 24,
+          "alias_transitions": 8,
+          "alias_border_only": 8,
+          "alias_interior_only": 0
+        },
+        "unchanged_submission_agent_official_public_suite": {
+          "games": 25,
+          "action_cap_per_game": 120,
+          "first_levels_completed": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "In six disjoint public games, all 22 pixel-changed/object-scene-static transitions occurred exclusively in the frozen 8px edge band (25 changed pixels). This replicates the geometric localization across additional public observations, but does not show HUD semantics, causal irrelevance, predictive superiority or a hidden holdout gain.",
+      "limitations": [
+        "Disjoint public sample, not independent hidden holdout or score evidence.",
+        "Only 12 early actions per game; six selected games are public and score histories may already exist.",
+        "Edge-only pixels may be gameplay relevant; no intervention on edge pixels.",
+        "No change to agent policy, Kaggle submission, licensing or spend."
       ]
     }
   }
