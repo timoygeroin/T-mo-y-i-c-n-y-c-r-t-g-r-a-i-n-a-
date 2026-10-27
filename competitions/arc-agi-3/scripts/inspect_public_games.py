@@ -27,6 +27,7 @@ from arc_agi import Arcade, OperationMode
 from agent.my_agent import MyAgent
 from object_model import extract_objects
 from spatial_delta_audit import pixel_delta_regions
+from disjoint_public_sample import select_disjoint_games
 
 
 def final_grid(observation):
@@ -94,7 +95,12 @@ def action_key(action):
 def main():
     arcade = Arcade(operation_mode=OperationMode.NORMAL)
     trace_rows = []
-    for game_id in ("ls20", "vc33"):
+    sample = os.environ.get("MONDAYID_ARC_PUBLIC_SAMPLE", "diagnostic")
+    if sample not in ("diagnostic", "disjoint"):
+        raise ValueError("invalid public diagnostic sample")
+    games = ("ls20", "vc33") if sample == "diagnostic" else select_disjoint_games()
+    print("PUBLIC_SAMPLE", sample, ",".join(games), flush=True)
+    for game_id in games:
         print("\n===== PUBLIC GAME", game_id, "=====", flush=True)
         env = arcade.make(game_id)
         if env is None:
@@ -153,7 +159,8 @@ def main():
             agent.append_frame(after_obs)
             if agent.is_done(agent.frames, after_obs):
                 break
-    trace_path = ROOT / "arc-agi3-public-transition-traces.jsonl"
+    trace_path = ROOT / ("arc-agi3-public-transition-traces.jsonl" if sample == "diagnostic"
+                         else "arc-agi3-disjoint-public-transition-traces.jsonl")
     trace_path.write_text("".join(json.dumps(row, sort_keys=True) + "\n"
                                   for row in trace_rows), encoding="utf-8")
     print("PUBLIC_TRACE_RECORDS", len(trace_rows), trace_path.name, flush=True)
