@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T19:16:07Z",
+  "updated_at": "2026-10-27T20:24:07Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,13 +69,13 @@
     }
   ],
   "next_experiment": {
-    "id": "pre_action_world_factorization_discriminating_gate",
-    "goal": "Do not continue blindly splitting zero-support donor keys. Design test-first falsifiable world-state hypotheses that increase cross-game support using only observable BEFORE-action context, with independent donor games and matched frozen controls; require new disjoint public evidence or intervention before policy A/B.",
+    "id": "independent_pre_action_world_evidence_gate",
+    "goal": "Stop projecting zero-supported PUBLIC donor keys. Pre-register a new disjoint evidence/intervention protocol that distinguishes H0 static, H1 absolute movement, H2 relational toward/away anchor using observable BEFORE-action states, with two independent donor games and matched counterfactual forecasts. Do not claim a gain from current reused PUBLIC traces.",
     "constraints": [
       "one existing PR and canonical C*",
-      "no target outcome leakage",
-      "no game-ID heuristics",
-      "no automatic policy promotion",
+      "no target outcome leakage or game-ID heuristics",
+      "test-first and frozen controls",
+      "no policy promotion without held-out gain",
       "no Kaggle submission/spend/terms/tokens"
     ]
   },
@@ -1752,6 +1752,59 @@
         "Other donor games may be globally later; no randomized intervention",
         "History derived from prior completed transitions only; RESET/level/turn boundaries clear state",
         "Zero new gameplay/progress evidence; no Kaggle submission, spending, token request, terms, legal/license/publication decision, prize, novelty or income claim"
+      ]
+    },
+    "anchor_relative_world_factorization": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.anchor-relative-world-factorization-v1",
+      "hypotheses": [
+        "H0 local replay/effect/static",
+        "H1 absolute displacement under same pre-action nearest-anchor axis",
+        "H2 toward/away nearest anchor with signed axis and magnitude"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "test_first": {
+        "red_commit": "9cafc7faa6bc3929338ec0bb6084e019967c64f4",
+        "red_contract_run": 40576479795,
+        "red_reason": "expected missing module import",
+        "green_commit": "c3d08577523ec0fd22ebf37b79090eb45f238b99",
+        "green_tests": "241/241 PASS",
+        "green_contract_run": 40577227482,
+        "system_proof_run": 40577227462,
+        "unchanged_official_public_smoke_run": 40577227438,
+        "frozen_public_replication_run": 40577227741,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "static_correct": 330,
+        "local_baseline_correct": 362,
+        "absolute_correct": 362,
+        "relative_correct": 362,
+        "absolute_forecasts": 0,
+        "relative_forecasts": 0,
+        "independent_other_game_supported_rules_per_target": {
+          "absolute": 0,
+          "relative": 0
+        },
+        "level_advances": 0,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "artifact_id": 12767209016,
+        "artifact_zip_sha256": "ce2559cbb211055d3d2df889e134531c28dfa796771bfb0c0d5478d174e90abe"
+      },
+      "interpretation": "A new anchor-relative representation does not create two-independent-donor unanimous moving rules on this frozen PUBLIC sample. No counterfactual forecasts or gain. Synthetic tests verify positive ability and static/conflict/one-game vetoes. Negative evidence for these hypotheses on these data, not impossibility of general world factorization.",
+      "constraints": [
+        "No target outcome in donors",
+        "Exact ACTION6 coordinates retained",
+        "Ambiguous movers and invalid geometry abstain",
+        "Donor games may be globally later: not global prequential or hidden holdout",
+        "Agent/policy unchanged; no Kaggle submission, money, tokens, terms, license/publication, prize or income claim"
       ]
     }
   }
