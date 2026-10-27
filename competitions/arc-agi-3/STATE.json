@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T16:10:43Z",
+  "updated_at": "2026-10-27T17:15:20Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,16 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "projected_donor_consensus_failure_decomposition",
-    "goal": "Diagnose whether zero projected donor rules is caused by fewer than two independent donor games per projected key, static-effect veto, or contradictory nonstatic effects. Predeclare a read-only test-first partition of projected support with frozen public controls; do not relax policy or choose game-ID heuristics.",
+    "id": "conditional_nonstatic_effect_falsification",
+    "goal": "Compare explicit conditional world hypotheses on the same frozen public donor evidence: whether static/nonstatic conflicts reflect missing observable context (before-scene relation or action history) versus genuinely incompatible effects. Predeclare test-first shadow-only matched counterfactuals and reject any representation that cannot produce independent donor agreement without target leakage.",
     "constraints": [
       "test-first RED then GREEN",
       "single reversible diagnostic",
-      "frozen PUBLIC trace",
+      "frozen PUBLIC trace and unchanged controls",
       "independent donor-game accounting",
-      "static and contradictory effect veto",
+      "static/conflict veto retained unless justified by held-out evidence",
       "no automatic policy promotion",
-      "revert regressions and preserve negative evidence",
+      "revert regressions and record negative evidence",
       "no Kaggle submission or spend"
     ]
   },
@@ -1522,6 +1522,92 @@
         "ACTION6 coordinates deliberately remain exact; action ablation is only for non-click actions.",
         "Projection changes representation, not a proven causal invariant.",
         "No hidden holdout, Kaggle submission, money, token, terms or legal/publication decision."
+      ]
+    },
+    "projected_donor_consensus_diagnostic": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.projected-donor-consensus-decomposition-v1",
+      "test_first": {
+        "red_commit": "d317f93c99f5a4e74f18e1348bb400da10c4395d",
+        "red_run": 40548169265,
+        "red_reason": "expected ModuleNotFoundError",
+        "green_tests": "213/213",
+        "green_run": 40548473436
+      },
+      "implementation_commit": "e33930f64ea80ee2493492d08859a3d0237d0c4e",
+      "workflow_commit": "5bf95bb7d4a97b7ccfe2d026c9d853ae08857e63",
+      "ci": {
+        "contract": 40548473436,
+        "system_proof": 40548473147,
+        "official_public_smoke": 40548473127,
+        "frozen_nine_public_games": 40548473116,
+        "all": "SUCCESS"
+      },
+      "public_trace": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "target_key_exposure_note": "Counts below sum over held-out target games; they are not independent transitions or scored forecasts."
+      },
+      "projected_support_by_variant": {
+        "exact": {
+          "insufficient_donor_games": 7520,
+          "static_only": 721,
+          "contradictory_or_mixed": 35,
+          "unanimous_nonstatic": 0
+        },
+        "action": {
+          "insufficient_donor_games": 7204,
+          "static_only": 700,
+          "contradictory_or_mixed": 31,
+          "unanimous_nonstatic": 0
+        },
+        "role": {
+          "insufficient_donor_games": 1198,
+          "static_only": 314,
+          "contradictory_or_mixed": 32,
+          "unanimous_nonstatic": 0
+        },
+        "both": {
+          "insufficient_donor_games": 1194,
+          "static_only": 296,
+          "contradictory_or_mixed": 9,
+          "unanimous_nonstatic": 0
+        }
+      },
+      "target_overlap_by_variant": {
+        "exact": {
+          "insufficient_donor_games": 231,
+          "static_only": 6,
+          "contradictory_or_mixed": 3,
+          "unanimous_nonstatic": 0
+        },
+        "action": {
+          "insufficient_donor_games": 201,
+          "static_only": 16,
+          "contradictory_or_mixed": 12,
+          "unanimous_nonstatic": 0
+        },
+        "role": {
+          "insufficient_donor_games": 15,
+          "static_only": 93,
+          "contradictory_or_mixed": 13,
+          "unanimous_nonstatic": 0
+        },
+        "both": {
+          "insufficient_donor_games": 11,
+          "static_only": 88,
+          "contradictory_or_mixed": 7,
+          "unanimous_nonstatic": 0
+        }
+      },
+      "interpretation": "Across four projected hypotheses, no held-out target has a projected key with >=2 independent OTHER donor games and one unanimous nonstatic effect. Most exact/action key exposures have only one donor; relaxed role/both projections yield more static-only and conflicting evidence, not transferable nonstatic consensus. Sequential partition puts donor insufficiency before effect analysis. Post-hoc public attribution, not globally prequential or hidden holdout.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED_NO_VERIFIED_GAIN",
+      "limitations": [
+        "Public frozen sample only; donor evidence can be globally later",
+        "Key exposure counts are not independent game outcomes",
+        "No causal intervention, hidden evaluation, or score improvement"
       ]
     }
   }
