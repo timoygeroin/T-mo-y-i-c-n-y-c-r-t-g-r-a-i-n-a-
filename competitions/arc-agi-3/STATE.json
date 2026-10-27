@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T05:49:00Z",
+  "updated_at": "2026-10-27T06:14:45.198Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,17 +69,29 @@
     }
   ],
   "next_experiment": {
-    "id": "prequential_single_object_effect_models_with_matched_static_and_replay_controls",
-    "goal": "Test whether prior action-conditioned one-object translations can predict future object scenes on the SAME fixed public trace before outcome, against static and exact replay, with RESET/game/level boundaries; then require a new disjoint sample before any policy integration.",
+    "id": "freeze_remaining_nine_public_games_before_detailed_traces",
+    "goal": "Evaluate the unchanged prequential one-object model on nine public games not yet used for detailed diagnostics, with 96 actions per game, without tuning after viewing results. Compare same-level matched static, exact replay and combined predictions per game, report confidence/abstentions and actual level progress. Do not integrate policy without separate matched-budget A/B.",
+    "sample_games": [
+      "su15",
+      "bp35",
+      "wa30",
+      "ft09",
+      "sk48",
+      "re86",
+      "m0r0",
+      "s5i5",
+      "sb26"
+    ],
+    "caveat": "All 25 public games already appeared in aggregate benchmark; disjoint detailed sample is NOT hidden or uncontaminated holdout.",
     "constraints": [
+      "freeze sample and evaluation before running trace",
       "test-first",
-      "reversible",
-      "offline",
-      "no game-id-specific heuristics",
       "no current-outcome leakage",
-      "no cross-episode transfer",
-      "no policy integration without matched gameplay improvement",
-      "no spend"
+      "RESET/game/level boundaries",
+      "no game-ID-specific tuning",
+      "no agent policy change",
+      "no spend",
+      "reject regression"
     ]
   },
   "sync_protocol": [
@@ -760,6 +772,82 @@
       },
       "interpretation": "Existing global static/whole-scene translate/recolor hypothesis family has no nonstatic post-hoc coverage in this 761-transition public trace; one-object translations explain 143 additional outcomes post hoc, while 105 change object count and 285 remain unexplained. Exact scene+action replay predicts 78/84 repeated contexts correctly using only earlier observations, vs static 0/84 on those same selected contexts. This diagnoses representational mismatch and reusable local action effects; it does NOT prove causal generalization, reversibility, policy benefit, hidden score, novelty or income.",
       "effect_on_agent": "NONE_SHADOW_ONLY"
+    },
+    "single_object_effect_prequential": {
+      "status": "REAL_PUBLIC_PREQUENTIAL_SAME_TRACE_GAIN_SHADOW_ONLY_NO_HELDOUT",
+      "module": "competitions/arc-agi-3/experiments/single_object_prequential.py",
+      "tests": "competitions/arc-agi-3/tests/test_single_object_prequential.py",
+      "method": "Conservative action+object-signature (color,area,width,height) -> single-object displacement from prior observed transitions in the same contiguous game/level episode. Exact scene/action replay has priority; conflicting evidence, duplicate signatures, multiple possible movers, out-of-bounds moves and RESET cause abstention. Matched static, replay, effect-only and combined forecasts are scored before learning each current outcome.",
+      "commits": {
+        "test_first_red": "8f00fe43cf2e04b65354eb93de654ffefc03fce5",
+        "test_correction": "67fd71145ea2d385f205d2ca9e99de27437a09a7",
+        "implementation": "58a4949d2e0787dad50ab1f66c62dc2d9b80f020",
+        "ci_integration": "30356593e6c71cf7a3bebf00100b448e7e431851"
+      },
+      "ci": {
+        "red_contract": {
+          "run": 40459454126,
+          "status": "EXPECTED_FAILURE_MISSING_MODULE"
+        },
+        "green_contract": {
+          "run": 40459663942,
+          "status": "SUCCESS",
+          "tests": "122/122"
+        },
+        "system_proof": {
+          "run": 40459664243,
+          "status": "SUCCESS"
+        },
+        "official_public_smoke": {
+          "run": 40459664188,
+          "status": "SUCCESS"
+        }
+      },
+      "frozen_public_trace": {
+        "games": [
+          "lp85",
+          "tr87",
+          "sp80",
+          "g50t",
+          "dc22",
+          "r11l",
+          "tu93",
+          "ar25"
+        ],
+        "records": 768,
+        "same_level_records": 761,
+        "reset_records": 6,
+        "level_advance_records": 1,
+        "trace_sha256": "cbf8fab991718ccb036e37caf2922b497d5bacd3e60b7a80b620990fc8dcc5bb",
+        "artifact_id": 12713922140,
+        "artifact_sha256": "51e3562ffef58abb79862cdd4a81bf6e2be79048a05194b851e364e6c4f33504",
+        "zip_crc": "PASS"
+      },
+      "matched_forecasts": {
+        "same_level": 761,
+        "static_correct": 228,
+        "exact_replay_with_static_fallback_correct": 306,
+        "one_object_effect_with_static_fallback_correct": 280,
+        "combined_replay_then_effect_then_static_correct": 358,
+        "combined_gain_over_replay_correct": 52,
+        "exact_replay_used": 80,
+        "effect_nonstatic_forecasts": 70,
+        "effect_nonstatic_correct": 60,
+        "effect_on_unseen_exact_scene_action_contexts": 70,
+        "effect_unseen_correct": 60,
+        "combined_effect_used": 70,
+        "combined_nonstatic_correct": 138,
+        "ambiguous_effect_abstentions": 71
+      },
+      "independent_verification": "Separate Python evaluator against previously frozen 768-row ZIP produced exactly the same 16 numeric counters as new GitHub Actions diagnostic; identical trace SHA256 in both artifacts.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "On the same previously studied public trace, conservative learned one-object action effects raise matched exact-scene prediction from 306/761 (exact replay plus static fallback) to 358/761 (replay then effect then static). 60/70 unseen-context nonstatic effect forecasts were correct. This is a prequential SAME-TRACE observational gain, not an independent held-out or causal gameplay result. The effect family was motivated by post-hoc coverage of this very trace; model selection bias and rare progress remain. No policy promotion.",
+      "limitations": [
+        "Same 8 PUBLIC games and trace used to motivate one-object hypothesis; NOT independent holdout.",
+        "One level-advance event; no reliable progress-prediction or policy value evidence.",
+        "Action-conditioned observational trace under existing agent, not intervention or matched action-policy A/B.",
+        "No Kaggle hidden score, final submission, money, license/publication or novelty claim."
+      ]
     }
   }
 }
