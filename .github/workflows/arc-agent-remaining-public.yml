@@ -5,6 +5,8 @@ on:
       - 'competitions/arc-agi-3/experiments/remaining_public_sample.py'
       - 'competitions/arc-agi-3/experiments/cross_game_transfer_audit.py'
       - 'competitions/arc-agi-3/experiments/relative_geometry_transfer_audit.py'
+      - 'competitions/arc-agi-3/experiments/relative_support_diagnostics.py'
+      - 'competitions/arc-agi-3/tests/test_relative_support_diagnostics.py'
       - 'competitions/arc-agi-3/tests/test_relative_geometry_transfer_audit.py'
       - 'competitions/arc-agi-3/tests/test_cross_game_transfer_audit.py'
       - 'competitions/arc-agi-3/tests/test_remaining_public_sample.py'
@@ -49,6 +51,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/relative_geometry_transfer_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relative-geometry.json
+      - name: Diagnose relative role and donor veto ladder (read-only PUBLIC trace)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relative_support_diagnostics.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relative-support.json
       - name: Preserve public-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,5 +66,6 @@ jobs:
             arc-agi3-remaining-public-evaluation.json
             arc-agi3-remaining-public-cross-game.json
             arc-agi3-remaining-public-relative-geometry.json
+            arc-agi3-remaining-public-relative-support.json
             arc-agi3-remaining-public-trace.sha256
           if-no-files-found: ignore
