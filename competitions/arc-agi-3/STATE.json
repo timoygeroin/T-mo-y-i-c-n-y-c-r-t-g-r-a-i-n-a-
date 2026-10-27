@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T12:10:48.855Z",
+  "updated_at": "2026-10-27T14:11:12.293Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,16 +69,15 @@
     }
   ],
   "next_experiment": {
-    "id": "relative_area_rank_single_relaxation_counterfactual",
-    "goal": "Predeclare and test one shadow-only counterfactual: relax ONLY strict smallest/largest area rank for moved-object roles, retaining unique nearest anchor, duplicate-role abstention, exact action including ACTION6 coordinates, level, donor consensus, static/conflict veto and held-out exclusion. Compare against current nonunit relative/static/within-game controls on frozen PUBLIC trace; report per-game forecasts, conflicts, regression and progress.",
+    "id": "unranked_area_donor_consensus_veto_diagnostic",
+    "goal": "Read-only decompose why zero two-donor nonstatic rules remain after the area-rank-only ablation: exact action/level overlap, duplicate nearest-anchor roles, static/conflict veto and independent-donor support. Keep all prior hypotheses and frozen public controls; no further relaxation or policy promotion without test-first independent evidence.",
     "constraints": [
       "test-first RED then GREEN",
-      "one isolated representation change",
+      "one reversible shadow-only diagnostic",
       "frozen public trace",
       "no game-ID heuristics",
-      "explicit counterfactual competing hypotheses",
       "no automatic policy promotion",
-      "record negative results",
+      "negative evidence retained",
       "no Kaggle submission or spend"
     ]
   },
@@ -1329,6 +1328,64 @@
         "Donor outcomes may occur globally after held-out target episodes.",
         "Area-rank veto is first observed remaining bottleneck; relaxing it is untested and may not improve any prediction.",
         "No Kaggle submission, spend, tokens, terms, legal/license/publication, prize or income claim."
+      ]
+    },
+    "relative_area_rank_single_relaxation_counterfactual": {
+      "status": "VERIFIED_NEGATIVE_LESSON_REJECT_POLICY_INTEGRATION",
+      "protocol": "arc-agi3.area-rank-unrestricted-leave-one-public-game-out-v1",
+      "method": "Only strict relative-area-rank removed; shape, unique nearest-anchor direction, duplicate-role abstention, cardinal displacement, exact action incl ACTION6 coordinates, level, static/conflict veto, independent donor consensus, target-game exclusion and local replay precedence unchanged.",
+      "test_first": {
+        "red_commit": "25be0b1f1b475d4174a0d3e8a2aceeae4569650f",
+        "red_run": 40517673137,
+        "red_reason": "ModuleNotFoundError for absent relative_area_rank_transfer_audit",
+        "green_run": 40517866037,
+        "green_tests": "186/186 PASS"
+      },
+      "implementation": {
+        "test_commit": "25be0b1f1b475d4174a0d3e8a2aceeae4569650f",
+        "module_commit": "fab62198761f32be2d83b17e70c1a745e2223821",
+        "workflow_commit": "6e5cbbc0ecd0a8a29d90d3b69c85f98e3b763904",
+        "paths": [
+          "competitions/arc-agi-3/tests/test_relative_area_rank_transfer_audit.py",
+          "competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py",
+          ".github/workflows/arc-agent-remaining-public.yml"
+        ]
+      },
+      "evidence": {
+        "frozen_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "public_games": 9,
+        "records": 864,
+        "same_level": 857,
+        "level_advances": 0,
+        "static_correct": 330,
+        "within_game_correct": 362,
+        "strict_nonunit_correct": 362,
+        "area_unranked_correct": 362,
+        "area_unranked_forecasts": 0,
+        "one_donor_forecasts": 0,
+        "two_donor_rules_each_game": 0,
+        "positive_games": 0,
+        "negative_games": 0,
+        "synthetic_two_donor_transfer_contract": "PASS",
+        "ci": {
+          "contract": "SUCCESS 186/186",
+          "contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866037",
+          "system": "SUCCESS",
+          "system_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866355",
+          "frozen_public": "SUCCESS",
+          "frozen_public_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866310",
+          "artifact_id": 12740551766,
+          "unchanged_agent_public": "SUCCESS",
+          "unchanged_agent_public_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866078"
+        }
+      },
+      "interpretation": "Removing ONLY strict area-rank did not produce a two-independent-donor rule or any applicable donor forecast on the frozen nine PUBLIC games. This falsifies the isolated area-rank-only transfer gain hypothesis on this sample, not all relational transfer. Remaining vetoes, especially static/conflict donor evidence and cross-game action/role overlap, are unresolved. Do not claim gameplay or policy improvement.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Exploratory public trace, not hidden holdout or causal intervention.",
+        "Other donor games may be chronologically later than held-out target.",
+        "No new level advances, no matched-budget gameplay A/B.",
+        "No Kaggle submission, money, tokens, terms, license/publication decision, prize or income claim."
       ]
     }
   }
