@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T00:13:00Z",
+  "updated_at": "2026-10-27T01:13:33.666Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,14 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "localize_pixel_scene_alias_regions",
-    "goal": "Separate HUD/animation-only differences from gameplay-relevant pixels with a preregistered spatial mask and same-budget held-out public trace, before changing causal models or policy.",
+    "id": "preregister_disjoint_public_spatial_trace",
+    "goal": "Test the same frozen 8px-edge/8x8-tile spatial alias hypothesis on a predeclared set of public games not used in the two-game detailed diagnostic; compare interior-only and edge-only alias transitions without relabeling edge as HUD. No policy integration before independent matched-budget gains.",
     "constraints": [
       "test-first",
       "reversible",
       "offline",
-      "no game-id-specific heuristics",
-      "no policy integration without measured improvement"
+      "no game-id-specific action heuristics",
+      "frozen spatial geometry",
+      "public only",
+      "no policy integration without measured gain"
     ]
   },
   "sync_protocol": [
@@ -225,6 +227,66 @@
         "No policy integration, no Kaggle submission or hidden score."
       ],
       "implementation_commit": "f1639bc3ead6138d1648059fd5666196b1de709f"
+    },
+    "spatial_alias_localization": {
+      "status": "REAL_PUBLIC_TRACE_EDGE_ONLY_ALIAS_OBSERVED_SHADOW_ONLY",
+      "implementation_commit": "ca9299e43a49c0df295ca33424f82dc6f835eae7",
+      "paths": [
+        "competitions/arc-agi-3/experiments/spatial_delta_audit.py",
+        "competitions/arc-agi-3/tests/test_spatial_delta_audit.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "method": "Frozen 8-pixel outer band on 64x64 visible public frames; count changed pixels in non-overlapping 8x8 tiles and inner 48x48 area. This is a geometric partition, not a semantic HUD/gameplay classifier.",
+      "test_first": "Local red: missing spatial_delta_audit import; local green: 9/9 synthetic tests.",
+      "ci": {
+        "contract": "SUCCESS 65/65",
+        "contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40431028451",
+        "system_proof": "SUCCESS",
+        "system_proof_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40431028456",
+        "official_public_smoke": "SUCCESS",
+        "official_public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40431028575"
+      },
+      "public_trace": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "records": 24,
+        "same_level_records": 23,
+        "object_scene_static_pixel_changed_transitions": 8,
+        "alias_border_only": 8,
+        "alias_interior_only": 0,
+        "alias_mixed": 0,
+        "alias_border_changed_pixels": 12,
+        "alias_interior_changed_pixels": 0,
+        "top_alias_tiles": [
+          [
+            7,
+            0,
+            8
+          ],
+          [
+            2,
+            7,
+            4
+          ]
+        ]
+      },
+      "unchanged_submission_agent_public_suite": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "All eight previously detected pixel-only/object-scene-static transitions changed only 12 pixels within the fixed outer 8px band, with no changed interior pixels, in this two-game public trace. This favors an edge-localized observational explanation over missing central visible geometry in this trace; it does not prove HUD, animation, or gameplay irrelevance.",
+      "limitations": [
+        "Same two diagnostic games, not independent held-out.",
+        "Edge pixels can be gameplay relevant; interior pixels can be HUD.",
+        "No latent-state observations or causal advantage.",
+        "No policy integration, Kaggle submission, hidden score, or contest result."
+      ]
     }
   }
 }
