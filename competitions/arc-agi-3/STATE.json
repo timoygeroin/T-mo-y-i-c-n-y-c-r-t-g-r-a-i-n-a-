@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T06:14:45.198Z",
+  "updated_at": "2026-10-27T06:17:17.069Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -774,7 +774,7 @@
       "effect_on_agent": "NONE_SHADOW_ONLY"
     },
     "single_object_effect_prequential": {
-      "status": "REAL_PUBLIC_PREQUENTIAL_SAME_TRACE_GAIN_SHADOW_ONLY_NO_HELDOUT",
+      "status": "REAL_PUBLIC_SAME_TRACE_GAME_CONCENTRATED_GAIN_SHADOW_ONLY",
       "module": "competitions/arc-agi-3/experiments/single_object_prequential.py",
       "tests": "competitions/arc-agi-3/tests/test_single_object_prequential.py",
       "method": "Conservative action+object-signature (color,area,width,height) -> single-object displacement from prior observed transitions in the same contiguous game/level episode. Exact scene/action replay has priority; conflicting evidence, duplicate signatures, multiple possible movers, out-of-bounds moves and RESET cause abstention. Matched static, replay, effect-only and combined forecasts are scored before learning each current outcome.",
@@ -839,15 +839,58 @@
         "combined_nonstatic_correct": 138,
         "ambiguous_effect_abstentions": 71
       },
-      "independent_verification": "Separate Python evaluator against previously frozen 768-row ZIP produced exactly the same 16 numeric counters as new GitHub Actions diagnostic; identical trace SHA256 in both artifacts.",
+      "independent_verification": "Separate Python evaluator against previously frozen 768-row ZIP produced exactly the same 16 numeric counters as new GitHub Actions diagnostic; identical trace SHA256 in both artifacts. Per-game decomposition: sp80 +54 correct, dc22 -2, remaining six games 0; 64/70 effect forecasts occur in sp80.",
       "effect_on_agent": "NONE_SHADOW_ONLY",
-      "interpretation": "On the same previously studied public trace, conservative learned one-object action effects raise matched exact-scene prediction from 306/761 (exact replay plus static fallback) to 358/761 (replay then effect then static). 60/70 unseen-context nonstatic effect forecasts were correct. This is a prequential SAME-TRACE observational gain, not an independent held-out or causal gameplay result. The effect family was motivated by post-hoc coverage of this very trace; model selection bias and rare progress remain. No policy promotion.",
+      "interpretation": "Aggregate +52 correct on same previously studied public trace is almost entirely one-game-specific: sp80 +54, dc22 -2, six other games unchanged. 64/70 effect forecasts and 58/60 correct effect forecasts came from sp80. No cross-game generalization, causal transfer, progress improvement or policy value established. Hypothesis selection was motivated by post-hoc study of the same trace; retain shadow only.",
       "limitations": [
+        "Per-game concentration: sp80 alone accounts for all positive gain; dc22 regresses by two correct forecasts; other six games have no effect contribution.",
         "Same 8 PUBLIC games and trace used to motivate one-object hypothesis; NOT independent holdout.",
         "One level-advance event; no reliable progress-prediction or policy value evidence.",
         "Action-conditioned observational trace under existing agent, not intervention or matched action-policy A/B.",
         "No Kaggle hidden score, final submission, money, license/publication or novelty claim."
-      ]
+      ],
+      "per_game_gain_vs_exact_replay": {
+        "sp80": {
+          "same_level": 93,
+          "combined_correct": 69,
+          "replay_correct": 15,
+          "delta_correct": 54,
+          "effect_nonstatic": 64,
+          "effect_nonstatic_correct": 58
+        },
+        "dc22": {
+          "same_level": 96,
+          "combined_correct": 70,
+          "replay_correct": 72,
+          "delta_correct": -2,
+          "effect_nonstatic": 6,
+          "effect_nonstatic_correct": 2
+        },
+        "ar25": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "g50t": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "lp85": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "r11l": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "tr87": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "tu93": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        }
+      }
     }
   }
 }
