@@ -12,7 +12,9 @@ on:
       - 'competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py'
       - 'competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py'
       - 'competitions/arc-agi-3/experiments/projected_donor_consensus_diagnostic.py'
+      - 'competitions/arc-agi-3/experiments/conditional_world_conflict_audit.py'
       - 'competitions/arc-agi-3/tests/test_projected_donor_consensus_diagnostic.py'
+      - 'competitions/arc-agi-3/tests/test_conditional_world_conflict_audit.py'
       - 'competitions/arc-agi-3/tests/test_action_role_counterfactual_audit.py'
       - 'competitions/arc-agi-3/tests/test_unranked_donor_veto.py'
       - 'competitions/arc-agi-3/tests/test_nonunit_veto_diagnostics.py'
@@ -91,6 +93,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/projected_donor_consensus_diagnostic.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-projected-consensus.json
+      - name: Test observable geometry-conditioned donor conflict hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/conditional_world_conflict_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-conditional-conflicts.json
       - name: Preserve public-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -109,5 +115,6 @@ jobs:
             arc-agi3-remaining-public-unranked-veto.json
             arc-agi3-remaining-public-action-role-counterfactual.json
             arc-agi3-remaining-public-projected-consensus.json
+            arc-agi3-remaining-public-conditional-conflicts.json
             arc-agi3-remaining-public-trace.sha256
           if-no-files-found: ignore
