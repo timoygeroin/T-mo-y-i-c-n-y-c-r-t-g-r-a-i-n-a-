@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T04:09:00Z",
+  "updated_at": "2026-10-27T05:30:54Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,14 +69,15 @@
     }
   ],
   "next_experiment": {
-    "id": "predeclare_prospective_public_episode_action_causal_controls",
-    "goal": "Pre-register a different public-game sample and sufficient action horizon before observing traces, then test concrete action-conditioned counterfactual predictions with level-progress events and stronger matched controls. Do not promote edge features without replicated improvement.",
+    "id": "falsify_static_world_hypothesis_dominance",
+    "goal": "Explain and test why explicit causal world-hypothesis shadow predicts only static outcomes on the new 768-record public trace; add concrete action-effect alternatives with test-first matched static controls, not generic curiosity. Keep policy unchanged until held-out predictive and matched gameplay gains.",
     "constraints": [
       "test-first",
       "reversible",
       "offline",
       "no game-id-specific heuristics",
-      "no leakage",
+      "RESET is episode boundary",
+      "no future leakage",
       "no policy integration without matched gameplay improvement",
       "no spend"
     ]
@@ -577,6 +578,132 @@
         "No policy integration, no causal edge intervention or verified generalization.",
         "Short within-game episodes and sparse exact action/edge support.",
         "No Kaggle submission, spending, prize, legal or licensing action."
+      ]
+    },
+    "prospective_public_action_causal_audit": {
+      "status": "REAL_PUBLIC_LONGER_TRACE_NEGATIVE_GATE_FAILED_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-causal.v1",
+      "preregistration": {
+        "seed": "mondayid-arc3-prospective-causal-v1:",
+        "games": [
+          "lp85",
+          "tr87",
+          "sp80",
+          "g50t",
+          "dc22",
+          "r11l",
+          "tu93",
+          "ar25"
+        ],
+        "sample_size": 8,
+        "horizon_actions_per_game": 96,
+        "excludes_prior_2_and_6_public_diagnostic_games": true,
+        "commits": [
+          "9f95bf37dc072a97f9e7c08e32e865279c725b80",
+          "9a0801142878babbafc32933bb8ba9f6b013d76a"
+        ],
+        "note": "Selected by frozen SHA256 game-id rank BEFORE this detailed trace, not based on scores. Public games already seen in aggregate 25-game benchmark; NOT a hidden holdout."
+      },
+      "evidence": {
+        "ci_contract": {
+          "status": "SUCCESS",
+          "tests": "102/102",
+          "run_id": 40455644207,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40455644207"
+        },
+        "ci_system_proof": {
+          "status": "SUCCESS",
+          "run_id": 40455644211,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40455644211"
+        },
+        "ci_official_public": {
+          "status": "SUCCESS",
+          "run_id": 40455644205,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40455644205"
+        },
+        "artifact": {
+          "id": 12712248319,
+          "sha256": "39e3d930174f45787f6566c2f2a591ecd28f1e9fa70db7379e1c58df22ceb6fe",
+          "zip_crc": "PASS",
+          "trace_sha256": "cbf8fab991718ccb036e37caf2922b497d5bacd3e60b7a80b620990fc8dcc5bb"
+        },
+        "test_first": "Local RED missing prospective sample module; GREEN 5/5. Later CI RED 4 new RESET-boundary tests; GREEN after fix, total 102/102.",
+        "reset_boundary_bug": {
+          "observed": "6 real RESET special actions were absent from advertised legal gameplay actions; initial prospective shadow CI failed action legality and action-conditioned history would leak across RESET.",
+          "fix": "Allow exact RESET as special episode boundary; exclude RESET transitions from shadow prediction/training and clear both action-conditioned and edge-model evidence; do not alter submission agent.",
+          "implementation_commits": [
+            "9b6fab828e7d81086fe6fa180f511a7b7c30b3db",
+            "26cd192609c872d355d65197effaf911613e8db9",
+            "b3e32cb4cd776742e4eee5c54b459bf345dbe216"
+          ],
+          "regression_tests": "4/4 new RESET tests PASS; earlier tests also pass."
+        }
+      },
+      "public_trace": {
+        "records": 768,
+        "games": 8,
+        "reset_actions": 6,
+        "level_advance_events_raw": 1,
+        "shadow": {
+          "same_level_records": 761,
+          "evaluated": 555,
+          "exact_correct": 112,
+          "static_correct": 112,
+          "non_static_predictions": 0,
+          "probe_candidates": 0
+        },
+        "action_conditioned": {
+          "evaluated_pairs": 747,
+          "episodes": 15,
+          "scene_change_events": 526,
+          "level_advance_events": 1,
+          "seen_action_pairs": 545,
+          "seen_joint_pairs": 485,
+          "scene_brier": {
+            "action_edge": 0.16785331275994633,
+            "action_only": 0.1643093551933434,
+            "edge_only": 0.14742838039622902,
+            "marginal": 0.16200218928098123,
+            "static": 0.7041499330655957,
+            "temporal": 0.32396251673360105
+          },
+          "progress_brier": {
+            "action_edge": 0.03783065997895601,
+            "action_only": 0.03270551543208772,
+            "edge_only": 0.01767504017896135,
+            "marginal": 0.01339694457806937,
+            "static": 0.0013386880856760374,
+            "temporal": 0.0013386880856760374
+          }
+        }
+      },
+      "preregistered_acceptance": {
+        "min_progress_events": 3,
+        "observed_progress_events": 1,
+        "pass_progress": false,
+        "min_evaluated_pairs": 100,
+        "observed_evaluated_pairs": 747,
+        "pass_pairs": true,
+        "min_seen_joint_fraction": 0.25,
+        "observed_fraction": 0.6492637215528781,
+        "pass_support": true,
+        "require_nonregression_vs_action_only": true,
+        "pass_scene_nonregression": false,
+        "automatic_policy_promotion": false,
+        "final": "REJECT_POLICY_INTEGRATION"
+      },
+      "unchanged_submission_agent": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "interpretation": "Prospectively chosen longer detailed PUBLIC trace exposed RESET episode-boundary bug, fixed and regression-tested. Explicit world-hypothesis shadow still matches static baseline exactly (112/555), no non-static top predictions or reversible probes. Joint action+edge Brier regresses vs action-only for scene and progress; one progress event fails preregistered minimum. This is negative evidence against promoting the current feature/model, not a general impossibility result.",
+      "limitations": [
+        "Not hidden or independent benchmark; game roster already publicly benchmarked in aggregate.",
+        "Only one level-advance event, inadequate for progress prediction.",
+        "No causal interventions or matched gameplay policy A/B.",
+        "No Kaggle final submission, prize, licensing/publication, spend or income claim."
       ]
     }
   }
