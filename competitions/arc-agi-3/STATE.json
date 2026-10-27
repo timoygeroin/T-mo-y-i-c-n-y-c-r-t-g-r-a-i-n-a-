@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T08:14:34.240Z",
+  "updated_at": "2026-10-27T09:09:43Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,18 +69,17 @@
     }
   ],
   "next_experiment": {
-    "id": "test_cross_game_representation_support_before_policy",
-    "goal": "Predeclare a representation-level counterfactual: test whether geometry-relative, action-conditioned object relations generate shared donor support across multiple public games, versus exact signature, static and within-game replay controls. Require multi-game nonregression and actual level-progress evidence before any policy A/B.",
+    "id": "diagnose_relative_role_support_before_any_broader_transfer",
+    "goal": "On frozen PUBLIC trace, decompose zero relative donor support into eligibility, object-role ambiguity, non-unit motion, action/level overlap, and contradictory static evidence; preregister a single geometry-only relaxation and negative controls before testing any new counterfactual forecasts.",
     "constraints": [
-      "no game-ID-specific heuristics",
-      "no current-outcome leakage",
-      "no target-game donor leakage",
       "test-first",
       "shadow only",
+      "no game-ID-specific heuristics",
+      "no current-outcome or held-out target donor leakage",
+      "same frozen public trace labeled exploratory",
       "no automatic policy promotion",
-      "no spend",
-      "no Kaggle submission",
-      "record zero-support and regressions as negative evidence"
+      "record zero-support and regressions as negative evidence",
+      "no Kaggle submission or spend"
     ]
   },
   "sync_protocol": [
@@ -1066,6 +1065,77 @@
         "Donor evidence can come from later chronological episodes of other games, so leave-one-game-out independence is not global temporal prequentiality.",
         "Zero applicable forecasts does not imply zero latent transferable mechanics; object signatures/action semantics may be incomparable across games.",
         "No Kaggle submission, spend, token request, terms, licensing/publication or policy mutation."
+      ]
+    },
+    "relative_geometry_leave_one_public_game_out": {
+      "status": "REAL_PUBLIC_NEGATIVE_ZERO_RELATIVE_DONOR_SUPPORT_SHADOW_ONLY",
+      "protocol": "arc-agi3.relative-geometry-leave-one-public-game-out-v1",
+      "module": "competitions/arc-agi-3/experiments/relative_geometry_transfer_audit.py",
+      "tests": "competitions/arc-agi-3/tests/test_relative_geometry_transfer_audit.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "implementation_commits": {
+        "test_first_red": "8a858b55e90c3f570343e7fa0883c25010edae8e",
+        "implementation": "f6fa1dd11403877b4048e9d9e110375bcc105d68",
+        "ci_integration": "f9b66e0b38df1c1c51294cf3aaa4509b84bd9410"
+      },
+      "hypotheses": [
+        "static",
+        "within-game exact replay then one-object effect then static",
+        "leave-one-game-out >=1 donor relative geometry",
+        "leave-one-game-out >=2 distinct donor games relative geometry"
+      ],
+      "representation": "No color/absolute object size or coordinates: coarse shape + strict relative area rank + nearest-anchor direction; one-pixel cardinal displacement, exact action and level. Reject duplicate roles, ties, static/conflicting evidence, invalid geometry.",
+      "test_first": {
+        "red_contract_run": 40478211307,
+        "red_reason": "ModuleNotFoundError: relative_geometry_transfer_audit (expected)",
+        "green_contract_run": 40478352058,
+        "final_contract_run": 40478534369,
+        "final_tests": "151/151 PASS"
+      },
+      "ci": {
+        "contract": {
+          "run": 40478534369,
+          "status": "SUCCESS"
+        },
+        "system": {
+          "run": 40478534243,
+          "status": "SUCCESS"
+        },
+        "frozen_public": {
+          "run": 40478534127,
+          "status": "SUCCESS"
+        },
+        "unchanged_public_smoke": {
+          "run": 40478534121,
+          "status": "SUCCESS"
+        }
+      },
+      "frozen_trace": {
+        "games": 9,
+        "records": 864,
+        "same_level": 857,
+        "level_advances": 0,
+        "sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "matched_forecasts": {
+        "static_correct": 330,
+        "within_game_baseline_correct": 362,
+        "one_donor_relative_correct": 362,
+        "two_donor_relative_correct": 362,
+        "one_donor_relative_forecasts": 0,
+        "two_donor_relative_forecasts": 0,
+        "one_donor_rules_per_heldout_game": 0,
+        "two_donor_rules_per_heldout_game": 0,
+        "strict_positive_games": 0,
+        "strict_negative_games": 0
+      },
+      "acceptance": "REJECT_POLICY_INTEGRATION",
+      "interpretation": "Even the color/absolute-size invariant strict nearest-anchor representation produced zero donor-supported one-pixel cardinal rules on the frozen nine-game PUBLIC trace. No transferable forecast, no gain, no regressions; zero level progress. This is negative evidence for this specific representation and eligibility filter, NOT for all relational world models.",
+      "limitations": [
+        "Donor outcomes may be chronologically later in other games: not globally prequential.",
+        "Frozen public games have already been aggregate benchmarked, not independent hidden holdout.",
+        "Strict area rank, unique nearest anchor and unit-step constraints may exclude real game mechanics.",
+        "No policy integration, Kaggle submission, spending, tokens, legal/license/publication decision, prize or income."
       ]
     }
   }
