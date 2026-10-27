@@ -92,10 +92,11 @@ class CrossGameTransferTests(unittest.TestCase):
         rows = fixture()
         target = FROZEN_GAMES[2]
         idx = next(i for i, r in enumerate(rows) if r["game_id"] == target)
-        rows[idx:idx+1] = [row(target, 0, scene(12), scene(12)),
-                           row(target, 1, scene(12), scene(12))]
+        rows[idx:idx+1] = [row(target, 0, scene(12), scene(13)),
+                           row(target, 1, scene(12), scene(13))]
         result = evaluate_cross_game(rows)
-        self.assertEqual(result["per_game"][target]["strict_donor_forecasts"], 0)
+        self.assertEqual(result["per_game"][target]["strict_donor_forecasts"], 1)
+        self.assertEqual(result["per_game"][target]["baseline_correct"], 1)
         self.assertEqual(result["per_game"][target]["strict_correct"], 2)
 
     def test_level_boundaries_do_not_reuse_donor_level_zero(self):
