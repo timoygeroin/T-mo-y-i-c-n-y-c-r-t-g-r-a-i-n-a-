@@ -16,8 +16,8 @@ def witness(game, direction, delta, action="ACTION3", level=0):
 
 def scene(left=True):
     if left:
-        return ((1, 1, 10, 10, 10, 10), (2, 1, 13, 10, 13, 10))
-    return ((1, 1, 13, 10, 13, 10), (2, 1, 10, 10, 10, 10))
+        return ((1, 1, 10, 10, 10, 10), (2, 2, 13, 10, 14, 10))
+    return ((1, 1, 13, 10, 13, 10), (2, 2, 9, 10, 10, 10))
 
 class RelationalWorldTests(unittest.TestCase):
     def test_opposing_absolute_moves_agree_on_toward_anchor(self):
@@ -29,7 +29,7 @@ class RelationalWorldTests(unittest.TestCase):
         self.assertEqual(len(absolute), 0)
         forecast = predict_scene(scene(True), 0, "ACTION3", rel, "relative")
         self.assertEqual(forecast,
-                         ((1, 1, 11, 10, 11, 10), (2, 1, 13, 10, 13, 10)))
+                         ((1, 1, 11, 10, 11, 10), (2, 2, 13, 10, 14, 10)))
 
     def test_static_observation_vetoes_relative_rule(self):
         w = [witness("g1", (1, 0), (1, 0)),
