@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T09:09:43Z",
+  "updated_at": "2026-10-27T10:08:30Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,16 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "diagnose_relative_role_support_before_any_broader_transfer",
-    "goal": "On frozen PUBLIC trace, decompose zero relative donor support into eligibility, object-role ambiguity, non-unit motion, action/level overlap, and contradictory static evidence; preregister a single geometry-only relaxation and negative controls before testing any new counterfactual forecasts.",
+    "id": "predeclare_nonunit_relative_effect_counterfactual_shadow",
+    "goal": "Freeze one geometry-only change: permit observed cardinal displacement magnitudes >1 while retaining all other role/action/level/donor vetoes; test with synthetic counterfactuals and same frozen public trace, explicitly compare unchanged strict model and static/within-game controls. Do not use game IDs or target outcomes in donor learning.",
     "constraints": [
       "test-first",
       "shadow only",
-      "no game-ID-specific heuristics",
-      "no current-outcome or held-out target donor leakage",
-      "same frozen public trace labeled exploratory",
+      "one geometry-only relaxation",
+      "negative controls for conflicting static witnesses, diagonal displacement, bounds, target leakage and ACTION6 coordinates",
+      "public sample exploratory",
+      "record per-game regressions",
       "no automatic policy promotion",
-      "record zero-support and regressions as negative evidence",
       "no Kaggle submission or spend"
     ]
   },
@@ -1136,6 +1136,69 @@
         "Frozen public games have already been aggregate benchmarked, not independent hidden holdout.",
         "Strict area rank, unique nearest anchor and unit-step constraints may exclude real game mechanics.",
         "No policy integration, Kaggle submission, spending, tokens, legal/license/publication decision, prize or income."
+      ]
+    },
+    "relative_support_veto_diagnostic": {
+      "status": "FROZEN_PUBLIC_TRACE_VERIFIED_NONUNIT_MOTION_FIRST_VETO_SHADOW_ONLY",
+      "protocol": "arc-agi3.relative-support-veto-diagnostic-v1",
+      "module": "competitions/arc-agi-3/experiments/relative_support_diagnostics.py",
+      "tests": "competitions/arc-agi-3/tests/test_relative_support_diagnostics.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "method": "Frozen 9-game PUBLIC trace; post-hoc same-level effect class and one-object displacement length, strict role eligibility, donor movement-key support and held-out action/level/role overlap. Reuses original frozen validator and existing relative role/consensus logic; no hypothesis relaxation or agent import.",
+      "test_first": {
+        "red_run": 40485623256,
+        "red_reason": "Expected missing relative_support_diagnostics module; 152 tests with import error",
+        "fixture_corrections": "Initial GREEN attempt exposed synthetic duplicate-role fixture moving two objects; fixture corrected to move only target while duplicate stays fixed. No agent regression.",
+        "green_run": 40485989485,
+        "green_tests": "157/157 PASS"
+      },
+      "ci": {
+        "contract": {
+          "run": 40485989485,
+          "status": "SUCCESS"
+        },
+        "system": {
+          "run": 40485989458,
+          "status": "SUCCESS"
+        },
+        "frozen_public": {
+          "run": 40485989378,
+          "status": "SUCCESS",
+          "artifact_id": 12725685485,
+          "artifact_zip_sha256": "99b8bacaecde687e69cbe9763c868195fc4bb6e3b6ae7ab71b59ac3388c4b9c4"
+        },
+        "unchanged_public_smoke": {
+          "run": 40485989503,
+          "status": "SUCCESS",
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "trace": {
+        "games": 9,
+        "records": 864,
+        "same_level": 857,
+        "static": 330,
+        "other_effects": 473,
+        "single_object_translate": 54,
+        "unit_cardinal_moves": 0,
+        "nonunit_moves": 54,
+        "diagonal_moves": 0,
+        "eligible_unit_moves": 0,
+        "role_rejections": {},
+        "movement_keys": 0,
+        "multi_donor_movement_keys": 0,
+        "conflicted_movement_keys": 0,
+        "weak_or_strict_target_key_overlap": 0,
+        "source_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "conclusion": "The first observable bottleneck is the one-pixel cardinal displacement filter: ALL 54 single-object translations in this frozen PUBLIC sample have non-unit displacement; zero movement witnesses reach the strict role/donor stage. Therefore zero donor support here cannot be attributed to action mismatch or ambiguous roles without relaxing displacement in a separate preregistered shadow test. No causal transfer or policy gain.",
+      "acceptance": "NO_POLICY_INTEGRATION",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Post-hoc PUBLIC evidence, no hidden holdout or causal intervention.",
+        "Donor observations can be globally later than held-out target.",
+        "Zero eligible unit movement makes later veto stages unidentifiable; absence of role rejections is not evidence that roles are sufficient.",
+        "No Kaggle submission, spending, tokens, terms, legal/license/publication decisions, prize or income."
       ]
     }
   }
