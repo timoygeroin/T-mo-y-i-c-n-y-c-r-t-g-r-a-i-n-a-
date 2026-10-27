@@ -1,0 +1,50 @@
+name: ARC-AGI-3 frozen remaining public replication
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/experiments/remaining_public_sample.py'
+      - 'competitions/arc-agi-3/tests/test_remaining_public_sample.py'
+      - 'competitions/arc-agi-3/scripts/inspect_public_games.py'
+      - '.github/workflows/arc-agent-remaining-public.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shadow-replication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run frozen protocol contract before public observations
+        working-directory: competitions/arc-agi-3
+        run: python -m unittest discover -s tests -p test_remaining_public_sample.py -v
+      - name: Fetch official ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official ARC offline environment
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Install unchanged MondayID agent into starter
+        run: cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+      - name: Collect exactly the nine frozen PUBLIC games (96 actions each max)
+        run: |
+          set -o pipefail
+          MONDAYID_ARC_PUBLIC_SAMPLE=remaining arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-remaining-public-diagnostics.log
+      - name: Score prequential counterfactual controls by game (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/remaining_public_sample.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-evaluation.json
+          sha256sum arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-trace.sha256
+      - name: Preserve public-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-agi3-remaining-public-shadow
+          path: |
+            arc-agi3-remaining-public-diagnostics.log
+            arc-agi3-remaining-public-transition-traces.jsonl
+            arc-agi3-remaining-public-evaluation.json
+            arc-agi3-remaining-public-trace.sha256
+          if-no-files-found: ignore
