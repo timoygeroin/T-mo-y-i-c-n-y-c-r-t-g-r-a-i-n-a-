@@ -31,8 +31,11 @@ def fixture(second_delta=1, target_delta=0, duplicate=False, donor_action="ACTIO
             dx = 1 if i == 0 else second_delta
             rows.append(row(game, before, scene(3+dx, color), donor_action))
         elif i == 2:
-            rows.append(row(game, scene(12, 7, duplicate=duplicate),
-                            scene(12+target_delta, 7, duplicate=duplicate)))
+            before = scene(12, 7, duplicate=duplicate)
+            after = scene(12+target_delta, 7)
+            if duplicate:
+                after.append([8, 1, 14, 2, 14, 2])
+            rows.append(row(game, before, after))
         else:
             before = [[8, 4, 2, 2, 3, 3]]
             rows.append(row(game, before, before))
