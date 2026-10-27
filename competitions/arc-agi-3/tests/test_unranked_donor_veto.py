@@ -14,7 +14,7 @@ def scene(x, color=2):
 
 def record(game, before, after, action="ACTION1"):
     return dict(schema="arc-agi3.shadow-transition.v1", game_id=game,
-                turn=0, action_key=action, legal_actions=["ACTION1", "ACTION6"],
+                turn=0, action_key=action, legal_actions=["ACTION1", "ACTION2", "ACTION6"],
                 level_before=0, level_after=0,
                 before_scene=before, after_scene=after)
 
