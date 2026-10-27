@@ -50,6 +50,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/scene_alias_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-scene-alias-metrics.json
+      - name: Audit fixed spatial edge/interior deltas (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/spatial_delta_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-spatial-delta-metrics.json
       - name: All-public-game benchmark (120 actions per game)
         working-directory: arc-starter
         run: |
@@ -73,6 +77,7 @@ jobs:
             arc-agi3-public-transition-traces.jsonl
             arc-agi3-causal-shadow-metrics.json
             arc-agi3-scene-alias-metrics.json
+            arc-agi3-spatial-delta-metrics.json
             arc-agi3-public-game-extended.log
             arc-agi3-public-games.log
             arc-agi3-public-suite.log

@@ -26,6 +26,7 @@ os.chdir(STARTER)
 from arc_agi import Arcade, OperationMode
 from agent.my_agent import MyAgent
 from object_model import extract_objects
+from spatial_delta_audit import pixel_delta_regions
 
 
 def final_grid(observation):
@@ -125,6 +126,9 @@ def main():
                 raise RuntimeError("Invalid ARC frame")
             after = final_grid(after_obs)
             count, box = delta_info(before, after)
+            spatial_delta = pixel_delta_regions(before, after)
+            if spatial_delta['total_changes'] != count:
+                raise RuntimeError('Spatial delta disagrees with pixel count')
             trace_rows.append({
                 "schema": "arc-agi3.shadow-transition.v1",
                 "game_id": game_id, "turn": turn,
@@ -137,6 +141,7 @@ def main():
                 "before_frame_sha256": frame_sha256(before),
                 "after_frame_sha256": frame_sha256(after),
                 "pixel_changes": count,
+                "spatial_delta": spatial_delta,
             })
             print(
                 "TRANSITION", game_id, turn, action.name,
