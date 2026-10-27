@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T10:08:30Z",
+  "updated_at": "2026-10-27T11:08:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,14 @@
     }
   ],
   "next_experiment": {
-    "id": "predeclare_nonunit_relative_effect_counterfactual_shadow",
-    "goal": "Freeze one geometry-only change: permit observed cardinal displacement magnitudes >1 while retaining all other role/action/level/donor vetoes; test with synthetic counterfactuals and same frozen public trace, explicitly compare unchanged strict model and static/within-game controls. Do not use game IDs or target outcomes in donor learning.",
+    "id": "nonunit_relative_role_veto_ladder",
+    "goal": "Diagnose which remaining veto blocks nonunit cardinal donor witnesses (role eligibility, action-level overlap, static/conflicting evidence, exact target role overlap), with read-only counters and no relaxation/policy import. Compare per-game and held-out keys without using target outcomes for donor learning.",
     "constraints": [
       "test-first",
-      "shadow only",
-      "one geometry-only relaxation",
-      "negative controls for conflicting static witnesses, diagonal displacement, bounds, target leakage and ACTION6 coordinates",
-      "public sample exploratory",
-      "record per-game regressions",
+      "shadow-only",
+      "frozen public trace",
+      "no game-ID heuristics",
+      "record negative evidence",
       "no automatic policy promotion",
       "no Kaggle submission or spend"
     ]
@@ -1199,6 +1198,60 @@
         "Donor observations can be globally later than held-out target.",
         "Zero eligible unit movement makes later veto stages unidentifiable; absence of role rejections is not evidence that roles are sufficient.",
         "No Kaggle submission, spending, tokens, terms, legal/license/publication decisions, prize or income."
+      ]
+    },
+    "relative_nonunit_cardinal_transfer": {
+      "status": "VERIFIED_PUBLIC_SHADOW_NEGATIVE_NO_SUPPORT",
+      "protocol": "arc-agi3.relative-cardinal-nonunit-leave-one-public-game-out-v1",
+      "hypothesis": "Allow any nonzero cardinal displacement magnitude while keeping all role, action, level, donor-unanimity and abstention constraints fixed; compare against strict unit model, same-game prequential baseline and static control on exactly the same frozen public transitions.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relative_nonunit_transfer_audit.py",
+        "competitions/arc-agi-3/tests/test_relative_nonunit_transfer_audit.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "test_first": {
+        "red_commit": "db926be97e62fb943a03b46ed8b93dac97f716a2",
+        "red_contract_run": 40493425148,
+        "red_result": "FAILED expected ModuleNotFoundError for absent new module",
+        "implementation_commit": "501b113d9a6cc82f25d0b543413b2071190684de",
+        "workflow_commit": "f0b7009a1efe48d462bbaa4e75b009ace74f4c13",
+        "green_contract": "SUCCESS 167/167",
+        "green_contract_run": 40493545608
+      },
+      "ci": {
+        "system_proof_run": 40493545629,
+        "system_proof": "SUCCESS",
+        "official_public_smoke_run": 40493545640,
+        "official_public_smoke": "SUCCESS",
+        "frozen_public_replication_run": 40493545650,
+        "frozen_public_replication": "SUCCESS",
+        "artifact_id": 12729331361,
+        "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "public_evidence": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "static_correct": 330,
+        "within_game_baseline_correct": 362,
+        "strict_unit_relative_correct": 362,
+        "nonunit_cardinal_relative_correct": 362,
+        "strict_unit_forecasts": 0,
+        "nonunit_cardinal_forecasts": 0,
+        "nonunit_donor_rules": 0,
+        "positive_games": 0,
+        "negative_games": 0,
+        "delta_vs_strict": 0,
+        "research_gates_passed": false
+      },
+      "interpretation": "Relaxing one-pixel displacement alone did NOT create a single eligible donor rule or forecast on frozen public trace. First observed bottleneck was unit displacement, but additional vetoes remain; cannot infer role/action support. No predictive gain, no progress, no policy promotion. This is negative evidence against this isolated relaxation, not all relational causal transfer.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limits": [
+        "PUBLIC exploratory sample previously aggregate-benchmarked; not hidden holdout",
+        "Donor observations can be later globally; leave-one-game-out only",
+        "No intervention or gameplay A/B",
+        "No Kaggle submission, spending, tokens, terms, licensing or publication"
       ]
     }
   }
