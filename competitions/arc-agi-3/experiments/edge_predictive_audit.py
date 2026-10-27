@@ -79,6 +79,13 @@ def score_steps(records, max_records=4096):
         game,turn=row['game_id'],row['turn']
         if game == current_game and turn <= last_turn:
             raise ValueError('unordered turns')
+        if row.get('action_key') == 'RESET':
+            # Never predict or train across a full environment restart.
+            previous = None
+            counts = {}
+            current_game = game
+            last_turn = turn
+            continue
         contiguous=(previous is not None and game == current_game and
                     turn == last_turn+1 and
                     previous['level_before'] == previous['level_after'] == row['level_before'])
