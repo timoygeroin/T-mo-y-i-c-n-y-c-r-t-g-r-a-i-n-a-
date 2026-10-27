@@ -50,12 +50,12 @@ class NonunitVetoTests(unittest.TestCase):
         self.assertEqual(target["two_donor_rules"], 1)
         self.assertEqual(report["effect_on_agent"], "NONE_SHADOW_ONLY")
 
-    def test_no_anchor_rejects_nonunit_movement_role(self):
+    def test_ambiguous_area_rank_rejects_nonunit_movement_role(self):
         rows = fixture()
-        rows[0]["before_scene"] = [[2, 1, 3, 2, 3, 2]]
-        rows[0]["after_scene"] = [[2, 1, 5, 2, 5, 2]]
+        rows[0]["before_scene"] = [[2, 1, 3, 2, 3, 2], [6, 1, 30, 30, 30, 30]]
+        rows[0]["after_scene"] = [[2, 1, 5, 2, 5, 2], [6, 1, 30, 30, 30, 30]]
         report = diagnose_nonunit_veto(rows)
-        self.assertEqual(report["total"]["role_rejections"].get("no_anchor"), 1)
+        self.assertEqual(report["total"]["role_rejections"].get("area_rank_ambiguous"), 1)
         self.assertEqual(report["total"]["role_eligible_moves"], 1)
         self.assertEqual(report["per_game"][FROZEN_GAMES[2]]["two_donor_rules"], 0)
 
