@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T07:15:19.560Z",
+  "updated_at": "2026-10-27T08:14:34.240Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,17 +69,18 @@
     }
   ],
   "next_experiment": {
-    "id": "falsify_cross_game_causal_transfer",
-    "goal": "Before any policy change, evaluate explicit competing action-effect hypotheses with leave-one-public-game-out training versus within-game prequential replay/static on the existing frozen traces. Freeze scoring and abstention rules before evaluating, and report per-game gains/regressions and lack of progress evidence.",
+    "id": "test_cross_game_representation_support_before_policy",
+    "goal": "Predeclare a representation-level counterfactual: test whether geometry-relative, action-conditioned object relations generate shared donor support across multiple public games, versus exact signature, static and within-game replay controls. Require multi-game nonregression and actual level-progress evidence before any policy A/B.",
     "constraints": [
       "no game-ID-specific heuristics",
-      "no per-game tuning after viewing outcomes",
-      "test-first",
       "no current-outcome leakage",
-      "no policy import",
+      "no target-game donor leakage",
+      "test-first",
+      "shadow only",
+      "no automatic policy promotion",
       "no spend",
       "no Kaggle submission",
-      "reject regression"
+      "record zero-support and regressions as negative evidence"
     ]
   },
   "sync_protocol": [
@@ -1000,6 +1001,72 @@
         ],
         "interpretation": "Positive aggregate +23 is entirely concentrated in re86, with no gain in eight other public games and no level progress. This is second distinct public-trace concentration (prior sp80 +54, dc22 -2). It does not demonstrate cross-game causal transfer, policy value or hidden Kaggle performance."
       }
+    },
+    "cross_game_leave_one_public_game_out": {
+      "status": "REAL_PUBLIC_TRACE_NEGATIVE_NO_CROSS_GAME_TRANSFER_SHADOW_ONLY",
+      "protocol": "arc-agi3.cross-game-leave-one-out-v1",
+      "module": "competitions/arc-agi-3/experiments/cross_game_transfer_audit.py",
+      "tests": "competitions/arc-agi-3/tests/test_cross_game_transfer_audit.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "method": "Leave each of nine frozen PUBLIC games out of ALL donor learning; compare matched static, prior within-game replay->one-object-effect->static, and donor-consensus transfer requiring one or two distinct donor games. Match action (including exact ACTION6 x,y), object signature and level; reject static/conflicting evidence and ambiguous objects; target-local baseline learns only after scoring. No policy import.",
+      "test_first": {
+        "red_contract_run": 40471673656,
+        "red_cause": "ModuleNotFoundError: No module named cross_game_transfer_audit",
+        "initial_green_failure_run": 40471870772,
+        "initial_green_failure": "One test fixture mistakenly expected no donor forecast on first previously unseen target action; fixture corrected before final GREEN.",
+        "green_contract_run": 40472052560,
+        "green_contract_tests": "141/141 PASS"
+      },
+      "verification": {
+        "implementation_head": "69698acca8fdaa6364d88aad1e6c9b3ab7eeaf17",
+        "contract": {
+          "run": 40472052560,
+          "status": "SUCCESS",
+          "tests": "141/141"
+        },
+        "system_proof": {
+          "run": 40472052537,
+          "status": "SUCCESS"
+        },
+        "public_replication": {
+          "run": 40472052476,
+          "status": "SUCCESS"
+        },
+        "unchanged_public_smoke": {
+          "run": 40472052454,
+          "status": "SUCCESS"
+        },
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "trace_records": 864,
+        "reset_records": 7,
+        "same_level_records": 857,
+        "level_advances": 0
+      },
+      "matched_forecasts": {
+        "static_correct": 330,
+        "within_game_baseline_correct": 362,
+        "one_donor_unanimous_correct": 362,
+        "two_donor_unanimous_correct": 362,
+        "one_donor_used_forecasts": 0,
+        "two_donor_used_forecasts": 0,
+        "one_donor_correct_forecasts": 0,
+        "two_donor_correct_forecasts": 0,
+        "games_with_two_donor_forecasts": 0,
+        "strict_positive_games": 0,
+        "strict_negative_games": 0,
+        "strict_supporting_rules_per_heldout_game": 0,
+        "single_donor_rule_support_in_eight_heldout_games": 2,
+        "single_donor_rule_support_in_re86": 0
+      },
+      "acceptance": "REJECT_POLICY_INTEGRATION",
+      "interpretation": "No learned cross-game one-object displacement produced an applicable held-out forecast on 857 same-level transitions. Even the permissive one-donor variant had 0 applicable forecasts; requiring two independent donor games yielded zero consensus movement rules. Exact matched baseline remained 362/857, versus static 330/857. This falsifies applicability of the CURRENT exact action+color/area/width/height displacement representation on this nine-game PUBLIC trace, not general cross-game causality or all world-model transfer. No progress events, no gameplay A/B, no hidden Kaggle score.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Nine PUBLIC games already included in previous aggregate 25-game benchmark; not an uncontaminated holdout.",
+        "Donor evidence can come from later chronological episodes of other games, so leave-one-game-out independence is not global temporal prequentiality.",
+        "Zero applicable forecasts does not imply zero latent transferable mechanics; object signatures/action semantics may be incomparable across games.",
+        "No Kaggle submission, spend, token request, terms, licensing/publication or policy mutation."
+      ]
     }
   }
 }
