@@ -37,7 +37,8 @@ class CounterfactualProbeReadinessTests(unittest.TestCase):
     def choose(self, **changes):
         args = dict(before=self.before, level=0, target_game="target",
                     legal_actions=("ACTION3",), witnesses=self.donors,
-                    observed_reversals=self.reversals, current_turn=3,\n                    episode_start_turn=0)
+                    observed_reversals=self.reversals, current_turn=3,
+                    episode_start_turn=0)
         args.update(changes)
         return propose_probe(**args)
 
