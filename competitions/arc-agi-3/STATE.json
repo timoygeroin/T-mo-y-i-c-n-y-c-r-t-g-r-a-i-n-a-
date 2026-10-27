@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T17:15:20Z",
+  "updated_at": "2026-10-27T18:18:56Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,17 +69,15 @@
     }
   ],
   "next_experiment": {
-    "id": "conditional_nonstatic_effect_falsification",
-    "goal": "Compare explicit conditional world hypotheses on the same frozen public donor evidence: whether static/nonstatic conflicts reflect missing observable context (before-scene relation or action history) versus genuinely incompatible effects. Predeclare test-first shadow-only matched counterfactuals and reject any representation that cannot produce independent donor agreement without target leakage.",
+    "id": "action_history_conditional_world_hypotheses",
+    "goal": "Test-first shadow-only compare action-history/scene-change observable context against unconditional static/nonstatic donor contradictions, preserving exact ACTION6, target exclusion and frozen controls. Reject if no independent predictive evidence.",
     "constraints": [
-      "test-first RED then GREEN",
-      "single reversible diagnostic",
-      "frozen PUBLIC trace and unchanged controls",
-      "independent donor-game accounting",
-      "static/conflict veto retained unless justified by held-out evidence",
-      "no automatic policy promotion",
-      "revert regressions and record negative evidence",
-      "no Kaggle submission or spend"
+      "frozen PUBLIC trace",
+      "no target outcome leakage",
+      "no game-ID heuristics",
+      "independent donor games",
+      "no agent change without matched-budget gameplay A/B",
+      "no Kaggle submission/spend"
     ]
   },
   "sync_protocol": [
@@ -1608,6 +1606,73 @@
         "Public frozen sample only; donor evidence can be globally later",
         "Key exposure counts are not independent game outcomes",
         "No causal intervention, hidden evaluation, or score improvement"
+      ]
+    },
+    "conditional_geometry_conflict_audit": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.geometry-conditioned-donor-conflicts-v1",
+      "hypotheses": [
+        "H0_unconditional_conflict",
+        "H1_bounds_conditioned",
+        "H2_bounds_and_bbox_occupancy_conditioned"
+      ],
+      "test_first": {
+        "red_commit": "8e49eb52cfddbb808a846d1a587da73a2dcd450c",
+        "red_run": 40558006931,
+        "red_reason": "expected ModuleNotFoundError for absent conditional_world_conflict_audit",
+        "implementation_commit": "dc2b01eaf1e1a0a32f1e40886f356c7510405ad1",
+        "workflow_commit": "812559a7f2ec90f46c3462103ba139c3e61d60a3",
+        "green_tests": "221/221"
+      },
+      "ci": {
+        "contract_run": 40558393539,
+        "system_run": 40558393484,
+        "official_public_smoke_run": 40558393519,
+        "frozen_nine_public_run": 40558393609,
+        "all": "SUCCESS",
+        "artifact_id": 12757544026
+      },
+      "public_trace": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "witnesses": 1318,
+        "per_heldout_target_key_exposures_not_independent_transitions": {
+          "exact": {
+            "mixed": 35,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 3
+          },
+          "action": {
+            "mixed": 31,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 12
+          },
+          "role": {
+            "mixed": 32,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 13
+          },
+          "both": {
+            "mixed": 9,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 7
+          }
+        },
+        "two_independent_moving_donor_keys_after_collision_conditioning": 0
+      },
+      "interpretation": "Neither pre-action 64x64 boundary feasibility nor coarse destination bounding-box occupancy explains ANY of the mixed static/nonstatic projected donor keys on frozen PUBLIC data. Counts are repeated per-heldout-target key exposures. Negative evidence for THESE geometry-conditioned hypotheses, not all contextual world models. No donor forecasts or gameplay gain claimed.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "limitations": [
+        "Public post-hoc trace, no hidden holdout or randomized intervention",
+        "Donor games may be later in global chronology",
+        "Bounding-box collision is conservative and may not represent game semantics",
+        "No Kaggle submission, spend, tokens, terms, legal/license/publication decision, prize, novelty or income claim"
       ]
     }
   }
