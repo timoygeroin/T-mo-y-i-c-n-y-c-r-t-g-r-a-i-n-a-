@@ -15,7 +15,9 @@ on:
       - 'competitions/arc-agi-3/experiments/conditional_world_conflict_audit.py'
       - 'competitions/arc-agi-3/experiments/history_conditioned_conflicts.py'
       - 'competitions/arc-agi-3/experiments/relational_world_factorization.py'
+      - 'competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py'
       - 'competitions/arc-agi-3/tests/test_relational_world_factorization.py'
+      - 'competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py'
       - 'competitions/arc-agi-3/tests/test_history_conditioned_conflicts.py'
       - 'competitions/arc-agi-3/tests/test_projected_donor_consensus_diagnostic.py'
       - 'competitions/arc-agi-3/tests/test_conditional_world_conflict_audit.py'
@@ -45,6 +47,9 @@ jobs:
       - name: Run frozen protocol contract before public observations
         working-directory: competitions/arc-agi-3
         run: python -m unittest discover -s tests -p test_remaining_public_sample.py -v
+      - name: Verify three-world probe gate contracts before PUBLIC observations
+        working-directory: competitions/arc-agi-3
+        run: python -m unittest discover -s tests -p test_counterfactual_probe_readiness.py -v
       - name: Fetch official ARC starter
         run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
       - name: Install official ARC offline environment
@@ -109,6 +114,10 @@ jobs:
         run: |
           set -o pipefail
           python competitions/arc-agi-3/experiments/relational_world_factorization.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relational-worlds.json
+      - name: Audit pre-action three-world disagreement and witnessed reversal gate (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-probe-readiness.json
       - name: Preserve public-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -130,5 +139,6 @@ jobs:
             arc-agi3-remaining-public-conditional-conflicts.json
             arc-agi3-remaining-public-history-conflicts.json
             arc-agi3-remaining-public-relational-worlds.json
+            arc-agi3-remaining-public-probe-readiness.json
             arc-agi3-remaining-public-trace.sha256
           if-no-files-found: ignore
