@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T15:15:13Z",
+  "updated_at": "2026-10-27T16:10:43Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "matched_action_role_overlap_counterfactual_design",
-    "goal": "Preregister a shadow-only, test-first matched counterfactual that separately measures exact action/level overlap and unranked nearest-anchor role overlap while retaining donor unanimity/static conflict, target exclusion, frozen trace and strong local controls. No heuristic game-ID mapping or automatic policy integration.",
+    "id": "projected_donor_consensus_failure_decomposition",
+    "goal": "Diagnose whether zero projected donor rules is caused by fewer than two independent donor games per projected key, static-effect veto, or contradictory nonstatic effects. Predeclare a read-only test-first partition of projected support with frozen public controls; do not relax policy or choose game-ID heuristics.",
     "constraints": [
       "test-first RED then GREEN",
-      "single reversible change",
+      "single reversible diagnostic",
       "frozen PUBLIC trace",
-      "compare explicit competing world hypotheses",
-      "no agent policy promotion without independent predictive evidence",
-      "revert regressions and retain negative evidence",
+      "independent donor-game accounting",
+      "static and contradictory effect veto",
+      "no automatic policy promotion",
+      "revert regressions and preserve negative evidence",
       "no Kaggle submission or spend"
     ]
   },
@@ -1457,6 +1458,70 @@
         "Donor observations can be globally later than target.",
         "Action/role veto counts are sequential and gate-order dependent; no policy benefit established.",
         "No Kaggle submission, money, tokens, legal/license/publication decision, prize, novelty or income claim."
+      ]
+    },
+    "action_role_projected_counterfactual": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.action-role-projected-counterfactual-v1",
+      "hypothesis": "Separately remove exact non-click action, exact relative role, or both from donor matching while preserving level, ACTION6 coordinates, >=2 independent other games, unanimous nonstatic effect, unique candidate, bounds and prequential local precedence.",
+      "hypotheses": [
+        "static",
+        "within_game_replay_effect_static",
+        "exact_action_exact_role",
+        "action_ablated_role_exact",
+        "action_exact_role_ablated",
+        "action_and_role_ablated"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py",
+        "competitions/arc-agi-3/tests/test_action_role_counterfactual_audit.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "test_first": {
+        "red_commit": "a411af1d8f1ac199b89ea516d42c60c2658dfc3b",
+        "red_run": 40537863642,
+        "red_expected_error": "ModuleNotFoundError for action_role_counterfactual_audit",
+        "green_commit": "907f6f29efa7a8707fe10d2c20e8a4b83c5ed8b0",
+        "contract_run": 40538018917,
+        "contract_tests": "204/204 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40538018905,
+        "official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40538018904,
+        "frozen_public_replication": "SUCCESS",
+        "frozen_run": 40538018940,
+        "artifact_id": 12749621281,
+        "artifact_sha256": "bd273da93a6b5aea9a3568c8a1198688018331bd36027d70ccc84facf0f4de61"
+      },
+      "frozen_public": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "static_correct": 330,
+        "within_game_correct": 362,
+        "exact_correct": 362,
+        "action_ablated_correct": 362,
+        "role_ablated_correct": 362,
+        "both_ablated_correct": 362,
+        "exact_forecasts": 0,
+        "action_ablated_forecasts": 0,
+        "role_ablated_forecasts": 0,
+        "both_ablated_forecasts": 0,
+        "two_donor_unanimous_nonstatic_projected_rules_per_target": 0
+      },
+      "interpretation": "None of four projected donor representations produces an eligible >=2-other-game unanimous nonstatic rule or applicable held-out forecast on this frozen PUBLIC trace. No gain or regression. This is negative evidence for these isolated projected representations, not proof cross-game causal structure is absent. Synthetic test demonstrates action-only projection can predict when two agreeing donor games exist; conflicting/static witnesses and ambiguous roles abstain.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "limitations": [
+        "PUBLIC post-hoc donor observations may be globally later than target turns; not globally prequential.",
+        "ACTION6 coordinates deliberately remain exact; action ablation is only for non-click actions.",
+        "Projection changes representation, not a proven causal invariant.",
+        "No hidden holdout, Kaggle submission, money, token, terms or legal/publication decision."
       ]
     }
   }
