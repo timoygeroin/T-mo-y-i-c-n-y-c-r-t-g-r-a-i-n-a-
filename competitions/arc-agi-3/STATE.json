@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T06:17:17.069Z",
+  "updated_at": "2026-10-27T07:12:17.945Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,29 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "freeze_remaining_nine_public_games_before_detailed_traces",
-    "goal": "Evaluate the unchanged prequential one-object model on nine public games not yet used for detailed diagnostics, with 96 actions per game, without tuning after viewing results. Compare same-level matched static, exact replay and combined predictions per game, report confidence/abstentions and actual level progress. Do not integrate policy without separate matched-budget A/B.",
-    "sample_games": [
-      "su15",
-      "bp35",
-      "wa30",
-      "ft09",
-      "sk48",
-      "re86",
-      "m0r0",
-      "s5i5",
-      "sb26"
-    ],
-    "caveat": "All 25 public games already appeared in aggregate benchmark; disjoint detailed sample is NOT hidden or uncontaminated holdout.",
+    "id": "readback_frozen_nine_public_replication",
+    "goal": "Verify official CI artifact for the pre-frozen nine public games, validate exact roster/96-turn cap and per-game prediction delta versus replay, record negative generalization or pass gates without automatic policy promotion.",
     "constraints": [
-      "freeze sample and evaluation before running trace",
+      "do not tune after seeing nine-game trace",
       "test-first",
-      "no current-outcome leakage",
-      "RESET/game/level boundaries",
-      "no game-ID-specific tuning",
-      "no agent policy change",
+      "no policy change",
       "no spend",
-      "reject regression"
+      "no Kaggle submission",
+      "record per-game regression",
+      "readback CI and trace SHA256"
     ]
   },
   "sync_protocol": [
@@ -891,6 +878,46 @@
           "effect_nonstatic": 0
         }
       }
+    },
+    "remaining_public_replication": {
+      "status": "FROZEN_BEFORE_NEW_TRACE_CI_PENDING",
+      "protocol": "arc-agi3.remaining-public-v1",
+      "sample_games": [
+        "su15",
+        "bp35",
+        "wa30",
+        "ft09",
+        "sk48",
+        "re86",
+        "m0r0",
+        "s5i5",
+        "sb26"
+      ],
+      "max_actions_per_game": 96,
+      "sample_definition": "Exact complement of 2 diagnostic + 6 spatial + 8 prospective public games in official 25-game roster; frozen before reading these nine detailed traces.",
+      "protocol_code": "competitions/arc-agi-3/experiments/remaining_public_sample.py",
+      "contract_tests": "competitions/arc-agi-3/tests/test_remaining_public_sample.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "test_first": "Local import RED (ModuleNotFoundError) before implementation; 9/9 GREEN on frozen selection, no-leak, RESET, ordering, roster and 96-turn guards. CI result pending.",
+      "frozen_gates": {
+        "min_positive_games": 3,
+        "max_negative_games": 0,
+        "min_effect_forecasts": 30,
+        "min_games_with_effect_forecasts": 3,
+        "min_progress_events": 3,
+        "automatic_policy_promotion": false
+      },
+      "controls": [
+        "No per-game model tuning",
+        "Unchanged prequential exact replay then conservative one-object effect then static",
+        "One evaluator instance per game, reset on level and RESET",
+        "Exact ACTION6 coordinates retained",
+        "Per-game correct counts and regressions mandatory",
+        "No policy import, no Kaggle action"
+      ],
+      "caveat": "All 25 games already appeared in public aggregate benchmark; nine detailed games are not hidden or uncontaminated holdout.",
+      "evidence": "Local synthetic contracts only until official public CI readback",
+      "effect_on_agent": "NONE_SHADOW_ONLY"
     }
   }
 }
