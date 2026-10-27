@@ -72,7 +72,7 @@ class RelationalWorldTests(unittest.TestCase):
         w = [witness("g1", (1, 0), (1, 0)),
              witness("g2", (1, 0), (1, 0))]
         rules = donor_rules(w, "target", "absolute")
-        before = ((1,1,63,10,63,10),(2,1,61,10,61,10))
+        before = ((1,1,63,10,63,10),(2,2,61,10,62,10))
         self.assertIsNone(predict_scene(before, 0, "ACTION3", rules, "absolute"))
 
     def test_invalid_hypothesis_fails_closed(self):
