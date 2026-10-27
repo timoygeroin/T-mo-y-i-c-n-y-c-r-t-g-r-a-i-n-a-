@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T11:08:00Z",
+  "updated_at": "2026-10-27T12:10:48.855Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,16 @@
     }
   ],
   "next_experiment": {
-    "id": "nonunit_relative_role_veto_ladder",
-    "goal": "Diagnose which remaining veto blocks nonunit cardinal donor witnesses (role eligibility, action-level overlap, static/conflicting evidence, exact target role overlap), with read-only counters and no relaxation/policy import. Compare per-game and held-out keys without using target outcomes for donor learning.",
+    "id": "relative_area_rank_single_relaxation_counterfactual",
+    "goal": "Predeclare and test one shadow-only counterfactual: relax ONLY strict smallest/largest area rank for moved-object roles, retaining unique nearest anchor, duplicate-role abstention, exact action including ACTION6 coordinates, level, donor consensus, static/conflict veto and held-out exclusion. Compare against current nonunit relative/static/within-game controls on frozen PUBLIC trace; report per-game forecasts, conflicts, regression and progress.",
     "constraints": [
-      "test-first",
-      "shadow-only",
+      "test-first RED then GREEN",
+      "one isolated representation change",
       "frozen public trace",
       "no game-ID heuristics",
-      "record negative evidence",
+      "explicit counterfactual competing hypotheses",
       "no automatic policy promotion",
+      "record negative results",
       "no Kaggle submission or spend"
     ]
   },
@@ -1252,6 +1253,82 @@
         "Donor observations can be later globally; leave-one-game-out only",
         "No intervention or gameplay A/B",
         "No Kaggle submission, spending, tokens, terms, licensing or publication"
+      ]
+    },
+    "nonunit_veto_ladder": {
+      "status": "VERIFIED_FROZEN_PUBLIC_SHADOW_ALL_NONUNIT_MOTION_ROLE_REJECTED",
+      "protocol": "arc-agi3.nonunit-cardinal-veto-ladder-v1",
+      "paths": [
+        "competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py",
+        "competitions/arc-agi-3/tests/test_nonunit_veto_diagnostics.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "hypothesis": "Post-hoc decompose existing nonunit-cardinal donor failures into movement-role eligibility, exact action/level, relative-role overlap, independent donor support and static/conflicting evidence without relaxing any gate.",
+      "test_first": {
+        "red_commit": "547615631e78e14b50e6dfeeed46293130088409",
+        "red_run": 40501026591,
+        "red_result": "EXPECTED ModuleNotFoundError for absent nonunit_veto_diagnostics",
+        "initial_green_failure_run": 40501196169,
+        "initial_green_failure": "Synthetic single-object scene classified as global translation, not one-object translation; fixture corrected to two objects with ambiguous area rank. No agent regression.",
+        "final_contract_run": 40501355422,
+        "final_contract": "SUCCESS 174/174"
+      },
+      "implementation_commits": {
+        "module": "5b29a71fd73db0c3ace7748b316d4355254fda16",
+        "workflow": "3fa15619555067499f9f53a3fb1b09189f88385e",
+        "fixture_correction": "3172eb1b5f928642bebb3b244fc2b297b881a34f"
+      },
+      "ci": {
+        "contract": {
+          "run": 40501355422,
+          "status": "SUCCESS",
+          "tests": "174/174"
+        },
+        "system_proof": {
+          "run": 40501355712,
+          "status": "SUCCESS"
+        },
+        "frozen_public": {
+          "run": 40501355419,
+          "status": "SUCCESS",
+          "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+        },
+        "unchanged_public_smoke": {
+          "run": 40501355593,
+          "status": "SUCCESS",
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "public_evidence": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "single_object_nonunit_cardinal_moves": 54,
+        "movement_by_game": {
+          "m0r0": 29,
+          "re86": 25
+        },
+        "role_eligible_moves": 0,
+        "role_rejected_moves": 54,
+        "role_rejection_reasons": {
+          "area_rank_ambiguous": 54
+        },
+        "donor_nonzero_keys_per_heldout_game": 0,
+        "donor_action_level_overlap": 0,
+        "donor_exact_role_key_overlap": 0,
+        "one_donor_rules": 0,
+        "two_donor_rules": 0,
+        "delta_vs_existing_model": 0
+      },
+      "interpretation": "All 54 observed nonunit cardinal one-object movements fail the existing strict relative area-rank role assignment (29 m0r0, 25 re86). No nonzero donor movement keys reach action/level or donor-consensus stages. Those later gates are unidentifiable on this sample, not proven sufficient. This is PUBLIC post-hoc eligibility evidence, not cross-game causal generalization, policy gain or hidden score.",
+      "acceptance": "REJECT_POLICY_INTEGRATION",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "PUBLIC previously aggregate-benchmarked trace, not hidden/uncontaminated holdout.",
+        "Donor outcomes may occur globally after held-out target episodes.",
+        "Area-rank veto is first observed remaining bottleneck; relaxing it is untested and may not improve any prediction.",
+        "No Kaggle submission, spend, tokens, terms, legal/license/publication, prize or income claim."
       ]
     }
   }
