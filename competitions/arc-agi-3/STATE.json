@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T14:11:12.293Z",
+  "updated_at": "2026-10-27T15:15:13Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,15 @@
     }
   ],
   "next_experiment": {
-    "id": "unranked_area_donor_consensus_veto_diagnostic",
-    "goal": "Read-only decompose why zero two-donor nonstatic rules remain after the area-rank-only ablation: exact action/level overlap, duplicate nearest-anchor roles, static/conflict veto and independent-donor support. Keep all prior hypotheses and frozen public controls; no further relaxation or policy promotion without test-first independent evidence.",
+    "id": "matched_action_role_overlap_counterfactual_design",
+    "goal": "Preregister a shadow-only, test-first matched counterfactual that separately measures exact action/level overlap and unranked nearest-anchor role overlap while retaining donor unanimity/static conflict, target exclusion, frozen trace and strong local controls. No heuristic game-ID mapping or automatic policy integration.",
     "constraints": [
       "test-first RED then GREEN",
-      "one reversible shadow-only diagnostic",
-      "frozen public trace",
-      "no game-ID heuristics",
-      "no automatic policy promotion",
-      "negative evidence retained",
+      "single reversible change",
+      "frozen PUBLIC trace",
+      "compare explicit competing world hypotheses",
+      "no agent policy promotion without independent predictive evidence",
+      "revert regressions and retain negative evidence",
       "no Kaggle submission or spend"
     ]
   },
@@ -1386,6 +1386,77 @@
         "Other donor games may be chronologically later than held-out target.",
         "No new level advances, no matched-budget gameplay A/B.",
         "No Kaggle submission, money, tokens, terms, license/publication decision, prize or income claim."
+      ]
+    },
+    "unranked_donor_veto_attribution": {
+      "status": "VERIFIED_PUBLIC_SHADOW_DIAGNOSTIC_NO_TRANSFER",
+      "protocol": "arc-agi3.unranked-donor-veto-attribution-v1",
+      "paths": [
+        "competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py",
+        "competitions/arc-agi-3/tests/test_unranked_donor_veto.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "hypotheses": [
+        "H0_no_cross_game_support",
+        "H1_action_level_mismatch",
+        "H2_relative_role_mismatch",
+        "H3_insufficient_independent_donors",
+        "H4_static_or_conflicting_effect",
+        "H5_eligible_two_donor_key"
+      ],
+      "test_first": {
+        "red_commit": "ba369d071ad3b3a0316329dc63bdde41d2039871",
+        "red_contract_run": 40528359902,
+        "red_result": "EXPECTED ModuleNotFoundError for missing unranked_donor_veto_diagnostic",
+        "initial_green_commit": "06326861dd973be21ae07c6d03c801301db43e23",
+        "initial_green_run": 40528606694,
+        "fixture_correction": "Synthetic ACTION2 absent from fixture legal_actions; corrected without changing agent",
+        "fixture_fix_commit": "a61a4d199a327e6bb50743e97fb691b1d7c4700e",
+        "final_contract_run": 40528861555,
+        "final_contract": "SUCCESS 195/195"
+      },
+      "ci": {
+        "system_run": 40528861638,
+        "system": "SUCCESS",
+        "frozen_public_run": 40528861537,
+        "frozen_public": "SUCCESS",
+        "artifact_id": 12744139913,
+        "artifact_zip_sha256": "16c9af849fdfdf3775155eb9ee49fd4918097f16641054394676ab1983125eee",
+        "unchanged_public_smoke_run": 40528861660,
+        "unchanged_public_smoke": "SUCCESS"
+      },
+      "public_trace": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "source_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "cardinal_single_object_moves": 54,
+        "unranked_role_eligible_moves": 42,
+        "unranked_role_rejected_moves": 12,
+        "prior_unranked_forecasts": 0,
+        "per_heldout_game_nonzero_candidate_key_veto_counts": {
+          "action_level_mismatch": 50,
+          "relative_role_mismatch": 28,
+          "insufficient_independent_donor_games": 7,
+          "static_or_conflicting_effect": 3,
+          "eligible_two_donor_key": 0
+        },
+        "total_per_target_candidate_key_exposures": 88
+      },
+      "interpretation": "After only removing strict area rank, 42/54 observed cardinal single-object movements have eligible unranked roles, but zero eligible two-donor target keys and zero forecasts. On the frozen nine-game PUBLIC trace, the ordered per-heldout-target nonzero candidate-key veto partition is 50 exact action/level mismatches, 28 relative-role mismatches, 7 insufficient independent donor games, 3 static/conflicting effects, zero eligible keys. These 88 counts are repeated per-target key exposures, NOT 88 independent transitions or predictions. The attribution order affects categories; not a proof of which isolated relaxation would improve forecasting. No agent change or policy promotion.",
+      "unchanged_agent_public": {
+        "games": 25,
+        "cap": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "acceptance": "VERIFIED_NEGATIVE_LESSON_NO_POLICY_INTEGRATION",
+      "limitations": [
+        "PUBLIC post-hoc trace already aggregate benchmarked; not hidden holdout or prospective causal intervention.",
+        "Donor observations can be globally later than target.",
+        "Action/role veto counts are sequential and gate-order dependent; no policy benefit established.",
+        "No Kaggle submission, money, tokens, legal/license/publication decision, prize, novelty or income claim."
       ]
     }
   }
