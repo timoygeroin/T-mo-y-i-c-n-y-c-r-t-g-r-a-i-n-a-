@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T22:09:32Z",
+  "updated_at": "2026-10-27T23:14:52.535Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -1889,6 +1889,50 @@
       "constraints": [
         "No new game action or policy import",
         "No hidden Kaggle submission, spend, tokens, terms, license/publication decision, prize or income claim"
+      ]
+    },
+    "episode_scoped_reversal_gate": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.reversal-proof-episode-scope-v1",
+      "purpose": "Reject A->B->A reversal proofs from an earlier RESET/level/discontinuous episode even when game, level, exact action, and object scene match.",
+      "paths": [
+        "competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py",
+        "competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py"
+      ],
+      "behavior": "propose_probe requires explicit integer episode_start_turn, 0<=episode_start_turn<=current_turn; every reversal proof must start on/after this boundary, have adjacent start/restored turns and finish strictly before current_turn. The public shadow auditor resets episode_start_turn on discontinuity, RESET and level advance. Missing/malformed/future/cross-episode proof abstains.",
+      "test_first": {
+        "initial_test_fixture_typo_commit": "28f79ac8c641d775dd4d375288136a322c607603",
+        "typo_failure_run": 40600094162,
+        "corrected_red_commit": "a9964718a787f0632dffe6fc0437d525b9be90e6",
+        "red_contract_run": 40600232202,
+        "red_result": "EXPECTED semantic TypeError: propose_probe missing episode_start_turn (21 errors); fixture syntax typo corrected before implementation",
+        "implementation_commit": "8ee06a3691ece485f9a959bfbdf75cc87af139bd",
+        "green_contract_run": 40600394323,
+        "green_tests": "255/255 PASS",
+        "system_proof_run": 40600394296,
+        "unchanged_official_public_smoke_run": 40600394320,
+        "frozen_public_replication_run": 40600395107,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "observed_reversal_proofs": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probe_candidates": 0,
+        "comparison": "UNCHANGED_FROM_PRIOR_CHECKPOINT"
+      },
+      "unchanged_agent_public_suite": {
+        "games": 25,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "interpretation": "Confirmed a synthetic cross-episode proof-acceptance gap in the external shadow-probe API; closed with explicit episode boundary and tested abstention. No new independent causal evidence, gameplay gain, or policy promotion.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "constraints": [
+        "No new gameplay action or policy import",
+        "No Kaggle submission, spend, token, terms, license/publication decision, hidden score, prize or income claim"
       ]
     }
   }
