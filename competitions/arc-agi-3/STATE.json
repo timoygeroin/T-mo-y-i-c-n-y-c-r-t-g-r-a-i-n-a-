@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T05:30:54Z",
+  "updated_at": "2026-10-27T05:49:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,15 +69,15 @@
     }
   ],
   "next_experiment": {
-    "id": "falsify_static_world_hypothesis_dominance",
-    "goal": "Explain and test why explicit causal world-hypothesis shadow predicts only static outcomes on the new 768-record public trace; add concrete action-effect alternatives with test-first matched static controls, not generic curiosity. Keep policy unchanged until held-out predictive and matched gameplay gains.",
+    "id": "prequential_single_object_effect_models_with_matched_static_and_replay_controls",
+    "goal": "Test whether prior action-conditioned one-object translations can predict future object scenes on the SAME fixed public trace before outcome, against static and exact replay, with RESET/game/level boundaries; then require a new disjoint sample before any policy integration.",
     "constraints": [
       "test-first",
       "reversible",
       "offline",
       "no game-id-specific heuristics",
-      "RESET is episode boundary",
-      "no future leakage",
+      "no current-outcome leakage",
+      "no cross-episode transfer",
       "no policy integration without matched gameplay improvement",
       "no spend"
     ]
@@ -705,6 +705,61 @@
         "No causal interventions or matched gameplay policy A/B.",
         "No Kaggle final submission, prize, licensing/publication, spend or income claim."
       ]
+    },
+    "concrete_action_effect_coverage": {
+      "status": "REAL_PUBLIC_TRACE_SHADOW_DIAGNOSTIC_VERIFIED_NO_POLICY_INTEGRATION",
+      "module": "competitions/arc-agi-3/experiments/effect_coverage_audit.py",
+      "tests": "competitions/arc-agi-3/tests/test_effect_coverage_audit.py",
+      "test_first_red_commit": "7a6054f0e111ea849515964e2fd5e621f9c6ad46",
+      "implementation_commit": "5021bd8a0f1f66664e788867772f499e1c131886",
+      "frozen_input": {
+        "origin": "GitHub Actions run 40456155541, artifact 12712980381, previously frozen eight-game prospective public trace",
+        "archive_sha256": "444e5bdd6d67e0b7456f8e7cc37937b7fe3c9a1c28c7943d8154b1e3417ecb32",
+        "trace_sha256": "cbf8fab991718ccb036e37caf2922b497d5bacd3e60b7a80b620990fc8dcc5bb",
+        "zip_crc": "PASS",
+        "game_count": 8,
+        "transition_records": 768
+      },
+      "observed_effect_classes": {
+        "same_level_records": 761,
+        "reset_records": 6,
+        "level_advance_records": 1,
+        "static": 228,
+        "global_translate": 0,
+        "global_recolor": 0,
+        "single_object_translate": 143,
+        "single_object_recolor": 0,
+        "object_count_change": 105,
+        "unexplained": 285,
+        "posthoc_global_expressible_including_static": 228,
+        "posthoc_global_or_single_expressible_including_static": 371
+      },
+      "prequential_exact_scene_action_replay": {
+        "evaluated_repeated_contexts": 84,
+        "exact_correct": 78,
+        "static_correct_on_same_contexts": 0,
+        "nonstatic_replay_predictions": 80,
+        "conflicting_contexts_fell_back_to_static": 4,
+        "scope": "same contiguous game+level episode; RESET clears memory; ACTION6 exact coordinates",
+        "warning": "Repeated-context subset is highly selected, not a full-suite forecast or independent holdout; no policy score improvement shown."
+      },
+      "evidence": {
+        "local_test_first": "Missing-module import RED then 10/10 GREEN",
+        "github_test_first_red": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457033098",
+        "github_contract_green": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457089567",
+        "github_contract_tests": "112/112 PASS",
+        "github_system_proof": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457089789",
+        "github_public_smoke": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457089844",
+        "real_trace_audit_execution": "Independent local Python execution against byte-verified GitHub Actions artifact; not a GitHub workflow step",
+        "unchanged_agent_public_suite": {
+          "games": 25,
+          "cap": 120,
+          "completed_first_levels": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "interpretation": "Existing global static/whole-scene translate/recolor hypothesis family has no nonstatic post-hoc coverage in this 761-transition public trace; one-object translations explain 143 additional outcomes post hoc, while 105 change object count and 285 remain unexplained. Exact scene+action replay predicts 78/84 repeated contexts correctly using only earlier observations, vs static 0/84 on those same selected contexts. This diagnoses representational mismatch and reusable local action effects; it does NOT prove causal generalization, reversibility, policy benefit, hidden score, novelty or income.",
+      "effect_on_agent": "NONE_SHADOW_ONLY"
     }
   }
 }
