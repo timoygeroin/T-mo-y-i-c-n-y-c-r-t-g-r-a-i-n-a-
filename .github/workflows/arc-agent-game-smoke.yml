@@ -82,6 +82,10 @@ jobs:
           set -o pipefail
           python competitions/arc-agi-3/experiments/shadow_trace.py arc-agi3-prospective-public-transition-traces.jsonl | tee arc-agi3-prospective-causal-shadow.json
           python competitions/arc-agi-3/experiments/action_conditioned_audit.py arc-agi3-prospective-public-transition-traces.jsonl | tee arc-agi3-prospective-action-control.json
+      - name: Prequential one-object action effects vs exact replay and static (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/single_object_prequential.py arc-agi3-prospective-public-transition-traces.jsonl | tee arc-agi3-prospective-single-object-control.json
       - name: All-public-game benchmark (120 actions per game)
         working-directory: arc-starter
         run: |
@@ -118,6 +122,7 @@ jobs:
             arc-agi3-prospective-public-transition-traces.jsonl
             arc-agi3-prospective-causal-shadow.json
             arc-agi3-prospective-action-control.json
+            arc-agi3-prospective-single-object-control.json
             arc-agi3-public-game-extended.log
             arc-agi3-public-games.log
             arc-agi3-public-suite.log
