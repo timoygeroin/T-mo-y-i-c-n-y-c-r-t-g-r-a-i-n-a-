@@ -15,7 +15,7 @@ import re
 
 PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v1"
 WORLDS = ("H0_static", "H1_absolute", "H2_anchor_relative")
-PLAN_KEYS = frozenset(("game", "episode", "turn", "before",
+PLAN_KEYS = frozenset(("game", "episode", "control_episode", "turn", "before",
                        "treatment_action", "control_action",
                        "donor_snapshot_sha256", "forecasts"))
 OUTCOME_KEYS = frozenset(("game", "episode", "turn", "before", "action", "after"))
@@ -112,7 +112,12 @@ def seal_trial(plan):
     if not all(_single_cardinal_translation(before, normalized[h])
                for h in WORLDS[1:]):
         raise ValueError("moving-world forecast must be one cardinal rigid translation")
-    sealed_plan = dict(game=_text(plan["game"]), episode=_text(plan["episode"]),
+    episode = _text(plan["episode"])
+    control_episode = _text(plan["control_episode"])
+    if control_episode == episode:
+        raise ValueError("control episode must be distinct and precommitted")
+    sealed_plan = dict(game=_text(plan["game"]), episode=episode,
+                       control_episode=control_episode,
                        turn=plan["turn"], before=before,
                        treatment_action=treatment, control_action=control,
                        donor_snapshot_sha256=donor, forecasts=normalized)
@@ -145,7 +150,8 @@ def evaluate_pair(sealed, treatment, control):
     plan = original["plan"]
     a, b = _outcome(treatment), _outcome(control)
     if (a["game"] != plan["game"] or b["game"] != plan["game"] or
-            a["episode"] != plan["episode"] or b["episode"] == a["episode"] or
+            a["episode"] != plan["episode"] or
+            b["episode"] != plan["control_episode"] or
             a["turn"] != plan["turn"] or b["turn"] != plan["turn"] or
             a["before"] != plan["before"] or b["before"] != plan["before"] or
             a["action"] != plan["treatment_action"] or
