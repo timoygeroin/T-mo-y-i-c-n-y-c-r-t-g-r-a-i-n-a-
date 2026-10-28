@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T04:10:02Z",
+  "updated_at": "2026-10-28T05:23:37.710Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -76,13 +76,13 @@
     }
   ],
   "next_experiment": {
-    "id": "new_independent_public_donor_evidence_before_three_world_trial",
-    "goal": "Acquire genuinely new bounded PUBLIC pre-action observations under an outcome-blind, game-agnostic schedule and independent Git timestamp; require >=2 earlier OTHER donor games with nonstatic unanimous H1/H2 evidence before attempting a preregistered matched treatment/control trial.",
+    "id": "execute_outcome_blind_public_probe_when_safe_collector_available",
+    "goal": "Using the now Git-frozen public roster and legal-action-only schedule, collect genuinely new bounded PUBLIC episodes with an approved runner, independently timestamp trace provenance, score strict-prior H0/H1/H2, and only then consider a matched preregistered trial.",
     "constraints": [
-      "one existing PR and canonical C*",
-      "no game-ID heuristics or target-outcome leakage",
-      "test-first, bounded public actions, frozen controls, rollback on regression",
-      "no Kaggle submission/spend/terms/tokens"
+      "No collection was performed in this checkpoint",
+      "Do not bypass tool safety blocks",
+      "No automatic agent promotion or game-ID heuristics",
+      "No Kaggle submission, spending, terms, secrets or legal decisions"
     ]
   },
   "sync_protocol": [
@@ -2128,6 +2128,51 @@
       "policy_integration": "REJECTED_NO_NEW_EVIDENCE",
       "constraints": [
         "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "outcome_blind_public_probe_schedule": {
+      "status": "VERIFIED_CONTRACT_ONLY_COLLECTION_NOT_EXECUTED",
+      "protocol": "arc-agi3.outcome-blind-public-probe-v1",
+      "purpose": "Freeze a nine-PUBLIC-game, 24-turn-per-game, game-agnostic legal-action-only schedule and strictly chronological earlier-game H0/H1/H2 donor audit before collecting new episodes.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "350d013ff86d8247e9d6de312f9d24360e69cda5",
+        "red_run": 40636877880,
+        "red_result": "EXPECTED ModuleNotFoundError for missing prospective_probe_schedule; 273 tests",
+        "implementation_commit": "9b46a025d44573220fd559005d8c5358ffc6b02c",
+        "fixture_fix_commit": "42bf5e8dfea8c1fdaf2dc13d49db25cacdc978e7",
+        "fixture_fix_note": "Initial green attempt failed 1/280 because manifest field no_outcome_conditioning violated test's outcome-field-free key rule; renamed to action_inputs; no agent regression.",
+        "green_run": 40637247308,
+        "green_tests": "280/280 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40637247311,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40637247320,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40637247318
+      },
+      "frozen_contract": {
+        "sample_size": 9,
+        "action_horizon": 24,
+        "selection": "SHA256 of fixed seed + public game ID, never score-ranked",
+        "action_choice": "turn number and advertised legal set only; ACTION1..6 cyclic with deterministic fallback; ACTION6 fixed grid clicks",
+        "donor_gate": "only earlier completed OTHER public games, no future-game support or veto",
+        "trace_provenance": "plan SHA256 required in every record",
+        "automatic_policy_promotion": false
+      },
+      "collection_attempt": "A separate PUBLIC collector script write was blocked by tool safety checks; it was not committed or executed. Do not infer new observations.",
+      "new_independent_public_observations": 0,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "Pre-action research protocol and audit contracts verified; no prospective episode collected, no independent causal evidence, no policy gain.",
+      "constraints": [
+        "Existing draft PR only; no game-ID action heuristic or target-outcome leakage",
+        "No Kaggle submission, spend, token/secret request, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
       ]
     }
   }
