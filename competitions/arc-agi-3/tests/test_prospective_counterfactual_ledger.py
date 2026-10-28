@@ -251,5 +251,34 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertFalse(h1["causal_effect_proven"])
 
 
+    def test_world_pairs_report_which_action_arms_can_discriminate(self):
+        # Full paired-world fit can be treatment-only discrimination when all
+        # control predictions are identical; report this explicitly.
+        sealed = seal_trial(plan())
+        result = evaluate_pair(
+            sealed, outcome("ACTION3", "treatment-episode", scene(11)),
+            outcome("ACTION4", "control-episode", scene(10)))
+        pairs = result["pairwise_discriminating_arms"]
+        self.assertEqual(set(pairs), {
+            "H0_static|H1_absolute", "H0_static|H2_anchor_relative",
+            "H1_absolute|H2_anchor_relative"})
+        self.assertTrue(all(arms == ["treatment"] for arms in pairs.values()))
+        self.assertEqual(result["control_discriminating_pairs"], 0)
+        self.assertEqual(result["unique_paired_world_fit"], "H1_absolute")
+
+        # If control forecasts differ, report only the world pairs actually
+        # separated by the control action, not a blanket two-arm claim.
+        p = plan()
+        p["control_forecasts"]["H1_absolute"] = scene(11)
+        changed = evaluate_pair(
+            seal_trial(p), outcome("ACTION3", "treatment-episode", scene(11)),
+            outcome("ACTION4", "control-episode", scene(10)))
+        cp = changed["pairwise_discriminating_arms"]
+        self.assertEqual(cp["H0_static|H1_absolute"], ["treatment", "control"])
+        self.assertEqual(cp["H0_static|H2_anchor_relative"], ["treatment"])
+        self.assertEqual(cp["H1_absolute|H2_anchor_relative"], ["treatment", "control"])
+        self.assertEqual(changed["control_discriminating_pairs"], 2)
+
+
 if __name__ == "__main__":
     unittest.main()
