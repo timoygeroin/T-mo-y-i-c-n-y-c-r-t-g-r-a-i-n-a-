@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T13:09:35.647Z",
+  "updated_at": "2026-10-28T14:18:28Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2447,6 +2447,38 @@
         "A matching SHA256 is not independent proof that a frame came from the official engine or that its timestamp precedes action.",
         "Synthetic tests only; no new prospective public episodes or causal predictions.",
         "Previously blocked collector was not run or bypassed; no Kaggle submission, spend, secrets, terms, legal/license/publication decision, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_scene_order_invariance": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Treat object detections as an unordered canonical multiset when validating adjacent frames of the same public episode; do not reject valid object-list reorderings while still rejecting genuinely changed scenes or broken frame-hash chains.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "fb533edabc3d23a05e49257ca932c227bbb1f1bc",
+        "red_contract_run": 40703688508,
+        "red_result": "EXPECTED one semantic error among 297 tests: reordered but equivalent object detections rejected as discontinuous public observation chain",
+        "green_commit": "6e3acd86442a28cd091a0ef2a904214505c5943d",
+        "green_contract_run": 40704002019,
+        "green_result": "297/297 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS run 40704002019",
+        "system_proof": "SUCCESS run 40704001936",
+        "unchanged_official_public_smoke": "SUCCESS run 40704001896",
+        "frozen_remaining_public_replication": "SUCCESS run 40704001861"
+      },
+      "behavior": "Consecutive before/after scene continuity uses _scene canonicalized sorted object tuples rather than raw list order. Visible-frame SHA256 continuity and cross-game frame-to-scene identity checks remain unchanged.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "This is an input-order invariance correction, not evidence of improved causal prediction or gameplay.",
+        "No new authenticated prospective public episode, independently timestamped pre-action provenance, or matched control.",
+        "Previously blocked collector not run/bypassed; no Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
     }
   }
