@@ -98,6 +98,47 @@ class ProspectiveLedgerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             seal_trial(p)
 
+    def test_world_forecasts_reject_non_translation_effects(self):
+        # H1/H2 are displacement hypotheses, not arbitrary scene mutations.
+        bads = []
+        recolor = scene(11)
+        recolor[0][0] = 3
+        bads.append(("recolor", "H1_absolute", recolor))
+        resize = scene(11)
+        resize[0][1] = 2
+        bads.append(("area-change", "H1_absolute", resize))
+        diagonal = scene(11)
+        diagonal[0][3] = diagonal[0][5] = 11
+        bads.append(("diagonal", "H1_absolute", diagonal))
+        both_moved = scene(9)
+        both_moved[1][2] += 1
+        both_moved[1][4] += 1
+        bads.append(("two-movers", "H2_anchor_relative", both_moved))
+        bads.append(("creation", "H2_anchor_relative",
+                     scene(9) + [[3, 1, 30, 30, 30, 30]]))
+        bads.append(("deletion", "H2_anchor_relative", scene(9)[:1]))
+        for label, hypothesis, forecast in bads:
+            p = plan()
+            p["forecasts"][hypothesis] = forecast
+            with self.subTest(label=label), self.assertRaises(ValueError):
+                seal_trial(p)
+
+    def test_forecast_descriptor_area_cannot_exceed_bounding_box(self):
+        p = plan()
+        p["forecasts"]["H1_absolute"][0][1] = 3
+        with self.assertRaises(ValueError):
+            seal_trial(p)
+
+    def test_competing_worlds_may_move_different_single_objects(self):
+        # Different causal hypotheses can select different movers; each
+        # must still forecast a single cardinal rigid translation.
+        p = plan()
+        p["forecasts"]["H2_anchor_relative"] = scene(10)
+        p["forecasts"]["H2_anchor_relative"][1][3] += 1
+        p["forecasts"]["H2_anchor_relative"][1][5] += 1
+        self.assertEqual(set(seal_trial(p)["plan"]["forecasts"]),
+                         {"H0_static", "H1_absolute", "H2_anchor_relative"})
+
 
 if __name__ == "__main__":
     unittest.main()
