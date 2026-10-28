@@ -1,0 +1,99 @@
+"""Test-first frozen outcome-blind PUBLIC probe schedule and chronological audit."""
+import copy
+import sys
+import unittest
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "experiments"))
+from prospective_probe_schedule import (PROTOCOL, HORIZON, SAMPLE_SIZE,
+    select_probe_games, choose_probe_action, probe_manifest, audit_probe_trace)
+from disjoint_public_sample import PUBLIC_GAME_IDS
+
+def row(game, turn, action="ACTION1", legal=None, pre_state="IN_PROGRESS"):
+    return dict(schema="arc-agi3.shadow-transition.v1", game_id=game, turn=turn,
+        pre_state=pre_state, action_key=action,
+        legal_actions=legal if legal is not None else ["ACTION1"],
+        level_before=0, level_after=0,
+        before_scene=[[1, 1, 10, 10, 10, 10], [2, 1, 20, 10, 20, 10]],
+        after_scene=[[1, 1, 10, 10, 10, 10], [2, 1, 20, 10, 20, 10]])
+
+def minimal_rows():
+    games = select_probe_games()
+    sha = probe_manifest()["sha256"]
+    return [dict(row(game, 0), plan_sha256=sha,
+                 collection_policy="outcome_blind_cycle_v1") for game in games]
+
+class ProbeScheduleTests(unittest.TestCase):
+    def test_fixed_public_sample_no_score_based_selection(self):
+        games = select_probe_games()
+        self.assertEqual(len(games), SAMPLE_SIZE)
+        self.assertEqual(len(set(games)), SAMPLE_SIZE)
+        self.assertTrue(set(games).issubset(set(PUBLIC_GAME_IDS)))
+        self.assertEqual(games, select_probe_games(tuple(reversed(PUBLIC_GAME_IDS))))
+
+    def test_roster_drift_fails_closed(self):
+        for roster in (PUBLIC_GAME_IDS[:-1], PUBLIC_GAME_IDS + ("unknown",),
+                       PUBLIC_GAME_IDS[:-1] + (PUBLIC_GAME_IDS[0],)):
+            with self.assertRaises(ValueError):
+                select_probe_games(roster)
+
+    def test_cycle_is_predeclared_not_game_or_scene_dependent(self):
+        legal = ["ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6"]
+        self.assertEqual([choose_probe_action(t, legal)[0] for t in range(6)],
+                         legal)
+        self.assertEqual(choose_probe_action(6, legal)[0], "ACTION1")
+        self.assertEqual(choose_probe_action(0, ["ACTION4"]), ("ACTION4", None))
+        self.assertIsNone(choose_probe_action(0, ["ACTION7"]))
+        self.assertEqual(choose_probe_action(0, []), None)
+
+    def test_click_coordinates_bounded_and_exact(self):
+        for t in range(HORIZON):
+            action = choose_probe_action(t, ["ACTION6"])
+            self.assertEqual(action[0], "ACTION6")
+            self.assertEqual(len(action[1]), 2)
+            self.assertTrue(all(0 <= v < 64 for v in action[1]))
+        self.assertNotEqual(choose_probe_action(0, ["ACTION6"])[1],
+                            choose_probe_action(6, ["ACTION6"])[1])
+
+    def test_invalid_turn_or_legal_set_rejected(self):
+        for turn in (-1, HORIZON, True, "0"):
+            with self.assertRaises(ValueError):
+                choose_probe_action(turn, ["ACTION1"])
+        for legal in (None, "ACTION1", ["RESET"], ["ACTION1", "ACTION1"]):
+            with self.assertRaises(ValueError):
+                choose_probe_action(0, legal)
+
+    def test_manifest_is_outcome_blind_and_stable(self):
+        m = probe_manifest()
+        self.assertEqual(m, probe_manifest())
+        self.assertEqual(m["protocol"], PROTOCOL)
+        self.assertEqual(m["horizon"], HORIZON)
+        self.assertEqual(len(m["sha256"]), 64)
+        self.assertFalse(any("after" in key or "score" in key or "outcome" in key
+                             for key in m["plan"]))
+
+    def test_audit_requires_full_ordered_sample_and_plan_hash(self):
+        rows = minimal_rows()
+        result = audit_probe_trace(rows)
+        self.assertEqual(result["records"], SAMPLE_SIZE)
+        self.assertEqual(result["strict_prior"]["absolute_forecasts"], 0)
+        self.assertEqual(result["strict_prior"]["relative_forecasts"], 0)
+        for bad in (rows[:-1], list(reversed(rows)),
+                    [dict(rows[0], plan_sha256="0"*64)] + rows[1:],
+                    [dict(rows[0], turn=1)] + rows[1:],
+                    [dict(rows[0], action_key="ACTION2")] + rows[1:]):
+            with self.subTest(bad=bad[:1]), self.assertRaises(ValueError):
+                audit_probe_trace(bad)
+
+    def test_audit_rejects_nonprecommitted_or_illegal_action(self):
+        rows = minimal_rows()
+        for change in ({"collection_policy": "agent_novelty"},
+                       {"action_key": "ACTION6@2,3"},
+                       {"legal_actions": ["ACTION2"]},
+                       {"pre_state": "NOT_PLAYED"}):
+            bad = copy.deepcopy(rows)
+            bad[0].update(change)
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                audit_probe_trace(bad)
+
+if __name__ == "__main__":
+    unittest.main()
