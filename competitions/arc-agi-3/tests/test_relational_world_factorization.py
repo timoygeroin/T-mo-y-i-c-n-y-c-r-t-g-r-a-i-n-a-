@@ -187,6 +187,35 @@ class RelationalWorldTests(unittest.TestCase):
         self.assertFalse(world._research_acceptance(
             scores)["absolute"]["research_gates_passed"])
 
+    def test_disagreement_evidence_must_replicate_correct_world_wins(self):
+        # Three games with H1/H2 disagreements do not prove H1 if H1 is
+        # correct on only ONE game and both worlds miss on the other two.
+        # Positive deltas elsewhere must not manufacture replicated
+        # counterfactual discrimination.
+        import relational_world_factorization as world
+        from remaining_public_sample import FROZEN_GAMES
+        scores = {
+            g: dict(absolute_delta=1 if i < 3 else 0,
+                    relative_delta=0,
+                    absolute_forecasts=10 if i < 3 else 0,
+                    relative_forecasts=10 if i < 3 else 0,
+                    level_advances=1,
+                    paired_disagreements=1 if i < 3 else 0,
+                    absolute_wins_on_disagreement=1 if i == 0 else 0,
+                    relative_wins_on_disagreement=0,
+                    h0_wins_on_disagreement=0)
+            for i, g in enumerate(FROZEN_GAMES)
+        }
+        one_game_win = world._research_acceptance(scores)["absolute"]
+        self.assertEqual(one_game_win["disagreement_games"], 3)
+        self.assertEqual(one_game_win["head_to_head_wins"], 1)
+        self.assertFalse(one_game_win["research_gates_passed"])
+        for g in FROZEN_GAMES[1:3]:
+            scores[g]["absolute_wins_on_disagreement"] = 1
+        replicated = world._research_acceptance(scores)["absolute"]
+        self.assertEqual(replicated["head_to_head_wins"], 3)
+        self.assertTrue(replicated["research_gates_passed"])
+
     def test_invalid_hypothesis_fails_closed(self):
         with self.assertRaises(ValueError):
             donor_rules([], "target", "oracle")
