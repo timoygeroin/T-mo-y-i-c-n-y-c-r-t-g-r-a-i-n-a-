@@ -124,6 +124,27 @@ class ProbeScheduleTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit_probe_trace(rows)
 
+    def test_only_horizon_completed_earlier_games_can_donate(self):
+        # Merely moving on to another game does NOT finish the 24-turn
+        # preregistered donor episode. Otherwise one-turn sources can
+        # fabricate independent support for H1/H2.
+        games = select_probe_games()
+        rows = minimal_rows()
+        short = audit_probe_trace(rows)
+        self.assertEqual(short["per_game"][games[1]]["prior_games"], [])
+        self.assertEqual(short["per_game"][games[2]]["prior_games"], [])
+
+        # The first game is now observed for the entire bounded horizon;
+        # only it, not the second one-turn game, can be an earlier donor.
+        first = rows[0]
+        extra = [dict(row(games[0], t), plan_sha256=first["plan_sha256"],
+                      collection_policy="outcome_blind_cycle_v1")
+                 for t in range(1, HORIZON)]
+        rows[1:1] = extra
+        complete = audit_probe_trace(rows)
+        self.assertEqual(complete["per_game"][games[1]]["prior_games"], [games[0]])
+        self.assertEqual(complete["per_game"][games[2]]["prior_games"], [games[0]])
+
     def test_contiguous_two_turn_trace_is_accepted(self):
         rows = minimal_rows()
         next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
