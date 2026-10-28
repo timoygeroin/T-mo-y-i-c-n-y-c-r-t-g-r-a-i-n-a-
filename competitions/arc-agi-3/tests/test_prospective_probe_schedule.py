@@ -257,7 +257,22 @@ class ProbeScheduleTests(unittest.TestCase):
         self.assertEqual(result["incomplete_games"], [])
         self.assertEqual(result["records"], SAMPLE_SIZE * HORIZON)
         self.assertEqual(result["interpretation"],
-                         "NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF")
+                         "STRUCTURALLY_COMPLETE_UNAUTHENTICATED_PUBLIC_PROBE_TRACE")
+
+    def test_full_horizon_does_not_authenticate_prospective_evidence(self):
+        # A self-consistent JSONL file is not independently sourced or
+        # timestamped pre-action evidence, even when all 216 rows are present.
+        games = select_probe_games()
+        digest = probe_manifest()["sha256"]
+        rows = [dict(row(game, turn), plan_sha256=digest,
+                     collection_policy="outcome_blind_cycle_v1")
+                for game in games for turn in range(HORIZON)]
+        result = audit_probe_trace(rows)
+        self.assertTrue(result["trace_horizon_complete"])
+        self.assertFalse(result["provenance_authenticated"])
+        self.assertFalse(result["eligible_for_prospective_evidence"])
+        self.assertEqual(result["interpretation"],
+                         "STRUCTURALLY_COMPLETE_UNAUTHENTICATED_PUBLIC_PROBE_TRACE")
 
     def test_full_row_count_with_mid_episode_reset_is_not_valid_horizon_comparison(self):
         # A full 24-row count is not an uninterrupted 24-turn episode.
