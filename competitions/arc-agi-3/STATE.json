@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T12:14:02.613Z",
+  "updated_at": "2026-10-28T13:09:35.647Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2411,6 +2411,42 @@
         "Synthetic test fixtures only; no authenticated prospective public episode collection",
         "The previous blocked collector was not run or bypassed",
         "No Kaggle submission, spending, terms, secrets or legal decision"
+      ]
+    },
+    "public_probe_frame_scene_identity_gate": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent fabricated H1/H2 donor motion when identical visible-frame SHA256 maps to contradictory deterministic object scenes, including across different public games.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "160a68fa42056f73447e6116cd9065b6b5fd7cb9",
+        "red_run": 40693157188,
+        "red_result": "EXPECTED 2 semantic assertion failures among 296 tests: within-row and cross-game same-frame contradictory scenes; third control permits distinct frame digests with identical scenes.",
+        "green_commit": "0cd47f3ec5b0a394a1e08edbb6ab7df3df88cc27",
+        "green_run": 40693360236,
+        "green_result": "296/296 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40693360236,
+        "system_proof": "SUCCESS",
+        "system_run": 40693360224,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40693360247,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40693360226
+      },
+      "behavior": "Within and across the preregistered nine PUBLIC games, one visible-frame digest must map to exactly one canonical deterministic object scene. Distinct digests may map to the same scene (e.g., HUD/animation). The gate rejects conflicting object motion before constructing prior-game H0/H1/H2 witnesses.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "A matching SHA256 is not independent proof that a frame came from the official engine or that its timestamp precedes action.",
+        "Synthetic tests only; no new prospective public episodes or causal predictions.",
+        "Previously blocked collector was not run or bypassed; no Kaggle submission, spend, secrets, terms, legal/license/publication decision, hidden score, prize or income claim."
       ]
     }
   }
