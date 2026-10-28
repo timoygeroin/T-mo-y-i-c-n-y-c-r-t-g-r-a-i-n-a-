@@ -153,7 +153,14 @@ def audit_probe_trace(records):
     # a completed prospective 24-turn comparison. Keep the distinction
     # machine-readable so partial collection cannot be reported as a full run.
     incomplete_games = [g for g in games if len(grouped[g]) != HORIZON]
-    trace_horizon_complete = not incomplete_games
+    # A full row count can still contain a new episode after GAME_OVER.
+    # Preserve the frozen 24-turn action schedule, but do not present such
+    # stitched horizons as an uninterrupted matched-world comparison.
+    interrupted_games = [
+        g for g in games
+        if any(r["action_key"] == "RESET" for r in grouped[g][1:])
+    ]
+    trace_horizon_complete = not incomplete_games and not interrupted_games
 
     # Construct witnesses for reporting; donor_rules independently excludes
     # target and all future games, including their conflicting/static vetoes.
@@ -193,6 +200,7 @@ def audit_probe_trace(records):
                 games=list(games), records=count, horizon=HORIZON,
                 trace_horizon_complete=trace_horizon_complete,
                 incomplete_games=incomplete_games,
+                interrupted_games=interrupted_games,
                 witness_count=len(witnesses), per_game=per_game,
                 strict_prior=dict(
                     baseline_correct=totals["baseline_correct"],
@@ -206,9 +214,11 @@ def audit_probe_trace(records):
                     level_advances=totals["level_advances"]),
                 policy_integration="REJECTED_UNLESS_SEPARATE_MATCHED_EVIDENCE",
                 effect_on_agent="NONE_SHADOW_ONLY",
-                interpretation=("NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF"
-                                if trace_horizon_complete else
-                                "PARTIAL_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON"))
+                interpretation=("PARTIAL_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON"
+                                if incomplete_games else
+                                "INTERRUPTED_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON"
+                                if interrupted_games else
+                                "NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF"))
 
 
 def main():
