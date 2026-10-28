@@ -209,11 +209,19 @@ def evaluate_pair(sealed, treatment, control):
         raise ValueError("treatment/control are not the preregistered matched pair")
     treatment_hits = {h: a["after"] == plan["forecasts"][h] for h in WORLDS}
     control_hits = {h: b["after"] == plan["control_forecasts"][h] for h in WORLDS}
+    # Each world earns 0..2 exact hits, one per precommitted arm. A unique
+    # complete fit is diagnostic only: it cannot authenticate pre-action timing
+    # or equivalence of the two latent game states.
+    fit_counts = {h: int(treatment_hits[h]) + int(control_hits[h]) for h in WORLDS}
+    complete_fits = [h for h in WORLDS if fit_counts[h] == 2]
+    unique_complete_fit = complete_fits[0] if len(complete_fits) == 1 else None
     return dict(protocol=PROTOCOL, sha256=original["sha256"],
                 world_exact_hits=treatment_hits,
                 control_world_exact_hits=control_hits,
                 paired_world_exact_hits={h: treatment_hits[h] and control_hits[h]
                                          for h in WORLDS},
+                paired_world_fit_counts=fit_counts,
+                unique_paired_world_fit=unique_complete_fit,
                 control_static=b["after"] == plan["before"],
                 interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
                 causal_effect_proven=False, effect_on_agent="NONE_SHADOW_ONLY")
