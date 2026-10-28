@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T10:16:57.440Z",
+  "updated_at": "2026-10-28T11:14:08.203Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2356,6 +2356,32 @@
         "No bypass of previously blocked collector",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim"
       ]
+    },
+    "prospective_interrupted_horizon_reporting_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "test_first": {
+        "red_commit": "f13eb92e51c51f3fa0678787eaa852392317936c",
+        "red_contract_run": 40677752805,
+        "red_result": "EXPECTED one semantic assertion failure: interrupted full-row-count trace incorrectly reported complete (292 tests)",
+        "implementation_commit": "c07637748ca7c9106478444f7c5825957cc3da23",
+        "green_result": "292/292 PASS"
+      },
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "behavior": "A 24-row game containing a mid-horizon GAME_OVER/RESET is reported in interrupted_games; trace_horizon_complete=false and interpretation rejects uninterrupted horizon comparison, even if all nine games contain 24 rows. Full uninterrupted synthetic controls retain previous interpretation. Frozen v2 schedule, manifest, donor gating and competition agent remain unchanged.",
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40677877752,
+        "system_proof": "SUCCESS",
+        "system_run": 40677877781,
+        "unchanged_public_smoke": "SUCCESS",
+        "public_smoke_run": 40677877711,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40677877834
+      },
+      "interpretation": "Synthetic reporting-integrity correction only. No new public episode, independent timestamp, H0/H1/H2 causal forecast, matched control, gameplay gain or Kaggle submission. Prior collector safety block not bypassed."
     }
   }
 }
