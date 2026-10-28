@@ -185,6 +185,15 @@ class ProbeScheduleTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit_probe_trace(rows)
 
+    def test_unknown_public_state_cannot_be_used_as_world_evidence(self):
+        # Arbitrary nonempty state strings must not authorize a scheduled
+        # action and then enter H0/H1/H2 donor evidence.
+        for state in ("PAUSED", "IN_PROGRESS ", "RESET", "game_over"):
+            rows = minimal_rows()
+            rows[0]["pre_state"] = state
+            with self.subTest(state=state), self.assertRaises(ValueError):
+                audit_probe_trace(rows)
+
     def test_contiguous_two_turn_trace_is_accepted(self):
         rows = minimal_rows()
         next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
