@@ -297,5 +297,22 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertFalse(result["causal_effect_proven"])
 
 
+    def test_click_action_alias_cannot_fake_distinct_arms(self):
+        # ACTION6@01,1 and ACTION6@1,1 address the same click. Different
+        # strings must not manufacture a treatment/control contrast.
+        for alias in ("ACTION6@01,1", "ACTION6@1,01", "ACTION6@001,1"):
+            p = plan()
+            p["treatment_action"] = "ACTION6@1,1"
+            p["control_action"] = alias
+            with self.subTest(alias=alias), self.assertRaises(ValueError):
+                seal_trial(p)
+
+        # Canonical, genuinely different click coordinates remain legal.
+        p = plan()
+        p["treatment_action"] = "ACTION6@1,1"
+        p["control_action"] = "ACTION6@2,1"
+        self.assertEqual(seal_trial(p)["plan"]["control_action"], "ACTION6@2,1")
+
+
 if __name__ == "__main__":
     unittest.main()
