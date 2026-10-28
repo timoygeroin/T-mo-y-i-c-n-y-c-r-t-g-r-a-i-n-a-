@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-27T23:14:52.535Z",
+  "updated_at": "2026-10-28T00:13:30Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -69,12 +69,12 @@
     }
   ],
   "next_experiment": {
-    "id": "independent_prospective_pre_action_evidence",
-    "goal": "Collect genuinely new, disjoint, pre-registered observable intervention evidence in a controlled PUBLIC environment with explicit H0/H1/H2 counterfactual predictions and matched control; do not reuse current 857 transitions as independent confirmation. First verify safe reversibility and legal action interface; no policy promotion before independent gain.",
+    "id": "externally_timestamped_public_three_world_trial",
+    "goal": "Commit one frozen outcome-blind H0/H1/H2 plan and donor snapshot digest BEFORE any new bounded PUBLIC gameplay; use a distinct matched-control episode, record observations, then score using the verified prospective ledger. Do not mistake scene matching for latent-state equivalence or reused public traces for independent evidence.",
     "constraints": [
       "one existing PR and canonical C*",
       "no game-ID heuristics or target-outcome leakage",
-      "test-first, bounded actions, frozen controls, rollback on regression",
+      "test-first, bounded public actions, frozen controls, rollback on regression",
       "no Kaggle submission/spend/terms/tokens"
     ]
   },
@@ -1933,6 +1933,38 @@
       "constraints": [
         "No new gameplay action or policy import",
         "No Kaggle submission, spend, token, terms, license/publication decision, hidden score, prize or income claim"
+      ]
+    },
+    "prospective_counterfactual_ledger": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v1",
+      "purpose": "Freeze H0 static, H1 absolute displacement, H2 anchor-relative displacement BEFORE a prospective PUBLIC treatment; then score a visible-scene matched control from a separate episode, without claiming latent-state equivalence or causal identification.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "b188f25babd9eaca8aea423d843453b3fd55bd0c",
+        "red_contract_run": 40606923963,
+        "red": "EXPECTED ModuleNotFoundError: prospective_counterfactual_ledger",
+        "green_commit": "24fe697e56a80116b651309e34d7092e475a946b",
+        "green_contract_run": 40607063500,
+        "green_tests": "262/262 PASS",
+        "system_proof_run": 40607063468,
+        "unchanged_official_public_smoke_run": 40607063548,
+        "frozen_public_replication_run": 40607063507,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "controls": [
+        "Sealing accepts only exact pre-action plan fields, exact three distinct scene forecasts, bounded legal treatment/control actions, donor snapshot SHA256 and explicit episode/turn",
+        "Outcome scoring is separate and verifies commitment integrity, exact action, same visible before-scene, game, turn, distinct treatment/control episodes",
+        "Rejects future/outcome fields at seal time, mismatched contexts, altered plans, malformed evidence",
+        "Pure shadow code; no gameplay execution or agent import"
+      ],
+      "interpretation": "Synthetic contract and four CI gates verified; no new independent PUBLIC observations, no actual prospective sealed trial, no gameplay gain. A SHA256 digest alone cannot prove chronology: an independently timestamped Git/CI commitment must precede action. Visible-scene matched control cannot establish latent-state equivalence or causal effect.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "constraints": [
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income claim"
       ]
     }
   }
