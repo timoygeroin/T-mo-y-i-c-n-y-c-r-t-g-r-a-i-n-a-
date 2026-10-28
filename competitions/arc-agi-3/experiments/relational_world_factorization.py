@@ -199,11 +199,40 @@ def _evaluate_target(rows, rules):
     return stats
 
 
+def _research_acceptance(strict_prior_per_game):
+    """Research gates use only prequential, strictly earlier OTHER-game donors.
+
+    The post-hoc all-game diagnostic is descriptive and cannot pass a gate.
+    """
+    total_advances = sum(s["level_advances"]
+                         for s in strict_prior_per_game.values())
+    acceptance = {}
+    for h in HYPOTHESES:
+        positive = sum(s[h+"_delta"] > 0
+                       for s in strict_prior_per_game.values())
+        negative = sum(s[h+"_delta"] < 0
+                       for s in strict_prior_per_game.values())
+        forecast_games = sum(s[h+"_forecasts"] > 0
+                             for s in strict_prior_per_game.values())
+        forecasts = sum(s[h+"_forecasts"]
+                        for s in strict_prior_per_game.values())
+        passed = (positive >= 3 and negative == 0 and
+                  forecasts >= 30 and forecast_games >= 3 and
+                  total_advances >= 3)
+        acceptance[h] = dict(positive_games=positive,
+                             negative_games=negative,
+                             forecast_games=forecast_games,
+                             research_gates_passed=passed,
+                             result=("RESEARCH_GATE_PASS_NO_AUTOMATIC_PROMOTION"
+                                     if passed else "REJECT_POLICY_INTEGRATION"))
+    return acceptance
+
+
 def evaluate_relational_worlds(records):
     grouped, frozen = _bounded_rows(records)
     witnesses = _witnesses(grouped)
     per_game, total, support = {}, defaultdict(int), {}
-    prior_support, prior_order = {}, {}
+    prior_support, prior_order, strict_per_game = {}, {}, {}
     prior_totals = defaultdict(int)
     for index, target in enumerate(FROZEN_GAMES):
         # Only completed games strictly earlier in the collection sequence.
@@ -213,6 +242,7 @@ def evaluate_relational_worlds(records):
                         for h in HYPOTHESES}
         strict = _evaluate_target(grouped[target], strict_rules)
         prior_support[target] = {h: len(strict_rules[h]) for h in HYPOTHESES}
+        strict_per_game[target] = strict
         for h in HYPOTHESES:
             prior_totals[h + "_forecasts"] += strict[h + "_forecasts"]
             prior_totals[h + "_correct"] += strict[h + "_correct"]
@@ -233,36 +263,27 @@ def evaluate_relational_worlds(records):
         support[target] = {h: len(rules[h]) for h in HYPOTHESES}
         for name, value in result.items():
             total[name] += value
-    acceptance = {}
-    for h in HYPOTHESES:
-        positive = sum(s[h+"_delta"] > 0 for s in per_game.values())
-        negative = sum(s[h+"_delta"] < 0 for s in per_game.values())
-        forecast_games = sum(s[h+"_forecasts"] > 0 for s in per_game.values())
-        passed = (positive >= 3 and negative == 0 and
-                  total[h+"_forecasts"] >= 30 and forecast_games >= 3 and
-                  total["level_advances"] >= 3)
-        acceptance[h] = dict(positive_games=positive, negative_games=negative,
-                             forecast_games=forecast_games,
-                             research_gates_passed=passed,
-                             result=("RESEARCH_GATE_PASS_NO_AUTOMATIC_PROMOTION"
-                                     if passed else "REJECT_POLICY_INTEGRATION"))
+    acceptance = _research_acceptance(strict_per_game)
     return dict(protocol=PROTOCOL, games=list(FROZEN_GAMES), horizon=HORIZON,
                 hypotheses=["H0_local_replay_effect_static",
                             "H1_absolute_anchor_axis",
                             "H2_toward_away_anchor_axis"],
                 per_game=per_game, total=dict(total), donor_support=support,
+                acceptance_basis="STRICT_PRIOR_GAME_ONLY",
                 chronological_prior_game_only=dict(
                     donor_order=list(FROZEN_GAMES),
                     eligible_prior_games_per_target=prior_order,
                     donor_support_per_target=prior_support,
+                    per_game=strict_per_game,
                     total_forecasts={h: prior_totals[h + "_forecasts"] for h in HYPOTHESES},
                     total_correct={h: prior_totals[h + "_correct"] for h in HYPOTHESES},
                     effect_on_agent="NONE_SHADOW_ONLY",
                     caveat="Prior completed PUBLIC games only; no independent holdout."),
                 acceptance=acceptance, witness_count=len(witnesses),
                 effect_on_agent="NONE_SHADOW_ONLY",
-                caveat=("PUBLIC post-hoc donor pool, globally later games possible; "
-                        "not a hidden holdout or causal intervention. Exact actions "
+                caveat=("Research acceptance uses strictly earlier-game donors ONLY; "
+                        "per_game/total remain post-hoc diagnostics with globally later games possible. "
+                        "Not a hidden holdout or causal intervention. Exact actions "
                         "including ACTION6 coordinates retained. No policy import, "
                         "Kaggle submission, prize or score claim."))
 
