@@ -13,7 +13,7 @@ from hashlib import sha256
 import json
 import re
 
-PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v1"
+PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v2"
 WORLDS = ("H0_static", "H1_absolute", "H2_anchor_relative")
 PLAN_KEYS = frozenset(("game", "episode", "control_episode", "turn", "before",
                        "treatment_action", "control_action",
