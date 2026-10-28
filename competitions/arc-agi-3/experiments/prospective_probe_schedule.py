@@ -123,6 +123,20 @@ def audit_probe_trace(records):
             raise ValueError("missing public level fields")
         if not isinstance(row.get("before_scene"), list) or not isinstance(row.get("after_scene"), list):
             raise ValueError("missing public visible-scene evidence")
+        # Frame digests are observational identities, not proof of source or
+        # independent timestamp. Reject malformed identities and broken chains
+        # rather than treating stitched transitions as independent witnesses.
+        for field in ("before_frame_sha256", "after_frame_sha256"):
+            digest = row.get(field)
+            if (not isinstance(digest, str) or len(digest) != 64 or
+                    any(ch not in "0123456789abcdef" for ch in digest)):
+                raise ValueError("missing or malformed public frame digest")
+        if grouped[game]:
+            previous = grouped[game][-1]
+            if (previous["level_after"] != row["level_before"] or
+                    previous["after_scene"] != row["before_scene"] or
+                    previous["after_frame_sha256"] != row["before_frame_sha256"]):
+                raise ValueError("discontinuous public observation chain")
         grouped[game].append(row)
     if current != SAMPLE_SIZE - 1 or any(not grouped[g] for g in games):
         raise ValueError("incomplete preregistered public sample")
