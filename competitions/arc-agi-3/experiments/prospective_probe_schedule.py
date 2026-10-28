@@ -83,6 +83,9 @@ def audit_probe_trace(records):
     games = select_probe_games()
     manifest = probe_manifest()
     grouped = {g: [] for g in games}
+    # Same visible-frame bytes must have the same deterministic object scene,
+    # even across different public games. Different bytes may share a scene.
+    frame_scenes = {}
     current = 0
     count = 0
     for row in records:
@@ -131,11 +134,13 @@ def audit_probe_trace(records):
         # Validate BOTH visible scenes on EVERY row, including RESET rows
         # skipped by downstream witness construction. A descriptor cannot
         # contain more visible pixels than its own bounding box can hold.
+        scenes = {}
         for field in ("before_scene", "after_scene"):
             scene = _scene(row.get(field))
             if any(obj[1] > (obj[4] - obj[2] + 1) *
                     (obj[5] - obj[3] + 1) for obj in scene):
                 raise ValueError("impossible public object area")
+            scenes[field] = scene
         # Frame digests are observational identities, not proof of source or
         # independent timestamp. Reject malformed identities and broken chains
         # rather than treating stitched transitions as independent witnesses.
@@ -144,6 +149,16 @@ def audit_probe_trace(records):
             if (not isinstance(digest, str) or len(digest) != 64 or
                     any(ch not in "0123456789abcdef" for ch in digest)):
                 raise ValueError("missing or malformed public frame digest")
+        # A scene extracted deterministically from visible pixels cannot
+        # change while the SHA256 identity of those same pixels stays fixed.
+        # This prevents a fabricated nonstatic H1/H2 donor effect; it does
+        # not authenticate that a frame came from the official engine.
+        for prefix in ("before", "after"):
+            digest = row[prefix + "_frame_sha256"]
+            scene = scenes[prefix + "_scene"]
+            if digest in frame_scenes and frame_scenes[digest] != scene:
+                raise ValueError("identical public frame digest has conflicting object scenes")
+            frame_scenes[digest] = scene
         if grouped[game]:
             previous = grouped[game][-1]
             if (previous["level_after"] != row["level_before"] or
