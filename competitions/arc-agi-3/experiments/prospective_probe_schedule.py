@@ -15,7 +15,7 @@ import sys
 
 from disjoint_public_sample import PUBLIC_GAME_IDS
 
-PROTOCOL = "arc-agi3.outcome-blind-public-probe-v1"
+PROTOCOL = "arc-agi3.outcome-blind-public-probe-v2"
 SEED = "mondayid-arc3-independent-actions-20261028-v1:"
 SAMPLE_SIZE = 9
 HORIZON = 24
@@ -147,10 +147,16 @@ def audit_probe_trace(records):
     totals = defaultdict(int)
     per_game = {}
     for i, game in enumerate(games):
-        eligible = frozenset(games[:i])
+        # A source is not a completed preregistered donor merely because the
+        # collector moved to the next game. Without an authenticated terminal
+        # event, only a full HORIZON trace is eligible; early wins abstain.
+        prior = tuple(g for g in games[:i] if len(grouped[g]) == HORIZON)
+        short_prior = tuple(g for g in games[:i] if len(grouped[g]) < HORIZON)
+        eligible = frozenset(prior)
         rules = {h: donor_rules(witnesses, game, h, eligible) for h in HYPOTHESES}
         result = _evaluate_target(grouped[game], rules)
-        per_game[game] = dict(**result, prior_games=list(games[:i]),
+        per_game[game] = dict(**result, prior_games=list(prior),
+                              ineligible_short_prior_games=list(short_prior),
                               donor_rules={h: len(rules[h]) for h in HYPOTHESES})
         for key, value in result.items():
             if type(value) is int:
