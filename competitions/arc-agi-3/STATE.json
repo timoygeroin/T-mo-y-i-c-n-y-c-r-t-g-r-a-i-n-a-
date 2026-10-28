@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T21:13:34.445Z",
+  "updated_at": "2026-10-28T22:12:05.546Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2730,6 +2730,43 @@
         "Pre-action SHA256 alone is not independent chronology proof; no authenticated new public episodes or latent-state matched resets.",
         "Frozen probe schedule and competition agent unchanged; blocked collector not executed.",
         "No Kaggle submission, spending, credentials, terms, license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_paired_world_observed_arm_winners_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Separate precommitted pairwise forecast contrast from observed winners in each treatment/control arm; expose opposing-world outcomes instead of inferring a common winner from potential discrimination.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "81d25cb58775c777a5733df098ec103ee7e8c4fd",
+        "red_contract_run": 40777422940,
+        "red_result": "EXPECTED one KeyError pairwise_observed_winner_by_arm among 307 tests",
+        "implementation_commit": "6029bbe66c96eb351cea6546abe4f80b879b2aaa",
+        "green_contract_run": 40777638709,
+        "green_result": "307/307 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40777638709,
+        "system_run": 40777638716,
+        "public_smoke_run": 40777638883,
+        "frozen_run": 40777638711
+      },
+      "behavior": "For each H0/H1/H2 pair and each preregistered arm, report NON_DISCRIMINATING if forecasts coincide; otherwise report the uniquely exact-hit world or NEITHER. Synthetic adversarial example: H1 wins treatment while H0 wins control for H0/H1, preventing a false common two-arm winner. No policy promotion.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Visible-scene scoring on synthetic fixtures only; no independent pre-action timestamp, authenticated new public episode, latent-state equivalence, causal proof, or gameplay gain.",
+        "Frozen schedule and competition agent unchanged; previously blocked collector not executed or bypassed.",
+        "No Kaggle submission, spending, tokens, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
     }
   }
