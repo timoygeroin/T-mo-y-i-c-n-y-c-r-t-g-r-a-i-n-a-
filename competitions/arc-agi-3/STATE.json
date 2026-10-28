@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T18:17:39.772Z",
+  "updated_at": "2026-10-28T19:12:41.947Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -77,7 +77,7 @@
   ],
   "next_experiment": {
     "id": "approved_runner_public_probe_v2_with_authenticated_terminal_evidence",
-    "goal": "Execute frozen outcome-blind v2 schedule via permitted runner on genuinely NEW bounded PUBLIC episodes with independent pre-action timestamp; score H0/H1/H2 only with completed earlier donor horizons, and compare matched controls without automatic agent promotion.",
+    "goal": "Before any NEW permitted bounded PUBLIC gameplay, independently timestamp a v3 treatment/control pair with pre-action H0/H1/H2 predictions for BOTH actions; evaluate both arms on the exact preregistered episodes with strict-prior donors, without automatic agent promotion. Existing frozen v2 public probe schedule remains unchanged.",
     "constraints": [
       "Collector previously blocked; do not bypass tool safety",
       "Short early-win episodes abstain as donors absent separately authenticated terminal provenance",
@@ -2624,6 +2624,45 @@
         "This is reporting contract hardening on synthetic data only; cannot authenticate source or pre-action timestamps.",
         "Collector safety block respected, not bypassed.",
         "No Kaggle submission, money, tokens, terms, legal/license/publication choice, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_paired_control_world_forecasts_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "Prevent a preregistered treatment/control comparison from scoring only treatment-arm H0/H1/H2 forecasts while selecting favorable control predictions after outcomes. Commit both action-conditioned world predictions before observing either arm.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "8378a858d1eb386932a06d515a9cb4be607771b7",
+        "red_contract_run": 40751373445,
+        "red_result": "EXPECTED 2 ValueError errors among 304 tests: old v2 schema rejects control_forecasts",
+        "implementation_commit": "c372fa7538134053292e0af6c54fdd026ae2514d",
+        "fixture_commit": "4b7f18432438508a6bcc2aa2b508540cf3745e63",
+        "green_result": "304/304 PASS",
+        "green_contract_run": 40751646409
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40751646409,
+        "system_run": 40751645668,
+        "public_smoke_run": 40751645509,
+        "frozen_run": 40751645581
+      },
+      "behavior": "Matched-pair ledger protocol v3 requires explicit control_forecasts for H0 static/H1 absolute/H2 anchor-relative in the sealed plan. Control H1/H2 may abstain to static or predict one rigid cardinal translation; moving H2 must follow unique nearest pre-action anchor axis. Evaluator scores each world on treatment and control separately and exposes paired_world_exact_hits, while retaining treatment world_exact_hits for diagnostics. Altered control forecasts invalidate the SHA256 seal; old v2 plans fail closed rather than silently upgrade.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "A SHA256 seal alone does not independently prove it preceded gameplay; timestamped Git/CI receipt still required.",
+        "Control scenes matching visible before-scenes do not prove latent-state equivalence or causal effect.",
+        "No new independently sourced PUBLIC episodes or confirmed H0/H1/H2 prediction advantage; this is synthetic protocol hardening only.",
+        "Previously blocked collector not executed or bypassed; no Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
     }
   }
