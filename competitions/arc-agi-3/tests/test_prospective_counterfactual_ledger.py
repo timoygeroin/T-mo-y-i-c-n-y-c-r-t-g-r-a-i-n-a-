@@ -153,10 +153,45 @@ class ProspectiveLedgerTests(unittest.TestCase):
         # must still forecast a single cardinal rigid translation.
         p = plan()
         p["forecasts"]["H2_anchor_relative"] = scene(10)
-        p["forecasts"]["H2_anchor_relative"][1][3] += 1
-        p["forecasts"]["H2_anchor_relative"][1][5] += 1
+        p["forecasts"]["H2_anchor_relative"][1][2] += 1
+        p["forecasts"]["H2_anchor_relative"][1][4] += 1
         self.assertEqual(set(seal_trial(p)["plan"]["forecasts"]),
                          {"H0_static", "H1_absolute", "H2_anchor_relative"})
+
+
+    def test_h2_rejects_motion_orthogonal_to_unique_nearest_anchor(self):
+        # The sole nearest anchor is to the right of object 1.
+        p = plan()
+        p["forecasts"]["H2_anchor_relative"] = scene(10)
+        p["forecasts"]["H2_anchor_relative"][0][3] += 1
+        p["forecasts"]["H2_anchor_relative"][0][5] += 1
+        with self.assertRaises(ValueError):
+            seal_trial(p)
+
+    def test_h2_rejects_diagonal_nearest_anchor_even_for_cardinal_motion(self):
+        p = plan()
+        p["before"] = [[1, 1, 10, 10, 10, 10],
+                       [2, 1, 20, 20, 20, 20]]
+        p["forecasts"] = dict(
+            H0_static=copy.deepcopy(p["before"]),
+            H1_absolute=[[1, 1, 11, 10, 11, 10], [2, 1, 20, 20, 20, 20]],
+            H2_anchor_relative=[[1, 1, 9, 10, 9, 10], [2, 1, 20, 20, 20, 20]])
+        with self.assertRaises(ValueError):
+            seal_trial(p)
+
+    def test_h2_rejects_equally_near_anchors(self):
+        p = plan()
+        p["before"] = [[1, 1, 10, 10, 10, 10],
+                       [2, 1, 5, 10, 5, 10],
+                       [3, 1, 15, 10, 15, 10]]
+        p["forecasts"] = dict(
+            H0_static=copy.deepcopy(p["before"]),
+            H1_absolute=[[1, 1, 11, 10, 11, 10],
+                         [2, 1, 5, 10, 5, 10], [3, 1, 15, 10, 15, 10]],
+            H2_anchor_relative=[[1, 1, 9, 10, 9, 10],
+                                [2, 1, 5, 10, 5, 10], [3, 1, 15, 10, 15, 10]])
+        with self.assertRaises(ValueError):
+            seal_trial(p)
 
 
 if __name__ == "__main__":
