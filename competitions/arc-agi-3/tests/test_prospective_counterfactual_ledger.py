@@ -231,5 +231,25 @@ class ProspectiveLedgerTests(unittest.TestCase):
                 outcome("ACTION4", "control-episode", scene(10)))
 
 
+    def test_paired_world_fit_counts_and_unique_fit_require_both_arms(self):
+        # A treatment-only hit is not a complete matched-pair world fit.
+        sealed = seal_trial(plan())
+        control = outcome("ACTION4", "control-episode", scene(10))
+        h1 = evaluate_pair(
+            sealed, outcome("ACTION3", "treatment-episode", scene(11)), control)
+        self.assertEqual(h1["paired_world_fit_counts"],
+                         {"H0_static": 1, "H1_absolute": 2, "H2_anchor_relative": 1})
+        self.assertEqual(h1["unique_paired_world_fit"], "H1_absolute")
+        h2 = evaluate_pair(
+            sealed, outcome("ACTION3", "treatment-episode", scene(9)), control)
+        self.assertEqual(h2["unique_paired_world_fit"], "H2_anchor_relative")
+        neither = evaluate_pair(
+            sealed, outcome("ACTION3", "treatment-episode", scene(12)), control)
+        self.assertEqual(neither["paired_world_fit_counts"],
+                         {"H0_static": 1, "H1_absolute": 1, "H2_anchor_relative": 1})
+        self.assertIsNone(neither["unique_paired_world_fit"])
+        self.assertFalse(h1["causal_effect_proven"])
+
+
 if __name__ == "__main__":
     unittest.main()
