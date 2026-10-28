@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T05:23:37.710Z",
+  "updated_at": "2026-10-28T06:16:38Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2173,6 +2173,48 @@
       "constraints": [
         "Existing draft PR only; no game-ID action heuristic or target-outcome leakage",
         "No Kaggle submission, spend, token/secret request, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_public_probe_continuity_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Reject stitched or incomplete consecutive visible observation chains in the frozen nine-game prospective PUBLIC probe audit before H0/H1/H2 donor scoring.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "9cb63ded39971cdd6d2923654b142f2c1436970a",
+        "red_contract_run": 40642334223,
+        "red_result": "EXPECTED five assertion failures (three malformed digest subtests, scene-chain mismatch, visible-frame-hash mismatch) among 284 tests; positive contiguous fixture passed.",
+        "implementation_commit": "48fcecf08f8ede8018268c261424c6dcffd6bb6a",
+        "green_contract_run": 40642475252,
+        "green_tests": "284/284 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40642475362,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40642475241,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40642475376
+      },
+      "gate": [
+        "Require lowercase 64-character SHA256 syntax for both pre/post visible-frame digests on every prospective row",
+        "Require adjacent same-game transitions to chain previous after_scene to next before_scene",
+        "Require adjacent same-game transitions to chain previous after_frame_sha256 to next before_frame_sha256 and previous level_after to next level_before",
+        "Reject any discontinuity before generating cross-game witnesses; no attempt to repair/guess frames"
+      ],
+      "limitations": [
+        "Digest shape and continuity do not authenticate the collector or independently prove timestamp, new data, or hidden latent state",
+        "The scheduled collector remains uncreated/unexecuted after prior safety block; no bypass attempted",
+        "Existing frozen nine-game PUBLIC replication is a separate prior dataset, not new scheduled probe evidence"
+      ],
+      "new_independent_public_observations": 0,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "next": "Collect new bounded PUBLIC observations only via an approved runner, with independently timestamped plan and trace provenance; then test H0/H1/H2 and matched controls without automatic promotion.",
+      "constraints": [
+        "No Kaggle submission, spending, tokens, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
       ]
     }
   }
