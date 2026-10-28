@@ -131,7 +131,13 @@ def _evaluate_target(rows, rules):
     seen, local = {}, defaultdict(set)
     last_level, last_turn = None, -1
     stats = dict(same_level=0, level_advances=0, static_correct=0,
-                 baseline_correct=0)
+                 baseline_correct=0,
+                 paired_forecasts=0, paired_agreements=0,
+                 paired_disagreements=0,
+                 absolute_wins_on_disagreement=0,
+                 relative_wins_on_disagreement=0,
+                 neither_correct_on_disagreement=0,
+                 h0_wins_on_disagreement=0)
     for h in HYPOTHESES:
         stats.update({h+"_correct": 0, h+"_forecasts": 0,
                       h+"_forecasts_correct": 0})
@@ -161,14 +167,31 @@ def _evaluate_target(rows, rules):
         else:
             baseline, donor_allowed = before, True
         stats["baseline_correct"] += int(baseline == after)
+        candidates = {}
         for h in HYPOTHESES:
             candidate = (predict_scene(before, level, action, rules[h], h)
                          if donor_allowed else None)
+            candidates[h] = candidate
             prediction = candidate if candidate is not None else baseline
             stats[h+"_correct"] += int(prediction == after)
             stats[h+"_forecasts"] += int(candidate is not None)
             stats[h+"_forecasts_correct"] += int(candidate is not None and
                                                  candidate == after)
+        # Only compare genuinely paired counterfactuals: same target turn,
+        # both hypotheses issued forecasts, and no target outcome was used
+        # in either donor rule. Different coverage is not a head-to-head win.
+        absolute, relative = (candidates[h] for h in HYPOTHESES)
+        if absolute is not None and relative is not None:
+            stats["paired_forecasts"] += 1
+            if absolute == relative:
+                stats["paired_agreements"] += 1
+            else:
+                stats["paired_disagreements"] += 1
+                stats["absolute_wins_on_disagreement"] += int(absolute == after)
+                stats["relative_wins_on_disagreement"] += int(relative == after)
+                stats["neither_correct_on_disagreement"] += int(
+                    absolute != after and relative != after)
+                stats["h0_wins_on_disagreement"] += int(baseline == after)
         seen.setdefault((action, before), set()).add(after)
         _learn_effect(before, after, action, local)
     for h in HYPOTHESES:
