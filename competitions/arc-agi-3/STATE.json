@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T09:12:00Z",
+  "updated_at": "2026-10-28T10:16:57.440Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2322,6 +2322,39 @@
       "constraints": [
         "Previously blocked collector not executed or bypassed",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_horizon_completeness_reporting_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent a one-row-per-game partial prospective PUBLIC trace from being interpreted as a completed nine-game 24-turn H0/H1/H2 comparison.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "d8c50ed406416c571247275fdc7cddeb78e19eeb",
+        "red_contract_run": 40670242072,
+        "red_result": "EXPECTED two KeyError failures among 291 tests for missing horizon-completeness reporting fields",
+        "green_commit": "91e3b8fec88042004acdbfd34024928b7309177b",
+        "green_contract_run": 40670406732,
+        "green_tests": "291/291 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "system_run": 40670406765,
+        "public_smoke_run": 40670406679,
+        "frozen_run": 40670406657
+      },
+      "gate": "Trace returns trace_horizon_complete=false and enumerates incomplete_games unless EVERY preselected game has exactly 24 records; partial trace interpretation explicitly disallows horizon comparison. Complete trace reports completeness of row counts ONLY, not independently authenticated source or pre-action timing.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Synthetic completeness-reporting contract only. No new public game observations, world-hypothesis evidence, causal identification, policy improvement, hidden score or prize claim.",
+      "constraints": [
+        "No bypass of previously blocked collector",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim"
       ]
     }
   }
