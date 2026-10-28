@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T14:18:28Z",
+  "updated_at": "2026-10-28T16:17:01.543Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2514,6 +2514,42 @@
         "Synthetic test only: no authenticated new prospective public episodes, independent pre-action timestamp, causal intervention or measured score gain.",
         "Earlier blocked collector was not executed or bypassed.",
         "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "strict_prior_research_acceptance_gate": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent post-hoc globally later donor games from satisfying H1/H2 research acceptance gates; only strictly earlier OTHER-game prequential forecasts can pass. Retain all-game forecasts as descriptive diagnostics.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py"
+      ],
+      "test_first": {
+        "red_commit": "ccab7f48d8a394b13df37ac74cdc46745fcb6798",
+        "red_contract_run": 40723597130,
+        "red_result": "EXPECTED 1 missing acceptance_basis KeyError among 299 tests",
+        "green_commit": "e8f4e3a236e7160a0bc4a9b2af261ce2475857c5",
+        "green_contract_run": 40723780367,
+        "green_result": "299/299 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40723780367,
+        "system_proof": "SUCCESS",
+        "system_run": 40723780408,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40723780391,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40723780609
+      },
+      "behavior": "acceptance and research_gates_passed now derive from strict-prior per-game scores, not all-game post-hoc donor rules; chronological_prior_game_only.per_game exposes matched prequential metrics; acceptance_basis=STRICT_PRIOR_GAME_ONLY. Existing post-hoc per_game/total remain diagnostics. Synthetic adversarial gate test shows favorable post-hoc coverage cannot compensate for zero strict-prior forecasts.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Frozen existing public replay is not new prospective evidence or an independent holdout.",
+        "No newly authenticated pre-action episode or independently timestamped matched control.",
+        "Previously blocked collector not executed or bypassed; no Kaggle submission, spend, tokens, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
     }
   }
