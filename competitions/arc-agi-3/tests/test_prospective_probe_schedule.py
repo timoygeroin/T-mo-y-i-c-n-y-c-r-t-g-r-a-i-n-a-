@@ -139,6 +139,18 @@ class ProbeScheduleTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit_probe_trace(rows)
 
+
+    def test_equivalent_scene_ordering_preserves_continuity(self):
+        # Object detections are an unordered scene multiset. A stable frame
+        # digest with reordered descriptors must not break an episode chain.
+        rows = minimal_rows()
+        next_row = dict(row(rows[0]["game_id"], 1),
+                        plan_sha256=rows[0]["plan_sha256"],
+                        collection_policy="outcome_blind_cycle_v1")
+        next_row["before_scene"] = list(reversed(next_row["before_scene"]))
+        rows.insert(1, next_row)
+        self.assertEqual(audit_probe_trace(rows)["records"], SAMPLE_SIZE + 1)
+
     def test_same_game_consecutive_visible_frame_must_chain(self):
         rows = minimal_rows()
         next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
