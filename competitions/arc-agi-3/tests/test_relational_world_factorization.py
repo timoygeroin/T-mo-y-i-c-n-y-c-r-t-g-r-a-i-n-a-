@@ -151,6 +151,38 @@ class RelationalWorldTests(unittest.TestCase):
         self.assertFalse(world._research_acceptance(
             strict_empty)["absolute"]["research_gates_passed"])
 
+    def test_research_gate_needs_matched_world_discrimination(self):
+        # Aggregate H1 accuracy alone cannot establish superiority over H2/H0.
+        # Forecast coverage and level advances are insufficient without
+        # strictly-prior paired counterfactual disagreement evidence.
+        import relational_world_factorization as world
+        from remaining_public_sample import FROZEN_GAMES
+        scores = {
+            g: dict(absolute_delta=1 if i < 3 else 0,
+                    relative_delta=0,
+                    absolute_forecasts=10 if i < 3 else 0,
+                    relative_forecasts=10 if i < 3 else 0,
+                    level_advances=1,
+                    paired_disagreements=0,
+                    absolute_wins_on_disagreement=0,
+                    relative_wins_on_disagreement=0,
+                    h0_wins_on_disagreement=0)
+            for i, g in enumerate(FROZEN_GAMES)
+        }
+        no_discrimination = world._research_acceptance(scores)["absolute"]
+        self.assertFalse(no_discrimination["research_gates_passed"])
+        self.assertEqual(no_discrimination["paired_disagreements"], 0)
+        for g in FROZEN_GAMES[:3]:
+            scores[g]["paired_disagreements"] = 1
+            scores[g]["absolute_wins_on_disagreement"] = 1
+        discriminated = world._research_acceptance(scores)["absolute"]
+        self.assertTrue(discriminated["research_gates_passed"])
+        self.assertEqual(discriminated["head_to_head_wins"], 3)
+        for g in FROZEN_GAMES[:3]:
+            scores[g]["h0_wins_on_disagreement"] = 1
+        self.assertFalse(world._research_acceptance(
+            scores)["absolute"]["research_gates_passed"])
+
     def test_invalid_hypothesis_fails_closed(self):
         with self.assertRaises(ValueError):
             donor_rules([], "target", "oracle")
