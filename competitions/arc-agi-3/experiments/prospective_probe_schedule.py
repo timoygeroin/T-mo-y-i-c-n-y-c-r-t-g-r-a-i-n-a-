@@ -218,6 +218,8 @@ def audit_probe_trace(records):
     return dict(protocol=PROTOCOL, plan_sha256=manifest["sha256"],
                 games=list(games), records=count, horizon=HORIZON,
                 trace_horizon_complete=trace_horizon_complete,
+                provenance_authenticated=False,
+                eligible_for_prospective_evidence=False,
                 incomplete_games=incomplete_games,
                 interrupted_games=interrupted_games,
                 witness_count=len(witnesses), per_game=per_game,
@@ -237,7 +239,7 @@ def audit_probe_trace(records):
                                 if incomplete_games else
                                 "INTERRUPTED_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON"
                                 if interrupted_games else
-                                "NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF"))
+                                "STRUCTURALLY_COMPLETE_UNAUTHENTICATED_PUBLIC_PROBE_TRACE"))
 
 
 def main():
