@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T22:12:05.546Z",
+  "updated_at": "2026-10-28T23:11:42.252Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2767,6 +2767,34 @@
         "Visible-scene scoring on synthetic fixtures only; no independent pre-action timestamp, authenticated new public episode, latent-state equivalence, causal proof, or gameplay gain.",
         "Frozen schedule and competition agent unchanged; previously blocked collector not executed or bypassed.",
         "No Kaggle submission, spending, tokens, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_action6_canonical_click_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Reject noncanonical zero-padded ACTION6 coordinates so the same physical click cannot masquerade as distinct preregistered treatment and control actions.",
+      "test_first": {
+        "red_commit": "c044184affe9c10e3dc522b1265165f8d4a56cca",
+        "red_contract_run": 40784846355,
+        "red": "EXPECTED 3 subtest assertion failures among 308 tests: ACTION6@01,1, ACTION6@1,01, ACTION6@001,1 were accepted as different from ACTION6@1,1",
+        "green_commit": "9d55c86574f92b0dd30d17ea0db0a3b1de64377b",
+        "green_contract_run": 40785102462,
+        "green_tests": "308/308 PASS",
+        "system_proof_run": 40785102471,
+        "unchanged_public_smoke_run": 40785102483,
+        "frozen_nine_public_replication_run": 40785102515,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "implementation": "ACTION6 click coordinates must be canonical nonnegative decimal integers with no leading zeros (except literal 0); legal distinct canonical coordinates remain accepted.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Synthetic contract only; no new independently authenticated PUBLIC episodes or pre-action timestamps",
+        "No demonstrated causal world-model improvement, public score gain or policy promotion",
+        "No collector execution or bypass, Kaggle submission, spending, credentials, terms or legal/publication choice"
       ]
     }
   }
