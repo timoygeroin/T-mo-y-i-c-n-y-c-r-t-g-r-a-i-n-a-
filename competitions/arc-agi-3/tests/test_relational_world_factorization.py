@@ -115,6 +115,42 @@ class RelationalWorldTests(unittest.TestCase):
                          {"absolute": 0, "relative": 0})
         self.assertEqual(strict["effect_on_agent"], "NONE_SHADOW_ONLY")
 
+    def test_research_acceptance_requires_strict_prior_forecasts(self):
+        # Post-hoc donor support can be strong even when no prequential
+        # strict-prior forecast exists; it must never pass a research gate.
+        import relational_world_factorization as world
+        from remaining_public_sample import FROZEN_GAMES
+        rows = [dict(schema="arc-agi3.shadow-transition.v1",
+                     game_id=g, turn=0, action_key="ACTION3",
+                     legal_actions=["ACTION3"], level_before=0,
+                     level_after=0,
+                     before_scene=[[1, 1, 10, 10, 10, 10]],
+                     after_scene=[[1, 1, 10, 10, 10, 10]])
+                for g in FROZEN_GAMES]
+        report = evaluate_relational_worlds(rows)
+        strict = report["chronological_prior_game_only"]
+        self.assertEqual(report["acceptance_basis"], "STRICT_PRIOR_GAME_ONLY")
+        self.assertEqual(report["acceptance"],
+                         world._research_acceptance(strict["per_game"]))
+        self.assertFalse(report["acceptance"]["absolute"]["research_gates_passed"])
+
+        posthoc_favorable = {
+            g: dict(absolute_delta=1 if i < 3 else 0,
+                    relative_delta=0, absolute_forecasts=10 if i < 3 else 0,
+                    relative_forecasts=0, level_advances=1)
+            for i, g in enumerate(FROZEN_GAMES)
+        }
+        strict_empty = {
+            g: dict(absolute_delta=0, relative_delta=0,
+                    absolute_forecasts=0, relative_forecasts=0,
+                    level_advances=1)
+            for g in FROZEN_GAMES
+        }
+        self.assertTrue(world._research_acceptance(
+            posthoc_favorable)["absolute"]["research_gates_passed"])
+        self.assertFalse(world._research_acceptance(
+            strict_empty)["absolute"]["research_gates_passed"])
+
     def test_invalid_hypothesis_fails_closed(self):
         with self.assertRaises(ValueError):
             donor_rules([], "target", "oracle")
