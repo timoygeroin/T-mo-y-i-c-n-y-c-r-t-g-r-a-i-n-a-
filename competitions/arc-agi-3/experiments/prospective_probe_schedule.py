@@ -162,7 +162,7 @@ def audit_probe_trace(records):
         if grouped[game]:
             previous = grouped[game][-1]
             if (previous["level_after"] != row["level_before"] or
-                    previous["after_scene"] != row["before_scene"] or
+                    _scene(previous["after_scene"]) != scenes["before_scene"] or
                     previous["after_frame_sha256"] != row["before_frame_sha256"]):
                 raise ValueError("discontinuous public observation chain")
         grouped[game].append(row)
