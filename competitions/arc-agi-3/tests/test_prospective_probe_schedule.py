@@ -106,6 +106,30 @@ class ProbeScheduleTests(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 audit_probe_trace(bad)
 
+    def test_same_visible_frame_cannot_claim_different_object_effect(self):
+        # A deterministic scene extraction from identical visible pixels
+        # cannot manufacture an H1/H2 translation witness.
+        rows = minimal_rows()
+        rows[0]["after_scene"] = [[1, 1, 11, 10, 11, 10],
+                                  [2, 1, 20, 10, 20, 10]]
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
+    def test_same_visible_frame_across_games_has_one_scene(self):
+        # Identity applies across independent episodes, not just a chain.
+        rows = minimal_rows()
+        changed = [[1, 1, 11, 10, 11, 10], [2, 1, 20, 10, 20, 10]]
+        rows[1]["before_scene"] = changed
+        rows[1]["after_scene"] = copy.deepcopy(changed)
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
+    def test_different_visible_frames_may_share_object_scene(self):
+        # HUD or animation may change pixels without changing abstraction.
+        rows = minimal_rows()
+        rows[0]["after_frame_sha256"] = "b" * 64
+        self.assertEqual(audit_probe_trace(rows)["records"], SAMPLE_SIZE)
+
     def test_same_game_consecutive_scene_must_chain(self):
         rows = minimal_rows()
         next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
