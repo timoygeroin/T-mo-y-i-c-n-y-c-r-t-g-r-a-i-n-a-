@@ -145,6 +145,24 @@ class ProbeScheduleTests(unittest.TestCase):
         self.assertEqual(complete["per_game"][games[1]]["prior_games"], [games[0]])
         self.assertEqual(complete["per_game"][games[2]]["prior_games"], [games[0]])
 
+    def test_full_horizon_with_mid_episode_reset_is_not_an_independent_donor(self):
+        # 24 records are not necessarily one uninterrupted game episode.
+        # A GAME_OVER/RESET in the middle cannot donate an independent
+        # causal world rule to a later game's H1/H2 prediction.
+        games = select_probe_games()
+        rows = minimal_rows()
+        first = rows[0]
+        extra = [dict(row(games[0], t), plan_sha256=first["plan_sha256"],
+                      collection_policy="outcome_blind_cycle_v1")
+                 for t in range(1, HORIZON)]
+        extra[11]["pre_state"] = "GAME_OVER"
+        extra[11]["action_key"] = "RESET"
+        rows[1:1] = extra
+        result = audit_probe_trace(rows)
+        self.assertEqual(result["per_game"][games[1]]["prior_games"], [])
+        self.assertEqual(result["per_game"][games[1]]["ineligible_interrupted_prior_games"],
+                         [games[0]])
+
     def test_contiguous_two_turn_trace_is_accepted(self):
         rows = minimal_rows()
         next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
