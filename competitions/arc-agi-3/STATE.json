@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T03:17:46.436Z",
+  "updated_at": "2026-10-28T04:10:02Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2095,6 +2095,39 @@
         "Prior-game order is the frozen CI trace order, not independently timestamped intervention evidence",
         "No new public intervention or policy promotion",
         "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize or income claim"
+      ]
+    },
+    "prospective_anchor_axis_semantic_gate": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v2",
+      "purpose": "Reject H2 anchor-relative forecasts that are orthogonal to the unique nearest pre-action anchor, or have tied/diagonal nearest anchors; H1 remains arbitrary single cardinal translation.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "fd678f410180f172c81f7cfc25a6aca68951f448",
+        "red_contract_run": 40630654113,
+        "red_result": "EXPECTED three semantic failures in 272 tests: orthogonal motion, diagonal nearest anchor, equidistant anchor tie",
+        "implementation_commit": "34707028b2b65375b1c3c7f086c821f84e1af744",
+        "green_contract_run": 40630763745,
+        "green_tests": "272/272 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public": "SUCCESS",
+        "system_run": 40630763616,
+        "public_smoke_run": 40630763755,
+        "frozen_run": 40630763560
+      },
+      "behavior": "H2 forecasts must move one rigid object along the axis of its uniquely nearest pre-action anchor (doubled bounding-box centers, Manhattan distance); either toward or away is permitted. Ambiguous ties and diagonal anchors abstain. Existing valid different-mover positive fixture preserved.",
+      "interpretation": "Synthetic semantic contract repair, not a new donor-supported world hypothesis, independent PUBLIC trial, gameplay improvement or causal effect. H0/H1/H2 still have zero eligible independent three-world probes in prior frozen data.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED_NO_NEW_EVIDENCE",
+      "constraints": [
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
       ]
     }
   }
