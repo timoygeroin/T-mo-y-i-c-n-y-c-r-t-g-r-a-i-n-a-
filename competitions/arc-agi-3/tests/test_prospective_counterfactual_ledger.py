@@ -18,7 +18,9 @@ def plan():
         before=scene(10), treatment_action="ACTION3",
         control_action="ACTION4", donor_snapshot_sha256="a" * 64,
         forecasts=dict(H0_static=scene(10), H1_absolute=scene(11),
-                       H2_anchor_relative=scene(9)))
+                       H2_anchor_relative=scene(9)),
+        control_forecasts=dict(H0_static=scene(10), H1_absolute=scene(10),
+                               H2_anchor_relative=scene(10)))
 
 
 def outcome(action, episode, after):
@@ -212,6 +214,7 @@ class ProspectiveLedgerTests(unittest.TestCase):
                          {"H0_static": False, "H1_absolute": True,
                           "H2_anchor_relative": False})
         missing = plan()
+        missing.pop("control_forecasts")
         with self.assertRaises(ValueError):
             seal_trial(missing)
 
