@@ -77,6 +77,7 @@ def probe_manifest():
 def audit_probe_trace(records):
     """Validate provenance/schedule, then score H0/H1/H2 using prior games only."""
     from conditional_world_conflict_audit import _witnesses
+    from effect_coverage_audit import _scene
     from relational_world_factorization import (HYPOTHESES, _evaluate_target,
                                                  donor_rules)
     games = select_probe_games()
@@ -119,10 +120,18 @@ def audit_probe_trace(records):
             exact = f"{name}@{xy[0]},{xy[1]}" if xy is not None else name
             if action != exact:
                 raise ValueError("outcome-conditioned or off-schedule action")
-        if type(row.get("level_before")) is not int or type(row.get("level_after")) is not int:
-            raise ValueError("missing public level fields")
-        if not isinstance(row.get("before_scene"), list) or not isinstance(row.get("after_scene"), list):
-            raise ValueError("missing public visible-scene evidence")
+        if (type(row.get("level_before")) is not int or
+                type(row.get("level_after")) is not int or
+                min(row["level_before"], row["level_after"]) < 0):
+            raise ValueError("missing or invalid public level fields")
+        # Validate BOTH visible scenes on EVERY row, including RESET rows
+        # skipped by downstream witness construction. A descriptor cannot
+        # contain more visible pixels than its own bounding box can hold.
+        for field in ("before_scene", "after_scene"):
+            scene = _scene(row.get(field))
+            if any(obj[1] > (obj[4] - obj[2] + 1) *
+                    (obj[5] - obj[3] + 1) for obj in scene):
+                raise ValueError("impossible public object area")
         # Frame digests are observational identities, not proof of source or
         # independent timestamp. Reject malformed identities and broken chains
         # rather than treating stitched transitions as independent witnesses.
