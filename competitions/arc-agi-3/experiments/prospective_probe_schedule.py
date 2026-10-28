@@ -149,6 +149,11 @@ def audit_probe_trace(records):
         grouped[game].append(row)
     if current != SAMPLE_SIZE - 1 or any(not grouped[g] for g in games):
         raise ValueError("incomplete preregistered public sample")
+    # A one-row visit to each selected game is a valid diagnostic trace, not
+    # a completed prospective 24-turn comparison. Keep the distinction
+    # machine-readable so partial collection cannot be reported as a full run.
+    incomplete_games = [g for g in games if len(grouped[g]) != HORIZON]
+    trace_horizon_complete = not incomplete_games
 
     # Construct witnesses for reporting; donor_rules independently excludes
     # target and all future games, including their conflicting/static vetoes.
@@ -186,6 +191,8 @@ def audit_probe_trace(records):
                 totals[key] += value
     return dict(protocol=PROTOCOL, plan_sha256=manifest["sha256"],
                 games=list(games), records=count, horizon=HORIZON,
+                trace_horizon_complete=trace_horizon_complete,
+                incomplete_games=incomplete_games,
                 witness_count=len(witnesses), per_game=per_game,
                 strict_prior=dict(
                     baseline_correct=totals["baseline_correct"],
@@ -199,7 +206,9 @@ def audit_probe_trace(records):
                     level_advances=totals["level_advances"]),
                 policy_integration="REJECTED_UNLESS_SEPARATE_MATCHED_EVIDENCE",
                 effect_on_agent="NONE_SHADOW_ONLY",
-                interpretation="NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF")
+                interpretation=("NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF"
+                                if trace_horizon_complete else
+                                "PARTIAL_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON"))
 
 
 def main():
