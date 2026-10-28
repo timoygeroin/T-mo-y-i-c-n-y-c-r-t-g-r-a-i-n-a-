@@ -276,5 +276,29 @@ class ProbeScheduleTests(unittest.TestCase):
         self.assertEqual(result["interpretation"],
                          "INTERRUPTED_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON")
 
+    def test_competing_world_hypotheses_score_only_same_turn_disagreements(self):
+        # A head-to-head contrast is meaningful only when BOTH H1 and H2
+        # issue distinct forecasts on the SAME pre-action observation.
+        # Do not mistake different forecast coverage for a causal win.
+        from unittest.mock import patch
+        from relational_world_factorization import _evaluate_target
+        from effect_coverage_audit import _scene
+        before = _scene([[1, 1, 10, 10, 10, 10],
+                         [2, 1, 20, 10, 20, 10]])
+        after = _scene([[1, 1, 11, 10, 11, 10],
+                        [2, 1, 20, 10, 20, 10]])
+        r = row("synthetic", 0)
+        r["after_scene"] = [list(o) for o in after]
+        rules = {"absolute": {"dummy": 1}, "relative": {"dummy": 1}}
+        with patch("relational_world_factorization.predict_scene",
+                   side_effect=lambda scene, level, action, rule, h:
+                       after if h == "absolute" else before):
+            result = _evaluate_target([r], rules)
+        self.assertEqual(result["paired_disagreements"], 1)
+        self.assertEqual(result["absolute_wins_on_disagreement"], 1)
+        self.assertEqual(result["relative_wins_on_disagreement"], 0)
+        self.assertEqual(result["neither_correct_on_disagreement"], 0)
+        self.assertEqual(result["h0_wins_on_disagreement"], 0)
+
 if __name__ == "__main__":
     unittest.main()
