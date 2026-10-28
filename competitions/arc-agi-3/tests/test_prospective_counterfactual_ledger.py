@@ -280,5 +280,22 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertEqual(changed["control_discriminating_pairs"], 2)
 
 
+    def test_observed_arm_winners_distinguish_opposing_control_evidence(self):
+        # Forecast contrast alone does not imply the same world won both arms.
+        p = plan()
+        p["control_forecasts"]["H1_absolute"] = scene(11)
+        result = evaluate_pair(
+            seal_trial(p), outcome("ACTION3", "treatment-episode", scene(11)),
+            outcome("ACTION4", "control-episode", scene(10)))
+        observed = result["pairwise_observed_winner_by_arm"]
+        self.assertEqual(observed["H0_static|H1_absolute"],
+                         {"treatment": "H1_absolute", "control": "H0_static"})
+        self.assertEqual(observed["H0_static|H2_anchor_relative"],
+                         {"treatment": "NEITHER", "control": "NON_DISCRIMINATING"})
+        self.assertEqual(observed["H1_absolute|H2_anchor_relative"],
+                         {"treatment": "H1_absolute", "control": "H2_anchor_relative"})
+        self.assertFalse(result["causal_effect_proven"])
+
+
 if __name__ == "__main__":
     unittest.main()
