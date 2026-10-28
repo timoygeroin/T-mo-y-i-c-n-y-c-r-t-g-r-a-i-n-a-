@@ -192,5 +192,26 @@ class ProbeScheduleTests(unittest.TestCase):
         rows.insert(1, next_row)
         self.assertEqual(audit_probe_trace(rows)["records"], SAMPLE_SIZE + 1)
 
+    def test_partial_trace_is_not_presented_as_horizon_complete(self):
+        rows = minimal_rows()
+        result = audit_probe_trace(rows)
+        self.assertFalse(result["trace_horizon_complete"])
+        self.assertEqual(result["incomplete_games"], list(select_probe_games()))
+        self.assertEqual(result["interpretation"],
+                         "PARTIAL_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON")
+
+    def test_full_horizon_requires_all_nine_games(self):
+        games = select_probe_games()
+        digest = probe_manifest()["sha256"]
+        rows = [dict(row(game, turn), plan_sha256=digest,
+                     collection_policy="outcome_blind_cycle_v1")
+                for game in games for turn in range(HORIZON)]
+        result = audit_probe_trace(rows)
+        self.assertTrue(result["trace_horizon_complete"])
+        self.assertEqual(result["incomplete_games"], [])
+        self.assertEqual(result["records"], SAMPLE_SIZE * HORIZON)
+        self.assertEqual(result["interpretation"],
+                         "NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF")
+
 if __name__ == "__main__":
     unittest.main()
