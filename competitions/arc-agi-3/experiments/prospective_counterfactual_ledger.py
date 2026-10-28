@@ -215,6 +215,20 @@ def evaluate_pair(sealed, treatment, control):
     fit_counts = {h: int(treatment_hits[h]) + int(control_hits[h]) for h in WORLDS}
     complete_fits = [h for h in WORLDS if fit_counts[h] == 2]
     unique_complete_fit = complete_fits[0] if len(complete_fits) == 1 else None
+    # A complete two-arm fit need not mean both arms distinguished worlds:
+    # identical control forecasts make all discrimination treatment-only.
+    # Record the pairwise forecast contrasts, without claiming causality.
+    pairwise_arms = {}
+    for i, left in enumerate(WORLDS):
+        for right in WORLDS[i + 1:]:
+            arms = []
+            if plan["forecasts"][left] != plan["forecasts"][right]:
+                arms.append("treatment")
+            if plan["control_forecasts"][left] != plan["control_forecasts"][right]:
+                arms.append("control")
+            pairwise_arms[f"{left}|{right}"] = arms
+    control_discriminating_pairs = sum(
+        "control" in arms for arms in pairwise_arms.values())
     return dict(protocol=PROTOCOL, sha256=original["sha256"],
                 world_exact_hits=treatment_hits,
                 control_world_exact_hits=control_hits,
@@ -222,6 +236,8 @@ def evaluate_pair(sealed, treatment, control):
                                          for h in WORLDS},
                 paired_world_fit_counts=fit_counts,
                 unique_paired_world_fit=unique_complete_fit,
+                pairwise_discriminating_arms=pairwise_arms,
+                control_discriminating_pairs=control_discriminating_pairs,
                 control_static=b["after"] == plan["before"],
                 interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
                 causal_effect_proven=False, effect_on_agent="NONE_SHADOW_ONLY")
