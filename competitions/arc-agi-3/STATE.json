@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T01:17:45.463Z",
+  "updated_at": "2026-10-28T02:14:05.941Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -77,7 +77,7 @@
   ],
   "next_experiment": {
     "id": "externally_timestamped_public_three_world_trial",
-    "goal": "Commit one frozen outcome-blind H0/H1/H2 plan and donor snapshot digest BEFORE any new bounded PUBLIC gameplay; use a distinct matched-control episode, record observations, then score using the verified prospective ledger. Do not mistake scene matching for latent-state equivalence or reused public traces for independent evidence.",
+    "goal": "Precommit a genuinely outcome-blind H0/H1/H2 v2 plan with exact treatment_episode and control_episode plus donor snapshot digest in an independently timestamped Git/CI record BEFORE new bounded PUBLIC gameplay; then collect separate matched episodes and score without policy promotion absent independent gain.",
     "constraints": [
       "one existing PR and canonical C*",
       "no game-ID heuristics or target-outcome leakage",
@@ -2014,6 +2014,37 @@
         "Syntactic/physical forecast consistency does not prove causal correctness, donor support or external pre-action timestamp.",
         "No actual preregistered matched PUBLIC trial or new independent evidence.",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_control_episode_precommit": {
+      "status": "VERIFIED_CONTRACT_TEST_FIRST_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v2",
+      "purpose": "Prevent post-hoc favorable control selection: bind exact control_episode in the outcome-blind Git-committed plan before any treatment/control observations.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "dabac11ba230e6be2138206d87f3626ba531f583",
+        "red_contract_run": 40619194883,
+        "red_result": "EXPECTED six errors from new mandatory pre-action control_episode field, 266 tests run",
+        "implementation_commit": "db54d497fd8f25ca15d13bf404459bceb1d2c9b4",
+        "version_commit": "59bfeafc315aa2b7f52d71711301ea7caf7e6796",
+        "green_contract_run": 40619429458,
+        "green_tests": "266/266 PASS",
+        "system_proof_run": 40619429496,
+        "unchanged_official_public_smoke_run": 40619429676,
+        "frozen_public_replication_run": 40619429509,
+        "ci_conclusions": "3 SUCCESS; FROZEN_REPLICATION_IN_PROGRESS_AT_STATE_WRITE"
+      },
+      "behavior": "seal_trial requires explicit nonempty control_episode distinct from treatment episode and includes it in canonical SHA256 commitment; evaluate_pair rejects control outcomes from any other episode. v2 is a breaking contract version; old v1 plans cannot silently be scored as v2.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "new_public_observations": 0,
+      "gameplay_gain": "NOT_DEMONSTRATED",
+      "limitations": [
+        "A Git-committed hash must still be independently timestamped before actual gameplay; code alone does not prove chronology.",
+        "Visible-scene matching does not prove latent-state equivalence or causality.",
+        "No new donor-supported three-world disagreement; no new Kaggle submission, spend, credentials, terms, licensing or publication decision."
       ]
     }
   }
