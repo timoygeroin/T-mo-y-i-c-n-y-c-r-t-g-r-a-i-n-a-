@@ -19,7 +19,8 @@ PLAN_KEYS = frozenset(("game", "episode", "control_episode", "turn", "before",
                        "treatment_action", "control_action",
                        "donor_snapshot_sha256", "forecasts", "control_forecasts"))
 OUTCOME_KEYS = frozenset(("game", "episode", "turn", "before", "action", "after"))
-ACTION = re.compile(r"(?:ACTION[1-5]|ACTION6@[0-9]+,[0-9]+)\Z")
+# Canonical decimal coordinates: zero padding would alias the same physical click.
+ACTION = re.compile(r"(?:ACTION[1-5]|ACTION6@(0|[1-9][0-9]*),(0|[1-9][0-9]*))\Z")
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 
 
