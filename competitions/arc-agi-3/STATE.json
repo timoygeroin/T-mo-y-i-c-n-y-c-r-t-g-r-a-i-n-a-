@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T19:12:41.947Z",
+  "updated_at": "2026-10-28T20:12:48.413Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2664,6 +2664,36 @@
         "No new independently sourced PUBLIC episodes or confirmed H0/H1/H2 prediction advantage; this is synthetic protocol hardening only.",
         "Previously blocked collector not executed or bypassed; no Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
+    },
+    "prospective_paired_fit_diagnostic_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Expose explicit per-world exact-fit count across the separately preregistered treatment and control arms (0..2), plus the unique world fitting BOTH arms or null; prevent a treatment-only hit being read as a paired-world fit.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "44f5585245d368e2ab2e140872b68e10ece8f9c4",
+        "red_contract_run": 40760387624,
+        "red": "EXPECTED one KeyError: paired_world_fit_counts, among 305 tests",
+        "green_commit": "c9936e652478454bf6e63ea6e9fb50d909570ca9",
+        "green_contract_run": 40760601737,
+        "green": "305/305 PASS",
+        "system_proof_run": 40760601714,
+        "unchanged_public_smoke_run": 40760602106,
+        "frozen_nine_public_replication_run": 40760601724,
+        "ci_conclusions": "ALL_FOUR_SUCCESS"
+      },
+      "diagnostic": "H1 fitting treatment and static control produces H0=1/H1=2/H2=1 and unique H1; H2 treatment gives unique H2; when no treatment world fits, all 1 and unique null. Counts describe visible-scene observational fit only.",
+      "controls": [
+        "Pure read-only shadow diagnostic, no change to sealed plan schema, frozen schedule, action policy, game runner, Kaggle or submission",
+        "Does not authenticate pre-action timestamp, actual public episodes, independent reset or latent-state equivalence",
+        "Causal effect remains false and no automatic policy promotion"
+      ],
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_episodes": 0,
+      "confirmed_gameplay_gain": false
     }
   }
 }
