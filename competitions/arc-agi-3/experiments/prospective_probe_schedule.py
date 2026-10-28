@@ -150,13 +150,27 @@ def audit_probe_trace(records):
         # A source is not a completed preregistered donor merely because the
         # collector moved to the next game. Without an authenticated terminal
         # event, only a full HORIZON trace is eligible; early wins abstain.
-        prior = tuple(g for g in games[:i] if len(grouped[g]) == HORIZON)
+        # A complete row count is not a complete independent episode if the
+        # public environment reached GAME_OVER and RESET mid-horizon. A
+        # bootstrap RESET at turn zero is allowed, but any later RESET splits
+        # the trajectory and disqualifies that game as an H1/H2 donor.
+        prior = tuple(
+            g for g in games[:i]
+            if len(grouped[g]) == HORIZON and
+            all(r["action_key"] != "RESET" for r in grouped[g][1:])
+        )
         short_prior = tuple(g for g in games[:i] if len(grouped[g]) < HORIZON)
+        interrupted_prior = tuple(
+            g for g in games[:i]
+            if len(grouped[g]) == HORIZON and
+            any(r["action_key"] == "RESET" for r in grouped[g][1:])
+        )
         eligible = frozenset(prior)
         rules = {h: donor_rules(witnesses, game, h, eligible) for h in HYPOTHESES}
         result = _evaluate_target(grouped[game], rules)
         per_game[game] = dict(**result, prior_games=list(prior),
                               ineligible_short_prior_games=list(short_prior),
+                              ineligible_interrupted_prior_games=list(interrupted_prior),
                               donor_rules={h: len(rules[h]) for h in HYPOTHESES})
         for key, value in result.items():
             if type(value) is int:
