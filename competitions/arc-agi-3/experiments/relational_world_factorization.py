@@ -216,12 +216,36 @@ def _research_acceptance(strict_prior_per_game):
                              for s in strict_prior_per_game.values())
         forecasts = sum(s[h+"_forecasts"]
                         for s in strict_prior_per_game.values())
+        # Distinguish H1 from H2 and the identical-turn H0 control.
+        # Raw accuracy/coverage cannot validate a world hypothesis when
+        # both worlds make identical forecasts or one abstains.
+        rival = "relative" if h == "absolute" else "absolute"
+        disagreement_games = sum(
+            s.get("paired_disagreements", 0) > 0
+            for s in strict_prior_per_game.values())
+        paired_disagreements = sum(
+            s.get("paired_disagreements", 0)
+            for s in strict_prior_per_game.values())
+        wins = sum(s.get(h + "_wins_on_disagreement", 0)
+                   for s in strict_prior_per_game.values())
+        losses = sum(s.get(rival + "_wins_on_disagreement", 0)
+                     for s in strict_prior_per_game.values())
+        h0_wins = sum(s.get("h0_wins_on_disagreement", 0)
+                      for s in strict_prior_per_game.values())
+        discriminating = (disagreement_games >= 3 and
+                          wins > losses and wins > h0_wins)
         passed = (positive >= 3 and negative == 0 and
                   forecasts >= 30 and forecast_games >= 3 and
-                  total_advances >= 3)
+                  total_advances >= 3 and discriminating)
         acceptance[h] = dict(positive_games=positive,
                              negative_games=negative,
                              forecast_games=forecast_games,
+                             disagreement_games=disagreement_games,
+                             paired_disagreements=paired_disagreements,
+                             head_to_head_wins=wins,
+                             head_to_head_losses=losses,
+                             h0_wins_on_disagreement=h0_wins,
+                             discriminating_evidence=discriminating,
                              research_gates_passed=passed,
                              result=("RESEARCH_GATE_PASS_NO_AUTOMATIC_PROMOTION"
                                      if passed else "REJECT_POLICY_INTEGRATION"))
