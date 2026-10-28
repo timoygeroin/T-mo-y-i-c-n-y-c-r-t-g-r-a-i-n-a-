@@ -137,7 +137,11 @@ class RelationalWorldTests(unittest.TestCase):
         posthoc_favorable = {
             g: dict(absolute_delta=1 if i < 3 else 0,
                     relative_delta=0, absolute_forecasts=10 if i < 3 else 0,
-                    relative_forecasts=0, level_advances=1)
+                    relative_forecasts=0, level_advances=1,
+                    paired_disagreements=1 if i < 3 else 0,
+                    absolute_wins_on_disagreement=1 if i < 3 else 0,
+                    relative_wins_on_disagreement=0,
+                    h0_wins_on_disagreement=0)
             for i, g in enumerate(FROZEN_GAMES)
         }
         strict_empty = {
