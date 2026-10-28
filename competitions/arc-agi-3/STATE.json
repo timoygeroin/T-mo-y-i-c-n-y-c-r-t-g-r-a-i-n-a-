@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T11:14:08.203Z",
+  "updated_at": "2026-10-28T12:14:02.613Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2382,6 +2382,36 @@
         "frozen_run": 40677877834
       },
       "interpretation": "Synthetic reporting-integrity correction only. No new public episode, independent timestamp, H0/H1/H2 causal forecast, matched control, gameplay gain or Kaggle submission. Prior collector safety block not bypassed."
+    },
+    "public_probe_prestate_enum_integrity": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "method": "Fail closed on pre-action GameState enum before H0/H1/H2 witness construction: NOT_PLAYED/GAME_OVER require RESET, WIN cannot continue, NOT_FINISHED alone authorizes scheduled legal action; reject arbitrary nonempty strings.",
+      "source": "https://github.com/arcprize/ARC-AGI",
+      "test_path": "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py",
+      "implementation_path": "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+      "test_first": {
+        "red_commit": "a38211f5e771c9fc149de089cc15a787883bb11b",
+        "red_run": 40685105663,
+        "red_failure": "4 expected invalid-state subtests failed (293 tests)",
+        "negative_evidence": "Initial implementation commit a8099e097ae21d1cea2f66322088255cc20dc659 incorrectly used synthetic IN_PROGRESS as running state. Official SDK running state is NOT_FINISHED. This erroneous assumption was NOT promoted; corrected test-first via RED commit 992be798a4254969b64ce065522aabdbdb579803 (7 errors / 293 tests) and corrected implementation.",
+        "corrected_red_commit": "992be798a4254969b64ce065522aabdbdb579803",
+        "corrected_red_run": 40685528304,
+        "corrected_implementation_commit": "2b9bfad8b1b7d95959add3ea19fa96adc74e36a4"
+      },
+      "ci": {
+        "contract": "SUCCESS 293/293 run 40685623438",
+        "system_proof": "SUCCESS run 40685623546",
+        "unchanged_public_smoke": "SUCCESS run 40685623345",
+        "frozen_remaining_public_replication": "SUCCESS run 40685623337"
+      },
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Synthetic test fixtures only; no authenticated prospective public episode collection",
+        "The previous blocked collector was not run or bypassed",
+        "No Kaggle submission, spending, terms, secrets or legal decision"
+      ]
     }
   }
 }
