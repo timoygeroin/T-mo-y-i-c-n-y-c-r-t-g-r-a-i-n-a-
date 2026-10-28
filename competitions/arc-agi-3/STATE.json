@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T07:12:34.394Z",
+  "updated_at": "2026-10-28T08:12:50.264Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2249,6 +2249,41 @@
       "constraints": [
         "No bypass of prior collector safety block",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "interrupted_full_horizon_donor_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Exclude a 24-row scheduled PUBLIC trace interrupted by mid-episode GAME_OVER/RESET from the pool of completed independent earlier-game H1/H2 donors.",
+      "protocol": "arc-agi3.outcome-blind-public-probe-v2",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "b853ccaabb4f6f17d11545fe1cdd4944435451b3",
+        "red_run": 40654563697,
+        "red_result": "EXPECTED one semantic assertion failure among 286 tests: full 24-row prior game containing a mid-episode RESET wrongly counted as eligible donor.",
+        "green_commit": "5aed549a54fe660b2929748272ff241088f7e732",
+        "green_run": 40654722287,
+        "green_tests": "286/286 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40654722250,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40654722206,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40654722201
+      },
+      "gate": "24-row earlier games qualify as donors only if there is no RESET after the initial row. Initial bootstrap RESET is allowed; any later RESET indicates interrupted episode and is reported under ineligible_interrupted_prior_games. Short games remain separately excluded.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Synthetic interrupted-episode donor leakage fixed. No new public game observations, causal forecast gain, score improvement or policy promotion.",
+      "constraints": [
+        "Previously blocked collector not executed or bypassed",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim"
       ]
     }
   }
