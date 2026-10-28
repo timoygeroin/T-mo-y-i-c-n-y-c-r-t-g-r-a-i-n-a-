@@ -68,7 +68,7 @@ def probe_manifest():
         policy=POLICY,
         episode="new_local_public_env_per_game",
         no_game_specific_action_policy=True,
-        no_outcome_conditioning=True,
+        action_inputs="turn_and_advertised_legal_only",
     )
     digest = sha256(_canonical(dict(protocol=PROTOCOL, plan=plan)).encode("ascii")).hexdigest()
     return dict(protocol=PROTOCOL, horizon=HORIZON, plan=plan, sha256=digest)
