@@ -8,7 +8,7 @@ from prospective_probe_schedule import (PROTOCOL, HORIZON, SAMPLE_SIZE,
     select_probe_games, choose_probe_action, probe_manifest, audit_probe_trace)
 from disjoint_public_sample import PUBLIC_GAME_IDS
 
-def row(game, turn, action="ACTION1", legal=None, pre_state="IN_PROGRESS"):
+def row(game, turn, action="ACTION1", legal=None, pre_state="NOT_FINISHED"):
     return dict(schema="arc-agi3.shadow-transition.v1", game_id=game, turn=turn,
         pre_state=pre_state, action_key=action,
         legal_actions=legal if legal is not None else ["ACTION1"],
@@ -186,9 +186,10 @@ class ProbeScheduleTests(unittest.TestCase):
             audit_probe_trace(rows)
 
     def test_unknown_public_state_cannot_be_used_as_world_evidence(self):
+        # ARC GameState.NOT_FINISHED is the running state, not IN_PROGRESS.
         # Arbitrary nonempty state strings must not authorize a scheduled
         # action and then enter H0/H1/H2 donor evidence.
-        for state in ("PAUSED", "IN_PROGRESS ", "RESET", "game_over"):
+        for state in ("PAUSED", "IN_PROGRESS", "IN_PROGRESS ", "RESET", "game_over"):
             rows = minimal_rows()
             rows[0]["pre_state"] = state
             with self.subTest(state=state), self.assertRaises(ValueError):
