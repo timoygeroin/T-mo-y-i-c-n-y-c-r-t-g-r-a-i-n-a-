@@ -232,7 +232,14 @@ def _research_acceptance(strict_prior_per_game):
                      for s in strict_prior_per_game.values())
         h0_wins = sum(s.get("h0_wins_on_disagreement", 0)
                       for s in strict_prior_per_game.values())
+        # Repeated disagreements are not repeated correct predictions.
+        # A single correct game plus two neither-correct games must not
+        # masquerade as replicated world-model discrimination.
+        winning_disagreement_games = sum(
+            s.get(h + "_wins_on_disagreement", 0) > 0
+            for s in strict_prior_per_game.values())
         discriminating = (disagreement_games >= 3 and
+                          winning_disagreement_games >= 3 and
                           wins > losses and wins > h0_wins)
         passed = (positive >= 3 and negative == 0 and
                   forecasts >= 30 and forecast_games >= 3 and
@@ -241,6 +248,7 @@ def _research_acceptance(strict_prior_per_game):
                              negative_games=negative,
                              forecast_games=forecast_games,
                              disagreement_games=disagreement_games,
+                             winning_disagreement_games=winning_disagreement_games,
                              paired_disagreements=paired_disagreements,
                              head_to_head_wins=wins,
                              head_to_head_losses=losses,
