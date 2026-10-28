@@ -194,5 +194,39 @@ class ProspectiveLedgerTests(unittest.TestCase):
             seal_trial(p)
 
 
+    def test_control_world_forecasts_required_and_scored_on_same_pair(self):
+        # A matched action control cannot discriminate H0/H1/H2 if world
+        # predictions are only sealed for the treatment action.
+        p = plan()
+        p["control_forecasts"] = {
+            "H0_static": scene(10), "H1_absolute": scene(10),
+            "H2_anchor_relative": scene(10)}
+        sealed = seal_trial(p)
+        result = evaluate_pair(
+            sealed, outcome("ACTION3", "treatment-episode", scene(11)),
+            outcome("ACTION4", "control-episode", scene(10)))
+        self.assertEqual(result["control_world_exact_hits"],
+                         {"H0_static": True, "H1_absolute": True,
+                          "H2_anchor_relative": True})
+        self.assertEqual(result["paired_world_exact_hits"],
+                         {"H0_static": False, "H1_absolute": True,
+                          "H2_anchor_relative": False})
+        missing = plan()
+        with self.assertRaises(ValueError):
+            seal_trial(missing)
+
+    def test_control_forecast_is_committed_not_selected_after_outcome(self):
+        p = plan()
+        p["control_forecasts"] = {
+            "H0_static": scene(10), "H1_absolute": scene(10),
+            "H2_anchor_relative": scene(10)}
+        sealed = seal_trial(p)
+        sealed["plan"]["control_forecasts"]["H1_absolute"] = scene(11)
+        with self.assertRaises(ValueError):
+            evaluate_pair(
+                sealed, outcome("ACTION3", "treatment-episode", scene(11)),
+                outcome("ACTION4", "control-episode", scene(10)))
+
+
 if __name__ == "__main__":
     unittest.main()
