@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T00:13:30Z",
+  "updated_at": "2026-10-28T01:17:45.463Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -16,7 +16,14 @@
     "final_submission": "NOT_VERIFIED",
     "leaderboard_score": "NOT_CLAIMED",
     "prize": "NOT_CLAIMED",
-    "spend_ils": 0
+    "spend_ils": 0,
+    "official_timeline_readback": {
+      "checked_on": "2026-10-28",
+      "source": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview",
+      "entry_deadline_utc": "2026-10-26T23:59:00Z",
+      "final_submission_deadline_utc": "2026-11-02T23:59:00Z",
+      "status": "PUBLIC_RULES_TIMELINE_ONLY_NOT_AUTHENTICATED_SUBMISSION"
+    }
   },
   "verified_public_checkpoint": {
     "engine": "official ARC-AGI-3 Python 3.12 public engine",
@@ -1965,6 +1972,48 @@
       "effect_on_competition_agent": "NONE_SHADOW_ONLY",
       "constraints": [
         "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income claim"
+      ]
+    },
+    "prospective_forecast_translation_invariant": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v1",
+      "purpose": "Prevent arbitrary scene edits being sealed as H1 absolute or H2 anchor-relative displacement forecasts.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "af371d9d8adf40af1ea24a58987c30c12b8682d4",
+        "red_contract_run": 40613664767,
+        "red_result": "EXPECTED 7 semantic failures in 265 tests: recolor, area change, diagonal motion, two movers, creation, deletion, impossible area",
+        "green_commit": "45dddcad1ed6e4e7890a0f41037b6286ea532dae",
+        "green_contract_run": 40613775579,
+        "green_tests": "265/265 PASS",
+        "system_proof_run": 40613775816,
+        "unchanged_official_public_smoke_run": 40613775877,
+        "frozen_nine_public_replication_run": 40613775619,
+        "ci_conclusions": "ALL_FOUR_SUCCESS"
+      },
+      "behavior": "seal_trial now validates every six-field descriptor area <= its bounding-box capacity; each H1/H2 forecast must preserve object count, color, area, width/height and every other object while moving exactly one rigid descriptor along exactly one cardinal axis. Competing worlds may move different objects. No game ID heuristic or target outcome input.",
+      "evidence": "Synthetic tests prove rejection of six non-translation effects and impossible descriptor; public CI regression checks pass. No new independent PUBLIC intervention or donor consensus.",
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "observed_A_B_A_reversals": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probes": 0,
+        "comparison": "UNCHANGED"
+      },
+      "unchanged_agent_public_suite": {
+        "games": 25,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Syntactic/physical forecast consistency does not prove causal correctness, donor support or external pre-action timestamp.",
+        "No actual preregistered matched PUBLIC trial or new independent evidence.",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income claim."
       ]
     }
   }
