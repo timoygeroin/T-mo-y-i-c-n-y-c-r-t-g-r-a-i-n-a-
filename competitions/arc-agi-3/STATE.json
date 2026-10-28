@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T06:16:38Z",
+  "updated_at": "2026-10-28T07:12:34.394Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -76,12 +76,11 @@
     }
   ],
   "next_experiment": {
-    "id": "execute_outcome_blind_public_probe_when_safe_collector_available",
-    "goal": "Using the now Git-frozen public roster and legal-action-only schedule, collect genuinely new bounded PUBLIC episodes with an approved runner, independently timestamp trace provenance, score strict-prior H0/H1/H2, and only then consider a matched preregistered trial.",
+    "id": "approved_runner_public_probe_v2_with_authenticated_terminal_evidence",
+    "goal": "Execute frozen outcome-blind v2 schedule via permitted runner on genuinely NEW bounded PUBLIC episodes with independent pre-action timestamp; score H0/H1/H2 only with completed earlier donor horizons, and compare matched controls without automatic agent promotion.",
     "constraints": [
-      "No collection was performed in this checkpoint",
-      "Do not bypass tool safety blocks",
-      "No automatic agent promotion or game-ID heuristics",
+      "Collector previously blocked; do not bypass tool safety",
+      "Short early-win episodes abstain as donors absent separately authenticated terminal provenance",
       "No Kaggle submission, spending, terms, secrets or legal decisions"
     ]
   },
@@ -2215,6 +2214,41 @@
       "next": "Collect new bounded PUBLIC observations only via an approved runner, with independently timestamped plan and trace provenance; then test H0/H1/H2 and matched controls without automatic promotion.",
       "constraints": [
         "No Kaggle submission, spending, tokens, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "horizon_complete_donor_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent prematurely terminated one-turn PUBLIC probe games from being counted as completed independent earlier-game donors for H1/H2.",
+      "protocol": "arc-agi3.outcome-blind-public-probe-v2",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "b57a31b750857393812330faaf583b85402230c1",
+        "red_contract_run": 40648007525,
+        "red_result": "EXPECTED one semantic failure among 285 tests: short first game incorrectly listed as completed prior donor",
+        "green_commit": "2e475e9fb06b1956131ea4ca29525d53400d8c88",
+        "green_contract_run": 40648145900,
+        "green_tests": "285/285 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_official_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "system_run": 40648145892,
+        "public_smoke_run": 40648145901,
+        "frozen_run": 40648145951
+      },
+      "gate": "Earlier game enters H1/H2 independent donor pool only after exactly 24 contiguous scheduled observations; shorter games are explicitly excluded even if collector advanced. Early wins remain conservatively excluded until separately authenticated terminal provenance is supported.",
+      "manifest": "Protocol version bumped v1->v2, so old v1 trace digests fail closed; roster, seed, action cycle, 24-turn horizon unchanged. No prospective collection had occurred.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Fixes synthetic donor-completion loophole; does not validate new world predictions or improve gameplay. Public frozen CI is unchanged agent and old data, not new prospective observations.",
+      "constraints": [
+        "No bypass of prior collector safety block",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
       ]
     }
   }
