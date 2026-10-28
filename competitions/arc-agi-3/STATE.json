@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T17:11:22.177Z",
+  "updated_at": "2026-10-28T18:17:39.772Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2588,6 +2588,42 @@
         "Synthetic gate contract only; frozen public replay is not a new independent holdout or authenticated pre-action prospective experiment.",
         "Previously blocked collector not executed or bypassed.",
         "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_probe_provenance_reporting": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "A structurally complete 9x24 public probe JSONL is not independent proof of official source or pre-action timestamps. Prevent the audit from labeling unverified trace bytes as NEW PUBLIC action trajectories.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "6a2a34b4497e657a2a63ffb66bf33dcbaffc16c5",
+        "red_contract_run": 40743177173,
+        "red_result": "EXPECTED 2 semantic failures (1 missing provenance_authenticated KeyError, 1 misleading full-horizon interpretation assertion) among 302 tests",
+        "green_commit": "fbc2602006dfb6a48c8ae244b2255559c13968ff",
+        "green_contract_run": 40743374862,
+        "green_result": "302/302 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40743374862,
+        "system_run": 40743374963,
+        "public_smoke_run": 40743374888,
+        "frozen_run": 40743375139
+      },
+      "behavior": "The structural trace_horizon_complete metric remains separate. provenance_authenticated=false and eligible_for_prospective_evidence=false are explicit. Full 9x24 traces receive STRUCTURALLY_COMPLETE_UNAUTHENTICATED_PUBLIC_PROBE_TRACE, not a NEW_PUBLIC claim. No change to precommitted schedule, H0/H1/H2 forecasts, donor eligibility, contest agent or policy.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "This is reporting contract hardening on synthetic data only; cannot authenticate source or pre-action timestamps.",
+        "Collector safety block respected, not bypassed.",
+        "No Kaggle submission, money, tokens, terms, legal/license/publication choice, hidden score, prize or income claim."
       ]
     }
   }
