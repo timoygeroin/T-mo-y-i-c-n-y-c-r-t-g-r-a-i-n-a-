@@ -57,14 +57,16 @@ def effect_code(w, hypothesis):
     return ("toward" if along > 0 else "away", abs(along))
 
 
-def donor_rules(witnesses, target, hypothesis):
+def donor_rules(witnesses, target, hypothesis, eligible_games=None):
     """Unanimous effect across >=2 independent OTHER games; abstain on any veto."""
     if hypothesis not in HYPOTHESES:
         raise ValueError("unknown hypothesis")
+    if eligible_games is not None and (not isinstance(eligible_games, (set, frozenset)) or any(not isinstance(g, str) or not g for g in eligible_games)):
+        raise ValueError("eligible games must be a set of game IDs")
     groups = defaultdict(lambda: defaultdict(set))
     invalid = set()
     for w in witnesses:
-        if w["game"] == target:
+        if w["game"] == target or (eligible_games is not None and w["game"] not in eligible_games):
             continue
         key = _key(w["level"], w["action"], w["role"])
         if key is None:
