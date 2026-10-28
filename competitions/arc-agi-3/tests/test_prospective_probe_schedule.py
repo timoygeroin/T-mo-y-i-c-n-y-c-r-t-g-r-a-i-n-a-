@@ -213,5 +213,22 @@ class ProbeScheduleTests(unittest.TestCase):
         self.assertEqual(result["interpretation"],
                          "NEW_PUBLIC_ACTION_TRAJECTORIES_NOT_HIDDEN_HOLDOUT_OR_CAUSAL_PROOF")
 
+    def test_full_row_count_with_mid_episode_reset_is_not_valid_horizon_comparison(self):
+        # A full 24-row count is not an uninterrupted 24-turn episode.
+        # It must not be advertised as complete for matched-world comparisons.
+        games = select_probe_games()
+        digest = probe_manifest()["sha256"]
+        rows = [dict(row(game, turn), plan_sha256=digest,
+                     collection_policy="outcome_blind_cycle_v1")
+                for game in games for turn in range(HORIZON)]
+        rows[12]["pre_state"] = "GAME_OVER"
+        rows[12]["action_key"] = "RESET"
+        result = audit_probe_trace(rows)
+        self.assertFalse(result["trace_horizon_complete"])
+        self.assertEqual(result["interrupted_games"], [games[0]])
+        self.assertEqual(result["incomplete_games"], [])
+        self.assertEqual(result["interpretation"],
+                         "INTERRUPTED_PUBLIC_PROBE_TRACE_NOT_VALID_FOR_HORIZON_COMPARISON")
+
 if __name__ == "__main__":
     unittest.main()
