@@ -2480,6 +2480,41 @@
         "No new authenticated prospective public episode, independently timestamped pre-action provenance, or matched control.",
         "Previously blocked collector not run/bypassed; no Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
+    },
+    "matched_counterfactual_disagreement": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "Compare competing H1 absolute-axis and H2 anchor-relative world forecasts only on identical pre-action turns where both issue different concrete predictions; prevent differing forecast coverage from being mistaken for head-to-head predictive superiority.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "463306e0d8f82e86bf0c439a75e03decde5cebaf",
+        "red_contract_run": 40712749516,
+        "red_result": "EXPECTED exactly one KeyError missing paired_disagreements among 298 tests",
+        "green_commit": "934491a5c26779cf6a87f8bb49d599c7374b71e9",
+        "green_contract_run": 40712925885,
+        "green_result": "298/298 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_official_public_smoke": "SUCCESS",
+        "frozen_remaining_public_replication": "SUCCESS",
+        "system_run": 40712926065,
+        "public_smoke_run": 40712925865,
+        "frozen_run": 40712925752
+      },
+      "behavior": "For each eligible same-level turn, count paired_forecasts only when BOTH hypotheses emit concrete forecasts; paired_agreements if identical; paired_disagreements if distinct; then score absolute_wins_on_disagreement, relative_wins_on_disagreement, neither_correct_on_disagreement, and H0 baseline correctness on exactly those disagreement turns. Unpaired forecasts do not create a head-to-head win. No change to frozen v2 plan, donor selection, H0/H1/H2 prediction, competition agent or policy.",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Synthetic test only: no authenticated new prospective public episodes, independent pre-action timestamp, causal intervention or measured score gain.",
+        "Earlier blocked collector was not executed or bypassed.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
     }
   }
 }
