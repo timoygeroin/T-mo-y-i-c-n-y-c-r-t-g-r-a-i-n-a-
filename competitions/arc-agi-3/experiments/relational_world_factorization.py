@@ -180,9 +180,23 @@ def evaluate_relational_worlds(records):
     grouped, frozen = _bounded_rows(records)
     witnesses = _witnesses(grouped)
     per_game, total, support = {}, defaultdict(int), {}
-    for target in FROZEN_GAMES:
+    prior_support, prior_order = {}, {}
+    prior_totals = defaultdict(int)
+    for index, target in enumerate(FROZEN_GAMES):
+        # Only completed games strictly earlier in the collection sequence.
+        prior = frozenset(FROZEN_GAMES[:index])
+        prior_order[target] = list(FROZEN_GAMES[:index])
+        strict_rules = {h: donor_rules(witnesses, target, h, prior)
+                        for h in HYPOTHESES}
+        strict = _evaluate_target(grouped[target], strict_rules)
+        prior_support[target] = {h: len(strict_rules[h]) for h in HYPOTHESES}
+        for h in HYPOTHESES:
+            prior_totals[h + "_forecasts"] += strict[h + "_forecasts"]
+            prior_totals[h + "_correct"] += strict[h + "_correct"]
         rules = {h: donor_rules(witnesses, target, h) for h in HYPOTHESES}
         result = _evaluate_target(grouped[target], rules)
+        if strict["baseline_correct"] != result["baseline_correct"]:
+            raise AssertionError("chronological baseline drift")
         control = frozen["per_game"][target]
         for name, expected in (
             ("same_level", control["same_level_records"]),
@@ -214,6 +228,14 @@ def evaluate_relational_worlds(records):
                             "H1_absolute_anchor_axis",
                             "H2_toward_away_anchor_axis"],
                 per_game=per_game, total=dict(total), donor_support=support,
+                chronological_prior_game_only=dict(
+                    donor_order=list(FROZEN_GAMES),
+                    eligible_prior_games_per_target=prior_order,
+                    donor_support_per_target=prior_support,
+                    total_forecasts={h: prior_totals[h + "_forecasts"] for h in HYPOTHESES},
+                    total_correct={h: prior_totals[h + "_correct"] for h in HYPOTHESES},
+                    effect_on_agent="NONE_SHADOW_ONLY",
+                    caveat="Prior completed PUBLIC games only; no independent holdout."),
                 acceptance=acceptance, witness_count=len(witnesses),
                 effect_on_agent="NONE_SHADOW_ONLY",
                 caveat=("PUBLIC post-hoc donor pool, globally later games possible; "
