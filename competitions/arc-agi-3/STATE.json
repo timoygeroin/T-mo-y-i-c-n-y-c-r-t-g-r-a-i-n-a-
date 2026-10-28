@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T08:12:50.264Z",
+  "updated_at": "2026-10-28T09:12:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2284,6 +2284,44 @@
       "constraints": [
         "Previously blocked collector not executed or bypassed",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_public_scene_integrity_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Fail closed on invalid or physically impossible public object descriptors, including RESET rows previously skipped by downstream witnesses, and on negative level identifiers before H0/H1/H2 donor evaluation.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "17d579ba6b018e2584d3eb85c8020376dbd00f0c",
+        "red_contract_run": 40661866773,
+        "red_result": "EXPECTED three semantic failures among 289 tests: invalid RESET descriptor, area > bbox capacity, negative level",
+        "green_commit": "7d513f0e01e9f33bcb8f57c53de981973eaf6ff2",
+        "green_contract_run": 40662031579,
+        "green_tests": "289/289 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40662031575,
+        "unchanged_public_smoke": "SUCCESS",
+        "public_smoke_run": 40662031550,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40662032042
+      },
+      "gate": [
+        "Validate both pre- and post-scene descriptors on every row including RESET via existing _scene schema",
+        "Require descriptor area not to exceed bounding-box pixel capacity",
+        "Require nonnegative integer level_before and level_after before scoring"
+      ],
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Synthetic provenance/scene semantic contract hardening only; no new independent public episode, causal forecast, policy improvement, hidden score or prize claim.",
+      "constraints": [
+        "Previously blocked collector not executed or bypassed",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
       ]
     }
   }
