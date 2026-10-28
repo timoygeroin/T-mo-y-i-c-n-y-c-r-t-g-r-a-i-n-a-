@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T02:14:05.941Z",
+  "updated_at": "2026-10-28T03:17:46.436Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -76,8 +76,8 @@
     }
   ],
   "next_experiment": {
-    "id": "externally_timestamped_public_three_world_trial",
-    "goal": "Precommit a genuinely outcome-blind H0/H1/H2 v2 plan with exact treatment_episode and control_episode plus donor snapshot digest in an independently timestamped Git/CI record BEFORE new bounded PUBLIC gameplay; then collect separate matched episodes and score without policy promotion absent independent gain.",
+    "id": "new_independent_public_donor_evidence_before_three_world_trial",
+    "goal": "Acquire genuinely new bounded PUBLIC pre-action observations under an outcome-blind, game-agnostic schedule and independent Git timestamp; require >=2 earlier OTHER donor games with nonstatic unanimous H1/H2 evidence before attempting a preregistered matched treatment/control trial.",
     "constraints": [
       "one existing PR and canonical C*",
       "no game-ID heuristics or target-outcome leakage",
@@ -2045,6 +2045,56 @@
         "A Git-committed hash must still be independently timestamped before actual gameplay; code alone does not prove chronology.",
         "Visible-scene matching does not prove latent-state equivalence or causality.",
         "No new donor-supported three-world disagreement; no new Kaggle submission, spend, credentials, terms, licensing or publication decision."
+      ]
+    },
+    "chronological_prior_donor_worlds": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.chronological-prior-game-donors-v1",
+      "purpose": "Compare H0 local replay/static, H1 absolute displacement, H2 anchor-relative movement with strict completed-earlier-game donors, eliminating globally future donor support and vetoes.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py"
+      ],
+      "test_first": {
+        "red_commit": "215c35a344366eae15039a3e2fda375cfdb2ceef",
+        "red_contract_run": 40625259745,
+        "red_result": "EXPECTED 3 errors of 269 tests: absent eligible_games argument and chronological report",
+        "implementation_commits": [
+          "4c761f696b0577fac01569f216bc3c67a849fed4",
+          "ade93edee0036c007546cdc5bcb3b293c2800d60"
+        ],
+        "green_tests": "269/269 PASS",
+        "green_contract_run": 40625449849
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40625449886,
+        "unchanged_public_smoke": "SUCCESS",
+        "public_smoke_run": 40625449809,
+        "frozen_nine_public": "SUCCESS",
+        "frozen_run": 40625449876
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "legacy_posthoc_absolute_forecasts": 0,
+        "legacy_posthoc_relative_forecasts": 0,
+        "strict_prior_absolute_forecasts": 0,
+        "strict_prior_relative_forecasts": 0,
+        "strict_prior_supported_rules_all_targets": 0,
+        "local_baseline_correct": 362,
+        "strict_prior_absolute_correct": 362,
+        "strict_prior_relative_correct": 362,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "interpretation": "Chronological donor eligibility removes future-game support and future-game veto leakage in shadow analysis. The stricter PUBLIC replay still has ZERO supported rules or moving forecasts; no predictive improvement, no new independent observations or hidden holdout. Synthetic tests verify future donors cannot authorize or veto an earlier prediction.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "constraints": [
+        "Prior-game order is the frozen CI trace order, not independently timestamped intervention evidence",
+        "No new public intervention or policy promotion",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize or income claim"
       ]
     }
   }
