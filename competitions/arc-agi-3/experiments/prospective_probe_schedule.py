@@ -111,10 +111,11 @@ def audit_probe_trace(records):
                 raise ValueError("reset required by public game state")
         elif pre_state == "WIN":
             raise ValueError("cannot continue a won episode")
-        elif pre_state != "IN_PROGRESS":
-            # Only the documented running state authorizes a scheduled
-            # gameplay action. Arbitrary strings cannot become H0/H1/H2
-            # witnesses or masquerade as a completed public episode.
+        elif pre_state != "NOT_FINISHED":
+            # Official ARC GameState.NOT_FINISHED is the running state.
+            # A previous synthetic fixture used IN_PROGRESS incorrectly;
+            # reject that value and other unrecognized strings rather than
+            # admitting fabricated H0/H1/H2 evidence.
             raise ValueError("unrecognized public game state")
         else:
             if expected is None:
