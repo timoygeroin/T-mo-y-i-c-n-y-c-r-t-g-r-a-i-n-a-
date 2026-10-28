@@ -33,7 +33,8 @@ def _scene(raw):
             raise ValueError("invalid object descriptor")
         color, area, x0, y0, x1, y1 = obj
         if (color < 0 or area < 1 or
-                not (0 <= x0 <= x1 < 64 and 0 <= y0 <= y1 < 64)):
+                not (0 <= x0 <= x1 < 64 and 0 <= y0 <= y1 < 64) or
+                area > (x1 - x0 + 1) * (y1 - y0 + 1)):
             raise ValueError("object descriptor outside visible frame")
         objects.append(tuple(obj))
     if len(set(objects)) != len(objects):
@@ -65,6 +66,25 @@ def _hash(value):
     return sha256(_canonical(value).encode("utf-8")).hexdigest()
 
 
+
+def _single_cardinal_translation(before, after):
+    """H1/H2 must each move exactly one rigid descriptor along one axis.
+
+    Different hypotheses MAY select different movers. This validates
+    observable forecast semantics, not the donor support or causal truth.
+    """
+    if len(before) != len(after):
+        return False
+    removed = set(map(tuple, before)) - set(map(tuple, after))
+    added = set(map(tuple, after)) - set(map(tuple, before))
+    if len(removed) != 1 or len(added) != 1:
+        return False
+    old, new = next(iter(removed)), next(iter(added))
+    dx, dy = new[2] - old[2], new[3] - old[3]
+    return (old[:2] == new[:2] and
+            new[4] - old[4] == dx and new[5] - old[5] == dy and
+            (dx == 0) != (dy == 0))
+
 def seal_trial(plan):
     """Validate a BEFORE-action three-world forecast, then seal its bytes.
 
@@ -89,6 +109,9 @@ def seal_trial(plan):
     normalized = {h: _scene(forecasts[h]) for h in WORLDS}
     if normalized["H0_static"] != before or len({_canonical(x) for x in normalized.values()}) != 3:
         raise ValueError("counterfactual worlds must disagree with static baseline")
+    if not all(_single_cardinal_translation(before, normalized[h])
+               for h in WORLDS[1:]):
+        raise ValueError("moving-world forecast must be one cardinal rigid translation")
     sealed_plan = dict(game=_text(plan["game"]), episode=_text(plan["episode"]),
                        turn=plan["turn"], before=before,
                        treatment_action=treatment, control_action=control,
