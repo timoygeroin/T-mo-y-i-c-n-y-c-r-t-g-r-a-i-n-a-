@@ -111,8 +111,11 @@ def audit_probe_trace(records):
                 raise ValueError("reset required by public game state")
         elif pre_state == "WIN":
             raise ValueError("cannot continue a won episode")
-        elif not isinstance(pre_state, str) or not pre_state:
-            raise ValueError("missing public game state")
+        elif pre_state != "IN_PROGRESS":
+            # Only the documented running state authorizes a scheduled
+            # gameplay action. Arbitrary strings cannot become H0/H1/H2
+            # witnesses or masquerade as a completed public episode.
+            raise ValueError("unrecognized public game state")
         else:
             if expected is None:
                 raise ValueError("no scheduled legal action")
