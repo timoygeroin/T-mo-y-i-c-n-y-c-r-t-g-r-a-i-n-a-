@@ -163,6 +163,28 @@ class ProbeScheduleTests(unittest.TestCase):
         self.assertEqual(result["per_game"][games[1]]["ineligible_interrupted_prior_games"],
                          [games[0]])
 
+    def test_reset_row_cannot_hide_malformed_visible_scene(self):
+        rows = minimal_rows()
+        rows[0]["pre_state"] = "GAME_OVER"
+        rows[0]["action_key"] = "RESET"
+        rows[0]["before_scene"] = [[1, 1, 70, 0, 70, 0]]
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
+    def test_impossible_object_area_cannot_be_donor_evidence(self):
+        rows = minimal_rows()
+        rows[0]["before_scene"] = [[1, 2, 10, 10, 10, 10]]
+        rows[0]["after_scene"] = [[1, 2, 10, 10, 10, 10]]
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
+    def test_negative_level_cannot_enter_world_audit(self):
+        rows = minimal_rows()
+        rows[0]["level_before"] = -1
+        rows[0]["level_after"] = -1
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
     def test_contiguous_two_turn_trace_is_accepted(self):
         rows = minimal_rows()
         next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
