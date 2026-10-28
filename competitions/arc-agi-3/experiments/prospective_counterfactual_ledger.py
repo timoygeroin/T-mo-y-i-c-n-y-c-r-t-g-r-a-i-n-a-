@@ -229,6 +229,26 @@ def evaluate_pair(sealed, treatment, control):
             pairwise_arms[f"{left}|{right}"] = arms
     control_discriminating_pairs = sum(
         "control" in arms for arms in pairwise_arms.values())
+    # Distinguish a *potential* contrast from its observed result. When two
+    # forecasts coincide, neither can win that arm, even if both are correct.
+    # When forecasts differ, at most one can match the observed visible scene.
+    observed_winners = {}
+    for i, left in enumerate(WORLDS):
+        for right in WORLDS[i + 1:]:
+            key = f"{left}|{right}"
+            observed_winners[key] = {}
+            for arm, forecasts, actual in (
+                    ("treatment", plan["forecasts"], a["after"]),
+                    ("control", plan["control_forecasts"], b["after"])):
+                if forecasts[left] == forecasts[right]:
+                    winner = "NON_DISCRIMINATING"
+                elif forecasts[left] == actual:
+                    winner = left
+                elif forecasts[right] == actual:
+                    winner = right
+                else:
+                    winner = "NEITHER"
+                observed_winners[key][arm] = winner
     return dict(protocol=PROTOCOL, sha256=original["sha256"],
                 world_exact_hits=treatment_hits,
                 control_world_exact_hits=control_hits,
@@ -237,6 +257,7 @@ def evaluate_pair(sealed, treatment, control):
                 paired_world_fit_counts=fit_counts,
                 unique_paired_world_fit=unique_complete_fit,
                 pairwise_discriminating_arms=pairwise_arms,
+                pairwise_observed_winner_by_arm=observed_winners,
                 control_discriminating_pairs=control_discriminating_pairs,
                 control_static=b["after"] == plan["before"],
                 interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
