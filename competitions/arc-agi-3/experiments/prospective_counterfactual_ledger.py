@@ -13,11 +13,11 @@ from hashlib import sha256
 import json
 import re
 
-PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v2"
+PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v3"
 WORLDS = ("H0_static", "H1_absolute", "H2_anchor_relative")
 PLAN_KEYS = frozenset(("game", "episode", "control_episode", "turn", "before",
                        "treatment_action", "control_action",
-                       "donor_snapshot_sha256", "forecasts"))
+                       "donor_snapshot_sha256", "forecasts", "control_forecasts"))
 OUTCOME_KEYS = frozenset(("game", "episode", "turn", "before", "action", "after"))
 ACTION = re.compile(r"(?:ACTION[1-5]|ACTION6@[0-9]+,[0-9]+)\Z")
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -145,6 +145,22 @@ def seal_trial(plan):
         raise ValueError("moving-world forecast must be one cardinal rigid translation")
     if not _anchor_relative_axis(before, normalized["H2_anchor_relative"]):
         raise ValueError("H2 requires a unique axis-aligned nearest pre-action anchor")
+    # Precommit the counterfactual prediction for BOTH arms. Without the
+    # control-arm forecast, choosing an observed control after treatment could
+    # be mistaken for discrimination among competing world hypotheses.
+    control_forecasts = plan["control_forecasts"]
+    if not isinstance(control_forecasts, dict) or set(control_forecasts) != set(WORLDS):
+        raise ValueError("exactly three control-action world forecasts required")
+    normalized_control = {h: _scene(control_forecasts[h]) for h in WORLDS}
+    if normalized_control["H0_static"] != before:
+        raise ValueError("control H0 must predict the unchanged scene")
+    for h in WORLDS[1:]:
+        candidate = normalized_control[h]
+        if candidate != before and not _single_cardinal_translation(before, candidate):
+            raise ValueError("control moving-world prediction must be static or a cardinal rigid translation")
+        if (h == "H2_anchor_relative" and candidate != before and
+                not _anchor_relative_axis(before, candidate)):
+            raise ValueError("control H2 movement must follow the nearest-anchor axis")
     episode = _text(plan["episode"])
     control_episode = _text(plan["control_episode"])
     if control_episode == episode:
@@ -153,7 +169,8 @@ def seal_trial(plan):
                        control_episode=control_episode,
                        turn=plan["turn"], before=before,
                        treatment_action=treatment, control_action=control,
-                       donor_snapshot_sha256=donor, forecasts=normalized)
+                       donor_snapshot_sha256=donor, forecasts=normalized,
+                       control_forecasts=normalized_control)
     return dict(plan=sealed_plan, sha256=_hash(sealed_plan))
 
 
@@ -190,9 +207,13 @@ def evaluate_pair(sealed, treatment, control):
             a["action"] != plan["treatment_action"] or
             b["action"] != plan["control_action"]):
         raise ValueError("treatment/control are not the preregistered matched pair")
+    treatment_hits = {h: a["after"] == plan["forecasts"][h] for h in WORLDS}
+    control_hits = {h: b["after"] == plan["control_forecasts"][h] for h in WORLDS}
     return dict(protocol=PROTOCOL, sha256=original["sha256"],
-                world_exact_hits={h: a["after"] == plan["forecasts"][h]
-                                  for h in WORLDS},
+                world_exact_hits=treatment_hits,
+                control_world_exact_hits=control_hits,
+                paired_world_exact_hits={h: treatment_hits[h] and control_hits[h]
+                                         for h in WORLDS},
                 control_static=b["after"] == plan["before"],
                 interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
                 causal_effect_proven=False, effect_on_agent="NONE_SHADOW_ONLY")
