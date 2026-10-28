@@ -14,7 +14,7 @@ def scene(x):
 
 def plan():
     return dict(
-        game="public-game", episode="treatment-episode", turn=7,
+        game="public-game", episode="treatment-episode", control_episode="control-episode", turn=7,
         before=scene(10), treatment_action="ACTION3",
         control_action="ACTION4", donor_snapshot_sha256="a" * 64,
         forecasts=dict(H0_static=scene(10), H1_absolute=scene(11),
@@ -95,6 +95,25 @@ class ProspectiveLedgerTests(unittest.TestCase):
     def test_outcomes_must_not_be_present_at_sealing_time(self):
         p = plan()
         p["forecasts"]["observed_after"] = scene(11)
+        with self.assertRaises(ValueError):
+            seal_trial(p)
+
+    def test_control_episode_is_committed_before_observing_outcomes(self):
+        # Post-hoc selection of a favorable control episode must be impossible.
+        sealed = seal_trial(plan())
+        treatment = outcome("ACTION3", "treatment-episode", scene(11))
+        control = outcome("ACTION4", "control-episode", scene(10))
+        self.assertEqual(sealed["plan"]["control_episode"], "control-episode")
+        self.assertTrue(evaluate_pair(sealed, treatment, control)["control_static"])
+        with self.assertRaises(ValueError):
+            evaluate_pair(sealed, treatment,
+                          outcome("ACTION4", "posthoc-picked-control", scene(10)))
+        p = plan()
+        p.pop("control_episode")
+        with self.assertRaises(ValueError):
+            seal_trial(p)
+        p = plan()
+        p["control_episode"] = p["episode"]
         with self.assertRaises(ValueError):
             seal_trial(p)
 
