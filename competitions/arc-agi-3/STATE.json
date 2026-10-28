@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T20:12:48.413Z",
+  "updated_at": "2026-10-28T21:13:34.445Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2694,6 +2694,43 @@
       "effect_on_competition_agent": "NONE_SHADOW_ONLY",
       "new_independent_public_episodes": 0,
       "confirmed_gameplay_gain": false
+    },
+    "prospective_paired_world_arm_discrimination_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "A unique world fitting both preregistered treatment and control can still be identified exclusively by treatment forecasts when all control-world forecasts coincide. Expose per-pair discriminating arms so a treatment-only contrast is not misreported as two-arm world discrimination.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "36b869278a86301a6fcde4e68da35b304b7a66e0",
+        "red_contract_run": 40769500580,
+        "red_result": "EXPECTED exactly 1 KeyError pairwise_discriminating_arms among 306 tests",
+        "green_commit": "a07df602b6257985d0e4c43840e51ec5c18b7e6c",
+        "green_contract_run": 40769745739,
+        "green_result": "306/306 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40769745739,
+        "system_run": 40769745710,
+        "public_smoke_run": 40769745610,
+        "frozen_run": 40769745678
+      },
+      "behavior": "pairwise_discriminating_arms maps each H0/H1/H2 pair to the exact preregistered action arms where its visible-scene predictions differ; control_discriminating_pairs counts control-arm separations. Synthetic test shows all-static control predicts 0 control pairs despite a unique H1 full paired fit; H1-moving control gives exactly 2 discriminating pairs. Observational diagnostic only; no causal proof.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Pre-action SHA256 alone is not independent chronology proof; no authenticated new public episodes or latent-state matched resets.",
+        "Frozen probe schedule and competition agent unchanged; blocked collector not executed.",
+        "No Kaggle submission, spending, credentials, terms, license/publication decision, hidden score, prize, invention or income claim."
+      ]
     }
   }
 }
