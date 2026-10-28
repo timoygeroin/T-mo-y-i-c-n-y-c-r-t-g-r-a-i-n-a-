@@ -85,6 +85,37 @@ def _single_cardinal_translation(before, after):
             new[4] - old[4] == dx and new[5] - old[5] == dy and
             (dx == 0) != (dy == 0))
 
+
+def _anchor_relative_axis(before, after):
+    """H2 movement must lie on the unique nearest pre-action anchor axis.
+
+    The anchor is selected from BEFORE descriptors using Manhattan distance
+    between doubled bounding-box centers, matching the shadow relative-world
+    role convention. Both toward and away motion are allowed. A diagonal
+    anchor or an equal-distance tie makes the relation unidentifiable.
+    """
+    removed = set(map(tuple, before)) - set(map(tuple, after))
+    added = set(map(tuple, after)) - set(map(tuple, before))
+    if len(removed) != 1 or len(added) != 1:
+        return False
+    old, new = next(iter(removed)), next(iter(added))
+    others = [obj for obj in map(tuple, before) if obj != old]
+    if not others:
+        return False
+    cx, cy = old[2] + old[4], old[3] + old[5]
+    distances = [(abs(obj[2] + obj[4] - cx) +
+                  abs(obj[3] + obj[5] - cy), obj) for obj in others]
+    nearest_distance = min(d for d, _ in distances)
+    nearest = [obj for d, obj in distances if d == nearest_distance]
+    if len(nearest) != 1:
+        return False
+    anchor = nearest[0]
+    ax, ay = anchor[2] + anchor[4] - cx, anchor[3] + anchor[5] - cy
+    dx, dy = new[2] - old[2], new[3] - old[3]
+    return ((ax != 0 and ay == 0 and dx != 0 and dy == 0) or
+            (ax == 0 and ay != 0 and dx == 0 and dy != 0))
+
+
 def seal_trial(plan):
     """Validate a BEFORE-action three-world forecast, then seal its bytes.
 
@@ -112,6 +143,8 @@ def seal_trial(plan):
     if not all(_single_cardinal_translation(before, normalized[h])
                for h in WORLDS[1:]):
         raise ValueError("moving-world forecast must be one cardinal rigid translation")
+    if not _anchor_relative_axis(before, normalized["H2_anchor_relative"]):
+        raise ValueError("H2 requires a unique axis-aligned nearest pre-action anchor")
     episode = _text(plan["episode"])
     control_episode = _text(plan["control_episode"])
     if control_episode == episode:
