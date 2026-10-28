@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T16:17:01.543Z",
+  "updated_at": "2026-10-28T17:11:22.177Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2550,6 +2550,44 @@
         "Frozen existing public replay is not new prospective evidence or an independent holdout.",
         "No newly authenticated pre-action episode or independently timestamped matched control.",
         "Previously blocked collector not executed or bypassed; no Kaggle submission, spend, tokens, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "strict_prior_world_discrimination_gate": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "Prevent H1/H2 research acceptance from passing on aggregate strict-prior forecast coverage and level advances when there is no matched H1-versus-H2 counterfactual discrimination against the same-turn H0 baseline.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py"
+      ],
+      "test_first": {
+        "red_commit": "b48a280fac34451a61069dbdcd0eb159ffa4f16e",
+        "red_contract_run": 40732498893,
+        "red_result": "EXPECTED exactly 1 semantic assertion failure among 300 tests: research gate passed with zero paired H1/H2 disagreements",
+        "implementation_commit": "d7af5ce31a0f77d438835c7062be63b9d311c82e",
+        "green_test_fixture_commit": "9e534ce60a1a0fe00dde459ba560bca1babdaa7d",
+        "green_contract_run": 40732781469,
+        "green_result": "300/300 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40732781469,
+        "system_proof": "SUCCESS",
+        "system_run": 40732781606,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40732781496,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40732781507
+      },
+      "behavior": "Research gate now requires >=3 independent strictly-prior target games with paired H1/H2 disagreement, candidate wins > opposing world wins on those exact turns, and candidate wins > H0 wins on those same turns. Existing positive/negative game, forecast coverage and level-advance gates remain. Discrimination metrics are exposed in acceptance; no new policy import.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "frozen_plan_unchanged": true,
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Synthetic gate contract only; frozen public replay is not a new independent holdout or authenticated pre-action prospective experiment.",
+        "Previously blocked collector not executed or bypassed.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
       ]
     }
   }
