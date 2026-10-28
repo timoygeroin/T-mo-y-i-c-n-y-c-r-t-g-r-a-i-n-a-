@@ -14,7 +14,8 @@ def row(game, turn, action="ACTION1", legal=None, pre_state="IN_PROGRESS"):
         legal_actions=legal if legal is not None else ["ACTION1"],
         level_before=0, level_after=0,
         before_scene=[[1, 1, 10, 10, 10, 10], [2, 1, 20, 10, 20, 10]],
-        after_scene=[[1, 1, 10, 10, 10, 10], [2, 1, 20, 10, 20, 10]])
+        after_scene=[[1, 1, 10, 10, 10, 10], [2, 1, 20, 10, 20, 10]],
+        before_frame_sha256="a" * 64, after_frame_sha256="a" * 64)
 
 def minimal_rows():
     games = select_probe_games()
@@ -94,6 +95,41 @@ class ProbeScheduleTests(unittest.TestCase):
             bad[0].update(change)
             with self.subTest(change=change), self.assertRaises(ValueError):
                 audit_probe_trace(bad)
+
+    def test_trace_requires_well_formed_frame_digests(self):
+        rows = minimal_rows()
+        for change in ({"before_frame_sha256": None},
+                       {"after_frame_sha256": "not-a-sha"},
+                       {"before_frame_sha256": "g" * 64}):
+            bad = copy.deepcopy(rows)
+            bad[0].update(change)
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                audit_probe_trace(bad)
+
+    def test_same_game_consecutive_scene_must_chain(self):
+        rows = minimal_rows()
+        next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
+                        collection_policy="outcome_blind_cycle_v1")
+        next_row["before_scene"] = [[3, 1, 11, 10, 11, 10]]
+        rows.insert(1, next_row)
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
+    def test_same_game_consecutive_visible_frame_must_chain(self):
+        rows = minimal_rows()
+        next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
+                        collection_policy="outcome_blind_cycle_v1")
+        next_row["before_frame_sha256"] = "b" * 64
+        rows.insert(1, next_row)
+        with self.assertRaises(ValueError):
+            audit_probe_trace(rows)
+
+    def test_contiguous_two_turn_trace_is_accepted(self):
+        rows = minimal_rows()
+        next_row = dict(row(rows[0]["game_id"], 1), plan_sha256=rows[0]["plan_sha256"],
+                        collection_policy="outcome_blind_cycle_v1")
+        rows.insert(1, next_row)
+        self.assertEqual(audit_probe_trace(rows)["records"], SAMPLE_SIZE + 1)
 
 if __name__ == "__main__":
     unittest.main()
