@@ -175,7 +175,9 @@ export class MondayRuntime {
   }
 
   async executeAction(action) {
-    const receptor = this.capabilities[action.domain] || this.capabilities.general;
+    const receptor = action.requireDomainReceptor===true
+      ? this.capabilities[action.domain]
+      : (this.capabilities[action.domain] || this.capabilities.general);
     const prepared = this.actionLedger.prepare(action,{ cellId:this.cellId });
     if (!prepared.ok) {
       return {
