@@ -12,6 +12,7 @@ from __future__ import annotations
 from hashlib import sha256
 import json
 import re
+import unicodedata
 
 PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v3"
 WORLDS = ("H0_static", "H1_absolute", "H2_anchor_relative")
@@ -47,7 +48,9 @@ def _text(value):
     # Machine identity keys must be canonical. Whitespace padding can relabel
     # one real episode as several supposedly independent observations.
     if (not isinstance(value, str) or not value or
-            any(ch.isspace() or ord(ch) < 32 or ord(ch) == 127 for ch in value)):
+            unicodedata.normalize("NFKC", value) != value or
+            any(ch.isspace() or unicodedata.category(ch).startswith("C")
+                for ch in value)):
         raise ValueError("noncanonical trial identity")
     return value
 
