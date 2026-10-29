@@ -680,5 +680,46 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertEqual(diverse["distinct_forecast_designs"], 2)
         self.assertEqual(diverse["max_forecast_design_reuse"], 1)
 
+
+    def test_repeated_design_opposing_world_winners_are_negative_evidence(self):
+        # Identical frozen H0/H1/H2 designs in different named episodes may
+        # produce opposite two-arm winners. Count this instability by DESIGN,
+        # not as independent confirmation of either world.
+        from prospective_counterfactual_ledger import evaluate_trial_registry
+
+        first = plan()
+        first["control_forecasts"]["H1_absolute"] = scene(11)
+        second = copy.deepcopy(first)
+        second["episode"] = "treatment-episode-2"
+        second["control_episode"] = "control-episode-2"
+
+        def row(p, observed):
+            return dict(
+                sealed=seal_trial(p),
+                treatment=outcome("ACTION3", p["episode"], scene(observed)),
+                control=outcome("ACTION4", p["control_episode"], scene(observed)))
+
+        h1, h0 = row(first, 11), row(second, 10)
+        key = "H0_static|H1_absolute"
+        scored = evaluate_trial_registry([h1, h0])
+        self.assertEqual(scored["distinct_forecast_designs"], 1)
+        self.assertEqual(scored["consistent_winner_counts"][key],
+                         {"H0_static": 1, "H1_absolute": 1})
+        self.assertEqual(scored["designs_with_opposing_replication_winners_by_pair"][key], 1)
+        self.assertEqual(
+            evaluate_trial_registry([h0, h1])["designs_with_opposing_replication_winners_by_pair"][key], 1)
+        self.assertEqual(
+            evaluate_trial_registry([h1, row(second, 11)])[
+                "designs_with_opposing_replication_winners_by_pair"][key], 0)
+
+        # A different donor snapshot is a different hypothesis version.
+        second["donor_snapshot_sha256"] = "b" * 64
+        independent_designs = evaluate_trial_registry([h1, row(second, 10)])
+        self.assertEqual(independent_designs["distinct_forecast_designs"], 2)
+        self.assertEqual(
+            independent_designs["designs_with_opposing_replication_winners_by_pair"][key], 0)
+        self.assertFalse(scored["independent_public_episodes_authenticated"])
+        self.assertFalse(scored["causal_effect_proven"])
+
 if __name__ == "__main__":
     unittest.main()
