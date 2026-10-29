@@ -314,5 +314,44 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertEqual(seal_trial(p)["plan"]["control_action"], "ACTION6@2,1")
 
 
+    def test_registry_prevents_reused_episodes_and_cherry_picked_world_seals(self):
+        # Two individually valid counterfactual seals must not claim the same
+        # actual episode as independent evidence (including cross-arm reuse).
+        from prospective_counterfactual_ledger import audit_trial_registry
+
+        first = seal_trial(plan())
+        second_plan = plan()
+        second_plan["episode"] = "treatment-episode-2"
+        second_plan["control_episode"] = "control-episode-2"
+        second = seal_trial(second_plan)
+        clean = audit_trial_registry([first, second])
+        self.assertEqual(clean["trial_count"], 2)
+        self.assertEqual(clean["distinct_episodes"], 4)
+
+        # Exact duplicate also double-counts the same observational pair.
+        with self.assertRaises(ValueError):
+            audit_trial_registry([first, copy.deepcopy(first)])
+
+        # A different SHA for the same episode is a conflicting preregistration,
+        # not a second independent trial.
+        conflicting = plan()
+        conflicting["control_episode"] = "other-control"
+        with self.assertRaises(ValueError):
+            audit_trial_registry([first, seal_trial(conflicting)])
+
+        # An episode cannot be treatment in one trial and control in another.
+        cross_arm = plan()
+        cross_arm["episode"] = "control-episode"
+        cross_arm["control_episode"] = "third-control"
+        with self.assertRaises(ValueError):
+            audit_trial_registry([first, seal_trial(cross_arm)])
+
+        # A forged seal must fail before it enters the evidence registry.
+        forged = copy.deepcopy(second)
+        forged["sha256"] = "0" * 64
+        with self.assertRaises(ValueError):
+            audit_trial_registry([first, forged])
+
+
 if __name__ == "__main__":
     unittest.main()
