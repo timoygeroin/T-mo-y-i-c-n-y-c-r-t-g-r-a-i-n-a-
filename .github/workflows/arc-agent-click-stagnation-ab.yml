@@ -28,16 +28,16 @@ jobs:
       - name: Install official Python 3.12 runner
         working-directory: arc-starter
         run: make setup PYTHON=python3.12
-      - name: FROZEN original 25 public games 500 steps
+      - name: FROZEN original 25 public games 2000 steps (temporary budget-robustness probe)
         run: |
           set -o pipefail
           cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation-frozen.log
-      - name: Click-only stagnation gate 25 public games 500 steps
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-stagnation-frozen.log
+      - name: Click-only stagnation gate 25 public games 2000 steps (temporary budget-robustness probe)
         run: |
           set -o pipefail
           python competitions/arc-agi-3/tools/click_stagnation_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation-candidate.log
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-stagnation-candidate.log
       - name: Compare complete public scorecards, never auto-promote
         run: |
           set -o pipefail
