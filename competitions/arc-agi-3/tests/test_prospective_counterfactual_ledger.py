@@ -487,9 +487,12 @@ class ProspectiveLedgerTests(unittest.TestCase):
         from prospective_counterfactual_ledger import select_discriminating_trial
 
         weak = plan()  # All control forecasts coincide: treatment-only contrast.
+        weak["treatment_action"], weak["control_action"] = "ACTION1", "ACTION2"
         medium = plan()
+        medium["treatment_action"], medium["control_action"] = "ACTION3", "ACTION4"
         medium["control_forecasts"]["H1_absolute"] = scene(11)
         strong = plan()
+        strong["treatment_action"], strong["control_action"] = "ACTION5", "ACTION6@1,1"
         strong["control_forecasts"]["H1_absolute"] = scene(11)
         strong["control_forecasts"]["H2_anchor_relative"] = scene(9)
         chosen = select_discriminating_trial([weak, medium, strong])
