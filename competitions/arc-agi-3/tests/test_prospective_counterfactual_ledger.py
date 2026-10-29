@@ -517,5 +517,44 @@ class ProspectiveLedgerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             select_discriminating_trial([strong, invalid])
 
+
+    def test_selector_rejects_mixed_pre_action_cohorts(self):
+        # Counterfactual actions must compete at ONE decision point, not
+        # cherry-pick a better-looking plan from another game/reset/donor.
+        from prospective_counterfactual_ledger import select_discriminating_trial
+
+        base = plan()
+        base["control_forecasts"]["H1_absolute"] = scene(11)
+        base["control_forecasts"]["H2_anchor_relative"] = scene(9)
+        for field, value in (
+            ("game", "another-game"),
+            ("episode", "another-treatment"),
+            ("control_episode", "another-control"),
+            ("turn", 8),
+            ("donor_snapshot_sha256", "b" * 64),
+        ):
+            other = copy.deepcopy(base)
+            other[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                select_discriminating_trial([base, other])
+
+        # A different visible pre-action state is not a matched reset.
+        shifted = copy.deepcopy(base)
+        shifted["before"] = scene(12)
+        shifted["forecasts"] = dict(
+            H0_static=scene(12), H1_absolute=scene(13),
+            H2_anchor_relative=scene(11))
+        shifted["control_forecasts"] = copy.deepcopy(shifted["forecasts"])
+        with self.assertRaises(ValueError):
+            select_discriminating_trial([base, shifted])
+
+        # Different actions/forecasts within the same cohort are still legal.
+        alternate = copy.deepcopy(base)
+        alternate["treatment_action"] = "ACTION2"
+        alternate["control_action"] = "ACTION5"
+        self.assertEqual(
+            select_discriminating_trial([base, alternate])["sealed"]["plan"]["game"],
+            base["game"])
+
 if __name__ == "__main__":
     unittest.main()
