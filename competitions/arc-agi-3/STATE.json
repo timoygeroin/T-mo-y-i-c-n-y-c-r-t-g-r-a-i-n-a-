@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-28T23:11:42.252Z",
+  "updated_at": "2026-10-29T00:07:48.359Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2795,6 +2795,43 @@
         "Synthetic contract only; no new independently authenticated PUBLIC episodes or pre-action timestamps",
         "No demonstrated causal world-model improvement, public score gain or policy promotion",
         "No collector execution or bypass, Kaggle submission, spending, credentials, terms or legal/publication choice"
+      ]
+    },
+    "prospective_trial_registry_episode_uniqueness_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Fail closed on repeated treatment/control episode identities across independently counted H0/H1/H2 matched-pair preregistrations; prevent double-counting and choosing among conflicting seals for the same episode.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "6f36052b79991ec32c923cd3410c0ff121a4d86b",
+        "red_contract_run": 40791514280,
+        "red_result": "EXPECTED one ImportError for missing audit_trial_registry among 309 tests",
+        "green_commit": "c330b751e3c25c2773ad5e241fbd95136cc16a30",
+        "green_contract_run": 40791627523,
+        "green_result": "309/309 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40791627523,
+        "system_run": 40791627521,
+        "public_smoke_run": 40791627463,
+        "frozen_run": 40791627465
+      },
+      "behavior": "Pure audit_trial_registry validates SHA256 seals and refuses repeated (game, episode) identities in any treatment or control role, including exact duplicates and conflicting forecasts; accepts two distinct pairs. Reports registry counts, but never authenticates chronology or episode provenance.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "registry_applied_to_public_gameplay": false,
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "This is an opt-in read-only integrity helper, not yet wired to an authenticated prospective experiment runner.",
+        "Independent timestamp, official episode provenance, and reset/latent-state equivalence remain unverified.",
+        "Frozen schedule, agent and blocked collector unchanged; no Kaggle submission, spending, credentials, terms or legal/publication decisions."
       ]
     }
   }
