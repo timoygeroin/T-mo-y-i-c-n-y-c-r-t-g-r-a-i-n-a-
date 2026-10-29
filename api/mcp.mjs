@@ -175,6 +175,7 @@ async function callTool(name, args = {}, req = {}) {
     const value = {
       schema:'mondayid.capability-manifest.runtime.v1',
       workDelivery:describeWorkReadiness(),
+      taskAmplification:system.task_amplification || null,
       capabilityFabric:system.capability_fabric || null,
       multiHostFabric:system.multi_host_fabric || null,
       computerFabric:system.computer_fabric || null,
