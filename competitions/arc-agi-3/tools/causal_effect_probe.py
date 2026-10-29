@@ -86,6 +86,8 @@ def parse_trace(text: str) -> dict:
     for line in text.splitlines():
         if line.startswith(PREFIX_FORECAST):
             row = json.loads(line[len(PREFIX_FORECAST):])
+            if not isinstance(row, dict) or not {"game", "step", "action", "state", "predictions"}.issubset(row):
+                raise ValueError("invalid pre-action forecast")
             key = (row["game"], row["step"])
             if key in seen or not row["action"]:
                 raise ValueError("duplicate or invalid forecast")
@@ -93,6 +95,8 @@ def parse_trace(text: str) -> dict:
             forecasts.append(row)
         elif line.startswith(PREFIX_OUTCOME):
             row = json.loads(line[len(PREFIX_OUTCOME):])
+            if not isinstance(row, dict) or not {"game", "step", "action", "before", "actual"}.issubset(row):
+                raise ValueError("invalid post-action outcome")
             key = (row["game"], row["step"])
             if key not in seen or key in completed:
                 raise ValueError("outcome missing preceding forecast or duplicate")
