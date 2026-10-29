@@ -392,9 +392,20 @@ def select_discriminating_trial(candidates):
     if not isinstance(candidates, (list, tuple)):
         raise ValueError("candidate designs must be a sequence")
     ranked = []
+    cohort = None
+    # All competing action designs must concern one frozen pre-action
+    # decision point. Otherwise ranking can silently cherry-pick a different
+    # game, reset, donor snapshot, or visible scene as the "best" probe.
+    cohort_keys = ("game", "episode", "control_episode", "turn",
+                   "before", "donor_snapshot_sha256")
     for candidate in candidates:
         sealed = seal_trial(candidate)
         plan = sealed["plan"]
+        candidate_cohort = {key: plan[key] for key in cohort_keys}
+        if cohort is None:
+            cohort = candidate_cohort
+        elif candidate_cohort != cohort:
+            raise ValueError("candidate probes must share one pre-action cohort")
         both = 0
         control = 0
         for i, left in enumerate(WORLDS):
