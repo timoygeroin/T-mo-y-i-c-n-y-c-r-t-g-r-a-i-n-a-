@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T08:14:41Z",
+  "updated_at": "2026-10-29T09:04:39.725Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3129,6 +3129,43 @@
         "Synthetic pre-action forecast consistency only; no independent public gameplay or independently timestamped preregistration.",
         "Matching visible scenes and donor snapshot do not establish latent reset equivalence or causal effect.",
         "Frozen agent/schedule and blocked collector untouched; no Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score or prize claim."
+      ]
+    },
+    "prospective_unicode_trial_identity_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Reject Unicode format/invisible characters and compatibility-normalization aliases in machine trial game/episode/control_episode identities before sealing or registry independence counting.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "ce2d4912b467f9abf72ded5260b4a9f807275866",
+        "red_contract_run": 40846561357,
+        "red_result": "EXPECTED 15 assertion failures in one adversarial test among 317 tests: zero-width, bidi and fullwidth identity aliases accepted",
+        "implementation_commit": "2a59172bfee198a57ab7cb74ef51d2d8790ce530",
+        "green_contract_run": 40846698708,
+        "green_result": "317/317 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40846698708,
+        "system_run": 40846698693,
+        "public_smoke_run": 40846698675,
+        "frozen_run": 40846698808
+      },
+      "behavior": "_text rejects Unicode category C (control, format, surrogate, private-use, unassigned) and non-NFKC-stable identities while retaining canonical NFC international text; rejects misleading episode aliases before sealing/scoring/registry audit.",
+      "negative_evidence": "Before fix, an episode with a zero-width suffix or a compatibility fullwidth glyph passed sealing and could bypass registry duplicate identity checks. RED reproduced 15 subtest failures.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetically demonstrated canonicalization integrity, not authenticated episode provenance, independent pre-action chronology, latent-state matched reset or causal prediction gain.",
+        "No change to frozen contest agent, public probe schedule or blocked collector.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication choice, hidden score, prize or income claim."
       ]
     }
   }
