@@ -5,9 +5,11 @@ import importlib.util
 from pathlib import Path
 import types
 import unittest
+import sys
 
 # Imports the existing contract's official-runtime stubs, not a game simulator.
 from test_agent import FrameData, GameAction
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from click_coverage_variant import generate
 
 BASE = Path(__file__).resolve().parents[1] / "agent" / "my_agent.py"
