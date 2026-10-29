@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T05:10:39.606Z",
+  "updated_at": "2026-10-29T06:10:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3016,6 +3016,44 @@
         "No latent-state matched reset, causality or score improvement demonstrated.",
         "Existing agent, frozen public schedule and previously blocked collector untouched.",
         "No Kaggle submission, spending, tokens, terms or legal/license/publication choices."
+      ]
+    },
+    "prospective_two_arm_probe_design_selection_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Select a candidate H0/H1/H2 preregistered matched treatment/control design by explicit two-arm counterfactual prediction contrasts, abstaining when all controls are nondiscriminating; no action uncertainty or game-ID heuristic.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "1315a23cdc1dd6d9bc1ee6009da183b5f0bbc136",
+        "red_contract_run": 40827338227,
+        "red_result": "EXPECTED ImportError select_discriminating_trial; 1 error in 314 tests",
+        "implementation_commit": "ea464e3bf3eb0d840f5d8f45a35076edac058efa",
+        "adversarial_test_commit": "6a1aa10e29b8f64bf13db75c0ad09e6bae735166",
+        "green_contract_run": 40827539357,
+        "green_result": "314/314 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40827539357,
+        "system_run": 40827539397,
+        "public_smoke_run": 40827539363,
+        "frozen_run": 40827539401
+      },
+      "behavior": "Pure select_discriminating_trial validates every candidate using seal_trial; counts hypothesis pairs with different treatment AND control predictions; prioritizes highest two-arm coverage then control coverage, deterministic action-only tie-break; returns None when zero two-arm contrasts. Invalid candidate fails closed; duplicate candidates do not affect selection. Does not execute gameplay or authenticate timestamps/resets.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic counterfactual plans only; no independently authenticated prospective PUBLIC episode or independent pre-action timestamp.",
+        "Visible-scene differences are not latent-state reset equivalence or causal evidence.",
+        "Contest agent, frozen public probe schedule and blocked collector untouched.",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score or prize claim."
       ]
     }
   }
