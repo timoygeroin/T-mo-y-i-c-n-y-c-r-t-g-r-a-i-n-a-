@@ -48,6 +48,7 @@ class MyAgent(Agent):
         self._last_grids: list[list[list[int]]] | None = None
         self._last_move: str | None = None
         self._last_position: tuple[int, int] | None = None
+        self._winning_click: tuple[int, int] | None = None
         self._click_visits: Counter[tuple[int, str, int, int]] = Counter()
         self._global_click_visits: Counter[tuple[int, int, int]] = Counter()
         self._click_successes: Counter[tuple[int, int, int]] = Counter()
@@ -280,6 +281,8 @@ class MyAgent(Agent):
         previous=self._last_observation
         changed = current != previous
         progressed = current[0] > previous[0]
+        if progressed and self._last_move == 'ACTION6' and self._last_position is not None:
+            self._winning_click = self._last_position
         delta = self._delta(self._last_grids, grids)
         outcome_identity = self._last_move
         meaningful = progressed or changed
@@ -334,6 +337,7 @@ class MyAgent(Agent):
             self._last_move=None
             self._last_observation=None
             self._last_grids=None
+            self._winning_click=None
             return GameAction.RESET
         if getattr(latest_frame, 'full_reset', False) and not self._seen_full_reset:
             self._seen_full_reset = True
@@ -389,13 +393,24 @@ class MyAgent(Agent):
             value+=self._random.random()*0.001  # seeded tie-breaking
             scoring.append((value,action))
         _,action=max(scoring,key=lambda pair:pair[0])
+        winning_click = self._winning_click
+        self._winning_click = None  # One-shot, never persistent stale transfer.
         self._attempts[(level,key[1],action.name)]+=1
         self._last_move=action.name
         self._last_observation=key
         self._last_grids=grids
         self._steps+=1
         if action.is_complex():
-            x,y=self._pick_click(key,grids)
+            # One-shot transfer only when the prior click advanced a level
+            # and this new level still presents the physical click target.
+            # Do not force it in games with mixed action families.
+            eligible = len(legal) == 1 and winning_click in self._salient_points(grids)[:self.MAX_CLICKS]
+            if eligible:
+                x,y=winning_click
+                self._click_visits[(key[0],key[1],x,y)]+=1
+                self._global_click_visits[(key[0],x,y)]+=1
+            else:
+                x,y=self._pick_click(key,grids)
             action.set_data({'x':x,'y':y})
             self._last_position=(x,y)
         action.reasoning={'policy':'monday-novelty-v1','level':level,'state_visits':self._visits[key], 'action':action.name}
