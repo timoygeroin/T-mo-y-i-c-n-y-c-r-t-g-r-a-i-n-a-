@@ -16,7 +16,7 @@ def generate(source: str, arm: str) -> str:
         raise ValueError("frozen source guard mismatch")
     condition = ">= 4" if arm == "effect" else "< 4"
     replacement = (NEEDLE +
-        " + (0.85 if self._delta(self._last_grids, grids) " +
+        " + (3.00 if self._delta(self._last_grids, grids) " +
         condition + " else 0.0)  # UL003 cardinal motion")
     candidate = source.replace(NEEDLE, replacement, 1)
     compile(candidate, "<ul003-candidate>", "exec")
