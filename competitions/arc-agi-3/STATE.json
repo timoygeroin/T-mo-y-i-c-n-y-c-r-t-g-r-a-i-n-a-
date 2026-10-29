@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T13:13:00Z",
+  "updated_at": "2026-10-29T14:15:53.237Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3315,6 +3315,43 @@
         "Synthetic fixtures only, no independently authenticated PUBLIC gameplay or pre-action seal chronology.",
         "Role-invariant forecast-design identity does not prove equal latent resets or independent replication.",
         "Contest agent, frozen schedule and blocked collector unchanged; no Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income."
+      ]
+    },
+    "prospective_repeated_design_action_outcome_divergence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Report divergent visible outcomes for the SAME physical action under a repeated frozen H0/H1/H2 forecast design, including when neither replication produces opposing complete two-arm world winners. Arm swaps cannot hide divergence.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "c79afeb805abbd2c4265fd425f41ec82ef032a98",
+        "red_contract_run": 40888915695,
+        "red_result": "EXPECTED one KeyError for missing designs_with_divergent_action_outcomes among 322 tests; job log independently inspected",
+        "green_commit": "e45710e55a3988b3af5cc8f514fbe6f1df803aec",
+        "green_contract_run": 40889095127,
+        "green_result": "322/322 PASS; GitHub job log independently inspected"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40889095127,
+        "system_run": 40889095458,
+        "public_smoke_run": 40889095188,
+        "frozen_run": 40889094973
+      },
+      "behavior": "evaluate_trial_registry now emits designs_with_divergent_action_outcomes (distinct forecast designs containing at least one physical action with multiple observed visible scenes) and divergent_design_action_pairs (number of design/action groups with conflicting scenes). Compares outcomes by action within role-invariant forecast-design identity, not episode or arm labels. Previous per-world/pairwise counts remain unchanged.",
+      "negative_evidence": "Previously, repeated identical forecast designs with a different observed scene for ACTION4 but the same ACTION3 scene could evade the opposing-complete-winner diagnostic. Synthetic RED reproduced the missing visibility; this is evidence of protocol blind spot, not independent PUBLIC environment stochasticity.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic fixtures only; no independently authenticated PUBLIC episodes, pre-action chronology or latent matched resets.",
+        "Divergent visible outcomes can arise from differing hidden reset state, stochasticity, animation/HUD or measurement; cannot assign causal mechanism.",
+        "No agent/policy, frozen schedule, blocked collector, Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income change."
       ]
     }
   }
