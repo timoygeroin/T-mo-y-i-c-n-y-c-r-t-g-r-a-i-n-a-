@@ -407,9 +407,22 @@ def evaluate_trial_registry(rows):
     # instead of presenting both raw counts as corroborating discoveries.
     # Different donor snapshots remain distinct hypothesis versions.
     design_winners = {pair: {} for pair in pair_names}
+    # Track actual visible outcomes by frozen physical action, not by arm
+    # label. Distinct observed scenes under the same action/design are
+    # replication instability, including cases with no opposing full winners.
+    # This cannot identify whether resets, stochasticity, or hidden state
+    # caused the divergence.
+    design_action_outcomes = {}
     for source, result in zip(rows, evaluated):
         normalized_plan = seal_trial(source["sealed"]["plan"])["plan"]
         design_sha = _forecast_design_sha(normalized_plan)
+        by_action = design_action_outcomes.setdefault(design_sha, {})
+        for action_key, observed_key in (
+                ("treatment_action", "treatment"),
+                ("control_action", "control")):
+            action = normalized_plan[action_key]
+            actual = _scene(source[observed_key]["after"])
+            by_action.setdefault(action, set()).add(_canonical(actual))
         for pair in pair_names:
             evidence = result["pairwise_two_arm_evidence"][pair]
             status_counts[pair][evidence["status"]] += 1
@@ -417,6 +430,11 @@ def evaluate_trial_registry(rows):
                 winner_counts[pair][evidence["winner"]] += 1
                 design_winners[pair].setdefault(design_sha, set()).add(
                     evidence["winner"])
+    divergent_design_actions = [
+        sum(len(observed) > 1 for observed in by_action.values())
+        for by_action in design_action_outcomes.values()]
+    designs_with_divergent_actions = sum(n > 0 for n in divergent_design_actions)
+    divergent_design_action_pairs = sum(divergent_design_actions)
     opposing_replications = {
         pair: sum(len(winners) > 1 for winners in designs.values())
         for pair, designs in design_winners.items()}
@@ -428,6 +446,8 @@ def evaluate_trial_registry(rows):
                 pairwise_status_counts=status_counts,
                 consistent_winner_counts=winner_counts,
                 designs_with_opposing_replication_winners_by_pair=opposing_replications,
+                designs_with_divergent_action_outcomes=designs_with_divergent_actions,
+                divergent_design_action_pairs=divergent_design_action_pairs,
                 world_arm_exact_hits=arm_hits,
                 world_arm_misses=arm_misses,
                 world_complete_pair_hits=complete_hits,
