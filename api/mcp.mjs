@@ -8,6 +8,7 @@ import { compileProjectLineage, projectToCapabilityDelta } from '../src/everythi
 import { describeWorkReadiness } from '../src/work-readiness.mjs';
 import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
 import { assessVisualTransition } from '../src/visual-release-gate.mjs';
+import { normalizeIntent } from '../src/intent-field.mjs';
 import { simulateBoundedDeus0, DEUS_LIMITS, deus0ErrorCode } from '../src/deus-zero-access.mjs';
 
 const system = JSON.parse(fs.readFileSync(new URL('../SYSTEM.json', import.meta.url), 'utf8'));
@@ -21,6 +22,11 @@ const tools = Object.freeze([
     name:'visual_release_gate',
     description:'Fail-closed MondayVision preflight and post-render identity/scene/wardrobe transaction. Does not intercept arbitrary native ChatGPT image generation.',
     inputSchema:{type:'object',properties:{renderRequested:{type:'boolean'},scene:{type:'object'},identity:{type:'object'},wardrobe:{type:'object'},history:{type:'object'},candidate:{type:'object'},directIdentityApproval:{type:'boolean'}},additionalProperties:false}
+  },
+  {
+    name:'amplify_intent',
+    description:'Private side-effect-free MondayID task preflight. Preserves exact user intent; materializes whole-system obligations without executing or claiming completion.',
+    inputSchema:{type:'object',properties:{signal:{type:'object'}},required:['signal'],additionalProperties:false}
   },
   {
     name:'health',
@@ -109,6 +115,27 @@ function jsonRpcError(id, code, message, data = undefined) {
 async function callTool(name, args = {}, req = {}) {
   if (name === 'visual_release_gate') {
     const value=assessVisualTransition(args);
+    return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+  }
+  if (name === 'amplify_intent') {
+    const input=args?.signal;
+    if(!input || typeof input!=='object' || Array.isArray(input)) {
+      const value={ok:false,status:'PREFLIGHT_ONLY',code:'OBJECT_SIGNAL_REQUIRED'};
+      return {isError:true,content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+    }
+    const intent=normalizeIntent(input);
+    const value={
+      ok:true,
+      schema:'mondayid.task-amplification.preflight.v1',
+      status:'PREFLIGHT_ONLY',
+      scope:intent.amplification?.scope || 'TASK_LOCAL',
+      domains:intent.domains,
+      requireDomainReceptor:intent.requireDomainReceptor===true,
+      proofPolicy:intent.amplification?.proofPolicy || 'EXISTING_TASK_CONTRACT',
+      obligations:intent.obligations.map(o=>({id:o.id,domain:o.domain,material:o.material,status:o.status,requiredVerificationMode:o.requiredVerificationMode})),
+      effectVerified:false,
+      persisted:false
+    };
     return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
   }
   if (name === 'health') {
