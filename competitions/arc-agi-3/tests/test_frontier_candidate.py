@@ -61,6 +61,7 @@ class FrontierCandidateTests(unittest.TestCase):
         a._attempts[(0, key[1], "ACTION1")] = 1
         a._attempts[(0, key[1], "ACTION2")] = 8
         a._transitions[(0, key[1], "ACTION2")] = (0, "unexplored-B")
+        a._visits[(0, "unexplored-B")] = 20  # Baseline avoids this familiar target
         self.assertEqual(a.choose_action([], obs), GameAction.ACTION2)
 
 
