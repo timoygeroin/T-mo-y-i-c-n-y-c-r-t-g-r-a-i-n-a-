@@ -481,6 +481,33 @@ class ProspectiveLedgerTests(unittest.TestCase):
 
 
 
+    def test_trial_identifiers_reject_invisible_unicode_and_compatibility_aliases(self):
+        # Unicode format characters and compatibility glyphs can relabel one
+        # observed episode as supposedly independent evidence. ASCII controls
+        # and ordinary whitespace are already rejected separately.
+        from prospective_counterfactual_ledger import audit_trial_registry
+
+        first = seal_trial(plan())
+        for suffix in ("\u200b", "\u2060", "\u202e"):
+            aliased = plan()
+            aliased["episode"] += suffix
+            aliased["control_episode"] = "another-control"
+            with self.subTest(suffix=repr(suffix)), self.assertRaises(ValueError):
+                audit_trial_registry([first, seal_trial(aliased)])
+
+        for field in ("game", "episode", "control_episode"):
+            for bad in ("\u200b", "\u2060", "\u202e", "\uff41"):
+                p = plan()
+                p[field] += bad
+                with self.subTest(field=field, bad=repr(bad)), self.assertRaises(ValueError):
+                    seal_trial(p)
+
+        # Legitimate NFC non-ASCII text need not be globally banned.
+        p = plan()
+        p["episode"] = "épisode"
+        self.assertEqual(seal_trial(p)["plan"]["episode"], "épisode")
+
+
     def test_selects_two_arm_counterfactual_design_not_action_uncertainty(self):
         # A preregistered control must discriminate competing H0/H1/H2 worlds.
         # No observed outcomes, game-ID heuristics or action uncertainty scores.
