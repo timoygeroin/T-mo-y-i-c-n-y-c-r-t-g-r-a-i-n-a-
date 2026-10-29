@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T03:12:51.725Z",
+  "updated_at": "2026-10-29T04:08:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2942,6 +2942,42 @@
         "No matched latent reset or demonstrated causal/world-model predictive gain",
         "Frozen contest agent and probe schedule unchanged; blocked collector not executed or bypassed",
         "No Kaggle submission, spend, credentials, terms or legal/license/publication decision"
+      ]
+    },
+    "prospective_registry_per_world_falsification_accounting_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Expose explicit per-world treatment/control exact-hit and miss counts and full two-arm fits across validated matched-pair registry, preserving failed world predictions independently of pairwise winners.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "e5436ae9b3a5b0790714bf96e587fb962ebaaf6e",
+        "red_contract_run": 40815922733,
+        "red_result": "EXPECTED one KeyError world_arm_exact_hits among 312 tests",
+        "green_commit": "d7475a4005fce6da32e836fcbdff3ad04a665f60",
+        "green_contract_run": 40816009781,
+        "green_result": "312/312 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40816009781,
+        "system_run": 40816009804,
+        "public_smoke_run": 40816009896,
+        "frozen_run": 40816009827
+      },
+      "behavior": "Pure evaluate_trial_registry reports world_arm_exact_hits, world_arm_misses and world_complete_pair_hits for H0/H1/H2 across every validated treatment/control pair; an observed H1/H1 pair and an H1/H0 opposing pair yield H1 2 treatment hits, 1 control hit, 1 complete-pair hit, and explicit misses for H0/H2. No causal inference.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Only synthetic observational matched-pair fixtures; no independently authenticated PUBLIC episodes, pre-action chronology, or latent-state matched reset.",
+        "Frozen competition agent/schedule and blocked collector untouched.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication choices, hidden score, prize or income claim."
       ]
     }
   }
