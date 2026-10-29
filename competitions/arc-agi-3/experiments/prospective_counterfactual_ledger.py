@@ -301,6 +301,7 @@ def audit_trial_registry(sealed_trials):
     if not isinstance(sealed_trials, (list, tuple)):
         raise ValueError("registry must be a sequence of sealed trial pairs")
     seen_episodes = set()
+    action_forecasts = {}
     digests = []
     for sealed in sealed_trials:
         if (not isinstance(sealed, dict) or set(sealed) != {"plan", "sha256"} or
@@ -315,6 +316,21 @@ def audit_trial_registry(sealed_trials):
             if key in seen_episodes:
                 raise ValueError("episode reused across independent trial pairs")
             seen_episodes.add(key)
+        # Across separately named episodes, the same pre-action model
+        # snapshot must make the same forecast for an identical visible
+        # decision context and physical action. Otherwise the registry could
+        # retrofit different world predictions after seeing outcomes.
+        # Different donor snapshots remain distinct model versions.
+        context = (plan["game"], plan["turn"], _canonical(plan["before"]),
+                   plan["donor_snapshot_sha256"])
+        for action_key, forecast_key in (
+                ("treatment_action", "forecasts"),
+                ("control_action", "control_forecasts")):
+            key = context + (plan[action_key],)
+            forecast = plan[forecast_key]
+            if key in action_forecasts and action_forecasts[key] != forecast:
+                raise ValueError("conflicting world forecasts for one pre-action action")
+            action_forecasts[key] = forecast
         digests.append(verified["sha256"])
     return dict(trial_count=len(digests),
                 distinct_episodes=len(seen_episodes),
