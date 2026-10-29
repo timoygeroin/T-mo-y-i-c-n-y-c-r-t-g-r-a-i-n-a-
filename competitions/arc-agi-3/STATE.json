@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T10:09:36.326Z",
+  "updated_at": "2026-10-29T11:14:08.150Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3204,6 +3204,43 @@
         "Matching visible scene/donor does not prove latent-state matched reset or causality.",
         "Agent, frozen public schedule and blocked collector unchanged.",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income."
+      ]
+    },
+    "prospective_forecast_design_dependence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Separate repeated observational matched-pair counts from independent forecast-design diversity when the same donor snapshot, visible pre-action context, actions and H0/H1/H2 predictions recur under new episode names.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "a14fc87b14d0516c4b83405c31c46670b3fa2572",
+        "red_contract_run": 40863470931,
+        "red_result": "EXPECTED one KeyError distinct_forecast_designs among 319 tests; logs independently inspected",
+        "implementation_commit": "44adae53192509a200e0b283685558a82c2cc084",
+        "green_contract_run": 40863628838,
+        "green_result": "319/319 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40863628838,
+        "system_run": 40863628862,
+        "public_smoke_run": 40863628837,
+        "frozen_run": 40863628815
+      },
+      "behavior": "Registry and scored aggregate now report distinct_forecast_designs and max_forecast_design_reuse. Design SHA256 excludes treatment/control episode labels but includes game, turn, visible before scene, immutable donor digest, both actions, and all three-world forecasts on both arms. Two distinct episodes with identical forecasts remain two observational pairs but one forecast design; different donor snapshot counts as a distinct design. Existing scoring counts are unchanged.",
+      "negative_evidence": "Before this change two repeated identical H1-consistent designs were counted as two consistent observational pairs without any explicit report that both came from one forecast design. RED reproduced missing dependence diagnostic; no claim of statistically independent replication.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Forecast-design diversity is not independent data provenance or proof of separate latent resets.",
+        "Synthetic tests only; no independently authenticated pre-action timestamps or new PUBLIC H0/H1/H2 episodes.",
+        "Agent, frozen public schedule and blocked collector untouched; no Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income."
       ]
     }
   }
