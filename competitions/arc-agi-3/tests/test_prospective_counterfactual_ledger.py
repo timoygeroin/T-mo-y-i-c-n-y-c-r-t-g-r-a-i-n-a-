@@ -353,5 +353,31 @@ class ProspectiveLedgerTests(unittest.TestCase):
             audit_trial_registry([first, forged])
 
 
+    def test_two_arm_pairwise_evidence_requires_consistent_discriminating_wins(self):
+        # An H1 treatment hit plus H0 control hit contradicts a shared
+        # two-arm H1 explanation. A static control cannot corroborate H1.
+        p = plan()
+        p["control_forecasts"]["H1_absolute"] = scene(11)
+        treatment = outcome("ACTION3", "treatment-episode", scene(11))
+        h1_control = outcome("ACTION4", "control-episode", scene(11))
+        h0_control = outcome("ACTION4", "control-episode", scene(10))
+        key = "H0_static|H1_absolute"
+        consistent = evaluate_pair(seal_trial(p), treatment, h1_control)
+        self.assertEqual(consistent["pairwise_two_arm_evidence"][key],
+                         {"status": "CONSISTENT", "winner": "H1_absolute"})
+        opposed = evaluate_pair(seal_trial(p), treatment, h0_control)
+        self.assertEqual(opposed["pairwise_two_arm_evidence"][key],
+                         {"status": "OPPOSING", "winner": None})
+        nondiscriminating = evaluate_pair(seal_trial(plan()), treatment, h0_control)
+        self.assertEqual(nondiscriminating["pairwise_two_arm_evidence"][key],
+                         {"status": "NON_DISCRIMINATING", "winner": None})
+        neither = evaluate_pair(
+            seal_trial(p), treatment,
+            outcome("ACTION4", "control-episode", scene(12)))
+        self.assertEqual(neither["pairwise_two_arm_evidence"][key],
+                         {"status": "NEITHER", "winner": None})
+        self.assertFalse(consistent["causal_effect_proven"])
+
+
 if __name__ == "__main__":
     unittest.main()
