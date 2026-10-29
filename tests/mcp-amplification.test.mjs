@@ -51,7 +51,7 @@ test('carrier advertises the exact preflight mechanism without pretending host i
  assert.equal(out.contracts.taskAmplifier?.autoInterceptsNativeChat,false);
 });
 
-test('quoted or negated hypothetical command is not promoted to whole-system authorization',()=>{
+test('quoted or negated hypothetical command is not promoted to whole-system authorization',async()=>{
  const {normalizeIntent}=await import('../src/intent-field.mjs');
  for(const text of ['Я не прошу пересобери всю систему','Не надо перенастраивать всю систему']){
   assert.notEqual(normalizeIntent({text}).amplification?.scope,'WHOLE_ORGANISM',text);
