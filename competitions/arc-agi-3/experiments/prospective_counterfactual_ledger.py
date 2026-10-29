@@ -336,6 +336,18 @@ def evaluate_trial_registry(rows):
     # from a cherry-picked subset of otherwise invalid observations.
     evaluated = [evaluate_pair(row["sealed"], row["treatment"], row["control"])
                  for row in rows]
+    # Preserve per-world falsification independently of pairwise winners.
+    # A world can lose an arm even when another pair is NON_DISCRIMINATING;
+    # totals are exact-scene observational counts, never causal evidence.
+    arm_hits = {arm: {world: sum(int(row[key][world]) for row in evaluated)
+                      for world in WORLDS}
+                for arm, key in (("treatment", "world_exact_hits"),
+                                 ("control", "control_world_exact_hits"))}
+    arm_misses = {arm: {world: len(evaluated) - hits
+                        for world, hits in counts.items()}
+                  for arm, counts in arm_hits.items()}
+    complete_hits = {world: sum(int(row["paired_world_exact_hits"][world])
+                                for row in evaluated) for world in WORLDS}
     statuses = ("CONSISTENT", "OPPOSING", "NON_DISCRIMINATING", "NEITHER")
     pair_names = [f"{left}|{right}" for i, left in enumerate(WORLDS)
                   for right in WORLDS[i + 1:]]
@@ -354,6 +366,9 @@ def evaluate_trial_registry(rows):
                 distinct_episodes=registry["distinct_episodes"],
                 pairwise_status_counts=status_counts,
                 consistent_winner_counts=winner_counts,
+                world_arm_exact_hits=arm_hits,
+                world_arm_misses=arm_misses,
+                world_complete_pair_hits=complete_hits,
                 interpretation="REGISTRY_OBSERVATIONAL_TWO_ARM_ONLY",
                 chronology_authenticated=False,
                 independent_public_episodes_authenticated=False,
