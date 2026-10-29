@@ -480,5 +480,40 @@ class ProspectiveLedgerTests(unittest.TestCase):
 
 
 
+
+    def test_selects_two_arm_counterfactual_design_not_action_uncertainty(self):
+        # A preregistered control must discriminate competing H0/H1/H2 worlds.
+        # No observed outcomes, game-ID heuristics or action uncertainty scores.
+        from prospective_counterfactual_ledger import select_discriminating_trial
+
+        weak = plan()  # All control forecasts coincide: treatment-only contrast.
+        medium = plan()
+        medium["control_forecasts"]["H1_absolute"] = scene(11)
+        strong = plan()
+        strong["control_forecasts"]["H1_absolute"] = scene(11)
+        strong["control_forecasts"]["H2_anchor_relative"] = scene(9)
+        chosen = select_discriminating_trial([weak, medium, strong])
+        self.assertEqual(chosen["sealed"], seal_trial(strong))
+        self.assertEqual(chosen["two_arm_discriminating_pairs"], 3)
+        self.assertEqual(chosen["control_discriminating_pairs"], 3)
+        self.assertEqual(chosen["interpretation"], "PROSPECTIVE_DESIGN_ONLY")
+        self.assertFalse(chosen["chronology_authenticated"])
+        self.assertIsNone(select_discriminating_trial([weak]))
+
+        # Equal-quality designs use a deterministic action-only tie break.
+        tied = copy.deepcopy(strong)
+        tied["treatment_action"] = "ACTION2"
+        tied["control_action"] = "ACTION5"
+        a = select_discriminating_trial([strong, tied])
+        b = select_discriminating_trial([tied, strong])
+        self.assertEqual(a, b)
+        self.assertEqual(a["sealed"]["plan"]["treatment_action"], "ACTION2")
+
+        # Invalid plans fail closed instead of being silently discarded.
+        invalid = copy.deepcopy(strong)
+        invalid["forecasts"]["H0_static"] = scene(12)
+        with self.assertRaises(ValueError):
+            select_discriminating_trial([strong, invalid])
+
 if __name__ == "__main__":
     unittest.main()
