@@ -379,5 +379,44 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertFalse(consistent["causal_effect_proven"])
 
 
+    def test_registry_scoring_requires_unique_pairs_and_counts_opposing_worlds(self):
+        # Aggregate only independently named matched pairs; disagreement
+        # across treatment/control is negative, never H1 corroboration.
+        from prospective_counterfactual_ledger import evaluate_trial_registry
+
+        p1 = plan()
+        p1["control_forecasts"]["H1_absolute"] = scene(11)
+        p2 = copy.deepcopy(p1)
+        p2["episode"] = "treatment-episode-2"
+        p2["control_episode"] = "control-episode-2"
+        rows = [
+            dict(sealed=seal_trial(p1),
+                 treatment=outcome("ACTION3", p1["episode"], scene(11)),
+                 control=outcome("ACTION4", p1["control_episode"], scene(11))),
+            dict(sealed=seal_trial(p2),
+                 treatment=outcome("ACTION3", p2["episode"], scene(11)),
+                 control=outcome("ACTION4", p2["control_episode"], scene(10))),
+        ]
+        result = evaluate_trial_registry(rows)
+        self.assertEqual(result["trial_count"], 2)
+        self.assertEqual(result["distinct_episodes"], 4)
+        self.assertEqual(result["pairwise_status_counts"]["H0_static|H1_absolute"],
+                         {"CONSISTENT": 1, "OPPOSING": 1,
+                          "NON_DISCRIMINATING": 0, "NEITHER": 0})
+        self.assertEqual(result["consistent_winner_counts"]["H0_static|H1_absolute"],
+                         {"H0_static": 0, "H1_absolute": 1})
+        self.assertFalse(result["causal_effect_proven"])
+        self.assertFalse(result["chronology_authenticated"])
+
+        with self.assertRaises(ValueError):
+            evaluate_trial_registry([rows[0], copy.deepcopy(rows[0])])
+        altered = copy.deepcopy(rows)
+        altered[1]["control"]["action"] = "ACTION3"
+        with self.assertRaises(ValueError):
+            evaluate_trial_registry(altered)
+        with self.assertRaises(ValueError):
+            evaluate_trial_registry([dict(rows[0], unexpected="outcome")])
+
+
 if __name__ == "__main__":
     unittest.main()
