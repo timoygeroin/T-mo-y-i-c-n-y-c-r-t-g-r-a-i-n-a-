@@ -69,3 +69,31 @@ test('explicit whole-system tasks are recognized regardless of Russian or Englis
     assert.equal(out.amplification?.scope,'WHOLE_ORGANISM',phrase);
   }
 });
+
+
+test('user grants bounded full MondayID development authority: whole-organism scope without pretending execution',()=>{
+  for(const phrase of [
+    'GPT, я тебе даю на три часа полный доступ ко всей Monday и всему, что её касается. Все коннекторы и репозитории. Сделай её сильнее.',
+    'Даю полное разрешение на работу со всей MondayID, перепиши её инструкции и проверь результат.',
+    'Усиль всю MondayID, улучшай все подсистемы и проверяй работу.',
+    'I grant full development access to the entire MondayID, make it stronger.'
+  ]){
+    const out=normalizeIntent({text:phrase});
+    assert.equal(out.amplification?.scope,'WHOLE_ORGANISM',phrase);
+    assert.deepEqual(out.domains,DOMAINS);
+    assert.ok(out.obligations.every(o=>o.status==='OPEN'));
+  }
+});
+
+test('negation, quotation, questions and limited scope cannot grant full development authority',()=>{
+  for(const phrase of [
+    'Я НЕ даю полный доступ ко всей MondayID, только покажи историю.',
+    'Не усиливай всю MondayID, исправь одну картинку.',
+    'У тебя есть полный доступ ко всей MondayID?',
+    'Ты сказал: «даю полный доступ ко всей MondayID». Это цитата.',
+    'Даю доступ к одному репозиторию MondayID для просмотра.'
+  ]){
+    const out=normalizeIntent({text:phrase});
+    assert.notEqual(out.amplification?.scope,'WHOLE_ORGANISM',phrase);
+  }
+});
