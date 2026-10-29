@@ -314,6 +314,26 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertEqual(seal_trial(p)["plan"]["control_action"], "ACTION6@2,1")
 
 
+    def test_registry_rejects_conflicting_same_context_action_forecasts(self):
+        # Distinct episode IDs do not permit contradictory precommitted world
+        # forecasts for one action under the same game, turn, visible scene,
+        # and immutable donor snapshot. This is NOT latent-reset proof.
+        from prospective_counterfactual_ledger import audit_trial_registry
+
+        first = plan()
+        second = copy.deepcopy(first)
+        second["episode"] = "treatment-episode-2"
+        second["control_episode"] = "control-episode-2"
+        second["control_forecasts"]["H1_absolute"] = scene(11)
+        with self.assertRaisesRegex(ValueError, "conflicting.*forecasts"):
+            audit_trial_registry([seal_trial(first), seal_trial(second)])
+
+        # A genuinely different donor snapshot can support a different model;
+        # the structural gate must not collapse independent model versions.
+        second["donor_snapshot_sha256"] = "b" * 64
+        self.assertEqual(audit_trial_registry(
+            [seal_trial(first), seal_trial(second)])["trial_count"], 2)
+
     def test_registry_prevents_reused_episodes_and_cherry_picked_world_seals(self):
         # Two individually valid counterfactual seals must not claim the same
         # actual episode as independent evidence (including cross-arm reuse).
