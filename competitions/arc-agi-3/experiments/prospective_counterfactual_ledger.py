@@ -289,6 +289,23 @@ def evaluate_pair(sealed, treatment, control):
                 causal_effect_proven=False, effect_on_agent="NONE_SHADOW_ONLY")
 
 
+
+def _forecast_design_sha(plan):
+    """Identify physical action/forecast designs, independent of arm labels.
+
+    Episode labels and treatment/control ordering do not create new world
+    predictions. This diagnostic does NOT prove independent public resets.
+    """
+    action_predictions = sorted((
+        (plan["treatment_action"], plan["forecasts"]),
+        (plan["control_action"], plan["control_forecasts"]),
+    ), key=lambda pair: pair[0])
+    return _hash(dict(game=plan["game"], turn=plan["turn"],
+                      before=plan["before"],
+                      donor_snapshot_sha256=plan["donor_snapshot_sha256"],
+                      action_predictions=action_predictions))
+
+
 def audit_trial_registry(sealed_trials):
     """Fail closed on episode reuse across independent H0/H1/H2 trial pairs.
 
@@ -334,9 +351,7 @@ def audit_trial_registry(sealed_trials):
             if key in action_forecasts and action_forecasts[key] != forecast:
                 raise ValueError("conflicting world forecasts for one pre-action action")
             action_forecasts[key] = forecast
-        design = {key: value for key, value in plan.items()
-                  if key not in ("episode", "control_episode")}
-        design_sha = _hash(design)
+        design_sha = _forecast_design_sha(plan)
         design_counts[design_sha] = design_counts.get(design_sha, 0) + 1
         digests.append(verified["sha256"])
     return dict(trial_count=len(digests),
@@ -394,8 +409,7 @@ def evaluate_trial_registry(rows):
     design_winners = {pair: {} for pair in pair_names}
     for source, result in zip(rows, evaluated):
         normalized_plan = seal_trial(source["sealed"]["plan"])["plan"]
-        design_sha = _hash({key: value for key, value in normalized_plan.items()
-                            if key not in ("episode", "control_episode")})
+        design_sha = _forecast_design_sha(normalized_plan)
         for pair in pair_names:
             evidence = result["pairwise_two_arm_evidence"][pair]
             status_counts[pair][evidence["status"]] += 1
