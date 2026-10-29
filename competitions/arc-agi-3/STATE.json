@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T11:14:08.150Z",
+  "updated_at": "2026-10-29T12:12:07.490Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3241,6 +3241,43 @@
         "Forecast-design diversity is not independent data provenance or proof of separate latent resets.",
         "Synthetic tests only; no independently authenticated pre-action timestamps or new PUBLIC H0/H1/H2 episodes.",
         "Agent, frozen public schedule and blocked collector untouched; no Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income."
+      ]
+    },
+    "prospective_replicated_design_opposing_winners_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Flag incompatible H0/H1/H2 two-arm CONSISTENT winners observed in separate episodes sharing the same sealed forecast design; preserve negative evidence instead of interpreting repeated design observations as independent confirmation.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "f61f07735be85f902f61e0b19d9459ea8aec97f5",
+        "red_contract_run": 40870971215,
+        "red_result": "EXPECTED one KeyError designs_with_opposing_replication_winners_by_pair among 320 tests; logs independently inspected",
+        "green_commit": "f6e29541d77424ff39f72eac777eaf8efb2c34f6",
+        "green_contract_run": 40871136466,
+        "green_result": "320/320 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40871136466,
+        "system_run": 40871136463,
+        "public_smoke_run": 40871136468,
+        "frozen_run": 40871136548
+      },
+      "behavior": "evaluate_trial_registry now groups valid CONSISTENT H0/H1/H2 pairwise winners by episode-independent normalized forecast-design SHA256, then reports designs_with_opposing_replication_winners_by_pair. An H1/H1 two-arm winner and H0/H0 two-arm winner from one frozen design count as one conflicting design, order-invariant; repeated same winner counts zero; different donor snapshots are distinct designs. Existing winner/score totals unchanged.",
+      "negative_evidence": "Before this change, raw consistent-winner counts could show one H1 and one H0 victory from the same repeated design without explicitly flagging contradictory replication; RED reproduced missing diagnostic.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic outcome fixtures only; opposing observational winners are not authenticated independent resets or causal falsification.",
+        "No independently timestamped pre-action seal, new authenticated PUBLIC episode, or policy/score gain.",
+        "Frozen contest agent/schedule and blocked collector untouched; no Kaggle submission, spending, tokens, terms, legal/license/publication decision, hidden score, prize or income."
       ]
     }
   }
