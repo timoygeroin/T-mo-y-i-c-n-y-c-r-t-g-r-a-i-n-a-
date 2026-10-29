@@ -20,7 +20,9 @@
     "invocation_end_must_preserve_active_task_identity_cursor_and_open_obligations",
     "automation_or_progress_report_cannot_substitute_for_work",
     "blocked_route_requires_reachable_program_expansion_before_terminal_failure",
-    "whole_system_task_requires_material_multi_domain_proof"
+    "whole_system_task_requires_material_multi_domain_proof",
+    "verified_counterexample_overrules_positive_self_report",
+    "meta_want_can_know_requires_traceable_effect_proof"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -127,7 +129,10 @@
     "fresh_cell_transfer_self_probes_before_learning",
     "visual_release_gate_is_executable_and_scoped_not_just_prose",
     "amplify_exact_user_goal_before_domain_dispatch",
-    "generic_receptor_cannot_close_whole_organism_work"
+    "generic_receptor_cannot_close_whole_organism_work",
+    "metacognitive_unknowns_must_not_be_promoted_as_knowledge",
+    "meta_observer_is_evidence_control_not_subjective_consciousness",
+    "anti_falsification_vetoes_self_attested_proofs"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -201,6 +206,7 @@
     "dispatch",
     "candidate_release_veto",
     "verify",
+    "meta_observe",
     "learn",
     "mutate_policy_if_proven",
     "settle_pass"
@@ -665,7 +671,9 @@
       "evolution_compiler",
       "autopoiesis_kernel",
       "wake_receptor",
-      "task_amplifier"
+      "task_amplifier",
+      "meta_observer",
+      "anti_counterexample_gate"
     ]
   },
   "release_state": {
@@ -1425,6 +1433,43 @@
       "independent_effect_readback",
       "explicit_integration_proof",
       "canonical_reentry_validation"
+    ]
+  },
+  "meta_observer": {
+    "schema": "mondayid.meta-observation.v1",
+    "owner": "ONE_MONDAYID",
+    "identity_owner": false,
+    "consciousnessClaim": false,
+    "purpose": "Second-order evidence/claim reconciliation: WANT requested effects, CAN available domain receptors, KNOW verifiable receipts; refuse premature self-certified completion.",
+    "implementation": "src/meta-observer.mjs",
+    "executionBindings": [
+      "src/runtime.mjs",
+      "src/interface.mjs",
+      "src/organism-cell.mjs",
+      "api/mcp.mjs"
+    ],
+    "crossHostTool": "meta_probe",
+    "crossHostScope": "PRIVATE_PREFLIGHT_ONLY_NOT_AUTOMATIC_NATIVE_CHAT_INTERCEPTION",
+    "proofBoundaries": {
+      "wholeSystemReceptor": "specific_domain_receptor",
+      "domainEvidence": "receptor_verify_mode_and_nonempty_evidenceRef",
+      "integration": "external-exact-readback",
+      "falsification": "accepted_verified_counterexample_for_exact_mutation_or_self_attested_evidence",
+      "automatedExternalEffects": false,
+      "rendererInterception": false,
+      "globalHostDeploymentVerified": false
+    },
+    "states": [
+      "TASK_LOCAL",
+      "HOLD",
+      "VERIFIED"
+    ],
+    "laws": [
+      "self_report_is_not_proof",
+      "traceable_receipt_is_not_automatically_real_world_effect",
+      "repeated_failures_must_not_self_promote",
+      "no_vacuous_surface_success",
+      "current_user_intent_outranks_historical_predictions"
     ]
   }
 }
