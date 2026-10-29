@@ -1,0 +1,56 @@
+{
+  "schema": "mondayid.arc.public_ab.negative.v1",
+  "experiment": "UL-001-causal-neighborhood-click",
+  "date_utc": "2026-10-29",
+  "hypothesis": "For click-only first-level worlds, after eight actions, explore previously untried candidate points within Euclidean distance <=7 of visibly responsive click coordinates; avoid repeatedly pressing the same exact point. Predict increased first-level completion or lower action cost at identical public budget.",
+  "alternative_hypotheses": [
+    "H0: frozen novelty-click policy remains superior; local visible responses are not predictive of useful adjacent click targets.",
+    "H1: spatially local affordance transfers within a 7-pixel radius and improves efficiency.",
+    "H2: apparent local effects reflect animation/HUD or hidden state, causing misleading neighbor exploration."
+  ],
+  "source_head": "f2afe86ba4de389a8176879f0a8d6db93c432274",
+  "baseline_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "red_commit": "1992a4de38e6f0f7d83e5d28d4bb6bf3c0e99b98",
+  "red_contract_run": 40946474223,
+  "red_result": "347 tests, expected one ModuleNotFoundError for not-yet-implemented candidate module",
+  "green_commit": "8efef37137b92fef5ecfd46048aed48e982c6085",
+  "green_contract_run": 40946612051,
+  "green_result": "350/350 PASS",
+  "ab_commit": "fab03522bd17d647ec5ec8d957c7a5082a0c1add",
+  "ab_run": 40946687870,
+  "ab_job": 123703784087,
+  "artifact_id": 12928539441,
+  "official_public_runner": "arcprize/ARC-AGI-3-Kaggle-Starter Python 3.12 make play-local STEPS=500",
+  "games": 25,
+  "baseline": {
+    "completed_first_levels": 7,
+    "local_score": 0.5019709375909188
+  },
+  "candidate": {
+    "completed_first_levels": 7,
+    "local_score": 0.4422250710146395
+  },
+  "delta": {
+    "completed_first_levels": 0,
+    "local_score": -0.05974586657627934,
+    "improved_level_games": 0,
+    "regressed_level_games": 0
+  },
+  "action_budget": {
+    "configured_steps_per_game": 500,
+    "printed_actions_per_game": 501,
+    "identical_budget": true
+  },
+  "limitations": [
+    "Same 25 public games as previous experiments; not held-out, no independently paired stochastic seeds.",
+    "No authenticated action-level coordinate trace or independently sealed pre-action world forecasts; no causal conclusion.",
+    "Local score fell substantially with no level gain; this falsifies promotion under this sample, not every local-causal hypothesis.",
+    "Official public local score is NOT Kaggle hidden score."
+  ],
+  "decision": "REJECT_AND_REVERT_EXPERIMENTAL_CANDIDATE",
+  "policy_promoted": false,
+  "official_agent_modified": false,
+  "collector_modified": false,
+  "official_evaluation_schedule_modified": false,
+  "kaggle_submission": false
+}
