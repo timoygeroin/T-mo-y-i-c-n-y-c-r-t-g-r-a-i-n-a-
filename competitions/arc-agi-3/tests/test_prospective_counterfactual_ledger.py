@@ -405,6 +405,16 @@ class ProspectiveLedgerTests(unittest.TestCase):
                           "NON_DISCRIMINATING": 0, "NEITHER": 0})
         self.assertEqual(result["consistent_winner_counts"]["H0_static|H1_absolute"],
                          {"H0_static": 0, "H1_absolute": 1})
+        # Full three-world accounting, including explicit failures, must not
+        # be inferred from pairwise winners alone. First H1/H1, second H1/H0.
+        self.assertEqual(result["world_arm_exact_hits"], {
+            "treatment": {"H0_static": 0, "H1_absolute": 2, "H2_anchor_relative": 0},
+            "control": {"H0_static": 1, "H1_absolute": 1, "H2_anchor_relative": 1}})
+        self.assertEqual(result["world_arm_misses"], {
+            "treatment": {"H0_static": 2, "H1_absolute": 0, "H2_anchor_relative": 2},
+            "control": {"H0_static": 1, "H1_absolute": 1, "H2_anchor_relative": 1}})
+        self.assertEqual(result["world_complete_pair_hits"], {
+            "H0_static": 0, "H1_absolute": 1, "H2_anchor_relative": 0})
         self.assertFalse(result["causal_effect_proven"])
         self.assertFalse(result["chronology_authenticated"])
 
