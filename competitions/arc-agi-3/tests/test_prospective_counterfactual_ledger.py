@@ -641,5 +641,44 @@ class ProspectiveLedgerTests(unittest.TestCase):
             select_discriminating_trial([base, alternate])["sealed"]["plan"]["game"],
             base["game"])
 
+
+    def test_registry_reports_repeated_designs_separately_from_episode_count(self):
+        # Two named resets with one frozen forecast design are two observed
+        # pairs, NOT two independent experimental designs or model discoveries.
+        from prospective_counterfactual_ledger import (
+            audit_trial_registry, evaluate_trial_registry)
+
+        p1 = plan()
+        p1["control_forecasts"]["H1_absolute"] = scene(11)
+        p2 = copy.deepcopy(p1)
+        p2["episode"] = "treatment-episode-2"
+        p2["control_episode"] = "control-episode-2"
+        sealed = [seal_trial(p1), seal_trial(p2)]
+        registry = audit_trial_registry(sealed)
+        self.assertEqual(registry["trial_count"], 2)
+        self.assertEqual(registry["distinct_episodes"], 4)
+        self.assertEqual(registry["distinct_forecast_designs"], 1)
+        self.assertEqual(registry["max_forecast_design_reuse"], 2)
+
+        rows = [
+            dict(sealed=seal_trial(p),
+                 treatment=outcome("ACTION3", p["episode"], scene(11)),
+                 control=outcome("ACTION4", p["control_episode"], scene(11)))
+            for p in (p1, p2)
+        ]
+        scored = evaluate_trial_registry(rows)
+        self.assertEqual(scored["trial_count"], 2)
+        self.assertEqual(scored["distinct_forecast_designs"], 1)
+        self.assertEqual(scored["max_forecast_design_reuse"], 2)
+        self.assertEqual(scored["consistent_winner_counts"]["H0_static|H1_absolute"]["H1_absolute"], 2)
+        self.assertFalse(scored["independent_public_episodes_authenticated"])
+
+        # A changed immutable donor model is a genuinely distinct forecast
+        # design even if it happens to make the same visible predictions.
+        p2["donor_snapshot_sha256"] = "b" * 64
+        diverse = audit_trial_registry([seal_trial(p1), seal_trial(p2)])
+        self.assertEqual(diverse["distinct_forecast_designs"], 2)
+        self.assertEqual(diverse["max_forecast_design_reuse"], 1)
+
 if __name__ == "__main__":
     unittest.main()
