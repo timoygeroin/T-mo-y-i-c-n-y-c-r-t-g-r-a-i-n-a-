@@ -44,8 +44,11 @@ def _scene(raw):
 
 
 def _text(value):
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError("missing trial identity")
+    # Machine identity keys must be canonical. Whitespace padding can relabel
+    # one real episode as several supposedly independent observations.
+    if (not isinstance(value, str) or not value or
+            any(ch.isspace() or ord(ch) < 32 or ord(ch) == 127 for ch in value)):
+        raise ValueError("noncanonical trial identity")
     return value
 
 
