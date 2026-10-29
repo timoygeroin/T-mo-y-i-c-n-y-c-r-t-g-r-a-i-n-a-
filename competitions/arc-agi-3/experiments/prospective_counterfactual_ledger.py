@@ -386,12 +386,26 @@ def evaluate_trial_registry(rows):
                      for pair in pair_names}
     winner_counts = {pair: {world: 0 for world in pair.split("|")}
                      for pair in pair_names}
-    for result in evaluated:
+    # Repeated episode names are not independent forecast designs. If the
+    # SAME frozen H0/H1/H2 design yields a complete H0 winner in one matched
+    # observation and a complete H1 winner in another, record the conflict
+    # instead of presenting both raw counts as corroborating discoveries.
+    # Different donor snapshots remain distinct hypothesis versions.
+    design_winners = {pair: {} for pair in pair_names}
+    for source, result in zip(rows, evaluated):
+        normalized_plan = seal_trial(source["sealed"]["plan"])["plan"]
+        design_sha = _hash({key: value for key, value in normalized_plan.items()
+                            if key not in ("episode", "control_episode")})
         for pair in pair_names:
             evidence = result["pairwise_two_arm_evidence"][pair]
             status_counts[pair][evidence["status"]] += 1
             if evidence["status"] == "CONSISTENT":
                 winner_counts[pair][evidence["winner"]] += 1
+                design_winners[pair].setdefault(design_sha, set()).add(
+                    evidence["winner"])
+    opposing_replications = {
+        pair: sum(len(winners) > 1 for winners in designs.values())
+        for pair, designs in design_winners.items()}
     return dict(protocol=PROTOCOL,
                 trial_count=registry["trial_count"],
                 distinct_episodes=registry["distinct_episodes"],
@@ -399,6 +413,7 @@ def evaluate_trial_registry(rows):
                 max_forecast_design_reuse=registry["max_forecast_design_reuse"],
                 pairwise_status_counts=status_counts,
                 consistent_winner_counts=winner_counts,
+                designs_with_opposing_replication_winners_by_pair=opposing_replications,
                 world_arm_exact_hits=arm_hits,
                 world_arm_misses=arm_misses,
                 world_complete_pair_hits=complete_hits,
