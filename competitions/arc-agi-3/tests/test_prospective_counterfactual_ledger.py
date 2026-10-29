@@ -721,5 +721,42 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertFalse(scored["independent_public_episodes_authenticated"])
         self.assertFalse(scored["causal_effect_proven"])
 
+    def test_forecast_design_diversity_is_invariant_to_swapping_arm_labels(self):
+        # A physical pair of actions with identical frozen H0/H1/H2
+        # forecasts is ONE forecast design, regardless of which action is
+        # called treatment or control. Otherwise role labels manufacture
+        # independent design diversity and hide conflicting replications.
+        from prospective_counterfactual_ledger import (
+            audit_trial_registry, evaluate_trial_registry)
+
+        first = plan()
+        first["control_forecasts"]["H1_absolute"] = scene(11)
+        first["control_forecasts"]["H2_anchor_relative"] = scene(9)
+        swapped = copy.deepcopy(first)
+        swapped["episode"] = "treatment-episode-2"
+        swapped["control_episode"] = "control-episode-2"
+        swapped["treatment_action"], swapped["control_action"] = (
+            first["control_action"], first["treatment_action"])
+        swapped["forecasts"], swapped["control_forecasts"] = (
+            copy.deepcopy(first["control_forecasts"]),
+            copy.deepcopy(first["forecasts"]))
+
+        registry = audit_trial_registry([seal_trial(first), seal_trial(swapped)])
+        self.assertEqual(registry["trial_count"], 2)
+        self.assertEqual(registry["distinct_forecast_designs"], 1)
+        self.assertEqual(registry["max_forecast_design_reuse"], 2)
+
+        def row(p, after):
+            return dict(
+                sealed=seal_trial(p),
+                treatment=outcome(p["treatment_action"], p["episode"], scene(after)),
+                control=outcome(p["control_action"], p["control_episode"], scene(after)))
+
+        key = "H0_static|H1_absolute"
+        scored = evaluate_trial_registry([row(first, 11), row(swapped, 10)])
+        self.assertEqual(scored["distinct_forecast_designs"], 1)
+        self.assertEqual(scored["designs_with_opposing_replication_winners_by_pair"][key], 1)
+        self.assertFalse(scored["independent_public_episodes_authenticated"])
+
 if __name__ == "__main__":
     unittest.main()
