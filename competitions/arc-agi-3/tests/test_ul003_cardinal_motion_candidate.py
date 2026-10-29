@@ -50,7 +50,9 @@ class UL003Tests(unittest.TestCase):
             changed = generate(SOURCE, arm)
             self.assertEqual(changed.count("UL003 cardinal motion"), 1)
             self.assertIn("self._delta(self._last_grids, grids)", changed)
-            self.assertEqual(changed.replace(changed.split("# UL003 cardinal motion")[1].split("\n")[0], ""), changed.replace(changed.split("# UL003 cardinal motion")[1].split("\n")[0], ""))
+            original_line = "                    value += 0.55"
+            replacement_line = next(line for line in changed.splitlines() if "# UL003 cardinal motion" in line)
+            self.assertEqual(changed.replace(replacement_line, original_line), SOURCE)
 
 if __name__ == "__main__":
     unittest.main()
