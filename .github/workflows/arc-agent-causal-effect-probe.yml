@@ -1,0 +1,58 @@
+name: ARC-AGI-3 isolated strict-prior public causal effect probe
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/causal_effect_probe.py'
+      - 'competitions/arc-agi-3/tests/test_causal_effect_probe.py'
+      - '.github/workflows/arc-agent-causal-effect-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify frozen agent and test-first strict-prior contracts
+        run: |
+          set -euo pipefail
+          test "$(git hash-object competitions/arc-agi-3/agent/my_agent.py)" = eb7bd0288cfa794f7997f6a93191c0a0c2c2787c
+          (cd competitions/arc-agi-3 && python -m unittest discover -s tests -p 'test_causal_effect_probe.py' -v)
+          (cd competitions/arc-agi-3 && python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v)
+      - name: Fetch official public ARC-AGI-3 Kaggle Starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official public Python 3.12 runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN baseline 25 public games, 500 steps per game
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-causal-frozen.log
+      - name: Identical agent with BEFORE-action forecast and AFTER-action shadow logs
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/causal_effect_probe.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-causal-shadow.log
+      - name: Compare actual official public gameplay and evaluate strict-prior predictions
+        run: |
+          set -euo pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-frozen.log arc-causal-shadow.log --output arc-causal-ab.json | tee arc-causal-ab-summary.log
+          python competitions/arc-agi-3/tools/causal_effect_probe.py --analyze arc-causal-shadow.log --summary arc-causal-prequential.json | tee arc-causal-prediction-summary.log
+      - name: Preserve raw official public evidence; never promote policy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-strict-prior-public-causal-effect
+          path: |
+            arc-causal-frozen.log
+            arc-causal-shadow.log
+            arc-causal-ab.json
+            arc-causal-ab-summary.log
+            arc-causal-prequential.json
+            arc-causal-prediction-summary.log
+          if-no-files-found: ignore
