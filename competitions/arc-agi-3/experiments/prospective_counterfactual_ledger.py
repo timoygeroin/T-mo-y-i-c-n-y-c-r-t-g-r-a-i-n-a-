@@ -263,3 +263,38 @@ def evaluate_pair(sealed, treatment, control):
                 control_static=b["after"] == plan["before"],
                 interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
                 causal_effect_proven=False, effect_on_agent="NONE_SHADOW_ONLY")
+
+
+def audit_trial_registry(sealed_trials):
+    """Fail closed on episode reuse across independent H0/H1/H2 trial pairs.
+
+    A treatment or control episode can appear in at most one matched-pair
+    preregistration for its game. Reusing it under a different forecast seal,
+    arm, or turn is not independent evidence and enables cherry-picking.
+    This is structural integrity only: it cannot establish that any seal
+    preceded gameplay, that episodes were real, or that resets matched.
+    """
+    if not isinstance(sealed_trials, (list, tuple)):
+        raise ValueError("registry must be a sequence of sealed trial pairs")
+    seen_episodes = set()
+    digests = []
+    for sealed in sealed_trials:
+        if (not isinstance(sealed, dict) or set(sealed) != {"plan", "sha256"} or
+                not isinstance(sealed["sha256"], str)):
+            raise ValueError("invalid sealed registry entry")
+        verified = seal_trial(sealed["plan"])
+        if verified["sha256"] != sealed["sha256"]:
+            raise ValueError("modified preregistration in registry")
+        plan = verified["plan"]
+        for episode in (plan["episode"], plan["control_episode"]):
+            key = (plan["game"], episode)
+            if key in seen_episodes:
+                raise ValueError("episode reused across independent trial pairs")
+            seen_episodes.add(key)
+        digests.append(verified["sha256"])
+    return dict(trial_count=len(digests),
+                distinct_episodes=len(seen_episodes),
+                sha256s=digests,
+                interpretation="REGISTRY_INTEGRITY_ONLY",
+                chronology_authenticated=False,
+                independent_public_episodes_authenticated=False)
