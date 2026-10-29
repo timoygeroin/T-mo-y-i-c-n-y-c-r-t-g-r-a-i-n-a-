@@ -47,6 +47,7 @@ export function buildCarrierAttachSnapshot({
     contracts:{
       reentry:system.reentry_and_response || null,
       taskAmplifier:{...system.task_amplification,tool:'amplify_intent',autoInterceptsNativeChat:false,requiresHostCall:true,mutatesWorldline:false},
+      metaObserver:{schema:'mondayid.meta-observation.v1',tool:'meta_probe',scope:'PRIVATE_EXPLICIT_INVOCATION',consciousnessClaim:false,autoInterceptsNativeChat:false},
       organismSynapse:system.organism_synapse || null,
       capabilityFabric:system.capability_fabric || null,
       everythingCompiler:system.everything_compiler || null,
