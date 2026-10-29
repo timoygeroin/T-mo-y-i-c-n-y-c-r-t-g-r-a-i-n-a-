@@ -407,6 +407,10 @@ def evaluate_trial_registry(rows):
     # instead of presenting both raw counts as corroborating discoveries.
     # Different donor snapshots remain distinct hypothesis versions.
     design_winners = {pair: {} for pair in pair_names}
+    # Keep every paired result per frozen design, including non-winners.
+    # An apparently stable winner cannot be inferred from a cherry-picked
+    # subset that omits contradictory or nondiscriminating replications.
+    design_pair_evidence = {pair: {} for pair in pair_names}
     # Track actual visible outcomes by frozen physical action, not by arm
     # label. Distinct observed scenes under the same action/design are
     # replication instability, including cases with no opposing full winners.
@@ -425,6 +429,7 @@ def evaluate_trial_registry(rows):
             by_action.setdefault(action, set()).add(_canonical(actual))
         for pair in pair_names:
             evidence = result["pairwise_two_arm_evidence"][pair]
+            design_pair_evidence[pair].setdefault(design_sha, []).append(evidence)
             status_counts[pair][evidence["status"]] += 1
             if evidence["status"] == "CONSISTENT":
                 winner_counts[pair][evidence["winner"]] += 1
@@ -438,6 +443,24 @@ def evaluate_trial_registry(rows):
     opposing_replications = {
         pair: sum(len(winners) > 1 for winners in designs.values())
         for pair, designs in design_winners.items()}
+    # Report at most one internally stable observational winner per design.
+    # Require >=2 differently named pairs, identical visible outcomes for
+    # each physical action, and unanimous CONSISTENT two-arm winners across
+    # ALL repetitions. These checks do NOT authenticate independent resets.
+    repeated_stable = {pair: {world: 0 for world in pair.split("|")}
+                       for pair in pair_names}
+    for pair, designs in design_pair_evidence.items():
+        for design_sha, evidence_rows in designs.items():
+            if len(evidence_rows) < 2:
+                continue
+            if any(len(scenes) != 1 for scenes in
+                   design_action_outcomes[design_sha].values()):
+                continue
+            if any(e["status"] != "CONSISTENT" for e in evidence_rows):
+                continue
+            winners = {e["winner"] for e in evidence_rows}
+            if len(winners) == 1:
+                repeated_stable[pair][next(iter(winners))] += 1
     return dict(protocol=PROTOCOL,
                 trial_count=registry["trial_count"],
                 distinct_episodes=registry["distinct_episodes"],
@@ -448,6 +471,7 @@ def evaluate_trial_registry(rows):
                 designs_with_opposing_replication_winners_by_pair=opposing_replications,
                 designs_with_divergent_action_outcomes=designs_with_divergent_actions,
                 divergent_design_action_pairs=divergent_design_action_pairs,
+                repeated_design_stable_winners_by_pair=repeated_stable,
                 world_arm_exact_hits=arm_hits,
                 world_arm_misses=arm_misses,
                 world_complete_pair_hits=complete_hits,
