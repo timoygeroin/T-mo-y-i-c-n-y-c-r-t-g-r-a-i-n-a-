@@ -242,7 +242,8 @@ def evaluate_pair(sealed, treatment, control):
                     ("treatment", plan["forecasts"], a["after"]),
                     ("control", plan["control_forecasts"], b["after"])):
                 if forecasts[left] == forecasts[right]:
-                    winner = "NON_DISCRIMINATING"
+                    winner = ("NON_DISCRIMINATING" if forecasts[left] == actual
+                              else "NEITHER")
                 elif forecasts[left] == actual:
                     winner = left
                 elif forecasts[right] == actual:
@@ -257,10 +258,10 @@ def evaluate_pair(sealed, treatment, control):
     for pair, winners in observed_winners.items():
         left = winners["treatment"]
         right = winners["control"]
-        if "NON_DISCRIMINATING" in (left, right):
-            status, winner = "NON_DISCRIMINATING", None
-        elif "NEITHER" in (left, right):
+        if "NEITHER" in (left, right):
             status, winner = "NEITHER", None
+        elif "NON_DISCRIMINATING" in (left, right):
+            status, winner = "NON_DISCRIMINATING", None
         elif left == right:
             status, winner = "CONSISTENT", left
         else:
