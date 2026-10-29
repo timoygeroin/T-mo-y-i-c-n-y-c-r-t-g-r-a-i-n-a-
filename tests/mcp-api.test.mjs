@@ -35,9 +35,9 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
   const names=res.body.result.tools.map(tool=>tool.name);
   assert.deepEqual(names,[
     'visual_release_gate',
+    'amplify_intent',
     'health',
     'cell_attach',
-    'amplify_intent',
     'capability_manifest',
     'compile_history',
     'simulate_counterfactual',
