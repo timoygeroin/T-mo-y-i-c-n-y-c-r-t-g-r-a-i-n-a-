@@ -758,5 +758,55 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertEqual(scored["designs_with_opposing_replication_winners_by_pair"][key], 1)
         self.assertFalse(scored["independent_public_episodes_authenticated"])
 
+
+    def test_repeated_design_divergent_action_outcomes_are_negative_evidence(self):
+        # One frozen forecast design and physical action can have different
+        # observed scenes in distinct named resets. Detect this even when
+        # neither repetition yields an opposing two-arm world winner.
+        # Swapping treatment/control roles must not conceal the divergence.
+        from prospective_counterfactual_ledger import evaluate_trial_registry
+
+        first = plan()
+        first["control_forecasts"]["H1_absolute"] = scene(11)
+        first["control_forecasts"]["H2_anchor_relative"] = scene(9)
+        swapped = copy.deepcopy(first)
+        swapped["episode"] = "treatment-episode-2"
+        swapped["control_episode"] = "control-episode-2"
+        swapped["treatment_action"], swapped["control_action"] = (
+            first["control_action"], first["treatment_action"])
+        swapped["forecasts"], swapped["control_forecasts"] = (
+            copy.deepcopy(first["control_forecasts"]),
+            copy.deepcopy(first["forecasts"]))
+
+        def row(p, treatment_after, control_after):
+            return dict(
+                sealed=seal_trial(p),
+                treatment=outcome(p["treatment_action"], p["episode"],
+                                  scene(treatment_after)),
+                control=outcome(p["control_action"], p["control_episode"],
+                                scene(control_after)))
+
+        stable = row(first, 11, 11)
+        divergent = row(swapped, 12, 11)  # ACTION4 differs; ACTION3 agrees.
+        result = evaluate_trial_registry([stable, divergent])
+        self.assertEqual(result["distinct_forecast_designs"], 1)
+        self.assertEqual(result["designs_with_divergent_action_outcomes"], 1)
+        self.assertEqual(result["divergent_design_action_pairs"], 1)
+        self.assertFalse(result["independent_public_episodes_authenticated"])
+        self.assertFalse(result["causal_effect_proven"])
+        self.assertEqual(
+            evaluate_trial_registry([divergent, stable])[
+                "divergent_design_action_pairs"], 1)
+        self.assertEqual(
+            evaluate_trial_registry([stable, row(swapped, 11, 11)])[
+                "divergent_design_action_pairs"], 0)
+
+        # Distinct immutable model snapshots are distinct designs, not
+        # within-design replication disagreements.
+        swapped["donor_snapshot_sha256"] = "b" * 64
+        self.assertEqual(
+            evaluate_trial_registry([stable, row(swapped, 12, 11)])[
+                "divergent_design_action_pairs"], 0)
+
 if __name__ == "__main__":
     unittest.main()
