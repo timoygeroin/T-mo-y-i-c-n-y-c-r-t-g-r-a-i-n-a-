@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T12:12:07.490Z",
+  "updated_at": "2026-10-29T13:13:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3278,6 +3278,43 @@
         "Synthetic outcome fixtures only; opposing observational winners are not authenticated independent resets or causal falsification.",
         "No independently timestamped pre-action seal, new authenticated PUBLIC episode, or policy/score gain.",
         "Frozen contest agent/schedule and blocked collector untouched; no Kaggle submission, spending, tokens, terms, legal/license/publication decision, hidden score, prize or income."
+      ]
+    },
+    "prospective_role_invariant_forecast_design_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent treatment/control arm labels from inflating distinct H0/H1/H2 forecast-design counts when two physical actions and all three world predictions are unchanged under a role swap.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "fdbab29ddb357eb01d7eaad7428b1fa805433e73",
+        "red_contract_run": 40879629351,
+        "red_result": "EXPECTED one AssertionError 2 != 1 among 321 tests; GitHub job log independently inspected",
+        "green_commit": "c307cff5465fa583e0b58ec4484edbf78f15b6e8",
+        "green_contract_run": 40879815989,
+        "green_result": "321/321 PASS; GitHub job log independently inspected"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40879815989,
+        "system_run": 40879816002,
+        "public_smoke_run": 40879815976,
+        "frozen_run": 40879816146
+      },
+      "behavior": "Both audit_trial_registry and evaluate_trial_registry now use a shared action-sorted forecast-design SHA256 over game, turn, before scene, donor digest and action-specific H0/H1/H2 predictions. Swapping treatment/control names while preserving physical action forecasts counts as one forecast design and exposes opposing observed winners under the same design. Distinct donor snapshots remain separate; existing per-pair score totals unchanged.",
+      "negative_evidence": "Before fix, role-swapped identical action/forecast designs were counted as 2 distinct designs; RED reproduced. Role labels do not independently diversify counterfactual predictions.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic fixtures only, no independently authenticated PUBLIC gameplay or pre-action seal chronology.",
+        "Role-invariant forecast-design identity does not prove equal latent resets or independent replication.",
+        "Contest agent, frozen schedule and blocked collector unchanged; no Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income."
       ]
     }
   }
