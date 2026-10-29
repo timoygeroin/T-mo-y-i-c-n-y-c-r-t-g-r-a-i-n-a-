@@ -250,6 +250,22 @@ def evaluate_pair(sealed, treatment, control):
                 else:
                     winner = "NEITHER"
                 observed_winners[key][arm] = winner
+    # A hypothesis pair has two-arm observational corroboration only when
+    # BOTH actions distinguish the hypotheses and the SAME world wins each.
+    # Opposing winners are negative evidence, not a world-model victory.
+    two_arm_evidence = {}
+    for pair, winners in observed_winners.items():
+        left = winners["treatment"]
+        right = winners["control"]
+        if "NON_DISCRIMINATING" in (left, right):
+            status, winner = "NON_DISCRIMINATING", None
+        elif "NEITHER" in (left, right):
+            status, winner = "NEITHER", None
+        elif left == right:
+            status, winner = "CONSISTENT", left
+        else:
+            status, winner = "OPPOSING", None
+        two_arm_evidence[pair] = {"status": status, "winner": winner}
     return dict(protocol=PROTOCOL, sha256=original["sha256"],
                 world_exact_hits=treatment_hits,
                 control_world_exact_hits=control_hits,
@@ -259,6 +275,7 @@ def evaluate_pair(sealed, treatment, control):
                 unique_paired_world_fit=unique_complete_fit,
                 pairwise_discriminating_arms=pairwise_arms,
                 pairwise_observed_winner_by_arm=observed_winners,
+                pairwise_two_arm_evidence=two_arm_evidence,
                 control_discriminating_pairs=control_discriminating_pairs,
                 control_static=b["after"] == plan["before"],
                 interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
