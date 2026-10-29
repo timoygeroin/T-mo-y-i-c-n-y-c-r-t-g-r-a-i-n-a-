@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T00:07:48.359Z",
+  "updated_at": "2026-10-29T01:11:58.700Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2832,6 +2832,41 @@
         "This is an opt-in read-only integrity helper, not yet wired to an authenticated prospective experiment runner.",
         "Independent timestamp, official episode provenance, and reset/latent-state equivalence remain unverified.",
         "Frozen schedule, agent and blocked collector unchanged; no Kaggle submission, spending, credentials, terms or legal/publication decisions."
+      ]
+    },
+    "prospective_pairwise_two_arm_evidence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Classify each H0/H1/H2 pair across both preregistered action arms: two-arm consistent winner versus opposing winners, nondiscriminating arm or neither matching; never promote one-arm evidence to two-arm corroboration.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "22acf7de6ec2d05d7d03758d4b348e4241dde8c4",
+        "red_contract_run": 40798730898,
+        "red_result": "EXPECTED failure for missing pairwise_two_arm_evidence field",
+        "implementation_commit": "e790627c746fdda322b11df99b7c6ea2691456da",
+        "green_contract_run": 40798811353,
+        "green_result": "SUCCESS (full contract suite)"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40798811353,
+        "system_run": 40798811428,
+        "public_smoke_run": 40798811351,
+        "frozen_run": 40798811404
+      },
+      "behavior": "pairwise_two_arm_evidence returns CONSISTENT with winner only when BOTH arms discriminate and the SAME H0/H1/H2 world wins; OPPOSING for different world winners, NON_DISCRIMINATING for an identical forecast in either arm, NEITHER when an arm matches neither world. All synthetic/observational; no causal proof.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "No authenticated pre-action chronology, public episode provenance or latent-state matched reset.",
+        "Frozen contest agent/schedule and blocked collector untouched; no Kaggle submission, spending, tokens, terms or legal/publication decisions."
       ]
     }
   }
