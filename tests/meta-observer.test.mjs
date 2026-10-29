@@ -36,8 +36,9 @@ test('whole-organism action rejects a verifier that asserts success without a tr
   const runtime=new MondayRuntime({capabilities:caps});
   const pass=await runtime.runPass([ask],{maxCycles:2});
   assert.equal(pass.state,'BLOCKED');
-  assert.equal(pass.final.results.length,6);
-  assert.ok(pass.final.results.every(x=>!x.ok && x.verification.code==='META_EFFECT_RECEIPT_MISSING'));
+  assert.equal(pass.cycles[0].results.length,6);
+  assert.ok(pass.cycles[0].results.every(x=>!x.ok && x.verification.code==='META_EFFECT_RECEIPT_MISSING'));
+  assert.ok(pass.final.results.every(x=>!x.ok),'no later cycle may promote an ambiguous effect');
   assert.equal(pass.final.intents['meta-whole'].status,'active');
   assert.equal(pass.final.meta.state,'HOLD');
 });
