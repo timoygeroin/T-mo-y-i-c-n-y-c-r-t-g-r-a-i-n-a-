@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T07:09:00Z",
+  "updated_at": "2026-10-29T08:14:41Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -18,7 +18,7 @@
     "prize": "NOT_CLAIMED",
     "spend_ils": 0,
     "official_timeline_readback": {
-      "checked_on": "2026-10-28",
+      "checked_on": "2026-10-29",
       "source": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview",
       "entry_deadline_utc": "2026-10-26T23:59:00Z",
       "final_submission_deadline_utc": "2026-11-02T23:59:00Z",
@@ -3091,6 +3091,44 @@
         "Only synthetic tests of design consistency, not authenticated PUBLIC gameplay or independent pre-action timestamp.",
         "Visible before-scene equality and shared donor hash do not prove latent reset equivalence.",
         "No policy promotion, frozen schedule or blocked collector change, Kaggle submission, spend, tokens, terms, license/publication choice, hidden score or prize claim."
+      ]
+    },
+    "prospective_action_forecast_coherence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent competing pre-action experiment designs from assigning contradictory H0/H1/H2 scene predictions to the same action under one fixed decision point and donor snapshot, including treatment/control arm swaps.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "bb263f8b1e970699b2835b80bf3dcfd35ae9d9cc",
+        "red_contract_run": 40840603274,
+        "red_result": "EXPECTED one assertion failure among 316 tests: conflicting ACTION4 forecast accepted",
+        "implementation_commit": "0635354c5f18e26452340093a6973c33940d219f",
+        "green_commit": "c6e498952c175ad66211b10289d1b409a1596b4e",
+        "green_contract_run": 40840752577,
+        "green_result": "316/316 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40840752577,
+        "system_run": 40840752514,
+        "public_smoke_run": 40840752521,
+        "frozen_run": 40840752509
+      },
+      "behavior": "select_discriminating_trial validates one consistent three-world forecast per action across all candidate plans/arms within the same frozen cohort; exact repeated forecasts remain valid, conflicting forecasts raise before ranking. Distinct-action candidates remain comparable. No agent import or policy integration.",
+      "negative_evidence": "Previously the selector could optimize apparent two-arm discrimination by assigning incompatible H1 forecasts to the same ACTION4 when that action moved between control and treatment. Reproduced in RED contract run.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic pre-action forecast consistency only; no independent public gameplay or independently timestamped preregistration.",
+        "Matching visible scenes and donor snapshot do not establish latent reset equivalence or causal effect.",
+        "Frozen agent/schedule and blocked collector untouched; no Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score or prize claim."
       ]
     }
   }
