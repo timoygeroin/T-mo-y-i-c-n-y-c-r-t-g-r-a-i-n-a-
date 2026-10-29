@@ -518,6 +518,41 @@ class ProspectiveLedgerTests(unittest.TestCase):
             select_discriminating_trial([strong, invalid])
 
 
+    def test_selector_rejects_conflicting_forecasts_for_same_action(self):
+        # The same action at one pre-action decision point cannot acquire
+        # different H0/H1/H2 predictions by changing its candidate arm/row.
+        # Otherwise selecting a high-contrast design cherry-picks a world.
+        from prospective_counterfactual_ledger import select_discriminating_trial
+
+        base = plan()
+        base["control_forecasts"]["H1_absolute"] = scene(11)
+        base["control_forecasts"]["H2_anchor_relative"] = scene(9)
+        swapped = copy.deepcopy(base)
+        swapped["treatment_action"] = "ACTION4"
+        swapped["control_action"] = "ACTION3"
+        swapped["forecasts"] = copy.deepcopy(base["control_forecasts"])
+        swapped["control_forecasts"] = copy.deepcopy(base["forecasts"])
+
+        # Reusing an action with exactly the same predictions is legitimate.
+        self.assertIsNotNone(select_discriminating_trial([base, swapped]))
+
+        # A different H1 prediction for ACTION4 must fail even when ACTION4
+        # changes from control to treatment between candidates.
+        conflicting = copy.deepcopy(swapped)
+        conflicting["forecasts"]["H1_absolute"] = scene(12)
+        self.assertIsNotNone(seal_trial(conflicting))
+        with self.assertRaises(ValueError):
+            select_discriminating_trial([base, conflicting])
+        with self.assertRaises(ValueError):
+            select_discriminating_trial([conflicting, base])
+
+        # The same inconsistency cannot be hidden within the control arm.
+        same_arm = copy.deepcopy(base)
+        same_arm["control_forecasts"]["H1_absolute"] = scene(12)
+        with self.assertRaises(ValueError):
+            select_discriminating_trial([base, same_arm])
+
+
     def test_selector_rejects_mixed_pre_action_cohorts(self):
         # Counterfactual actions must compete at ONE decision point, not
         # cherry-pick a better-looking plan from another game/reset/donor.
