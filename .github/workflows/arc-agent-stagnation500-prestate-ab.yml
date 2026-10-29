@@ -25,24 +25,8 @@ jobs:
       - name: Install official Python 3.12 runtime
         working-directory: arc-starter
         run: make setup PYTHON=python3.12
-      - name: FROZEN baseline at official 500-action cap
-        run: |
-          set -o pipefail
-          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
-          python - <<'PY'
-          from pathlib import Path
-          path=Path('arc-starter/agent/my_agent.py')
-          src=path.read_text()
-          needle='        return action\n'
-          assert src.count(needle)==1
-          audit=(
-              "        _ax, _ay = self._last_position if action.name == 'ACTION6' and self._last_position is not None else (-1, -1)\n"
-              "        print('ARC_PREACTION game=%s step=%d level=%d key=%s action=%s x=%d y=%d' % (self.game_id, self._steps, level, key[1], action.name, _ax, _ay), flush=True)\n"
-          )
-          path.write_text(src.replace(needle,audit+needle))
-          compile(path.read_text(),str(path),'exec')
-          PY
-          (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation500-frozen.log
+      # Counterbalanced second prospective run: treatment-first, same frozen code and 500 cap.
+      # This tests order stability, not unseen-game generalization or latent seed pairing.
       - name: H1 isolated click-only stagnation candidate at SAME 500-action cap
         run: |
           set -o pipefail
@@ -61,6 +45,24 @@ jobs:
           compile(path.read_text(),str(path),'exec')
           PY
           (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation500-candidate.log
+      - name: FROZEN baseline at official 500-action cap
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('arc-starter/agent/my_agent.py')
+          src=path.read_text()
+          needle='        return action\n'
+          assert src.count(needle)==1
+          audit=(
+              "        _ax, _ay = self._last_position if action.name == 'ACTION6' and self._last_position is not None else (-1, -1)\n"
+              "        print('ARC_PREACTION game=%s step=%d level=%d key=%s action=%s x=%d y=%d' % (self.game_id, self._steps, level, key[1], action.name, _ax, _ay), flush=True)\n"
+          )
+          path.write_text(src.replace(needle,audit+needle))
+          compile(path.read_text(),str(path),'exec')
+          PY
+          (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation500-frozen.log
       - name: Compare official scorecards and matched pre-action visible states
         run: |
           set -o pipefail
