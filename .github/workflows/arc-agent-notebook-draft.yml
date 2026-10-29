@@ -1,0 +1,62 @@
+name: ARC-AGI-3 reproducible Kaggle notebook draft
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-agent-notebook-draft.yml'
+      - 'competitions/arc-agi-3/agent/my_agent.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch official starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install public environment without private credentials
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Build draft notebook with frozen MondayID agent
+        run: |
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make notebook)
+      - name: Validate notebook provenance and offline configuration
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          path=Path('arc-starter/notebooks/submission.ipynb')
+          nb=json.loads(path.read_text())
+          meta=json.loads(Path('arc-starter/notebooks/kernel-metadata.json').read_text())
+          agent=Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          code='\n'.join(''.join(c['source']) for c in nb['cells'] if c['cell_type']=='code')
+          assert agent in code, 'frozen agent absent from generated notebook'
+          assert len(nb['cells'])==5
+          assert nb['metadata']['kaggle']['isInternetEnabled'] is False
+          assert meta['enable_internet'] is False
+          assert meta['id'].startswith('REPLACE_WITH_YOUR_USERNAME/'), 'must not upload with an invented user handle'
+          assert 'KAGGLE_IS_COMPETITION_RERUN' in code
+          result={'schema':'mondayid.arc.notebook-draft.v1',
+                  'agent_sha256':hashlib.sha256(agent.encode()).hexdigest(),
+                  'notebook_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+                  'cells':len(nb['cells']),'internet':False,
+                  'kaggle_pushed':False,'submission_completed':False,
+                  'username_placeholder_requires_owner':True}
+          Path('arc-notebook-draft-receipt.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result,sort_keys=True))
+          PY
+      - name: Preserve unsubmitted notebook and build receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mondayid-arc-notebook-draft
+          path: |
+            arc-starter/notebooks/submission.ipynb
+            arc-starter/notebooks/kernel-metadata.json
+            arc-notebook-draft-receipt.json
+          if-no-files-found: ignore
