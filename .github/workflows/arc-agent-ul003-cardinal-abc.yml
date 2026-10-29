@@ -1,0 +1,58 @@
+name: ARC-AGI-3 isolated UL003 cardinal-effect public A-B-C
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/ul003_cardinal_motion_variant.py'
+      - 'competitions/arc-agi-3/tests/test_ul003_cardinal_motion_candidate.py'
+      - '.github/workflows/arc-agent-ul003-cardinal-abc.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_abc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify candidate contract and comparator
+        working-directory: competitions/arc-agi-3
+        run: |
+          python -m unittest discover -s tests -p 'test_ul003_cardinal_motion_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official public ARC-AGI-3 starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Setup official public runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: H0 frozen original, 25 public games, 500 actions
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee ul003-frozen.log
+      - name: H1 visible-effect-conditioned persistence, same budget
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/ul003_cardinal_motion_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --arm effect
+          (cd arc-starter && make play-local STEPS=500) | tee ul003-effect.log
+      - name: H2 inverted-effect negative control, same budget
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/ul003_cardinal_motion_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --arm inverted
+          (cd arc-starter && make play-local STEPS=500) | tee ul003-inverted.log
+      - name: Compare local public scorecards; never auto-promote
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py ul003-frozen.log ul003-effect.log --output ul003-effect-vs-frozen.json | tee ul003-effect-summary.log
+          python competitions/arc-agi-3/tools/compare_public_logs.py ul003-frozen.log ul003-inverted.log --output ul003-inverted-vs-frozen.json | tee ul003-inverted-summary.log
+      - name: Preserve raw evidence, including failed runs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ul003-official-public-abc
+          path: |
+            ul003-*.log
+            ul003-*.json
+          if-no-files-found: ignore
