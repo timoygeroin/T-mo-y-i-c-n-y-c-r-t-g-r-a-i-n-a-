@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T06:10:00Z",
+  "updated_at": "2026-10-29T07:09:00Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3054,6 +3054,43 @@
         "Visible-scene differences are not latent-state reset equivalence or causal evidence.",
         "Contest agent, frozen public probe schedule and blocked collector untouched.",
         "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score or prize claim."
+      ]
+    },
+    "prospective_single_decision_cohort_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent a counterfactual H0/H1/H2 probe selector from cherry-picking high-discrimination plans across different games, turns, episodes, visible pre-action scenes, or donor snapshots; compare action alternatives only at one frozen decision point.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "2bf5d1e5e2366d9649ab69c548d9a802e9dd3218",
+        "red_contract_run": 40833419496,
+        "red_result": "EXPECTED 6 assertion failures in one new test among 315 tests: mismatched game/episode/control_episode/turn/donor/before accepted",
+        "green_commit": "a7ac66036ba9e780b7518b236c09a2b5470fe598",
+        "green_contract_run": 40833560396,
+        "green_result": "315/315 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40833560396,
+        "system_run": 40833560518,
+        "public_smoke_run": 40833560397,
+        "frozen_run": 40833560530
+      },
+      "behavior": "All candidate designs are validated before ranking; their game, treatment/control episode IDs, turn, normalized before scene, and immutable donor snapshot SHA256 must match. Different action/forecast alternatives within the same cohort remain legal; any cross-cohort candidate fails closed.",
+      "negative_evidence": "Prior selector accepted cross-context candidate lists, so a high-discrimination plan could win by switching the decision point rather than comparing actions under the same pre-action evidence. Reproduced in RED contract run.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Only synthetic tests of design consistency, not authenticated PUBLIC gameplay or independent pre-action timestamp.",
+        "Visible before-scene equality and shared donor hash do not prove latent reset equivalence.",
+        "No policy promotion, frozen schedule or blocked collector change, Kaggle submission, spend, tokens, terms, license/publication choice, hidden score or prize claim."
       ]
     }
   }
