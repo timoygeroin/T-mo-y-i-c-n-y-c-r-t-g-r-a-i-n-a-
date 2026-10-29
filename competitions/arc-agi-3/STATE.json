@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T09:04:39.725Z",
+  "updated_at": "2026-10-29T10:09:36.326Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3166,6 +3166,44 @@
         "Synthetically demonstrated canonicalization integrity, not authenticated episode provenance, independent pre-action chronology, latent-state matched reset or causal prediction gain.",
         "No change to frozen contest agent, public probe schedule or blocked collector.",
         "No Kaggle submission, spending, credentials, terms, legal/license/publication choice, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_cross_episode_forecast_coherence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Reject contradictory H0/H1/H2 pre-action forecasts for one physical action across independently named matched episodes when game, turn, normalized visible scene and donor snapshot are identical; different donor model versions remain valid.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "067eee231c9dba089e0b58e407caea30f06d0459",
+        "red_contract_run": 40855016453,
+        "red_result": "EXPECTED exactly one assertion failure among 318 tests: conflicting cross-episode H1 control forecast accepted",
+        "implementation_commit": "2890538756c027b25a212179160781facf3c62a1",
+        "green_contract_run": 40855184729,
+        "green_result": "318/318 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40855184729,
+        "system_run": 40855184857,
+        "public_smoke_run": 40855184583,
+        "frozen_run": 40855184763
+      },
+      "behavior": "audit_trial_registry now enforces one world-forecast map per (game, turn, canonical before-scene, donor snapshot SHA256, physical action) across separate sealed episode pairs and treatment/control arms; conflicting plans fail closed before registry evidence aggregation. A distinct donor snapshot is allowed. Shadow-only; no automatic gameplay or policy integration.",
+      "negative_evidence": "Previously unique episode IDs allowed contradictory forecasts for the same physical action under the same frozen model context, permitting post-hoc fit across registered trials. Reproduced by test-first RED.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic registry-integrity evidence only; no independently authenticated PUBLIC episode or pre-action chronology.",
+        "Matching visible scene/donor does not prove latent-state matched reset or causality.",
+        "Agent, frozen public schedule and blocked collector unchanged.",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income."
       ]
     }
   }
