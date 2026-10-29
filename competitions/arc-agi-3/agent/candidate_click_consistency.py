@@ -282,27 +282,28 @@ class MyAgent(Agent):
         progressed = current[0] > previous[0]
         delta = self._delta(self._last_grids, grids)
         outcome_identity = self._last_move
+        meaningful = progressed or changed
         if self._last_move == 'ACTION6' and self._last_position is not None:
             x, y = self._last_position
             click_key = (previous[0], x, y)
             outcome_identity = f'ACTION6@{x},{y}'
-            # An interactive control can change a distant region. The
-            # public vc33 game proved that useful clicks may affect >250
-            # pixels away from the click while the HUD timer changes 1-2.
-            if (progressed or delta >= 8
-                    or self._local_delta(self._last_grids, grids, x, y)):
+            # Do not let tiny remote animation masquerade as an effective
+            # click in the transition model while click statistics reject it.
+            # A local change, larger remote effect, or level advance counts.
+            meaningful = (progressed or delta >= 8
+                          or self._local_delta(self._last_grids, grids, x, y))
+            if meaningful:
                 self._click_successes[click_key] += 1
             else:
                 self._click_failures[click_key] += 1
-        # ACTION6 outcomes must be keyed by *coordinate*, not by the
-        # shared enum action, otherwise one dead pixel blacklists all clicks.
+        # ACTION6 outcomes are keyed by physical coordinate, not by enum.
         key=(previous[0],previous[1],outcome_identity)
         self._trials[self._last_move]+=1
-        if progressed or changed:
+        if meaningful:
             self._successes[self._last_move]+=1
             self._transitions[key]=current
             self._dead_actions.discard(key)
-        elif delta == 0:
+        elif delta == 0 or self._last_move == 'ACTION6':
             self._dead_actions.add(key)
         # If a move returns us to an already recurring position, mark it as
         # less desirable on the next decision without banning forever.
