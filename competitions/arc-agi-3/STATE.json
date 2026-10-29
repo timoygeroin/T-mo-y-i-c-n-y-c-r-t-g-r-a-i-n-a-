@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T01:11:58.700Z",
+  "updated_at": "2026-10-29T02:14:18.382Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2867,6 +2867,43 @@
       "limitations": [
         "No authenticated pre-action chronology, public episode provenance or latent-state matched reset.",
         "Frozen contest agent/schedule and blocked collector untouched; no Kaggle submission, spending, tokens, terms or legal/publication decisions."
+      ]
+    },
+    "prospective_registry_two_arm_aggregation_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Aggregate explicit H0/H1/H2 CONSISTENT/OPPOSING/NON_DISCRIMINATING/NEITHER two-arm evidence only after every trial seal and unique episode identity is validated; reject malformed or mismatched matched outcomes before any counts are returned.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "7fc81d218c3f697d613ac4d8e88894c03a50655c",
+        "red_contract_run": 40804827006,
+        "red_result": "EXPECTED contract failure for absent evaluate_trial_registry import",
+        "green_commit": "cbffb84e213f3e65a5954f77ebabf526aac86a82",
+        "green_contract_run": 40804910844,
+        "green_result": "SUCCESS (full contract suite)"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40804910844,
+        "system_run": 40804910838,
+        "public_smoke_run": 40804910840,
+        "frozen_run": 40804910843
+      },
+      "behavior": "Pure evaluate_trial_registry rejects duplicate or conflicting treatment/control episode identities across the batch, rejects invalid matched outcomes, and returns per-world-pair status counts and consistent-winner counts without misclassifying OPPOSING evidence as corroboration. Test fixture: one H1/H1 CONSISTENT and one H1/H0 OPPOSING; duplicate and wrong-action rows fail closed.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "registry_applied_to_authenticated_public_gameplay": false,
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic two-pair test only; no independently authenticated new PUBLIC episode, pre-action timestamp or latent-state matched reset.",
+        "No actual gameplay runner integration, policy promotion, causal gain, Kaggle submission, spending, tokens, terms, legal/license/publication decision.",
+        "Existing frozen agent and schedule, and previously blocked collector unchanged."
       ]
     }
   }
