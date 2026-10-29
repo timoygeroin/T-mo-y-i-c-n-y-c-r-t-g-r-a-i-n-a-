@@ -1,0 +1,55 @@
+name: ARC-AGI-3 isolated click-only affordance public A-B
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/click_affordance_variant.py'
+      - 'competitions/arc-agi-3/tests/test_click_affordance_candidate.py'
+      - '.github/workflows/arc-agent-click-affordance-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify generic affordance gate and frozen mixed-action invariant
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_click_affordance_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official ARC public starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official Python 3.12 runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN original 25 games 500 steps
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-affordance-frozen.log
+      - name: Generic click-only gate 25 games 500 steps
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_affordance_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-affordance-candidate.log
+      - name: Evaluate complete official public scorecards without promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-affordance-frozen.log arc-affordance-candidate.log --output arc-affordance-ab.json | tee arc-affordance-summary.log
+      - name: Preserve raw evidence including regressions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-affordance-public-ab
+          path: |
+            arc-affordance-frozen.log
+            arc-affordance-candidate.log
+            arc-affordance-ab.json
+            arc-affordance-summary.log
+          if-no-files-found: ignore
