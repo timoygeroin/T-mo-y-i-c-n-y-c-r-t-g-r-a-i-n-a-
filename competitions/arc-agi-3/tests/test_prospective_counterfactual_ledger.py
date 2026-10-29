@@ -508,6 +508,8 @@ class ProspectiveLedgerTests(unittest.TestCase):
         b = select_discriminating_trial([tied, strong])
         self.assertEqual(a, b)
         self.assertEqual(a["sealed"]["plan"]["treatment_action"], "ACTION2")
+        self.assertEqual(select_discriminating_trial([strong, copy.deepcopy(strong)]),
+                         select_discriminating_trial([strong]))
 
         # Invalid plans fail closed instead of being silently discarded.
         invalid = copy.deepcopy(strong)
