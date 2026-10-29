@@ -1,0 +1,105 @@
+{
+  "schema": "mondayid.arc3.evidence.stagnation500_prestates_counterbalanced.v1",
+  "status": "REPLICATED_IN_SAMPLE_PUBLIC_GAIN_NOT_PROMOTED",
+  "competition": "ARC Prize 2026 ARC-AGI-3",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "pr": 196,
+  "branch": "monday/arc-agi3-offline-agent-20261026",
+  "source_checkpoint": {
+    "canonical": "MONDAYID_CANONICAL_CSTAR (read before mutation, newest ARC UL004 regression checkpoint)",
+    "state_json_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+    "source_head": "bfe80b9d10d21cf6cf1b63627ff764e360f2712a",
+    "source_exact_commit_ci": "12/12 SUCCESS",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+  },
+  "hypotheses_pre_outcome": {
+    "H0": "Frozen novelty policy is no worse at the same 500-action cap.",
+    "H1": "In level-zero click-only environments, switching to uniform-first after 128 attempted actions can discover a first-level transition sooner.",
+    "H2": "Visible responsiveness can be animation/nonprogress; coordinate changes need not improve level completion."
+  },
+  "experimental_arms": {
+    "baseline": "unchanged competitions/arc-agi-3/agent/my_agent.py, stdout-only identical pre-action instrumentation in temporary runner copy",
+    "candidate": "existing tools/click_stagnation_variant.py generator; after 128 click-only level-zero actions reorder uniform-grid click candidates first; no game IDs",
+    "agent_integration": "NONE"
+  },
+  "protocol": {
+    "engine": "official ARC-AGI-3 Python 3.12 public starter",
+    "games": 25,
+    "configured_actions_per_game": 500,
+    "arms_run_sequentially": true,
+    "order_counterbalanced": true,
+    "same_game_ids": true,
+    "independent_latent_seed_pairing": false,
+    "initial_visible_prestate_fingerprints_matched": "25/25 in both orderings",
+    "unseen_held_out_games": false,
+    "preaction_stdout": "game, step, level, 96-bit visible state hash, action enum, ACTION6 x/y; temporary stdout only",
+    "action_count_caveat": "Official runner reports 501 actions per game in per-game scorecard due reset/counter semantics; configured cap is 500."
+  },
+  "runs": [
+    {
+      "commit": "5475fd2200ed95a5576dd9c9a4242871fd90093c",
+      "run_id": 40974909677,
+      "job_id": 123800434471,
+      "artifact_id": 12941368487,
+      "job_conclusion": "success",
+      "order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "commit": "56b73c2654d0d1f91801c75fd55d86b387cd40dc",
+      "run_id": 40975367227,
+      "job_id": 123801953607,
+      "artifact_id": 12942651614,
+      "job_conclusion": "success",
+      "order": [
+        "candidate",
+        "baseline"
+      ]
+    }
+  ],
+  "public_results_both_orderings": {
+    "baseline_first_levels": 7,
+    "candidate_first_levels": 8,
+    "delta_first_levels": 1,
+    "baseline_local_score": 0.5019709375909188,
+    "candidate_local_score": 0.5055889364012254,
+    "local_score_delta": 0.0036179988103065552,
+    "improved_level_games": [
+      "ft09"
+    ],
+    "regressed_level_games": [],
+    "ft09": {
+      "baseline_level_zero_through_cap": true,
+      "candidate_first_observed_level_one_at_preaction_step": 311,
+      "interpretation": "Level advance occurred before the action chosen at step 311; cannot assert exact advancing click from preaction row alone."
+    },
+    "baseline_preaction_rows": 12381,
+    "candidate_preaction_rows": 12379,
+    "matched_game_step_rows": 12378,
+    "matched_visible_prestate_and_level_rows": 11516,
+    "same_visible_prestate_click_pairs": 3088,
+    "different_action6_coordinates_on_same_visible_prestate": 239,
+    "different_action_enums_on_same_visible_prestate": 0,
+    "level_state_disagreements_on_matched_steps": 186,
+    "observed_first_visible_states_identical_for_all_games": true
+  },
+  "test_first": "Reused existing already-tested stagnation generator and contract tests; this run verifies contracts before official public gameplay. No new candidate logic was introduced and no artificial RED test was claimed.",
+  "interpretation": "A reproducible, causal policy-intervention association on already-used official public games: candidate click coordinates diverged under matched visible prestates and ft09 reached a first level under the 500 cap, while frozen did not. The reversed order reproduced the exact same results, but is a deterministic same-cohort rerun, not independent generalization.",
+  "promotion_gate": "NOT_MET: no genuinely unseen public games, no independent latent seed pairing, no independent held-out action-cost/regression assessment. Do not change contest agent.",
+  "negative_prior_context": [
+    "UL001 local-neighborhood click policy regressed public score.",
+    "UL002 bounded feedback changed clicks but was null.",
+    "UL004 whole-component suppression regressed a completed level.",
+    "Earlier 2000-step stagnation experiment had mixed ft09/lp85 efficiency effects."
+  ],
+  "limitations": [
+    "Only 25 repeatedly used official public games; positive ft09 is not a held-out discovery.",
+    "Visible prestate equality does not prove equality of hidden RNG or latent world state.",
+    "Repeated reversed-order identical outcome is reproducibility, not a confidence interval or independent-seed replication.",
+    "No Kaggle hidden score, no authenticated Phase-B execution or submission.",
+    "No policy promotion, no spend, tokens, rules/terms, licensing/publication or prize claim."
+  ],
+  "disposition": "Preserve machine evidence and existing candidate generator as research-only; remove temporary experimental workflow after evidence readback. Keep frozen agent, official schedule and blocked collector unchanged. STATE.json safety-blocked rewrite must not be bypassed."
+}
