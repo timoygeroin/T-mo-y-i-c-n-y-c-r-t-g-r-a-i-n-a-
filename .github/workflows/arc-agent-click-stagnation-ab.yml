@@ -1,0 +1,55 @@
+name: ARC-AGI-3 isolated stagnation-gated click public A-B
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/click_stagnation_variant.py'
+      - 'competitions/arc-agi-3/tests/test_click_stagnation_candidate.py'
+      - '.github/workflows/arc-agent-click-stagnation-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test-first stagnation and frozen policy invariants
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_click_stagnation_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official ARC public starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official Python 3.12 runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN original 25 public games 500 steps
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation-frozen.log
+      - name: Click-only stagnation gate 25 public games 500 steps
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_stagnation_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-stagnation-candidate.log
+      - name: Compare complete public scorecards, never auto-promote
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-stagnation-frozen.log arc-stagnation-candidate.log --output arc-stagnation-ab.json | tee arc-stagnation-summary.log
+      - name: Preserve complete evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-stagnation-public-ab
+          path: |
+            arc-stagnation-frozen.log
+            arc-stagnation-candidate.log
+            arc-stagnation-ab.json
+            arc-stagnation-summary.log
+          if-no-files-found: ignore
