@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T02:14:18.382Z",
+  "updated_at": "2026-10-29T03:12:51.725Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -2904,6 +2904,44 @@
         "Synthetic two-pair test only; no independently authenticated new PUBLIC episode, pre-action timestamp or latent-state matched reset.",
         "No actual gameplay runner integration, policy promotion, causal gain, Kaggle submission, spending, tokens, terms, legal/license/publication decision.",
         "Existing frozen agent and schedule, and previously blocked collector unchanged."
+      ]
+    },
+    "prospective_nondiscriminating_miss_priority_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent an identical, nondiscriminating forecast pair from masking an observed miss by both worlds on either preregistered arm; preserve negative competing-world evidence.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "0d6a5dc4b66738de637f821654ccf21ca1dace2c",
+        "red_contract_run": 40810257699,
+        "red_result": "EXPECTED 1 assertion failure among 312 tests: identical control forecasts incorrectly returned NON_DISCRIMINATING despite both missing the actual scene",
+        "green_commit": "8869d5d203ae1ca2fe2c6c3ef210a04929e5e4cb",
+        "green_contract_run": 40810471015,
+        "green_result": "312/312 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40810471015,
+        "system_run": 40810470978,
+        "public_smoke_run": 40810470989,
+        "frozen_run": 40810471030
+      },
+      "behavior": "On an arm with equal H0/H1/H2 pair forecasts, return NEITHER if both forecasts miss the actual visible scene, otherwise NON_DISCRIMINATING; a NEITHER arm takes priority over an otherwise nondiscriminating arm in two-arm classification. Test checks both control-arm miss and treatment-arm miss.",
+      "negative_evidence": "Prior classification suppressed a failed competing-world prediction behind a nondiscriminating label; corrected without claiming causal effect.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic counterfactual ledger tests only; no independently authenticated prospective PUBLIC episodes or pre-action timestamps",
+        "No matched latent reset or demonstrated causal/world-model predictive gain",
+        "Frozen contest agent and probe schedule unchanged; blocked collector not executed or bypassed",
+        "No Kaggle submission, spend, credentials, terms or legal/license/publication decision"
       ]
     }
   }
