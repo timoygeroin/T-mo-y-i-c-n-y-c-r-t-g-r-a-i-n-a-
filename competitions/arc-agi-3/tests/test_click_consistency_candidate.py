@@ -58,5 +58,28 @@ class ClickConsistencyCandidateTests(unittest.TestCase):
         self.assertEqual(self.agent._transitions[key][0], 1)
 
 
+    def test_verified_winning_click_is_reused_once_on_next_click_level(self):
+        self.agent.choose_action([], FrameData(
+            frame=[self.grid], available_actions=[GameAction.ACTION6]))
+        self.assertEqual(self.agent._last_position, (49, 12))
+        next_level = [row[:] for row in self.grid]
+        next_level[8][58] = 7  # Higher-ranked fresh object, not a proven control.
+        self.agent.choose_action([], FrameData(
+            frame=[next_level], available_actions=[GameAction.ACTION6],
+            levels_completed=1))
+        self.assertEqual(self.agent._last_position, (49, 12))
+
+    def test_missing_winning_click_target_is_not_forced(self):
+        self.agent.choose_action([], FrameData(
+            frame=[self.grid], available_actions=[GameAction.ACTION6]))
+        next_level = [row[:] for row in self.grid]
+        next_level[12][49] = 3
+        next_level[8][58] = 7
+        self.agent.choose_action([], FrameData(
+            frame=[next_level], available_actions=[GameAction.ACTION6],
+            levels_completed=1))
+        self.assertEqual(self.agent._last_position, (58, 8))
+
+
 if __name__ == "__main__":
     unittest.main()
