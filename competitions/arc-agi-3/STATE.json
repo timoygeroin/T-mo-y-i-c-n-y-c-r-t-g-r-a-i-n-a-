@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T14:15:53.237Z",
+  "updated_at": "2026-10-29T15:14:08.417Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3352,6 +3352,44 @@
         "Synthetic fixtures only; no independently authenticated PUBLIC episodes, pre-action chronology or latent matched resets.",
         "Divergent visible outcomes can arise from differing hidden reset state, stochasticity, animation/HUD or measurement; cannot assign causal mechanism.",
         "No agent/policy, frozen schedule, blocked collector, Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income change."
+      ]
+    },
+    "prospective_repeated_design_stable_world_winners_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Quarantine apparent two-arm H0/H1/H2 observational wins when the same forecast design is repeated but action outcomes diverge, winners oppose, or any pair is nondiscriminating. Do not count differently named episodes as independent evidence.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "c9b8f02f30f6da8caaf69b6cb184c75c65d1f879",
+        "red_contract_run": 40898883024,
+        "red_result": "EXPECTED one KeyError for absent repeated_design_stable_winners_by_pair among 323 tests; GitHub job logs independently inspected",
+        "green_commit": "8f349908d75ec5e51019282b8c3cf784b43f5095",
+        "green_contract_run": 40899214281,
+        "green_result": "323/323 PASS; GitHub job log independently inspected"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40899214281,
+        "system_run": 40899214188,
+        "public_smoke_run": 40899214277,
+        "frozen_run": 40899214280
+      },
+      "behavior": "evaluate_trial_registry now reports repeated_design_stable_winners_by_pair: at most one observational winner per frozen design and hypothesis pair, only when >=2 named pairs for that design have identical visible outcomes for each physical action and unanimously CONSISTENT two-arm winners. Singletons, divergent actions, opposing winners, any NON_DISCRIMINATING/NEITHER and distinct donor snapshots do not count. Raw scoring and prior diagnostics remain unchanged.",
+      "negative_evidence": "Before this gate, raw consistent-winner counts could appear to corroborate a world using duplicated designs even when repeated visible outcomes contradicted each other. Synthetic test-first RED reproduced missing conservative aggregation, not independent PUBLIC model failure.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Named episode IDs are not independent reset authentication; this metric is internal consistency only.",
+        "No independently authenticated PUBLIC pre-action chronology, latent matched reset, causal model or gameplay improvement.",
+        "Frozen competition agent, public schedule and blocked collector unchanged.",
+        "No Kaggle submission, spend, tokens, terms, legal/license/publication decision, hidden score, prize or income."
       ]
     }
   }
