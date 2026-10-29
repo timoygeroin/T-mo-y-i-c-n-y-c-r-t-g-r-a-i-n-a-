@@ -393,6 +393,7 @@ def select_discriminating_trial(candidates):
         raise ValueError("candidate designs must be a sequence")
     ranked = []
     cohort = None
+    action_forecasts = {}
     # All competing action designs must concern one frozen pre-action
     # decision point. Otherwise ranking can silently cherry-pick a different
     # game, reset, donor snapshot, or visible scene as the "best" probe.
@@ -406,6 +407,18 @@ def select_discriminating_trial(candidates):
             cohort = candidate_cohort
         elif candidate_cohort != cohort:
             raise ValueError("candidate probes must share one pre-action cohort")
+        # A frozen decision point and donor snapshot define ONE prediction
+        # per (world, action). Reusing an action with contradictory forecasts
+        # across candidate rows/arms is forecast cherry-picking, not a
+        # legitimate counterfactual comparison.
+        for action_key, forecasts_key in (
+                ("treatment_action", "forecasts"),
+                ("control_action", "control_forecasts")):
+            action = plan[action_key]
+            forecasts = plan[forecasts_key]
+            if action in action_forecasts and action_forecasts[action] != forecasts:
+                raise ValueError("conflicting world forecasts for one pre-action action")
+            action_forecasts[action] = forecasts
         both = 0
         control = 0
         for i, left in enumerate(WORLDS):
