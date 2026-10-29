@@ -377,3 +377,46 @@ def evaluate_trial_registry(rows):
                 independent_public_episodes_authenticated=False,
                 causal_effect_proven=False,
                 effect_on_agent="NONE_SHADOW_ONLY")
+
+
+def select_discriminating_trial(candidates):
+    """Choose an outcome-blind H0/H1/H2 two-arm experiment or abstain.
+
+    Rank only *pre-action* counterfactual forecast contrasts, never observed
+    outcomes, game identifiers, generic action entropy, or hidden scores.
+    A pair of hypotheses earns two-arm coverage only if their predictions
+    differ under BOTH preregistered actions. Every candidate is validated
+    before selection, so malformed plans cannot be silently cherry-picked.
+    This does not execute gameplay or authenticate chronology/latent resets.
+    """
+    if not isinstance(candidates, (list, tuple)):
+        raise ValueError("candidate designs must be a sequence")
+    ranked = []
+    for candidate in candidates:
+        sealed = seal_trial(candidate)
+        plan = sealed["plan"]
+        both = 0
+        control = 0
+        for i, left in enumerate(WORLDS):
+            for right in WORLDS[i + 1:]:
+                treatment_differs = plan["forecasts"][left] != plan["forecasts"][right]
+                control_differs = (plan["control_forecasts"][left] !=
+                                   plan["control_forecasts"][right])
+                both += int(treatment_differs and control_differs)
+                control += int(control_differs)
+        ranked.append((
+            -both, -control, plan["treatment_action"],
+            plan["control_action"], sealed["sha256"], sealed))
+    if not ranked:
+        return None
+    best = min(ranked)
+    if -best[0] == 0:
+        return None
+    return dict(protocol=PROTOCOL, sealed=best[-1],
+                two_arm_discriminating_pairs=-best[0],
+                control_discriminating_pairs=-best[1],
+                interpretation="PROSPECTIVE_DESIGN_ONLY",
+                chronology_authenticated=False,
+                latent_reset_authenticated=False,
+                causal_effect_proven=False,
+                effect_on_agent="NONE_SHADOW_ONLY")
