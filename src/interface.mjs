@@ -25,7 +25,11 @@ export function renderHumanSurface(cycleResult, { voice = 'monday' } = {}) {
   const blocked = blockedItems.length;
   const active = intents.filter(intent => intent?.status === 'active').length;
 
-  const verified = failed === 0 && blocked === 0 && active === 0;
+  // Empty results are not proof of a completed effect, and the meta observer
+  // can veto premature claims for whole-organism work.
+  const hasEffectEvidence = results.length > 0 || cycleResult?.meta?.state==='VERIFIED';
+  const verified = hasEffectEvidence && failed === 0 && blocked === 0 && active === 0 &&
+    cycleResult?.meta?.state!=='HOLD';
   const state = verified
     ? 'VERIFIED'
     : failed > 0
