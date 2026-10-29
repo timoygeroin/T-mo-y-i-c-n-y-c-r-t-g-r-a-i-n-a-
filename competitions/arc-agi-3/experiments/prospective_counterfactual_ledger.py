@@ -302,6 +302,9 @@ def audit_trial_registry(sealed_trials):
         raise ValueError("registry must be a sequence of sealed trial pairs")
     seen_episodes = set()
     action_forecasts = {}
+    # Same precommitted forecast design may recur under independent episode
+    # names. Keep that replication count distinct from model-design diversity.
+    design_counts = {}
     digests = []
     for sealed in sealed_trials:
         if (not isinstance(sealed, dict) or set(sealed) != {"plan", "sha256"} or
@@ -331,8 +334,14 @@ def audit_trial_registry(sealed_trials):
             if key in action_forecasts and action_forecasts[key] != forecast:
                 raise ValueError("conflicting world forecasts for one pre-action action")
             action_forecasts[key] = forecast
+        design = {key: value for key, value in plan.items()
+                  if key not in ("episode", "control_episode")}
+        design_sha = _hash(design)
+        design_counts[design_sha] = design_counts.get(design_sha, 0) + 1
         digests.append(verified["sha256"])
     return dict(trial_count=len(digests),
+                distinct_forecast_designs=len(design_counts),
+                max_forecast_design_reuse=max(design_counts.values(), default=0),
                 distinct_episodes=len(seen_episodes),
                 sha256s=digests,
                 interpretation="REGISTRY_INTEGRITY_ONLY",
@@ -386,6 +395,8 @@ def evaluate_trial_registry(rows):
     return dict(protocol=PROTOCOL,
                 trial_count=registry["trial_count"],
                 distinct_episodes=registry["distinct_episodes"],
+                distinct_forecast_designs=registry["distinct_forecast_designs"],
+                max_forecast_design_reuse=registry["max_forecast_design_reuse"],
                 pairwise_status_counts=status_counts,
                 consistent_winner_counts=winner_counts,
                 world_arm_exact_hits=arm_hits,
