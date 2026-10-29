@@ -808,5 +808,65 @@ class ProspectiveLedgerTests(unittest.TestCase):
             evaluate_trial_registry([stable, row(swapped, 12, 11)])[
                 "divergent_design_action_pairs"], 0)
 
+
+    def test_repeated_design_winner_needs_stable_physical_outcomes(self):
+        # A repeated forecast design earns at most ONE internally stable
+        # observational winner, never independent causal confirmation.
+        # Single observations, opposing winners and divergent physical
+        # action outcomes must not be promoted as replicated evidence.
+        from prospective_counterfactual_ledger import evaluate_trial_registry
+
+        first = plan()
+        first["control_forecasts"]["H1_absolute"] = scene(11)
+        first["control_forecasts"]["H2_anchor_relative"] = scene(9)
+        second = copy.deepcopy(first)
+        second["episode"] = "treatment-episode-2"
+        second["control_episode"] = "control-episode-2"
+
+        def row(p, a, b):
+            return dict(
+                sealed=seal_trial(p),
+                treatment=outcome(p["treatment_action"], p["episode"], scene(a)),
+                control=outcome(p["control_action"], p["control_episode"], scene(b)))
+
+        key = "H0_static|H1_absolute"
+        one = row(first, 11, 11)
+        same = row(second, 11, 11)
+        self.assertEqual(
+            evaluate_trial_registry([one])[
+                "repeated_design_stable_winners_by_pair"][key]["H1_absolute"], 0)
+        stable = evaluate_trial_registry([one, same])
+        self.assertEqual(stable["distinct_forecast_designs"], 1)
+        self.assertEqual(
+            stable["repeated_design_stable_winners_by_pair"][key],
+            {"H0_static": 0, "H1_absolute": 1})
+        self.assertFalse(stable["independent_public_episodes_authenticated"])
+        self.assertFalse(stable["causal_effect_proven"])
+        self.assertEqual(
+            evaluate_trial_registry([same, one])[
+                "repeated_design_stable_winners_by_pair"][key]["H1_absolute"], 1)
+
+        # An observed action changes across the repeated design, even
+        # without an opposing complete world winner: quarantine the design.
+        divergent = evaluate_trial_registry([one, row(second, 11, 12)])
+        self.assertEqual(divergent["designs_with_divergent_action_outcomes"], 1)
+        self.assertEqual(
+            divergent["repeated_design_stable_winners_by_pair"][key],
+            {"H0_static": 0, "H1_absolute": 0})
+
+        # An opposing complete winner must not be promoted either.
+        opposing = evaluate_trial_registry([one, row(second, 10, 10)])
+        self.assertEqual(
+            opposing["repeated_design_stable_winners_by_pair"][key],
+            {"H0_static": 0, "H1_absolute": 0})
+
+        # Different model snapshots are distinct designs, not replication.
+        second["donor_snapshot_sha256"] = "b" * 64
+        self.assertEqual(
+            evaluate_trial_registry([one, row(second, 11, 11)])[
+                "repeated_design_stable_winners_by_pair"][key],
+            {"H0_static": 0, "H1_absolute": 0})
+
+
 if __name__ == "__main__":
     unittest.main()
