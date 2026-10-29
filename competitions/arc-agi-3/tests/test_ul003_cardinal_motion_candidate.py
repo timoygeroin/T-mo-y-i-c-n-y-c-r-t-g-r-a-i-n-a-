@@ -50,6 +50,10 @@ class UL003Tests(unittest.TestCase):
             changed = generate(SOURCE, arm)
             self.assertEqual(changed.count("UL003 cardinal motion"), 1)
             self.assertIn("self._delta(self._last_grids, grids)", changed)
+            # UL003b: stronger intervention after UL003 no-action-change null.
+            # Pre-action H1 predicts changed cardinal sequences; H2 predicts
+            # loops/regressions, not a guaranteed score improvement.
+            self.assertIn(" + (3.00 if", changed)
             original_line = "                    value += 0.55"
             replacement_line = next(line for line in changed.splitlines() if "# UL003 cardinal motion" in line)
             self.assertEqual(changed.replace(replacement_line, original_line), SOURCE)
