@@ -328,6 +328,46 @@ class MyAgent(Agent):
         self._global_click_visits[(key[0],x,y)]+=1
         return x,y
 
+    def _frontier_step(self, current: tuple[int, str],
+                       legal: list[GameAction]) -> GameAction | None:
+        """BFS over witnessed same-level transitions toward an untried action.
+
+        Competing explanations: local novelty is sufficient (frozen control)
+        versus graph-frontier reuse reduces wasted revisits (candidate).
+        No game-ID rules, no unseen-edge hallucination, no RESET/ACTION6 path
+        assumption. Observed edges may be stale in dynamic worlds: the
+        policy re-plans after each real observation.
+        """
+        level = current[0]
+        simple = [a for a in legal if a.name not in ("ACTION7",)
+                  and not a.is_complex()]
+        if not simple:
+            return None
+        if any(self._attempts[(level, current[1], a.name)] == 0 for a in simple):
+            return None
+        if any((target := self._transitions.get((level, current[1], a.name)))
+               is not None and target[0] > level for a in simple):
+            return None
+
+        queue = deque([(current, None)])
+        seen = {current}
+        while queue and len(seen) <= 128:
+            state, first = queue.popleft()
+            if state != current and any(
+                    self._attempts[(level, state[1], a.name)] == 0
+                    for a in simple):
+                return first
+            for action in simple:
+                edge = (level, state[1], action.name)
+                if edge in self._dead_actions:
+                    continue
+                target = self._transitions.get(edge)
+                if target is None or target[0] != level or target in seen:
+                    continue
+                seen.add(target)
+                queue.append((target, first if first is not None else action))
+        return None
+
     def choose_action(self, frames: list[FrameData], latest_frame: FrameData) -> GameAction:
         if latest_frame.state in (GameState.NOT_PLAYED, GameState.GAME_OVER):
             self._last_move=None
@@ -350,6 +390,7 @@ class MyAgent(Agent):
         if not legal:
             return GameAction.RESET  # defensive fallback for invalid/no-action states
 
+        frontier_action = self._frontier_step(key, legal) if self._visits[key] >= 3 else None
         scoring=[]
         for action in legal:
             identity=action.name
@@ -381,6 +422,8 @@ class MyAgent(Agent):
                     value-=0.65
             # Don't regularly undo progress; use ACTION7 only when others
             # are exhausted or blocked.
+            if frontier_action is action:
+                value += 5.0  # Experimental navigation, NOT promoted without A/B
             if identity=='ACTION7':
                 value-=0.7
             if identity=='ACTION6':
