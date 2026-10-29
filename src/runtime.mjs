@@ -7,6 +7,7 @@ import { evaluateCandidateOutput } from './attractor-field.mjs';
 import { ensureTasks, updateTasks } from './task-field.mjs';
 import { ActionLedger } from './action-ledger.mjs';
 import { sensePhysiology, regulatePhysiology, allocateMetabolism } from './physiology-field.mjs';
+import { compileMetaObservation } from './meta-observer.mjs';
 
 export class MondayRuntime {
   constructor({
@@ -140,6 +141,14 @@ export class MondayRuntime {
       const intents = Object.values(cycle.intents || {});
       const active = intents.filter(intent => intent?.status === 'active');
       if (active.length === 0) {
+        if (cycle.meta?.state==='HOLD') return {
+          ok:true,
+          state:'BLOCKED',
+          reason:'META_INDEPENDENT_PROOF_REQUIRED',
+          cycles,
+          blockers:cycle.meta.gaps,
+          final:cycle
+        };
         return {
           ok:true,
           state:'FULFILLED',
@@ -175,7 +184,9 @@ export class MondayRuntime {
   }
 
   async executeAction(action) {
-    const receptor = this.capabilities[action.domain] || this.capabilities.general;
+    const receptor = action.requireDomainReceptor===true
+      ? this.capabilities[action.domain]
+      : (this.capabilities[action.domain] || this.capabilities.general);
     const prepared = this.actionLedger.prepare(action,{ cellId:this.cellId });
     if (!prepared.ok) {
       return {
@@ -310,6 +321,11 @@ export class MondayRuntime {
       }
 
       let verification = await receptor.verify(result, action);
+      if (verification?.ok === true && action.requireDomainReceptor===true &&
+          (typeof verification.mode!=='string' || !verification.mode.trim() ||
+           typeof verification.evidenceRef!=='string' || !verification.evidenceRef.trim())) {
+        verification={ok:false,code:'META_EFFECT_RECEIPT_MISSING',domain:action.domain};
+      }
       if (verification?.ok === true && action.requiredVerificationMode &&
           (verification.mode !== action.requiredVerificationMode ||
            typeof verification.evidenceRef !== 'string' || !verification.evidenceRef.trim())) {
@@ -450,6 +466,14 @@ export class MondayRuntime {
     const tasksUpdated = updateTasks(this.worldline,{ graph, frontier, results });
     if (!tasksUpdated.ok) return tasksUpdated;
 
+    const materialized=this.worldline.materialize();
+    const meta=compileMetaObservation({
+      intents:materialized.intents,
+      frontier,
+      results,
+      receipts:materialized.receipts
+    });
+
     return {
       ok:true,
       revision:this.worldline.revision(),
@@ -459,8 +483,9 @@ export class MondayRuntime {
       regulation,
       forged,
       results,
-      intents:this.worldline.materialize().intents,
-      state:this.worldline.materialize(),
+      intents:materialized.intents,
+      state:materialized,
+      meta,
       policies:this.policyField.snapshot(),
       actionLedger:this.actionLedger.snapshot()
     };

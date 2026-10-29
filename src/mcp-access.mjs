@@ -13,6 +13,8 @@ export const PUBLIC_MCP_TOOLS = Object.freeze([
 // Known private tools (documentation + tests); privacy does not depend on this list.
 export const PRIVATE_MCP_TOOLS = Object.freeze([
   'cell_attach',
+  'amplify_intent',
+  'meta_probe',
   'simulate_counterfactual',
   'get_state',
   'prove_trusted_write_readback',

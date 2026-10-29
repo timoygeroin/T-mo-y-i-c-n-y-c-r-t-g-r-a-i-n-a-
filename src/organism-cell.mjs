@@ -10,10 +10,27 @@ const wholeGeometry = Object.freeze({
   falsification:'antisystem'
 });
 
-const defaultAnti = async ({ evidence = [] } = {}) => ({
-  ok:Array.isArray(evidence) && evidence.length > 0,
-  code:Array.isArray(evidence) && evidence.length > 0 ? 'COUNTEREVIDENCE_CLEAR' : 'NO_EVIDENCE'
-});
+// The falsifier is a concrete evidence gate, not another persona or a claim
+// of subjective experience. Positive evidence cannot cancel a recorded,
+// independently verified counterexample for the exact proposed mutation.
+const defaultAnti = async ({
+  subject,proposal={},evidence=[],lineage=null,verification=null
+}={})=>{
+  if(!Array.isArray(evidence) || evidence.length===0)
+    return {ok:false,code:'NO_EVIDENCE'};
+  const mode=String(verification?.mode||'').toLowerCase();
+  if(verification?.selfCertified===true || ['self-attested','self-asserted','self-certified'].includes(mode))
+    return {ok:false,code:'ANTI_SELF_CERTIFICATION'};
+  const mutationId=String(proposal?.mutation?.id||'');
+  const opposing=(lineage?.forSubject?.(subject)||[]).filter(edge=>
+    edge?.kind==='failure' && edge?.status==='ACCEPTED' &&
+    edge?.epistemic==='verified' && edge?.after?.counterexample &&
+    edge?.after?.targetMutationId===mutationId
+  );
+  if(opposing.length)
+    return {ok:false,code:'ANTI_ACTIVE_COUNTEREXAMPLE',counterevidence:opposing.map(x=>x.id)};
+  return {ok:true,code:'COUNTEREVIDENCE_CLEAR',checkedMutationId:mutationId};
+};
 
 export class OrganismCell {
   constructor({
@@ -138,7 +155,7 @@ export class OrganismCell {
 
     const [dima, anti] = await Promise.all([
       this.miniDima({ subject, proposal:alphaProposal, evidence }),
-      this.anti({ subject, proposal:alphaProposal, evidence, lineage:this.lineage })
+      this.anti({ subject, proposal:alphaProposal, evidence, lineage:this.lineage, verification })
     ]);
 
     if (dima?.verdict !== 'SUPPORTED') {

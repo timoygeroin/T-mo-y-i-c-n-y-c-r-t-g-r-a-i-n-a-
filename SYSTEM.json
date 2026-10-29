@@ -19,7 +19,10 @@
     "delegated_goal_terminal_only_at_verified_effect_or_proven_human_gate",
     "invocation_end_must_preserve_active_task_identity_cursor_and_open_obligations",
     "automation_or_progress_report_cannot_substitute_for_work",
-    "blocked_route_requires_reachable_program_expansion_before_terminal_failure"
+    "blocked_route_requires_reachable_program_expansion_before_terminal_failure",
+    "whole_system_task_requires_material_multi_domain_proof",
+    "verified_counterexample_overrules_positive_self_report",
+    "meta_want_can_know_requires_traceable_effect_proof"
   ],
   "current_policies": [
     "continuation_not_creation",
@@ -124,7 +127,12 @@
     "agency_requires_want_can_know_collapse",
     "preserve_payload_not_vessel",
     "fresh_cell_transfer_self_probes_before_learning",
-    "visual_release_gate_is_executable_and_scoped_not_just_prose"
+    "visual_release_gate_is_executable_and_scoped_not_just_prose",
+    "amplify_exact_user_goal_before_domain_dispatch",
+    "generic_receptor_cannot_close_whole_organism_work",
+    "metacognitive_unknowns_must_not_be_promoted_as_knowledge",
+    "meta_observer_is_evidence_control_not_subjective_consciousness",
+    "anti_falsification_vetoes_self_attested_proofs"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -182,6 +190,7 @@
   },
   "runtime_cycle": [
     "recover",
+    "amplify_task_scope",
     "observe",
     "interocept",
     "allostatic_regulate",
@@ -197,6 +206,7 @@
     "dispatch",
     "candidate_release_veto",
     "verify",
+    "meta_observe",
     "learn",
     "mutate_policy_if_proven",
     "settle_pass"
@@ -660,7 +670,10 @@
       "github_genome",
       "evolution_compiler",
       "autopoiesis_kernel",
-      "wake_receptor"
+      "wake_receptor",
+      "task_amplifier",
+      "meta_observer",
+      "anti_counterexample_gate"
     ]
   },
   "release_state": {
@@ -1383,5 +1396,80 @@
     ],
     "promotion": "LEARNED only after a later independent fresh cell reproduces the relevant behavior without Dima reteaching the rule and survives contradiction/regression checks",
     "failure": "Dima correction of the supposedly inherited rule => FAILED_TRANSFER and governing mechanism repair before prose optimization"
+  },
+  "task_amplification": {
+    "schema": "mondayid.task-amplification.v1",
+    "owner": "ONE_MONDAYID",
+    "entry": "explicit_human_signal",
+    "intent_preservation": "current_user_text_and_desired_effect_unchanged",
+    "source": "src/task-amplifier.mjs",
+    "runtime_seams": [
+      "src/intent-field.mjs",
+      "src/compiler.mjs",
+      "src/planner.mjs",
+      "src/runtime.mjs"
+    ],
+    "domains": [
+      "continuity",
+      "host",
+      "code",
+      "vision",
+      "research",
+      "integration"
+    ],
+    "coverage_limit": "known_runtime_domain_families_not_a_verified_complete_system_inventory",
+    "integration_verification_mode": "external-exact-readback",
+    "tool": "amplify_intent",
+    "tool_access": "PRIVATE_HOST_AUTH_REQUIRED",
+    "auto_intercepts_chatgpt_native": false,
+    "mutates_worldline_on_preflight": false,
+    "forbidden_claims": [
+      "generic_echo_is_system_completion",
+      "one_domain_closes_whole_task",
+      "branch_ci_is_production_deployment"
+    ],
+    "release_requires": [
+      "domain_matched_receptors",
+      "independent_effect_readback",
+      "explicit_integration_proof",
+      "canonical_reentry_validation"
+    ]
+  },
+  "meta_observer": {
+    "schema": "mondayid.meta-observation.v1",
+    "owner": "ONE_MONDAYID",
+    "identity_owner": false,
+    "consciousnessClaim": false,
+    "purpose": "Second-order evidence/claim reconciliation: WANT requested effects, CAN available domain receptors, KNOW verifiable receipts; refuse premature self-certified completion.",
+    "implementation": "src/meta-observer.mjs",
+    "executionBindings": [
+      "src/runtime.mjs",
+      "src/interface.mjs",
+      "src/organism-cell.mjs",
+      "api/mcp.mjs"
+    ],
+    "crossHostTool": "meta_probe",
+    "crossHostScope": "PRIVATE_PREFLIGHT_ONLY_NOT_AUTOMATIC_NATIVE_CHAT_INTERCEPTION",
+    "proofBoundaries": {
+      "wholeSystemReceptor": "specific_domain_receptor",
+      "domainEvidence": "receptor_verify_mode_and_nonempty_evidenceRef",
+      "integration": "external-exact-readback",
+      "falsification": "accepted_verified_counterexample_for_exact_mutation_or_self_attested_evidence",
+      "automatedExternalEffects": false,
+      "rendererInterception": false,
+      "globalHostDeploymentVerified": false
+    },
+    "states": [
+      "TASK_LOCAL",
+      "HOLD",
+      "VERIFIED"
+    ],
+    "laws": [
+      "self_report_is_not_proof",
+      "traceable_receipt_is_not_automatically_real_world_effect",
+      "repeated_failures_must_not_self_promote",
+      "no_vacuous_surface_success",
+      "current_user_intent_outranks_historical_predictions"
+    ]
   }
 }
