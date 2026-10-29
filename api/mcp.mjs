@@ -202,6 +202,7 @@ async function callTool(name, args = {}, req = {}) {
       schema:'mondayid.capability-manifest.runtime.v1',
       workDelivery:describeWorkReadiness(),
       taskAmplification:system.task_amplification || null,
+      metaObserver:system.meta_observer || null,
       capabilityFabric:system.capability_fabric || null,
       multiHostFabric:system.multi_host_fabric || null,
       computerFabric:system.computer_fabric || null,
