@@ -1,0 +1,119 @@
+{
+  "schema": "mondayid.arc3.ul004.public_ab_negative.v1",
+  "date_utc": "2026-10-29",
+  "status": "OFFICIAL_PUBLIC_REGRESSION_REJECT_CANDIDATE",
+  "worldline": {
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "source_head": "857903ce13473ba05a991b5cff8eeec5ae4893f2",
+    "red_commit": "aabf9d2958806adf59f2059a1400db963472fbed",
+    "green_commit": "b7a925dcffedabd6f089d8b88200796536f66066",
+    "workflow_commit": "27305b7a9c4b0545e952ae28d9ea6b2bca5743ec",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "state_json_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7"
+  },
+  "hypotheses": {
+    "H0": "Frozen per-coordinate click feedback is no worse.",
+    "H1": "After at least two same-component visible nonprogress effects, deprioritizing the whole component improves exploratory efficiency at the same action budget.",
+    "H2": "Repeated visible changes on a component can be necessary to advance a level; object-level suppression can regress."
+  },
+  "test_first": {
+    "red_contract_run": 40971846235,
+    "red_job": 123790244792,
+    "red_result": "Expected missing-module import error among 351 tests; inspected exact GitHub Actions job log.",
+    "green_contract_run": 40972072340,
+    "green_job": 123790984628,
+    "green_result": "356/356 PASS; six UL004 candidate contract tests passed."
+  },
+  "official_public": {
+    "runner": "Official ARC-AGI-3 Kaggle Starter Python 3.12 local public game suite",
+    "run": 40972354437,
+    "job": 123791927738,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12939769673,
+    "artifact_zip_sha256": "538183c9a6588dcaef5748ec4edf27eaf989080536c903507cf119884af0f6ae",
+    "games": 25,
+    "configured_action_budget_per_game": 500,
+    "printed_action_rows_per_arm": 12525,
+    "printed_action_rows_per_game": 501,
+    "baseline": {
+      "first_levels_completed": 7,
+      "local_score": 0.5019709375909188
+    },
+    "candidate": {
+      "first_levels_completed": 6,
+      "local_score": 0.3591137947337759
+    },
+    "delta": {
+      "first_levels": -1,
+      "local_score": -0.1428571428571429,
+      "improved_games": [],
+      "regressed_games": [
+        "vc33"
+      ]
+    },
+    "first_level_action_indices": {
+      "tn36": {
+        "baseline": 44,
+        "candidate": 44
+      },
+      "cd82": {
+        "baseline": 43,
+        "candidate": 43
+      },
+      "lf52": {
+        "baseline": 94,
+        "candidate": 94
+      },
+      "vc33": {
+        "baseline": 5,
+        "candidate": null
+      },
+      "m0r0": {
+        "baseline": 420,
+        "candidate": 420
+      },
+      "sp80": {
+        "baseline": 98,
+        "candidate": 98
+      },
+      "r11l": {
+        "baseline": 39,
+        "candidate": 39
+      }
+    },
+    "action_trace": {
+      "same_game_count_rows": 12525,
+      "action_enum_mismatches": 1061,
+      "level_state_mismatches": 496,
+      "action6_enum_rows": {
+        "baseline": 3953,
+        "candidate": 3989
+      },
+      "coordinates_logged": false,
+      "independently_paired_latent_resets": false,
+      "unseen_heldout": false
+    }
+  },
+  "decision": "REJECT_AND_REVERT_ISOLATED_CANDIDATE; NO_POLICY_PROMOTION",
+  "interpretation": [
+    "The component-level nonprogress penalty passed synthetic contracts and changed real public action choices, but lost vc33's first level and reduced local score substantially at equal configured action budget.",
+    "The result supports rejection for this evaluated public cohort; it does not prove general causal attribution because independent latent-state seed pairing is unavailable.",
+    "Prior strict-prior visible-change predictive gains do not justify using visible effects as policy value; this new policy-level negative evidence reinforces that caution."
+  ],
+  "safety": {
+    "official_agent_changed": false,
+    "collector_changed": false,
+    "official_evaluation_schedule_changed": false,
+    "kaggle_submission": false,
+    "hidden_score_claim": false,
+    "spend": false,
+    "credentials": false,
+    "terms_or_legal_decisions": false
+  },
+  "limitations": [
+    "All 25 public games previously seen, not a new held-out cohort.",
+    "ACTION6 coordinates absent in runner's printed action stream, so action-enum comparison is incomplete for physical actions.",
+    "STATE.json prior full rewrite safety-blocked; do not bypass. Canonical C* is the compact continuity checkpoint."
+  ]
+}
