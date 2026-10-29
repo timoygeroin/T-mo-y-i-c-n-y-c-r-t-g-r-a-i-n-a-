@@ -1,7 +1,7 @@
 {
   "schema": "mondayid.arc-agi3.official-public-log-causal-audit.v1",
   "date_utc": "2026-10-29",
-  "status": "VERIFIED_LOG_ANALYSIS_NOT_GAMEPLAY_GAIN",
+  "status": "VERIFIED_PUBLIC_LOG_ANALYSIS_AND_500_STEP_ZERO_DELTA_NO_POLICY_GAIN",
   "provenance": {
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
     "pr": 196,
@@ -78,5 +78,35 @@
     "No held-out unseen game proof; these public games were previously evaluated.",
     "No changes to competition agent, policy, collector, official evaluation schedule, Kaggle submission, terms or spending.",
     "No same-budget positive policy gain."
-  ]
+  ],
+  "same_budget_click_feedback_500": {
+    "status": "REJECTED_ZERO_DELTA_NO_POLICY_PROMOTION",
+    "hypotheses": {
+      "H0": "One-shot replay of previously level-advancing ACTION6 click and strict click feedback do not improve first levels at 500-action cap.",
+      "H1": "Those changes improve public first levels or score at identical 500-action cap."
+    },
+    "run": 40917025699,
+    "job": 123599890257,
+    "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40917025699",
+    "official_public_python": "3.12",
+    "games": 25,
+    "steps_parameter": 500,
+    "recorded_actions_per_game": 501,
+    "baseline_completed_levels": 7,
+    "candidate_completed_levels": 7,
+    "baseline_local_score": 0.5019709375909188,
+    "candidate_local_score": 0.5019709375909188,
+    "local_score_delta": 0,
+    "improved_games": [],
+    "regressed_games": [],
+    "seed_pairing_verified": false,
+    "printed_action_type_count_level_records_per_arm": 12381,
+    "printed_action_sequence_divergent_games": [],
+    "candidate_agent_blob": "d9fe6acc42a4e6511826645101800e6d2ddb70db",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "workflow_experiment_commit": "bfb25b5c38392b4eda1c1089f0e37bf9f302e662",
+    "workflow_restored_commit": "b72afd46a22e65c2bbeb86e5bd8eb263d22d7859",
+    "workflow_restored_blob": "ae4ddcedddcee3de7c53425d3a0f29eab603ea76",
+    "caution": "Same printed action-type/count/level trace is not proof of identical click coordinates or hidden game state. Single sequential A/B not independently paired seeds; zero public score/level gain."
+  }
 }
