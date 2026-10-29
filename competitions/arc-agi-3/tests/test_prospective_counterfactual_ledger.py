@@ -453,5 +453,32 @@ class ProspectiveLedgerTests(unittest.TestCase):
         self.assertFalse(missed_control["causal_effect_proven"])
 
 
+    def test_canonical_episode_identifiers_prevent_whitespace_aliases(self):
+        # Whitespace-padded identifiers can relabel one observed episode as
+        # multiple independent trials. Reject them before sealing/scoring.
+        from prospective_counterfactual_ledger import audit_trial_registry
+
+        first = seal_trial(plan())
+        aliased = plan()
+        aliased["episode"] = " treatment-episode"
+        aliased["control_episode"] = "control-episode-2"
+        with self.assertRaises(ValueError):
+            audit_trial_registry([first, seal_trial(aliased)])
+
+        for field in ("game", "episode", "control_episode"):
+            p = plan()
+            p[field] = p[field] + " "
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                seal_trial(p)
+
+        for field in ("game", "episode"):
+            row = outcome("ACTION3", "treatment-episode", scene(11))
+            row[field] = "\t" + row[field]
+            with self.subTest(outcome_field=field), self.assertRaises(ValueError):
+                evaluate_pair(first, row,
+                              outcome("ACTION4", "control-episode", scene(10)))
+
+
+
 if __name__ == "__main__":
     unittest.main()
