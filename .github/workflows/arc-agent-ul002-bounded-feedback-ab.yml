@@ -1,0 +1,122 @@
+# UL-002 preregistration before gameplay:
+# H0: frozen click reinforcement is no worse at the same 500-action budget.
+# H1: penalizing >2 same-coordinate visible responses saves actions by avoiding
+#     non-progressing feedback loops, with more/equal first levels and score.
+# H2: repeated clicks are necessary for progress; candidate regresses.
+# Predictions: differences only after a point accumulates 3 observed responses;
+# prior to that, frozen and candidate select the same click given same history.
+# Competing physical outcomes: no visible change / visible non-level change /
+# level advancement. Log exact pre-action click coordinate and next observed
+# delta; no claim of matched latent reset seeds, held-out games or hidden score.
+name: ARC-AGI-3 UL-002 bounded-feedback official public A-B
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/click_bounded_feedback_variant.py'
+      - 'competitions/arc-agi-3/tests/test_click_bounded_feedback_candidate.py'
+      - '.github/workflows/arc-agent-ul002-bounded-feedback-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify focused test-first behavior
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_click_bounded_feedback_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official ARC-AGI-3 public starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Setup official public Python 3.12 runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Prepare frozen and candidate with identical read-only trace instrumentation
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, 'competitions/arc-agi-3/tools')
+          from click_bounded_feedback_variant import generate
+          frozen = Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          candidate = generate(frozen)
+          click_anchor = '        return x,y\n'
+          click_trace = (
+              "        print('UL002_CLICK', self.game_id, self._steps, key[0], x, y, "
+              "self._click_successes[(key[0],x,y)], flush=True)\n"
+          )
+          result_anchor = '        delta = self._delta(self._last_grids, grids)\n'
+          result_trace = (
+              "        if self._last_move == 'ACTION6' and self._last_position is not None:\n"
+              "            print('UL002_RESULT', self.game_id, self._steps, previous[0], "
+              "self._last_position[0], self._last_position[1], int(progressed), delta, flush=True)\n"
+          )
+          for label, src in (('frozen', frozen), ('candidate', candidate)):
+              assert src.count(click_anchor) == 1
+              assert src.count(result_anchor) == 1
+              traced = src.replace(click_anchor, click_trace + click_anchor, 1)
+              traced = traced.replace(result_anchor, result_anchor + result_trace, 1)
+              compile(traced, '<ul002-'+label+'>', 'exec')
+              Path('ul002-'+label+'-traced.py').write_text(traced)
+          assert frozen != candidate
+          PY
+      - name: FROZEN original agent 25 public games, STEPS 500
+        run: |
+          set -o pipefail
+          cp ul002-frozen-traced.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee ul002-frozen.log
+      - name: UL-002 isolated candidate 25 public games, STEPS 500
+        run: |
+          set -o pipefail
+          cp ul002-candidate-traced.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee ul002-candidate.log
+      - name: Compare official public scorecards and action costs without promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py ul002-frozen.log ul002-candidate.log --output ul002-ab.json | tee ul002-ab-summary.log
+      - name: Read back pre-action coordinates and observed outcomes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, re, hashlib
+          result = {}
+          for arm in ('frozen','candidate'):
+              raw = Path('ul002-'+arm+'.log').read_text()
+              clicks = re.findall(r'^UL002_CLICK (\S+) (\d+) (\d+) (\d+) (\d+) (\d+)\s*$', raw, re.M)
+              outcomes = re.findall(r'^UL002_RESULT (\S+) (\d+) (\d+) (\d+) (\d+) ([01]) (\d+)\s*$', raw, re.M)
+              if not clicks or not outcomes:
+                  raise RuntimeError('public runner did not expose action-level trace for '+arm)
+              result[arm] = {
+                  'sha256_log': hashlib.sha256(raw.encode()).hexdigest(),
+                  'clicks_logged': len(clicks),
+                  'clicks_after_3_prior_responses': sum(int(x[5]) >= 3 for x in clicks),
+                  'click_level_advances_observed': sum(int(x[5]) for x in outcomes),
+                  'unique_game_ids': len(set(x[0] for x in clicks)),
+                  'pre_action_coordinates_logged': True,
+                  'post_action_visible_delta_logged': True,
+                  'latent_seed_pairing_verified': False,
+              }
+          Path('ul002-trace-summary.json').write_text(json.dumps(result, indent=2, sort_keys=True)+'\n')
+          print(json.dumps(result, indent=2, sort_keys=True))
+          PY
+      - name: Preserve original action traces and scorecards
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ul002-bounded-feedback-official-public-ab
+          path: |
+            ul002-frozen-traced.py
+            ul002-candidate-traced.py
+            ul002-frozen.log
+            ul002-candidate.log
+            ul002-ab.json
+            ul002-ab-summary.log
+            ul002-trace-summary.json
+          if-no-files-found: ignore
