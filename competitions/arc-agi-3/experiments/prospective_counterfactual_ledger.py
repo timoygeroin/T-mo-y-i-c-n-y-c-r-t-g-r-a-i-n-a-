@@ -315,3 +315,46 @@ def audit_trial_registry(sealed_trials):
                 interpretation="REGISTRY_INTEGRITY_ONLY",
                 chronology_authenticated=False,
                 independent_public_episodes_authenticated=False)
+
+
+def evaluate_trial_registry(rows):
+    """Aggregate two-arm world evidence only after registry-wide integrity audit.
+
+    Reject any reused treatment/control episode or invalid matched outcome
+    before counting. Statuses are observational, not independent evidence of
+    pre-action chronology, matched latent resets, causality, or policy gain.
+    This pure helper never executes gameplay or modifies the contest agent.
+    """
+    if not isinstance(rows, (list, tuple)):
+        raise ValueError("scored registry must be a sequence")
+    if any(not isinstance(row, dict) or
+           set(row) != {"sealed", "treatment", "control"} for row in rows):
+        raise ValueError("invalid scored registry row")
+    registry = audit_trial_registry([row["sealed"] for row in rows])
+    # Evaluate every row before returning any aggregate: no partial counts
+    # from a cherry-picked subset of otherwise invalid observations.
+    evaluated = [evaluate_pair(row["sealed"], row["treatment"], row["control"])
+                 for row in rows]
+    statuses = ("CONSISTENT", "OPPOSING", "NON_DISCRIMINATING", "NEITHER")
+    pair_names = [f"{left}|{right}" for i, left in enumerate(WORLDS)
+                  for right in WORLDS[i + 1:]]
+    status_counts = {pair: {status: 0 for status in statuses}
+                     for pair in pair_names}
+    winner_counts = {pair: {world: 0 for world in pair.split("|")}
+                     for pair in pair_names}
+    for result in evaluated:
+        for pair in pair_names:
+            evidence = result["pairwise_two_arm_evidence"][pair]
+            status_counts[pair][evidence["status"]] += 1
+            if evidence["status"] == "CONSISTENT":
+                winner_counts[pair][evidence["winner"]] += 1
+    return dict(protocol=PROTOCOL,
+                trial_count=registry["trial_count"],
+                distinct_episodes=registry["distinct_episodes"],
+                pairwise_status_counts=status_counts,
+                consistent_winner_counts=winner_counts,
+                interpretation="REGISTRY_OBSERVATIONAL_TWO_ARM_ONLY",
+                chronology_authenticated=False,
+                independent_public_episodes_authenticated=False,
+                causal_effect_proven=False,
+                effect_on_agent="NONE_SHADOW_ONLY")
