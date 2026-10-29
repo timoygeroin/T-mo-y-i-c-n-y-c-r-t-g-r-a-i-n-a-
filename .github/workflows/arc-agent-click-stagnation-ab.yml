@@ -31,12 +31,23 @@ jobs:
       - name: FROZEN original 25 public games 2000 steps (temporary budget-robustness probe)
         run: |
           set -o pipefail
-          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          # The official runner clamps to MyAgent.MAX_ACTIONS=500, so STEPS=2000
+          # alone is NOT a valid 2000-action experiment. Change only the
+          # cap in an isolated temporary copy, identically for both arms.
+          python - <<'PY'
+          from pathlib import Path
+          src = Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          assert src.count('    MAX_ACTIONS = 500') == 1
+          extended = src.replace('    MAX_ACTIONS = 500', '    MAX_ACTIONS = 2000')
+          compile(extended, '<frozen-cap2000>', 'exec')
+          Path('arc-stagnation-frozen-cap2000.py').write_text(extended)
+          Path('arc-starter/agent/my_agent.py').write_text(extended)
+          PY
           (cd arc-starter && make play-local STEPS=2000) | tee arc-stagnation-frozen.log
       - name: Click-only stagnation gate 25 public games 2000 steps (temporary budget-robustness probe)
         run: |
           set -o pipefail
-          python competitions/arc-agi-3/tools/click_stagnation_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          python competitions/arc-agi-3/tools/click_stagnation_variant.py --source arc-stagnation-frozen-cap2000.py --output arc-starter/agent/my_agent.py
           (cd arc-starter && make play-local STEPS=2000) | tee arc-stagnation-candidate.log
       - name: Compare complete public scorecards, never auto-promote
         run: |
@@ -48,6 +59,7 @@ jobs:
         with:
           name: arc-stagnation-public-ab
           path: |
+            arc-stagnation-frozen-cap2000.py
             arc-stagnation-frozen.log
             arc-stagnation-candidate.log
             arc-stagnation-ab.json
