@@ -418,5 +418,30 @@ class ProspectiveLedgerTests(unittest.TestCase):
             evaluate_trial_registry([dict(rows[0], unexpected="outcome")])
 
 
+    def test_nondiscriminating_arm_cannot_mask_missed_world_forecasts(self):
+        # Equal forecasts that both miss the observed scene are falsified,
+        # not merely nondiscriminating. A miss on either arm dominates.
+        p = plan()
+        key = "H0_static|H1_absolute"
+        sealed = seal_trial(p)
+        treatment_hit = outcome("ACTION3", "treatment-episode", scene(11))
+        control_miss = outcome("ACTION4", "control-episode", scene(12))
+        missed_control = evaluate_pair(sealed, treatment_hit, control_miss)
+        self.assertEqual(
+            missed_control["pairwise_observed_winner_by_arm"][key]["control"],
+            "NEITHER")
+        self.assertEqual(
+            missed_control["pairwise_two_arm_evidence"][key],
+            {"status": "NEITHER", "winner": None})
+
+        treatment_miss = outcome("ACTION3", "treatment-episode", scene(12))
+        control_static = outcome("ACTION4", "control-episode", scene(10))
+        missed_treatment = evaluate_pair(sealed, treatment_miss, control_static)
+        self.assertEqual(
+            missed_treatment["pairwise_two_arm_evidence"][key],
+            {"status": "NEITHER", "winner": None})
+        self.assertFalse(missed_control["causal_effect_proven"])
+
+
 if __name__ == "__main__":
     unittest.main()
