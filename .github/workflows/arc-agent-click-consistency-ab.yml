@@ -1,4 +1,4 @@
-name: ARC-AGI-3 isolated click-feedback public A-B
+name: ARC-AGI-3 isolated click-feedback public A-B 500-step diagnostic
 on:
   pull_request:
     paths:
@@ -28,16 +28,16 @@ jobs:
       - name: Install official public game runner
         working-directory: arc-starter
         run: make setup PYTHON=python3.12
-      - name: FROZEN original agent 25 games 120 actions each
+      - name: FROZEN original agent 25 games 500 actions each
         run: |
           set -o pipefail
           cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=120) | tee arc-click-baseline.log
+          (cd arc-starter && make play-local STEPS=500) | tee arc-click-baseline.log
       - name: ISOLATED click consistency candidate 25 games 120 actions each
         run: |
           set -o pipefail
           cp competitions/arc-agi-3/agent/candidate_click_consistency.py arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=120) | tee arc-click-candidate.log
+          (cd arc-starter && make play-local STEPS=500) | tee arc-click-candidate.log
       - name: Evaluate outcome deltas and negative evidence without auto-promotion
         run: |
           set -o pipefail
