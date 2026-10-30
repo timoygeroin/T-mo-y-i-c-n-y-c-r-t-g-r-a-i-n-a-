@@ -1,0 +1,164 @@
+{
+  "schema": "mondayid.arc3.alternative_action_visible_outcome_audit.v1",
+  "date_utc": "2026-10-30",
+  "status": "RETROSPECTIVE_OFFICIAL_PUBLIC_TRACE_DIAGNOSTIC_NO_POLICY_PROMOTION",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "pr": 196,
+  "branch": "monday/arc-agi3-offline-agent-20261026",
+  "source_exact_head": "1f24974fea448e60481b3623f20d492872df03c0",
+  "source_exact_head_ci": "11/11 completed SUCCESS",
+  "frozen_agent_blob_sha": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "state_json_blob_sha": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+  "source": {
+    "official_public_engine": "ARC-AGI-3 Python 3.12 public starter",
+    "workflow_run": 40996189172,
+    "job_id": 123869752891,
+    "artifact_id": 12952100906,
+    "artifact_zip_sha256": "6a58e979497a108985e5ad244baf9c2827ca4821c4e3d5f4fb4536171005c56a",
+    "games": 25,
+    "configured_action_cap_per_arm": 2000,
+    "arm_preaction_rows": {
+      "frozen": 49399,
+      "gate96": 49384,
+      "gate128": 49383
+    },
+    "log_record_format": "ARC_PREACT game=... step=... level=... state=... action=... x=... y=... predicted_progress=...",
+    "source_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40996189172"
+  },
+  "method": {
+    "study_type": "post-hoc observational paired visible-state/action contrast; NOT a preregistered causal intervention or independent held-out trial",
+    "pair_key": "same public game id and same pre-action step index, with exactly equal visible state hash and observed level",
+    "different_action": "different action enum or different physical ACTION6 x,y",
+    "outcome": "next logged pre-action state hash and level at step+1 within same arm/game",
+    "identical_action_control": "same physical action and same visible prestate, compare next logged observation across arms",
+    "categories": [
+      "both next states equal previous visible state and level",
+      "both next states identical but differ from previous",
+      "next observations differ across arms"
+    ],
+    "censoring": "exclude a pair when either arm has no next pre-action row",
+    "interpretation_limit": "equal visible hashes and steps do not establish equal latent game states, randomized resets, or independent causal assignment; same public games repeatedly used",
+    "reproduction": "parse job log by frozen/gate96/gate128 arm boundaries; index ARC_PREACT by (game,step); pair rows with equal level+state; compare exact physical actions; use step+1 as observed next state; independently recomputed with two parsers"
+  },
+  "comparisons": {
+    "frozen_vs_gate96": {
+      "paired_rows": 49384,
+      "matched_visible_prestates": 45067,
+      "same_physical_action_with_next": 43747,
+      "same_action_next_observation_conflicts": 0,
+      "different_actions": 1298,
+      "different_actions_with_next": 1297,
+      "censored": 1,
+      "both_next_static": 1203,
+      "both_next_same_changed": 1,
+      "different_next_observation": 93,
+      "any_immediate_level_progress": 0,
+      "discordant_immediate_progress": 0,
+      "by_game": {
+        "lp85": {
+          "different_actions_with_next": 1031,
+          "different_next_observation": 22
+        },
+        "s5i5": {
+          "different_actions_with_next": 263,
+          "different_next_observation": 68
+        },
+        "ft09": {
+          "different_actions_with_next": 3,
+          "different_next_observation": 3
+        }
+      }
+    },
+    "frozen_vs_gate128": {
+      "paired_rows": 49383,
+      "matched_visible_prestates": 44896,
+      "same_physical_action_with_next": 43819,
+      "same_action_next_observation_conflicts": 0,
+      "different_actions": 1055,
+      "different_actions_with_next": 1054,
+      "censored": 1,
+      "both_next_static": 952,
+      "both_next_same_changed": 2,
+      "different_next_observation": 100,
+      "any_immediate_level_progress": 0,
+      "discordant_immediate_progress": 0,
+      "by_game": {
+        "lp85": {
+          "different_actions_with_next": 833,
+          "different_next_observation": 21
+        },
+        "s5i5": {
+          "different_actions_with_next": 184,
+          "different_next_observation": 72
+        },
+        "ft09": {
+          "different_actions_with_next": 37,
+          "different_next_observation": 7
+        }
+      }
+    },
+    "gate96_vs_gate128": {
+      "paired_rows": 49383,
+      "matched_visible_prestates": 46433,
+      "same_physical_action_with_next": 44611,
+      "same_action_next_observation_conflicts": 0,
+      "different_actions": 1800,
+      "different_actions_with_next": 1799,
+      "censored": 1,
+      "both_next_static": 1619,
+      "both_next_same_changed": 3,
+      "different_next_observation": 177,
+      "any_immediate_level_progress": 0,
+      "discordant_immediate_progress": 0,
+      "by_game": {
+        "lp85": {
+          "different_actions_with_next": 840,
+          "different_next_observation": 8
+        },
+        "ft09": {
+          "different_actions_with_next": 663,
+          "different_next_observation": 105
+        },
+        "s5i5": {
+          "different_actions_with_next": 296,
+          "different_next_observation": 64
+        }
+      }
+    }
+  },
+  "official_public_performance_from_source": {
+    "frozen": {
+      "first_levels": 10,
+      "local_score": 0.5024346195754061
+    },
+    "gate96": {
+      "first_levels": 10,
+      "local_score": 0.5059495010482379
+    },
+    "gate128": {
+      "first_levels": 10,
+      "local_score": 0.5058498479030465
+    },
+    "level_regressions": 0,
+    "action_cost_regression": {
+      "game": "lp85",
+      "gate96_later_than_frozen_steps": 454
+    }
+  },
+  "conclusions": [
+    "Of 1297 valid same-visible-prestate different-action pairs frozen vs gate96, 1203 were both next-state static, 1 was same changed next state, 93 differed. No immediate level progress was observed in either arm for those different-action pairs.",
+    "Equal physical actions had zero next-visible-observation conflicts in 43747 matched controls, consistent with reproducible public trajectories, not proof of latent equivalence.",
+    "One-step visual change alone has no demonstrated positive predictive value for level progress in this contrast; delayed sequence-dependent effects remain possible.",
+    "No independent held-out games or effective randomized reset diversity, no policy promotion."
+  ],
+  "controls": {
+    "agent_unchanged": true,
+    "official_schedule_unchanged": true,
+    "collector_unchanged": true,
+    "STATE_json_not_rewritten_due_prior_safety_block": true,
+    "hidden_kaggle_score": "UNKNOWN",
+    "kaggle_submission": "NONE",
+    "spend": 0,
+    "legal_licensing_publication": "NO_ACTION"
+  }
+}

@@ -1,0 +1,144 @@
+name: ARC-AGI-3 frozen remaining public replication
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/experiments/remaining_public_sample.py'
+      - 'competitions/arc-agi-3/experiments/cross_game_transfer_audit.py'
+      - 'competitions/arc-agi-3/experiments/relative_geometry_transfer_audit.py'
+      - 'competitions/arc-agi-3/experiments/relative_support_diagnostics.py'
+      - 'competitions/arc-agi-3/experiments/relative_nonunit_transfer_audit.py'
+      - 'competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py'
+      - 'competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py'
+      - 'competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py'
+      - 'competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py'
+      - 'competitions/arc-agi-3/experiments/projected_donor_consensus_diagnostic.py'
+      - 'competitions/arc-agi-3/experiments/conditional_world_conflict_audit.py'
+      - 'competitions/arc-agi-3/experiments/history_conditioned_conflicts.py'
+      - 'competitions/arc-agi-3/experiments/relational_world_factorization.py'
+      - 'competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py'
+      - 'competitions/arc-agi-3/tests/test_relational_world_factorization.py'
+      - 'competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py'
+      - 'competitions/arc-agi-3/tests/test_history_conditioned_conflicts.py'
+      - 'competitions/arc-agi-3/tests/test_projected_donor_consensus_diagnostic.py'
+      - 'competitions/arc-agi-3/tests/test_conditional_world_conflict_audit.py'
+      - 'competitions/arc-agi-3/tests/test_action_role_counterfactual_audit.py'
+      - 'competitions/arc-agi-3/tests/test_unranked_donor_veto.py'
+      - 'competitions/arc-agi-3/tests/test_nonunit_veto_diagnostics.py'
+      - 'competitions/arc-agi-3/tests/test_relative_area_rank_transfer_audit.py'
+      - 'competitions/arc-agi-3/tests/test_relative_support_diagnostics.py'
+      - 'competitions/arc-agi-3/tests/test_relative_nonunit_transfer_audit.py'
+      - 'competitions/arc-agi-3/tests/test_relative_geometry_transfer_audit.py'
+      - 'competitions/arc-agi-3/tests/test_cross_game_transfer_audit.py'
+      - 'competitions/arc-agi-3/tests/test_remaining_public_sample.py'
+      - 'competitions/arc-agi-3/scripts/inspect_public_games.py'
+      - '.github/workflows/arc-agent-remaining-public.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shadow-replication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run frozen protocol contract before public observations
+        working-directory: competitions/arc-agi-3
+        run: python -m unittest discover -s tests -p test_remaining_public_sample.py -v
+      - name: Verify three-world probe gate contracts before PUBLIC observations
+        working-directory: competitions/arc-agi-3
+        run: python -m unittest discover -s tests -p test_counterfactual_probe_readiness.py -v
+      - name: Fetch official ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official ARC offline environment
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Install unchanged MondayID agent into starter
+        run: cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+      - name: Collect exactly the nine frozen PUBLIC games (96 actions each max)
+        run: |
+          set -o pipefail
+          MONDAYID_ARC_PUBLIC_SAMPLE=remaining arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-remaining-public-diagnostics.log
+      - name: Score prequential counterfactual controls by game (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/remaining_public_sample.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-evaluation.json
+          sha256sum arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-trace.sha256
+      - name: Falsify cross-game causal-transfer hypotheses (leave-one-game-out shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/cross_game_transfer_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-cross-game.json
+      - name: Falsify relative-geometry transfer hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relative_geometry_transfer_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relative-geometry.json
+      - name: Diagnose relative role and donor veto ladder (read-only PUBLIC trace)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relative_support_diagnostics.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relative-support.json
+      - name: Compare cardinal nonunit versus strict unit relative donors (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relative_nonunit_transfer_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relative-nonunit.json
+      - name: Diagnose nonunit role, action and donor-consensus vetoes (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-nonunit-veto.json
+      - name: Falsify area-rank-only relaxed donor hypothesis (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-area-rank.json
+      - name: Attribute unranked donor vetoes without relaxing gates (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-unranked-veto.json
+      - name: Test projected action-versus-role world hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-action-role-counterfactual.json
+      - name: Partition projected donor consensus vetoes (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/projected_donor_consensus_diagnostic.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-projected-consensus.json
+      - name: Test observable geometry-conditioned donor conflict hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/conditional_world_conflict_audit.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-conditional-conflicts.json
+      - name: Test previous-action and prior-scene-change donor hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/history_conditioned_conflicts.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-history-conflicts.json
+      - name: Compare absolute and anchor-relative causal world forecasts (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/relational_world_factorization.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-relational-worlds.json
+      - name: Audit pre-action three-world disagreement and witnessed reversal gate (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py arc-agi3-remaining-public-transition-traces.jsonl | tee arc-agi3-remaining-public-probe-readiness.json
+      - name: Preserve public-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-agi3-remaining-public-shadow
+          path: |
+            arc-agi3-remaining-public-diagnostics.log
+            arc-agi3-remaining-public-transition-traces.jsonl
+            arc-agi3-remaining-public-evaluation.json
+            arc-agi3-remaining-public-cross-game.json
+            arc-agi3-remaining-public-relative-geometry.json
+            arc-agi3-remaining-public-relative-support.json
+            arc-agi3-remaining-public-relative-nonunit.json
+            arc-agi3-remaining-public-nonunit-veto.json
+            arc-agi3-remaining-public-area-rank.json
+            arc-agi3-remaining-public-unranked-veto.json
+            arc-agi3-remaining-public-action-role-counterfactual.json
+            arc-agi3-remaining-public-projected-consensus.json
+            arc-agi3-remaining-public-conditional-conflicts.json
+            arc-agi3-remaining-public-history-conflicts.json
+            arc-agi3-remaining-public-relational-worlds.json
+            arc-agi3-remaining-public-probe-readiness.json
+            arc-agi3-remaining-public-trace.sha256
+          if-no-files-found: ignore

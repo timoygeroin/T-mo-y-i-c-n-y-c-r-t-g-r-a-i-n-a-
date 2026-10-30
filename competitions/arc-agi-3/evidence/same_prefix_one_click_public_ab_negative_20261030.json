@@ -1,0 +1,144 @@
+{
+  "schema": "mondayid.arc3.same_prefix_one_click_public_ab_negative.v1",
+  "date_utc": "2026-10-30",
+  "worldline": {
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "source_head": "4783d1d7cb1233c76fc039162a20987a26182118",
+    "red_head": "0a8f033cf8227b632b8b6d1fe3ccddebc6f2dd96",
+    "green_head": "1524110169d5ad7bac0d153c6e1e2d0c636480d3"
+  },
+  "status": "OFFICIAL_PUBLIC_MATCHED_VISIBLE_PREFIX_CAUSAL_PROBE_NULL_REVERTED",
+  "hypotheses": {
+    "H0": "Changing one physical click after identical observed prefix has no next-visible effect and no level advantage",
+    "H1": "A nearest different-color salient target changes the next observation and improves progress by 500-action cap",
+    "H2": "The alternative changes next observation without level benefit, or regresses"
+  },
+  "preregistered_protocol": {
+    "engine": "Official ARC-AGI-3 Kaggle Starter, Python 3.12",
+    "games": 25,
+    "configured_max_actions_each_arm": 500,
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "policy": "Only first ACTION6 in level 0, legal action set exactly ACTION6, steps 96..160; replace exactly one physical click with nearest different-color salient target (fallback nearest distinct), otherwise frozen policy",
+    "matched_prefix": "Initial visible SHA256 and all physical actions plus full visible frame SHA256 and level before fork match per game; not authenticated latent-state reset pairing",
+    "preaction_rows_per_arm": 12381,
+    "held_out_games": false,
+    "public_games_reused": true
+  },
+  "test_first": {
+    "red": {
+      "commit": "0a8f033cf8227b632b8b6d1fe3ccddebc6f2dd96",
+      "run": 41007472432,
+      "expected_failure": "ModuleNotFoundError: paired_click_fork",
+      "tests_discovered": 351
+    },
+    "green": {
+      "commit": "1524110169d5ad7bac0d153c6e1e2d0c636480d3",
+      "run": 41007729454,
+      "conclusion": "SUCCESS",
+      "tests": "357/357 PASS"
+    }
+  },
+  "public_run": {
+    "workflow_run": 41007729541,
+    "job_id": 123906322940,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12956735758,
+    "artifact_zip_sha256": "024854ca26c0f3008a3384d51509350fcb6b3ef13a99e0eb597bcba32156cbfc",
+    "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/41007729541"
+  },
+  "performance": {
+    "frozen": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "one_click_candidate": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "level_delta": 0,
+    "local_score_delta": 0,
+    "improved_games": [],
+    "regressed_games": [],
+    "first_level_preaction_step_unchanged": {
+      "cd82": 45,
+      "lf52": 96,
+      "m0r0": 420,
+      "r11l": 41,
+      "sp80": 97,
+      "tn36": 46,
+      "vc33": 7
+    },
+    "forked_games": 3,
+    "matched_prefix_valid_games": 25,
+    "next_visible_divergent_forks": 2,
+    "fork_details": {
+      "ft09": {
+        "fork_step": 96,
+        "baseline_click": [
+          54,
+          54
+        ],
+        "candidate_click": [
+          60,
+          59
+        ],
+        "next_visible_diverged": true,
+        "divergent_postfork_visible_steps": 8,
+        "last_divergent_step": 113,
+        "different_physical_actions_after_including_fork": 44,
+        "first_level_both": null
+      },
+      "s5i5": {
+        "fork_step": 96,
+        "baseline_click": [
+          52,
+          27
+        ],
+        "candidate_click": [
+          46,
+          21
+        ],
+        "next_visible_diverged": true,
+        "divergent_postfork_visible_steps": 296,
+        "last_divergent_step": 492,
+        "different_physical_actions_after_including_fork": 386,
+        "first_level_both": null
+      },
+      "lp85": {
+        "fork_step": 96,
+        "baseline_click": [
+          16,
+          23
+        ],
+        "candidate_click": [
+          19,
+          20
+        ],
+        "next_visible_diverged": false,
+        "divergent_postfork_visible_steps": 0,
+        "different_physical_actions_after_including_fork": 22,
+        "first_level_both": null
+      }
+    }
+  },
+  "interpretation": "One-click interventions produce real immediate and delayed visible trajectory differences in two of three eligible click-only public games but zero first-level gains, zero local-score gain and no first-level action-cost change. H1 gameplay benefit not observed; H2 observational/no-benefit alternative supported in this cohort. Visible effects are not validated as a progress proxy.",
+  "disposition": "REJECT_ONE_CLICK_CANDIDATE_REMOVE_TEMP_SCRIPT_TEST_WORKFLOW_RETAIN_NEGATIVE_EVIDENCE",
+  "limitations": [
+    "All 25 public games have been repeatedly inspected and cannot establish unseen generalization",
+    "Identical visible states and full action prefixes do not independently authenticate identical latent reset state",
+    "Single intervention per game at one precommitted step window is not a full learned policy and has only three eligible games",
+    "No Kaggle hidden score or Phase-B submission; local public score only",
+    "STATE.json remains unchanged due preexisting safety-blocked full rewrite; do not bypass"
+  ],
+  "controls": {
+    "contest_agent_unchanged": true,
+    "official_evaluation_schedule_unchanged": true,
+    "collector_unchanged": true,
+    "kaggle_submission": false,
+    "spend": 0,
+    "tokens_exposed": false,
+    "terms_accepted_by_agent": false,
+    "legal_or_publication_decision": false
+  }
+}
