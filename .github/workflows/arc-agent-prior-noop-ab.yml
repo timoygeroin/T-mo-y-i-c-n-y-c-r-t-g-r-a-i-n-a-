@@ -41,13 +41,13 @@ jobs:
         run: |
           set -o pipefail
           cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=500) | tee arc-prior-noop-frozen.log
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-prior-noop-frozen.log
       - name: ISOLATED strict-prior soft no-op candidate same 25 games and budget
         run: |
           set -o pipefail
           python competitions/arc-agi-3/tools/prior_noop_penalty_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
           python -m py_compile arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=500) | tee arc-prior-noop-candidate.log
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-prior-noop-candidate.log
       - name: Compare paired public games and action costs without auto-promotion
         run: |
           set -o pipefail
