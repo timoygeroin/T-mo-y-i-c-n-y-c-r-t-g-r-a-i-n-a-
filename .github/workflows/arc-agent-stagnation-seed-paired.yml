@@ -49,7 +49,7 @@ jobs:
           script = script.replace(needle, replacement, 1)
           needle2 = '        agent.main()\n'
           assert script.count(needle2) == 1
-          instrument = '\\n'.join([
+          instrument = '\n'.join([
               "        agent.main()",
               "        first = next((f for f in agent.frames if getattr(f, 'frame', None)), None)",
               "        if first is None:",
@@ -58,7 +58,7 @@ jobs:
               "        init_sha = hashlib.sha256(repr(first.frame).encode()).hexdigest()",
               "        seed_value = __import__('os').environ['MONDAY_ARC_SEED']",
               "        print(f'MONDAY_SEED_INIT seed={seed_value} game={game_id} sha256={init_sha}', flush=True)",
-          ]) + '\\n'
+          ]) + '\n'
           script = script.replace(needle2, instrument, 1)
           compile(script, '<official-starter-seed-instrumentation>', 'exec')
           script_path.write_text(script)
