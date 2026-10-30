@@ -4,6 +4,8 @@ on:
     paths:
       - '.github/workflows/arc-agent-notebook-draft.yml'
       - 'competitions/arc-agi-3/agent/my_agent.py'
+      - 'competitions/arc-agi-3/tools/harden_notebook_draft.py'
+      - 'competitions/arc-agi-3/tests/test_harden_notebook_draft.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +27,10 @@ jobs:
         run: |
           cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
           (cd arc-starter && make notebook)
+      - name: Guard notebook shell commands and run failure tests
+        run: |
+          python -m unittest discover -s competitions/arc-agi-3/tests -p test_harden_notebook_draft.py -v
+          python competitions/arc-agi-3/tools/harden_notebook_draft.py arc-starter/notebooks/submission.ipynb
       - name: Validate notebook provenance and offline configuration
         run: |
           python - <<'PY'
@@ -38,6 +44,8 @@ jobs:
           assert agent in code, 'frozen agent absent from generated notebook'
           assert len(nb['cells'])==5
           assert nb['metadata']['kaggle']['isInternetEnabled'] is False
+          assert nb['metadata'].get('mondayid_fail_fast_shell_v1') is True
+          assert all('check=True' in nb['cells'][i]['source'] for i in (1, 3))
           assert meta['enable_internet'] is False
           assert meta['id'].startswith('REPLACE_WITH_YOUR_USERNAME/'), 'must not upload with an invented user handle'
           assert 'KAGGLE_IS_COMPETITION_RERUN' in code
