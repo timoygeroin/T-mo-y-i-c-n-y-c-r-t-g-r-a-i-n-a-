@@ -1,0 +1,147 @@
+name: ARC-AGI-3 isolated stagnation threshold robustness (research only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-agent-stagnation-threshold-robustness.yml'
+permissions:
+  contents: read
+jobs:
+  public_threshold_robustness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Contract-first frozen and existing candidate checks
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_click_stagnation_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Precommit and guard exact policy variants before outcomes
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys, types
+          from pathlib import Path
+          sys.path.insert(0, 'competitions/arc-agi-3/tools')
+          sys.path.insert(0, 'competitions/arc-agi-3/tests')
+          from click_stagnation_variant import generate
+          from test_agent import FrameData, GameAction
+          source = Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          assert source.count('    MAX_ACTIONS = 500') == 1
+          generated = generate(source)
+          needle = 'self._steps >= 128'
+          assert generated.count(needle) == 1
+          # Pre-outcome H0: frozen policy; H1: +1 first level is robust to threshold;
+          # H2: +1 is threshold-specific/in-sample, and other thresholds regress.
+          for threshold in (64, 96, 128, 192, 256):
+              candidate = generated.replace(needle, f'self._steps >= {threshold}', 1)
+              assert candidate.count(f'self._steps >= {threshold}') == 1
+              assert candidate.count('    MAX_ACTIONS = 500') == 1
+              compile(candidate, f'<stagnation-{threshold}>', 'exec')
+              module = types.ModuleType(f'stagnation_{threshold}')
+              exec(candidate, module.__dict__)
+              obs = FrameData(frame=[[[0]*64 for _ in range(64)]],
+                              available_actions=[GameAction.ACTION6], levels_completed=0)
+              agent = module.MyAgent(game_id='precommitted-synthetic-contract')
+              for _ in range(threshold):
+                  agent.choose_action([], obs)
+                  assert agent._click_only is False
+              agent.choose_action([], obs)
+              assert agent._click_only is True
+              Path(f'arc-threshold-{threshold}.py').write_text(candidate)
+              print(f'CONTRACT_PASS threshold={threshold}, action_cap=500, no game-ID branch')
+          PY
+      - name: Fetch official ARC starter and install Python 3.12 runner
+        run: |
+          set -euo pipefail
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          (cd arc-starter && make setup PYTHON=python3.12)
+      - name: Frozen official 25 public games 500-action cap
+        run: |
+          set -euo pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) > arc-threshold-frozen.log 2>&1
+          tail -n 30 arc-threshold-frozen.log
+      - name: Threshold 64, 96, 128, 192, 256 official public arms at equal 500 cap
+        run: |
+          set -euo pipefail
+          for t in 64 96 128 192 256; do
+            cp "arc-threshold-$t.py" arc-starter/agent/my_agent.py
+            (cd arc-starter && make play-local STEPS=500) > "arc-threshold-$t.log" 2>&1
+            echo "COMPLETE_THRESHOLD=$t"
+            tail -n 4 "arc-threshold-$t.log"
+          done
+      - name: Exact game-matched local scorecards, action cost and regressions
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, re, sys
+          from pathlib import Path
+          sys.path.insert(0, 'competitions/arc-agi-3/tools')
+          from compare_public_logs import parse, compare
+          def first_level_steps(log):
+              # The official runner logs the PRE-action level and count; do not
+              # claim that the action at this count caused the transition.
+              pattern = re.compile(r'\b([a-z0-9]{4}) - ACTION\d+: count (\d+), levels completed (\d+)')
+              result = {}
+              for gid, step, level in pattern.findall(log):
+                  if int(level) > 0 and gid not in result:
+                      result[gid] = int(step)
+              return result
+          baseline_log = Path('arc-threshold-frozen.log').read_text()
+          baseline = parse(baseline_log)
+          bsteps = first_level_steps(baseline_log)
+          output = {
+              'schema': 'mondayid.arc3.stagnation_threshold_robustness.v1',
+              'status': 'OFFICIAL_PUBLIC_IN_SAMPLE_RESEARCH_ONLY',
+              'configured_action_cap': 500,
+              'games': 25,
+              'thresholds_precommitted': [64,96,128,192,256],
+              'latent_seed_pairing': False,
+              'held_out_unseen_games': False,
+              'frozen': {'first_levels': sum(v['levels'] for v in baseline['games'].values()),
+                         'local_score': baseline['local_score'],
+                         'first_level_preaction_steps': bsteps},
+              'candidates': {}
+          }
+          for threshold in (64,96,128,192,256):
+              log = Path(f'arc-threshold-{threshold}.log').read_text()
+              data = parse(log)
+              delta = compare(baseline, data)
+              csteps = first_level_steps(log)
+              common = set(bsteps) & set(csteps)
+              output['candidates'][str(threshold)] = {
+                  'first_levels': delta['candidate_completed_levels'],
+                  'local_score': delta['candidate_local_score'],
+                  'score_delta': delta['local_score_delta'],
+                  'improved_games': delta['improved_games'],
+                  'regressed_games': delta['regressed_games'],
+                  'first_level_preaction_steps': csteps,
+                  'action_cost_delta_on_shared_first_level_wins': {
+                      g: csteps[g]-bsteps[g] for g in sorted(common)
+                  },
+                  'per_game': delta['per_game'],
+              }
+          Path('arc-threshold-robustness-summary.json').write_text(
+              json.dumps(output, indent=2, sort_keys=True)+'\n')
+          print('ROBUSTNESS_SUMMARY_JSON=' + json.dumps({
+              'frozen': output['frozen'],
+              'thresholds': {t: {k:v[k] for k in
+                  ('first_levels','local_score','score_delta','improved_games','regressed_games','action_cost_delta_on_shared_first_level_wins')}
+                  for t,v in output['candidates'].items()}
+          }, sort_keys=True))
+          PY
+      - name: Preserve complete research evidence without policy promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-stagnation-threshold-robustness-public
+          path: |
+            arc-threshold-*.log
+            arc-threshold-*.py
+            arc-threshold-robustness-summary.json
+          if-no-files-found: ignore
