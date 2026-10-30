@@ -76,7 +76,63 @@
         "regressed_games": []
       }
     },
-    "action_cost": "All three arms used the same configured 500-step cap and printed 501 action-counter rows/game; per-level completion timing and exact ACTION6 coordinate divergence not independently audited in this UL005 run."
+    "action_cost": "Same configured 500-step cap per game. All eight first-level completion action indices are equal between threshold96 and UL005 (ft09 307; other seven 5,39,43,44,94,98,420). No action-efficiency gain over threshold96; ACTION6 coordinate differences not authenticated.",
+    "first_level_first_observed_action_index": {
+      "frozen": {
+        "sp80": 98,
+        "cd82": 43,
+        "m0r0": 420,
+        "tn36": 44,
+        "vc33": 5,
+        "lf52": 94,
+        "r11l": 39
+      },
+      "existing_threshold96": {
+        "sp80": 98,
+        "cd82": 43,
+        "m0r0": 420,
+        "tn36": 44,
+        "vc33": 5,
+        "lf52": 94,
+        "r11l": 39,
+        "ft09": 307
+      },
+      "ul005_late_refinement": {
+        "sp80": 98,
+        "cd82": 43,
+        "m0r0": 420,
+        "tn36": 44,
+        "vc33": 5,
+        "lf52": 94,
+        "r11l": 39,
+        "ft09": 307
+      }
+    },
+    "public_action_trace_audit": {
+      "method": "Parse actual official runner game/action-enum/count/level lines from completed job 123833990856, first level state counted on first printed action count; no ACTION6 coordinates.",
+      "frozen_vs_threshold96": {
+        "frozen_rows": 12381,
+        "candidate_rows": 12379,
+        "matched_game_action_count_rows": 12374,
+        "action_enum_differences": 0,
+        "level_state_differences": 190
+      },
+      "frozen_vs_ul005": {
+        "frozen_rows": 12381,
+        "candidate_rows": 12380,
+        "matched_game_action_count_rows": 12375,
+        "action_enum_differences": 0,
+        "level_state_differences": 190
+      },
+      "threshold96_vs_ul005": {
+        "threshold96_rows": 12379,
+        "ul005_rows": 12380,
+        "matched_game_action_count_rows": 12379,
+        "action_enum_differences": 0,
+        "level_state_differences": 0
+      },
+      "interpretation": "The same eight first-level completions occur at exactly the same first-observed action indices for threshold96 and UL005. Action enum parity cannot establish identical physical ACTION6 click coordinates or hidden-state trajectories."
+    }
   },
   "decision": {
     "ul005": "REJECT_NO_INCREMENTAL_PUBLIC_LEVEL_OR_SCORE_GAIN",
