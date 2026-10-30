@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-29T15:14:08.417Z",
+  "updated_at": "2026-10-30T21:25:41Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3391,6 +3391,63 @@
         "Frozen competition agent, public schedule and blocked collector unchanged.",
         "No Kaggle submission, spend, tokens, terms, legal/license/publication decision, hidden score, prize or income."
       ]
+    },
+    "prior_noop_soft_penalty_20261030": {
+      "status": "OFFICIAL_PUBLIC_PAIRED_NULL_NO_ACTION_ENUM_EXPOSURE_NOT_PROMOTED",
+      "intent": "Test a strict-prior soft cardinal-action no-op penalty against the exact frozen agent on the same official public game cohort and action budget, without game-ID routing or Kaggle submission.",
+      "hypotheses": {
+        "H0": "No local-score or action-cost improvement over frozen baseline.",
+        "H1": "Repeated observed exact-state cardinal no-ops can be softly deprioritized to save actions and advance levels.",
+        "H2": "No-ops can be setup or reversible actions; soft penalties may regress useful exploration."
+      },
+      "outcome_before_action_prediction": "Click-only trajectories remain unchanged; mixed-cardinal choices may diverge after prior exact no-ops, potentially saving actions, but not assumed to generalize.",
+      "pre_registered_workflow": ".github/workflows/arc-agent-prior-noop-ab.yml",
+      "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+      "red": {
+        "commit": "32384db970fbd837ee927428b2834905590903ec",
+        "workflow_run": 41129545796,
+        "contract_failure": "ModuleNotFoundError: prior_noop_penalty_variant; 373 tests, 1 import error"
+      },
+      "green": {
+        "commit": "a88fab9a929f2d12080dd87f5639b3d56ec467f4",
+        "contract_run": 41130528174,
+        "contract_result": "377/377 PASS; original frozen agent unchanged"
+      },
+      "official_public_ab": {
+        "source_head": "2284878d577cef77ce68d2083d6f272760d58305",
+        "workflow_run": 41130704282,
+        "job_id": 124320553379,
+        "artifact_id": 13013535798,
+        "artifact_sha256": "758510caf042e8bf10f82500fb20567e9e903600546c6a38414c52a4ef669b8b",
+        "status": "COMPLETED_SUCCESS",
+        "games": 25,
+        "budget_per_game": 500,
+        "baseline_first_levels": 7,
+        "candidate_first_levels": 7,
+        "baseline_local_score": 0.5019709375909188,
+        "candidate_local_score": 0.5019709375909188,
+        "local_score_delta": 0,
+        "action_enum_differences": 0,
+        "pre_action_action_rows_per_arm": 12525,
+        "first_level_observed_pre_action_counts_equal_in_all_7_common_wins": true,
+        "first_level_observed_counts": {
+          "cd82": 43,
+          "lf52": 94,
+          "m0r0": 420,
+          "r11l": 39,
+          "sp80": 98,
+          "tn36": 44,
+          "vc33": 5
+        },
+        "scorecard_comparator_action_cost_available": false,
+        "independent_job_log_action_row_audit": true
+      },
+      "interpretation": "No public performance gain; same observed action enum at all 12,525 action slots per arm. Scorecard comparator did not parse action rows, so independent read-only job-log audit recovered first-level observation counts; this is not an agent-action causal effect or proof of coordinate-level identity. The isolated candidate is NOT promoted. Reused 25 public games are not held-out; no seed independence, hidden score, or win proof.",
+      "effect_on_competition_agent": "NONE_FROZEN_AGENT_UNCHANGED",
+      "official_evaluation_schedule": "UNCHANGED",
+      "collector": "UNCHANGED",
+      "kaggle_submission": "NONE",
+      "legal_spend_secrets": "NONE"
     }
   }
 }
