@@ -1,0 +1,56 @@
+name: ARC-AGI-3 isolated same-prefix one-click public A-B
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/scripts/paired_click_fork.py'
+      - 'competitions/arc-agi-3/tests/test_paired_click_fork.py'
+      - '.github/workflows/arc-agent-paired-click-fork.yml'
+permissions:
+  contents: read
+jobs:
+  public_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test preregistered alternative-action policy and audit contracts
+        working-directory: competitions/arc-agi-3
+        run: python -m unittest discover -s tests -p 'test_paired_click_fork.py' -v
+      - name: Fetch official public ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official Python 3.12 public engine
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Generate isolated frozen and one-click variants
+        run: |
+          python competitions/arc-agi-3/scripts/paired_click_fork.py generate competitions/arc-agi-3/agent/my_agent.py arc-fork-frozen.py arc-fork-candidate.py
+          python -m py_compile arc-fork-frozen.py arc-fork-candidate.py
+      - name: Run unchanged frozen policy with stdout-only instrumentation, 25 games 500 steps
+        run: |
+          set -o pipefail
+          cp arc-fork-frozen.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-fork-frozen.log
+      - name: Run one-click candidate same 25 games and budget
+        run: |
+          set -o pipefail
+          cp arc-fork-candidate.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-fork-candidate.log
+      - name: Verify matched visible/action prefixes and measure outcomes
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/scripts/paired_click_fork.py audit arc-fork-frozen.log arc-fork-candidate.log arc-fork-audit.json
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-fork-frozen.log arc-fork-candidate.log --output arc-fork-scorecard.json
+      - name: Preserve raw and derived public evidence, including failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-one-click-same-prefix-public-ab
+          path: |
+            arc-fork-frozen.log
+            arc-fork-candidate.log
+            arc-fork-audit.json
+            arc-fork-scorecard.json
+          if-no-files-found: ignore
