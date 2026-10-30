@@ -1,0 +1,97 @@
+{
+  "schema": "mondayid.arc3.evidence.ul005_late_refinement.v1",
+  "date_utc": "2026-10-30",
+  "status": "OFFICIAL_PUBLIC_25_GAME_NULL_INCREMENTAL_REJECTED_NOT_PROMOTED",
+  "worldline": {
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "pre_mutation_head": "42eebf7ced3afe62469a920ca63cadd5d7494069",
+    "pre_mutation_contract_run": 40983419175,
+    "pre_mutation_contract_result": "EXPECTED_RED_missing_click_late_refinement_variant",
+    "pre_mutation_state_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+  },
+  "hypotheses": {
+    "H0": "Unchanged frozen baseline is no worse at the same 500-action cap.",
+    "H1": "Late (+2,+2) physical click offset after 384 actions in still-unsolved click-only first levels adds progress beyond existing threshold-96 stagnation gate.",
+    "H2": "Late offsets only change redundant physical click locations or harm useful interactions; visible changes are not progress."
+  },
+  "test_first": {
+    "red_commit": "42eebf7ced3afe62469a920ca63cadd5d7494069",
+    "red_run": 40983419175,
+    "red_result": "351 tests, one expected import error (candidate module missing), job log inspected",
+    "green_commit": "a1d98739058b387f2efa81c68b1746800174f462",
+    "green_run": 40984867379,
+    "green_result": "354/354 PASS, job log inspected",
+    "tests": "competitions/arc-agi-3/tests/test_click_late_refinement_candidate.py",
+    "candidate": "competitions/arc-agi-3/tools/click_late_refinement_variant.py"
+  },
+  "official_public": {
+    "engine": "Official ARC-AGI-3 Kaggle Starter Python 3.12 public runner",
+    "workflow_run": 40985046811,
+    "job_id": 123833990856,
+    "conclusion": "SUCCESS",
+    "source_head": "fc62b59cc396d9ff120c14b19d5dcc9604e8d30f",
+    "artifact_id": 12946064973,
+    "artifact_zip_sha256": "2cdde4c61106afcbda55a38ef29382bb20078557c87592816c6a2a5e5df624a8",
+    "games": 25,
+    "configured_action_cap_per_game": 500,
+    "logged_actions_per_game": 501,
+    "arms": {
+      "frozen": {
+        "first_levels": 7,
+        "local_score": 0.5019709375909188
+      },
+      "existing_threshold96": {
+        "first_levels": 8,
+        "local_score": 0.5056835206170455
+      },
+      "ul005_late_refinement": {
+        "first_levels": 8,
+        "local_score": 0.5056835206170455
+      }
+    },
+    "comparisons": {
+      "threshold96_vs_frozen": {
+        "level_delta": 1,
+        "local_score_delta": 0.003712583026126648,
+        "improved_games": [
+          "ft09"
+        ],
+        "regressed_games": []
+      },
+      "ul005_vs_frozen": {
+        "level_delta": 1,
+        "local_score_delta": 0.003712583026126648,
+        "improved_games": [
+          "ft09"
+        ],
+        "regressed_games": []
+      },
+      "ul005_vs_threshold96": {
+        "level_delta": 0,
+        "local_score_delta": 0,
+        "improved_games": [],
+        "regressed_games": []
+      }
+    },
+    "action_cost": "All three arms used the same configured 500-step cap and printed 501 action-counter rows/game; per-level completion timing and exact ACTION6 coordinate divergence not independently audited in this UL005 run."
+  },
+  "decision": {
+    "ul005": "REJECT_NO_INCREMENTAL_PUBLIC_LEVEL_OR_SCORE_GAIN",
+    "policy_promotion": false,
+    "contest_agent": "UNCHANGED",
+    "official_evaluation_schedule": "UNCHANGED",
+    "blocked_collector": "UNCHANGED",
+    "state_json": "UNCHANGED_PREEXISTING_SAFETY_BLOCK_DO_NOT_BYPASS",
+    "canonical_cstar": "UPDATE_WITH_COMPACT_VERIFIED_DELTA_AFTER_ROLLBACK",
+    "limitations": [
+      "Same previously exploited 25 public games; not an unseen held-out cohort.",
+      "No independently authenticated matched latent reset/seed variation; previous seed sweep produced identical public trajectories.",
+      "Synthetic contract demonstrates coordinate offset for a stub frame, not actual gameplay action divergence.",
+      "The 25-game +1 level from threshold96 is previously observed ft09 only, not new generalization.",
+      "No Kaggle hidden score, final submission, prize, spending, secrets, terms, legal/licensing/publication decisions."
+    ]
+  }
+}
