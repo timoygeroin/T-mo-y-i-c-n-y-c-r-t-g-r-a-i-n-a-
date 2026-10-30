@@ -43,7 +43,7 @@ class MortonResearchContracts(unittest.TestCase):
         obs = FrameData(frame=[grid], available_actions=[GameAction.ACTION6], levels_completed=0)
         for _ in range(12):
             aa, bb = a.choose_action([], obs), b.choose_action([], obs)
-            self.assertEqual((aa.name, aa.data), (bb.name, bb.data))
+            self.assertEqual((aa.name, a._last_position), (bb.name, b._last_position))
             self.assertFalse(b._click_only)
 
     def test_gate_only_after_threshold_at_level_zero(self):
