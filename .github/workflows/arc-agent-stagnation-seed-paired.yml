@@ -1,0 +1,165 @@
+name: ARC-AGI-3 isolated same-seed public reset A-B (research only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-agent-stagnation-seed-paired.yml'
+permissions:
+  contents: read
+jobs:
+  public_seed_paired:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test existing frozen policy and threshold-128 generator
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_click_stagnation_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official public starter and Python 3.12 engine
+        run: |
+          set -euo pipefail
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          (cd arc-starter && make setup PYTHON=python3.12)
+      - name: Guard official seed API and temporary runner instrumentation
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import inspect, sys
+          from pathlib import Path
+          sys.path.insert(0, 'competitions/arc-agi-3/tools')
+          from click_stagnation_variant import generate
+          sys.path.insert(0, 'arc-starter/.venv/lib/python3.12/site-packages')
+          import arc_agi
+          assert 'seed' in inspect.signature(arc_agi.Arcade.make).parameters, 'official seed API missing'
+          frozen = Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          assert frozen.count('    MAX_ACTIONS = 500') == 1
+          candidate = generate(frozen)
+          compile(candidate, '<precommitted-threshold128>', 'exec')
+          Path('arc-seed-candidate.py').write_text(candidate)
+          script_path = Path('arc-starter/scripts/play_local.py')
+          script = script_path.read_text()
+          needle = '        env = arc.make(game_id, render_mode=args.render)'
+          assert script.count(needle) == 1
+          replacement = "        env = arc.make(game_id, seed=int(__import__('os').environ['MONDAY_ARC_SEED']), render_mode=args.render)"
+          script = script.replace(needle, replacement, 1)
+          needle2 = '        agent.main()\n'
+          assert script.count(needle2) == 1
+          instrument = """        agent.main()
+          first = next((f for f in agent.frames if getattr(f, 'frame', None)), None)
+          if first is None:
+              raise RuntimeError('No initial visible observation')
+          import hashlib
+          init_sha = hashlib.sha256(repr(first.frame).encode()).hexdigest()
+          print(f"MONDAY_SEED_INIT seed={__import__('os').environ['MONDAY_ARC_SEED']} game={game_id} sha256={init_sha}", flush=True)
+          """
+          # Preserve indentation exactly in the official runner's main loop.
+          instrument = '\n'.join(line[2:] if line.startswith('  ') else line for line in instrument.splitlines()) + '\n'
+          script = script.replace(needle2, instrument, 1)
+          compile(script, '<official-starter-seed-instrumentation>', 'exec')
+          script_path.write_text(script)
+          print('GUARDED_OFFICIAL_SEED_API_PASS; precommitted seeds=0,1,2,3')
+          PY
+      - name: Same-budget public A-B on exact requested seeds 0, 1, 2, 3
+        run: |
+          set -euo pipefail
+          for seed in 0 1 2 3; do
+            if (( seed % 2 == 0 )); then
+              order="frozen candidate"
+            else
+              order="candidate frozen"
+            fi
+            for arm in $order; do
+              if [ "$arm" = "frozen" ]; then
+                cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+              else
+                cp arc-seed-candidate.py arc-starter/agent/my_agent.py
+              fi
+              (cd arc-starter && MONDAY_ARC_SEED="$seed" make play-local STEPS=500) > "arc-seed-$seed-$arm.log" 2>&1
+              echo "SEED_ARM_COMPLETE seed=$seed arm=$arm"
+              tail -n 3 "arc-seed-$seed-$arm.log"
+            done
+          done
+      - name: Evaluate exact seed pairs, level and score deltas, action cost and initial state parity
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,re,sys
+          from pathlib import Path
+          sys.path.insert(0, 'competitions/arc-agi-3/tools')
+          from compare_public_logs import parse,compare
+          def first_steps(s):
+              p=re.compile(r'\b([a-z0-9]{4}) - ACTION\d+: count (\d+), levels completed (\d+)')
+              out={}
+              for g,step,lvl in p.findall(s):
+                  if int(lvl)>0 and g not in out: out[g]=int(step)
+              return out
+          def initial_hashes(s,seed):
+              p=re.compile(r'MONDAY_SEED_INIT seed=(\d+) game=([a-z0-9]{4}) sha256=([0-9a-f]{64})')
+              out={}
+              for sd,g,h in p.findall(s):
+                  assert int(sd)==seed and g not in out, (sd,g)
+                  out[g]=h
+              assert len(out)==25, ('missing initial frames',seed,len(out))
+              return out
+          results={'schema':'mondayid.arc3.official_public_same_seed_ab.v1',
+                   'status':'RESEARCH_ONLY_NOT_HELDOUT_GAME_IDS',
+                   'engine':'official arc-agi Python 3.12 with documented Arcade.make seed argument',
+                   'seeds_precommitted':[0,1,2,3],
+                   'configured_action_cap_per_game':500,
+                   'games_per_seed':25,
+                   'arms':['frozen','threshold128'],
+                   'official_submission_agent_modified':False,
+                   'seed_results':{}}
+          initial_by_seed={}
+          for seed in (0,1,2,3):
+              frozen_log=Path(f'arc-seed-{seed}-frozen.log').read_text()
+              candidate_log=Path(f'arc-seed-{seed}-candidate.log').read_text()
+              frozen=parse(frozen_log)
+              candidate=parse(candidate_log)
+              diff=compare(frozen,candidate)
+              fh=initial_hashes(frozen_log,seed)
+              ch=initial_hashes(candidate_log,seed)
+              matches=[g for g in sorted(fh) if fh[g]==ch[g]]
+              bf,cf=first_steps(frozen_log),first_steps(candidate_log)
+              shared=set(bf)&set(cf)
+              results['seed_results'][str(seed)]={
+                  'baseline_first_levels':diff['baseline_completed_levels'],
+                  'candidate_first_levels':diff['candidate_completed_levels'],
+                  'baseline_local_score':diff['baseline_local_score'],
+                  'candidate_local_score':diff['candidate_local_score'],
+                  'score_delta':diff['local_score_delta'],
+                  'improved_games':diff['improved_games'],
+                  'regressed_games':diff['regressed_games'],
+                  'matched_initial_visible_hashes':len(matches),
+                  'initial_visible_hash_mismatches':sorted(set(fh)-set(matches)),
+                  'first_level_preaction_steps_frozen':bf,
+                  'first_level_preaction_steps_candidate':cf,
+                  'shared_winner_action_cost_delta':{g:cf[g]-bf[g] for g in sorted(shared)},
+                  'per_game':diff['per_game']
+              }
+              initial_by_seed[seed]=fh
+          games=sorted(initial_by_seed[0])
+          results['games_with_different_initial_visible_frames_across_seeds']=[
+              g for g in games if len({initial_by_seed[s][g] for s in (0,1,2,3)})>1]
+          Path('arc-seed-paired-summary.json').write_text(json.dumps(results,indent=2,sort_keys=True)+'\n')
+          print('SEED_PAIRED_SUMMARY_JSON='+json.dumps({
+              'games_with_different_initial_visible_frames_across_seeds':results['games_with_different_initial_visible_frames_across_seeds'],
+              'seed_results':{k:{j:v[j] for j in ('baseline_first_levels','candidate_first_levels','baseline_local_score','candidate_local_score','score_delta','improved_games','regressed_games','matched_initial_visible_hashes','initial_visible_hash_mismatches','shared_winner_action_cost_delta')} for k,v in results['seed_results'].items()}
+          },sort_keys=True))
+          assert all(v['matched_initial_visible_hashes']==25 for v in results['seed_results'].values()), 'initial observation mismatch across arms at same seed'
+          PY
+      - name: Preserve raw official-public seed evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-stagnation-same-seed-public-ab
+          path: |
+            arc-seed-*.log
+            arc-seed-candidate.py
+            arc-seed-paired-summary.json
+          if-no-files-found: ignore
