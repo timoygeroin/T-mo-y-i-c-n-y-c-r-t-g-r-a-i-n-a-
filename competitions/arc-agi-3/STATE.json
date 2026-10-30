@@ -1,6 +1,6 @@
 {
   "schema": "mondayid.arc-agi3.state.v1",
-  "updated_at": "2026-10-30T21:25:41Z",
+  "updated_at": "2026-10-30T21:32:57Z",
   "authority": {
     "competition": "ARC Prize 2026 — ARC-AGI-3",
     "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
@@ -3442,12 +3442,52 @@
         "scorecard_comparator_action_cost_available": false,
         "independent_job_log_action_row_audit": true
       },
-      "interpretation": "No public performance gain; same observed action enum at all 12,525 action slots per arm. Scorecard comparator did not parse action rows, so independent read-only job-log audit recovered first-level observation counts; this is not an agent-action causal effect or proof of coordinate-level identity. The isolated candidate is NOT promoted. Reused 25 public games are not held-out; no seed independence, hidden score, or win proof.",
+      "interpretation": "Two independent executions on the same reused official 25 public games and 500-action budget returned exact 7 vs 7 first levels, local 0.5019709375909188 vs 0.5019709375909188, and 0 action enum differences across 12,525 pre-action slots/arm. Second execution preserves complete redacted action traces, and first-level observation counts match for all 7 wins. No measurable policy effect or generalization; isolated candidate NOT PROMOTED. Action6 coordinates not in action-enum trace, but generator only changes cardinal scoring and click-only contract preserved.",
       "effect_on_competition_agent": "NONE_FROZEN_AGENT_UNCHANGED",
       "official_evaluation_schedule": "UNCHANGED",
       "collector": "UNCHANGED",
       "kaggle_submission": "NONE",
-      "legal_spend_secrets": "NONE"
+      "legal_spend_secrets": "NONE",
+      "second_public_ab_with_complete_trace": {
+        "status": "COMPLETED_SUCCESS_SAME_BUDGET_PUBLIC_NULL",
+        "source_head": "e078e3142c65d9e2b046a4e42eeea90864c3e219",
+        "workflow_run": 41131538315,
+        "job_id": 124323421112,
+        "artifact_id": 13013920387,
+        "artifact_sha256": "01fc3afb8fbff579e10eee6db2e273454b82ec384402746b1ca558a883d13336",
+        "zip_crc": "PASS",
+        "games": 25,
+        "budget_per_game": 500,
+        "baseline_first_levels": 7,
+        "candidate_first_levels": 7,
+        "baseline_local_score": 0.5019709375909188,
+        "candidate_local_score": 0.5019709375909188,
+        "local_score_delta": 0,
+        "action_enum_differences": 0,
+        "pre_action_rows_per_arm": 12525,
+        "complete_action_traces": true,
+        "common_first_level_action_cost_delta": 0,
+        "first_level_pre_action_counts": {
+          "cd82": 43,
+          "lf52": 94,
+          "m0r0": 420,
+          "r11l": 39,
+          "sp80": 98,
+          "tn36": 44,
+          "vc33": 5
+        },
+        "new_first_level_games": [],
+        "lost_first_level_games": [],
+        "improved_games": [],
+        "regressed_games": [],
+        "anonymous_api_key_redacted_in_preserved_artifact": true
+      },
+      "logging_fix": {
+        "defect": "Official runner action trace printed to stderr; tee captured stdout only, so initial artifact lacked action rows and comparator reported cost unavailable.",
+        "local_red_green": "Mock stderr ACTION1 trace missing under stdout-only tee; present under 2>&1 | sed redaction | tee, with synthetic secret absent.",
+        "fix_commit": "e078e3142c65d9e2b046a4e42eeea90864c3e219",
+        "scope": "ISOLATED_WORKFLOW_ONLY_OFFICIAL_EVALUATION_SCHEDULE_UNCHANGED"
+      }
     }
   }
 }
