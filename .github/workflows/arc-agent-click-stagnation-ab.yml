@@ -1,67 +1,151 @@
-name: ARC-AGI-3 isolated stagnation-gated click public A-B
+name: ARC-AGI-3 isolated 2000-step pre-action causal threshold A-B-C
 on:
   pull_request:
     paths:
-      - 'competitions/arc-agi-3/tools/click_stagnation_variant.py'
-      - 'competitions/arc-agi-3/tests/test_click_stagnation_candidate.py'
       - '.github/workflows/arc-agent-click-stagnation-ab.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  public_ab:
+  public_abc:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Test-first stagnation and frozen policy invariants
+      - name: Existing generator and comparator contracts before gameplay
         working-directory: competitions/arc-agi-3
         run: |
-          set -o pipefail
+          set -euo pipefail
           python -m unittest discover -s tests -p 'test_click_stagnation_candidate.py' -v
           python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
-      - name: Fetch official ARC public starter
-        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
-      - name: Install official Python 3.12 runner
-        working-directory: arc-starter
-        run: make setup PYTHON=python3.12
-      - name: FROZEN original 25 public games 2000 steps (temporary budget-robustness probe)
+      - name: Install official public engine and compile three isolated agents
         run: |
-          set -o pipefail
-          # The official runner clamps to MyAgent.MAX_ACTIONS=500, so STEPS=2000
-          # alone is NOT a valid 2000-action experiment. Change only the
-          # cap in an isolated temporary copy, identically for both arms.
+          set -euo pipefail
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          (cd arc-starter && make setup PYTHON=python3.12)
           python - <<'PY'
           from pathlib import Path
+          import sys
+          sys.path.insert(0, 'competitions/arc-agi-3/tools')
+          from click_stagnation_variant import generate
           src = Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
           assert src.count('    MAX_ACTIONS = 500') == 1
-          extended = src.replace('    MAX_ACTIONS = 500', '    MAX_ACTIONS = 2000')
-          compile(extended, '<frozen-cap2000>', 'exec')
-          Path('arc-stagnation-frozen-cap2000.py').write_text(extended)
-          Path('arc-starter/agent/my_agent.py').write_text(extended)
+          src = src.replace('    MAX_ACTIONS = 500', '    MAX_ACTIONS = 2000', 1)
+          marker = '        return action\n'
+          assert src.count(marker) == 1, 'one safe instrumentation site'
+          instrumentation = (
+              "        # Pre-action forecast from STRICTLY PRIOR observed transitions.\n"
+              "        _x, _y = self._last_position if action.name == 'ACTION6' and self._last_position is not None else (-1, -1)\n"
+              "        _ident = f'ACTION6@{_x},{_y}' if action.name == 'ACTION6' else action.name\n"
+              "        _p = self._transitions.get((level, key[1], _ident))\n"
+              "        _pwin = int(_p is not None and _p[0] > level)\n"
+              "        print(f'ARC_PREACT game={self.game_id} step={self._steps} level={level} state={key[1]} action={action.name} x={_x} y={_y} predicted_progress={_pwin}', flush=True)\n"
+              "        return action\n"
+          )
+          frozen = src.replace(marker, instrumentation, 1)
+          gate128 = generate(frozen)
+          assert gate128.count('self._steps >= 128') == 1
+          gate96 = gate128.replace('self._steps >= 128', 'self._steps >= 96', 1)
+          for label, text in [('frozen', frozen), ('gate96', gate96), ('gate128', gate128)]:
+              assert '    MAX_ACTIONS = 2000' in text
+              assert text.count('ARC_PREACT game=') == 1
+              compile(text, '<isolated-' + label + '>', 'exec')
+              Path('arc-' + label + '-instrumented.py').write_text(text)
+          assert gate96 != gate128 != frozen
+          print('THREE_ISOLATED_AGENTS_COMPILED; frozen source unmodified; no game-ID rules')
           PY
-          (cd arc-starter && make play-local STEPS=2000) | tee arc-stagnation-frozen.log
-      - name: Click-only stagnation gate 25 public games 2000 steps (temporary budget-robustness probe)
+      - name: Frozen unchanged action policy at identical 2000-action cap
         run: |
           set -o pipefail
-          python competitions/arc-agi-3/tools/click_stagnation_variant.py --source arc-stagnation-frozen-cap2000.py --output arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=2000) | tee arc-stagnation-candidate.log
-      - name: Compare complete public scorecards, never auto-promote
+          cp arc-frozen-instrumented.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-frozen2000.log
+      - name: Hypothesis H1 click-only 96-step gate at identical cap
         run: |
           set -o pipefail
-          python competitions/arc-agi-3/tools/compare_public_logs.py arc-stagnation-frozen.log arc-stagnation-candidate.log --output arc-stagnation-ab.json | tee arc-stagnation-summary.log
-      - name: Preserve complete evidence
+          cp arc-gate96-instrumented.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-gate96-2000.log
+      - name: Hypothesis H2 prior 128-step gate at identical cap
+        run: |
+          set -o pipefail
+          cp arc-gate128-instrumented.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-gate128-2000.log
+      - name: Official public scorecards plus strictly-prior action-coordinate diagnostics
+        run: |
+          set -euo pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-frozen2000.log arc-gate96-2000.log --output arc-frozen-vs-96.json
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-frozen2000.log arc-gate128-2000.log --output arc-frozen-vs-128.json
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-gate128-2000.log arc-gate96-2000.log --output arc-128-vs-96.json
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          pattern = re.compile(r'ARC_PREACT game=(\w+) step=(\d+) level=(\d+) state=([0-9a-f]+) action=(\w+) x=(-?\d+) y=(-?\d+) predicted_progress=(\d+)')
+          paths = {'frozen':'arc-frozen2000.log', 'gate96':'arc-gate96-2000.log', 'gate128':'arc-gate128-2000.log'}
+          arms = {}
+          for label, path in paths.items():
+              rows = {}
+              for line in Path(path).open(errors='replace'):
+                  match = pattern.search(line)
+                  if match:
+                      game, step, level, state, action, x, y, pred = match.groups()
+                      key = (game, int(step))
+                      assert key not in rows, ('duplicate trace', label, key)
+                      rows[key] = (int(level), state, action, int(x), int(y), int(pred))
+              assert len(rows) > 10000, ('missing official action traces', label, len(rows))
+              arms[label] = rows
+          report = {'schema':'mondayid.arc3.threshold2000.preaction_public_abc.v1',
+                    'status':'RESEARCH_ONLY_NO_POLICY_PROMOTION',
+                    'public_games_reused':25,'configured_cap_per_game':2000,
+                    'independent_latent_pairing':False,'held_out':False,'arms':{},'comparisons':{}}
+          for label, rows in arms.items():
+              wins = {}
+              valid = 0
+              pred_true = 0
+              pred_correct = 0
+              for (game, step), (level, state, action, x, y, pred) in rows.items():
+                  if level >= 1:
+                      wins[game] = min(wins.get(game,step),step)
+                  nxt = rows.get((game, step+1))
+                  if nxt is not None:
+                      valid += 1
+                      actual = int(nxt[0] > level)
+                      pred_true += pred
+                      pred_correct += int(pred == actual)
+              report['arms'][label] = {'pre_action_rows':len(rows),'first_level_preaction_index':wins,
+                                       'strict_prior_progress_forecast_eligible':valid,
+                                       'predicted_progress_positive':pred_true,
+                                       'progress_forecast_accuracy':pred_correct/valid if valid else None}
+          for other in ('gate96','gate128'):
+              a,b=arms['frozen'],arms[other]
+              keys=set(a)&set(b)
+              same=[k for k in keys if a[k][:2] == b[k][:2]]
+              physical=[k for k in same if a[k][2:] != b[k][2:]]
+              coords=[k for k in same if a[k][2]=='ACTION6' and b[k][2]=='ACTION6' and a[k][3:5] != b[k][3:5]]
+              report['comparisons']['frozen_vs_'+other] = {
+                  'paired_game_step_rows':len(keys),'matched_visible_prestate_level':len(same),
+                  'different_physical_actions_same_visible_prestate':len(physical),
+                  'different_ACTION6_coordinates_same_visible_prestate':len(coords),
+                  'target_games':{g:{'same_prestate_rows':sum(k[0]==g for k in same),
+                                     'coordinate_differences_same_prestate':sum(k[0]==g for k in coords),
+                                     'frozen_first_level':report['arms']['frozen']['first_level_preaction_index'].get(g),
+                                     'candidate_first_level':report['arms'][other]['first_level_preaction_index'].get(g)}
+                                  for g in ('ft09','lp85')}}
+          Path('arc-threshold2000-preaction-evidence.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+      - name: Preserve raw official logs and pre-action causal observations
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arc-stagnation-public-ab
+          name: arc-threshold2000-causal-public-abc
           path: |
-            arc-stagnation-frozen-cap2000.py
-            arc-stagnation-frozen.log
-            arc-stagnation-candidate.log
-            arc-stagnation-ab.json
-            arc-stagnation-summary.log
+            arc-frozen2000.log
+            arc-gate96-2000.log
+            arc-gate128-2000.log
+            arc-frozen-vs-96.json
+            arc-frozen-vs-128.json
+            arc-128-vs-96.json
+            arc-threshold2000-preaction-evidence.json
           if-no-files-found: ignore
