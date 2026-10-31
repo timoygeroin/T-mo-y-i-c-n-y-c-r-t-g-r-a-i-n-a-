@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createVirtualChip, commitVirtualChipCycle, compileVirtualHardwareLayer } from '../src/virtual-chip.mjs';
+import { createVirtualChip, commitVirtualChipCycle, compileVirtualHardwareLayer, compileNaturalComputeFabric } from '../src/virtual-chip.mjs';
 
 const baseSignal = {
   id:'task:effect-first',
@@ -140,4 +140,38 @@ test('virtual hardware layer replaces physical dependencies by their computation
   assert.equal(hw.devices.BUS.effect,'interconnect');
   assert.equal(hw.claims.literalQuantumHardware,false);
   assert.equal(hw.claims.physicalActuationWithoutReceptor,false);
+});
+
+
+test('natural compute fabric uses universe earth life and human frames as operators, not literal device claims',()=>{
+  const fabric=compileNaturalComputeFabric({
+    frames:[
+      'physics','earth_system','biology','evolution',
+      'psychology','religion_myth','technology','logic','history'
+    ]
+  });
+
+  assert.equal(fabric.schema,'mondayid.natural-compute-fabric.v1');
+  assert.equal(fabric.substrateModel,'STATE_AND_RULE_ARE_COLOCATED');
+  assert.equal(fabric.centralProcessorRequired,false);
+  assert.equal(fabric.operators.physics.effect,'local_state_transition');
+  assert.equal(fabric.operators.earth_system.effect,'coupled_feedback_cycles');
+  assert.equal(fabric.operators.biology.effect,'sensor_processor_actuator_cells');
+  assert.equal(fabric.operators.evolution.effect,'variation_selection_inheritance');
+  assert.equal(fabric.operators.psychology.effect,'attention_value_interpretation');
+  assert.equal(fabric.operators.religion_myth.effect,'meaning_value_long_horizon_compression');
+  assert.equal(fabric.operators.technology.effect,'externalize_repeat_and_scale');
+  assert.equal(fabric.operators.logic.effect,'consistency_constraint_and_proof');
+  assert.equal(fabric.operators.history.effect,'causal_memory_and_failure_immunity');
+  assert.equal(fabric.truthBoundary.universeIsLiterallyAComputer,false);
+  assert.equal(fabric.truthBoundary.religiousMeaningIsPhysicalEvidence,false);
+});
+
+test('clone is a whole cell; core is invariant physics and mod is task phenotype',()=>{
+  const fabric=compileNaturalComputeFabric();
+  assert.equal(fabric.cell.core.definition,'stable_invariants_and_transition_laws');
+  assert.equal(fabric.cell.mod.definition,'task_local_reconfigurable_expression');
+  assert.equal(fabric.cell.clone.definition,'whole_cell_candidate_not_partial_persona');
+  assert.equal(fabric.collective.definition,'interacting_cells_create_emergent_compute_field');
+  assert.equal(fabric.collective.literalBillionsOfRunningAgents,false);
 });
