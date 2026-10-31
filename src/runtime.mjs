@@ -17,7 +17,8 @@ export class MondayRuntime {
     policyField = null,
     actionLedger = null,
     cellId = 'cell:runtime',
-    hostPool = []
+    hostPool = [],
+    independentReadback = null
   } = {}) {
     this.worldline = worldline;
     this.capabilities = capabilities;
@@ -26,6 +27,8 @@ export class MondayRuntime {
     this.actionLedger = actionLedger || new ActionLedger();
     this.cellId = cellId;
     this.hostPool = Array.isArray(hostPool) ? [...hostPool] : [];
+    // Injected by a trusted host, not the executing receptor or a model response.
+    this.independentReadback = typeof independentReadback === 'function' ? independentReadback : null;
   }
 
   routeHost({ desiredEffect, task = {}, regulation = null, hosts = null } = {}) {
@@ -335,6 +338,42 @@ export class MondayRuntime {
           requiredMode:action.requiredVerificationMode,
           observedMode:verification?.mode || null
         };
+      }
+      // A receptor verifying its own output is still self-attestation. For a
+      // whole-organism claim, require a separate host-injected source reader
+      // to independently observe the exact action and return a stable receipt.
+      // A model-generated field named "independent" never satisfies this gate.
+      if (verification?.ok === true && action.requireDomainReceptor === true) {
+        if (!this.independentReadback) {
+          verification = {ok:false,code:'META_INDEPENDENT_READER_MISSING',domain:action.domain};
+        } else {
+          const witnessed = await this.independentReadback({
+            action, result, claimedVerification:verification
+          });
+          const exact = witnessed?.ok === true &&
+            witnessed.effectId === action.id &&
+            witnessed.domain === action.domain &&
+            witnessed.sourceSignal === action.sourceSignal &&
+            typeof witnessed.evidenceRef === 'string' &&
+            witnessed.evidenceRef.trim().length > 0;
+          if (!exact) {
+            verification = {
+              ok:false,code:'META_INDEPENDENT_EFFECT_MISMATCH',
+              domain:action.domain
+            };
+          } else {
+            verification = {
+              ...verification,
+              independentProof:{
+                source:'HOST_READER',
+                effectId:action.id,
+                domain:action.domain,
+                sourceSignal:action.sourceSignal,
+                evidenceRef:witnessed.evidenceRef.trim()
+              }
+            };
+          }
+        }
       }
       const outcome = {
         action,
