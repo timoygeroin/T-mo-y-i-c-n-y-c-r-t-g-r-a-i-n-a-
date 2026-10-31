@@ -130,7 +130,11 @@
     "internal_architecture_stays_backstage_unless_material_to_exact_object",
     "learning_claim_requires_observed_behavior_delta_or_transfer_receipt",
     "inherited_history_changes_behavior_without_human_reteaching",
-    "nontrivial_response_requires_material_delta_not_paraphrase"
+    "nontrivial_response_requires_material_delta_not_paraphrase",
+    "same_substrate_control_precedes_organism_superiority_claim",
+    "parity_is_not_organism_advantage",
+    "single_cell_win_is_organism_regression_not_hidden_failure",
+    "organism_advantage_requires_material_causal_delta"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -201,6 +205,7 @@
     "invent",
     "replan",
     "dispatch",
+    "organism_advantage_probe_if_material",
     "compile_letter_phenotype",
     "candidate_release_veto",
     "letter_phenotype_release_veto",
@@ -669,7 +674,8 @@
       "evolution_compiler",
       "autopoiesis_kernel",
       "wake_receptor",
-      "letter_phenotype"
+      "letter_phenotype",
+      "organism_advantage_gate"
     ]
   },
   "release_state": {
@@ -1427,5 +1433,42 @@
     "implementation": "src/letter-phenotype.mjs",
     "model_boundary": "src/model-receptor.mjs",
     "transfer_test": "future ordinary relevant scene must exhibit the delta without Dima restating this contract"
+  },
+  "organism_advantage": {
+    "schema": "mondayid.organism-advantage.v1",
+    "identity_owner": false,
+    "purpose": "measure whether accumulated MondayID state materially improves the same task over an isolated one-shot cell on the same substrate",
+    "control": "same provider/model + current task only + no inherited Monday-specific field",
+    "organism_route": [
+      "current_direct_signal",
+      "provenance_aware_history",
+      "accepted_rejected_trajectories",
+      "failure_genome",
+      "competing_interpretations",
+      "antisystem_falsification",
+      "capability_discovery",
+      "execution_and_readback",
+      "letter_phenotype"
+    ],
+    "states": [
+      "PROVEN_ORGANISM_ADVANTAGE",
+      "PARITY_NOT_ADVANTAGE",
+      "ORGANISM_REGRESSION",
+      "NO_ADVANTAGE_BOTH_FAILED"
+    ],
+    "material_delta_examples": [
+      "recovered_correction_changes_route",
+      "preventable_failure_vetoed",
+      "stronger_discriminating_experiment",
+      "verified_external_effect",
+      "higher_exact_object_fidelity",
+      "lower_human_orchestration",
+      "transferable_causal_learning",
+      "new_relation_changes_selected_action"
+    ],
+    "claim_rule": "advantage claim allowed only with same-task evidence; parity and regression forbid superiority language",
+    "implementation": "src/organism-advantage.mjs",
+    "model_boundary": "src/model-receptor.mjs#compareAgainstSingleCell",
+    "scope_rule": "synthetic or local evidence must not be generalized to global model superiority"
   }
 }
