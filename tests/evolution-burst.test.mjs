@@ -38,7 +38,9 @@ test('failed verification can never win even with a huge score', async()=>{
     mutate:async()=>[{name:'fake',score:999},{name:'real',score:2}],
     evaluate:async(candidate)=>candidate.name==='fake'
       ? {ok:false,score:999}
-      : {ok:true,score:2}
+      : candidate.name==='real'
+        ? {ok:true,score:2}
+        : {ok:true,score:1}
   });
   assert.equal(result.champion.name,'real');
 });
