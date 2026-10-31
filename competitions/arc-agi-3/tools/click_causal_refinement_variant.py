@@ -23,13 +23,13 @@ GATE_REPLACEMENT = """        # Preserve all early successes and mixed-action be
 """
 
 def generate(source: str, mode: str = "near") -> str:
-    if mode not in ("near", "far"):
-        raise ValueError("mode must be near or far")
+    if mode not in ("near", "far", "burst112", "burst128", "burst160"):
+        raise ValueError("unsupported mode")
     result = affordance_generate(source)
     if result.count(GATE) != 1 or result.count(ROW) != 1:
         raise ValueError("frozen policy anchors changed; fail closed")
     result = result.replace(GATE, GATE_REPLACEMENT, 1)
-    offsets = ((2,0),(-2,0),(0,2),(0,-2),(4,0),(-4,0),(0,4),(0,-4)) if mode == "near" else (
+    offsets = ((2,0),(-2,0),(0,2),(0,-2),(4,0),(-4,0),(0,4),(0,-4)) if mode != "far" else (
         (24,0),(-24,0),(0,24),(0,-24),(16,0),(-16,0),(0,16),(0,-16)
     )
     injection = """                # Causal follow-up: action-conditioned, not game-ID routing.
@@ -58,6 +58,13 @@ def generate(source: str, mode: str = "near") -> str:
                 uniform = [p for p in uniform if p not in responsive_coords]
                 points = local + uniform + [p for p in points if p not in local and p not in uniform and p not in responsive_coords]
 """.replace("OFFSETS", repr(offsets))
+    if mode.startswith("burst"):
+        cutoff = int(mode[5:])
+        injection = injection.replace(
+            "                local = []\\n",
+            f"                if self._steps >= {cutoff}: responsive = []\\n                local = []\\n",
+            1,
+        )
     result = result.replace(ROW, injection, 1)
     compile(result, "<causal-click-"+mode+">", "exec")
     return result
@@ -66,7 +73,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--mode", choices=("near","far"), default="near")
+    parser.add_argument("--mode", choices=("near","far","burst112","burst128","burst160"), default="near")
     args = parser.parse_args()
     args.output.write_text(generate(args.source.read_text(), mode=args.mode))
 

@@ -70,6 +70,25 @@ class CausalClickRefinementTests(unittest.TestCase):
         a.choose_action([],obs())
         self.assertNotIn(a._last_position,{(32,30),(28,30),(30,32),(30,28)})
 
+    def test_burst_preserves_early_local_probe_and_later_row96(self):
+        for mode, cutoff in (("burst112",112),("burst128",128),("burst160",160)):
+            early=candidate(mode)(game_id="synthetic")
+            early._steps=96
+            early._click_successes[(0,30,30)]=2
+            early.choose_action([],obs())
+            self.assertIn(early._last_position,{(32,30),(28,30),(30,32),(30,28),(34,30),(26,30),(30,34),(30,26)})
+            from click_stagnation_variant import generate as row_generate
+            row_source=row_generate(SOURCE).replace("self._steps >= 128","self._steps >= 96")
+            module=types.ModuleType("row96")
+            exec(compile(row_source,"<row96>","exec"),module.__dict__)
+            row=module.MyAgent(game_id="synthetic")
+            late=candidate(mode)(game_id="synthetic")
+            for a in (row,late):
+                a._steps=cutoff
+                a._click_successes[(0,30,30)]=2
+                a.choose_action([],obs())
+            self.assertEqual(row._last_position,late._last_position)
+
     def test_source_guard_and_modes(self):
         with self.assertRaises(ValueError):
             generate(SOURCE.replace("MAX_CLICKS = 80","MAX_CLICKS = 79"))

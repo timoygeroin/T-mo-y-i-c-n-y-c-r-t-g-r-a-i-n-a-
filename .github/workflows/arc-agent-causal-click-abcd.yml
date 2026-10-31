@@ -1,9 +1,9 @@
-name: ARC-AGI-3 causal click refinement official public A-B-C-D
+name: ARC-AGI-3 bounded causal click burst official public A-B-C-D-E
 # Preregistered H0: no improvement over frozen and row96 controls.
 # H1: after 96 stalled click-only level-0 actions, local follow-up of
 #     observed responsive physical clicks improves 25-game public score
 #     and/or first-level action efficiency without losing common wins.
-# H2: distant follow-up (negative spatial control) performs as well as near.
+# H2: shorter burst loses lp85, longer burst loses ft09; near/far prior negative\n#     controls remain immutable evidence in earlier official run 41247314733.\n# Post-hoc public cohort tuning, never held-out or automatic promotion.
 # Same previously used 25 public games, no held-out or independent seed claim.
 # No change to frozen contest agent, main, Kaggle or legal/identity actions.
 on:
@@ -54,29 +54,36 @@ jobs:
           PY
           python -m py_compile arc-starter/agent/my_agent.py
           (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-row96.log
-      - name: Isolated local causal follow-up, same budget
+      - name: Isolated burst112 local follow-up, same budget
         run: |
           set -o pipefail
-          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode near
+          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode burst112
           python -m py_compile arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-near.log
-      - name: Distant-neighbor negative control, same budget
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\\1[REDACTED]/' | tee arc-causal-burst112.log
+      - name: Isolated burst128 local follow-up, same budget
         run: |
           set -o pipefail
-          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode far
+          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode burst128
           python -m py_compile arc-starter/agent/my_agent.py
-          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-far.log
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\\1[REDACTED]/' | tee arc-causal-burst128.log
+      - name: Isolated burst160 local follow-up, same budget
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode burst160
+          python -m py_compile arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\\1[REDACTED]/' | tee arc-causal-burst160.log
       - name: Compare official scorecards, no automatic policy promotion
         run: |
           set -o pipefail
           python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-frozen.log arc-causal-row96.log --expected-games 25 --output arc-causal-frozen-v-row96.json | tee arc-causal-frozen-v-row96.summary
-          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-near.log --expected-games 25 --output arc-causal-row96-v-near.json | tee arc-causal-row96-v-near.summary
-          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-far.log --expected-games 25 --output arc-causal-row96-v-far.json | tee arc-causal-row96-v-far.summary
-      - name: Preserve all four official public traces and negative evidence
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-burst112.log --expected-games 25 --output arc-causal-row96-v-burst112.json | tee arc-causal-row96-v-burst112.summary
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-burst128.log --expected-games 25 --output arc-causal-row96-v-burst128.json | tee arc-causal-row96-v-burst128.summary
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-burst160.log --expected-games 25 --output arc-causal-row96-v-burst160.json | tee arc-causal-row96-v-burst160.summary
+      - name: Preserve all five official public traces and negative evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arc-causal-click-abcd
+          name: arc-causal-click-burst-abcde
           path: |
             arc-causal-*.log
             arc-causal-*.json
