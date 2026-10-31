@@ -219,6 +219,22 @@ export class MondayRuntime {
         this.actionLedger.commit(prepared.actionKey);
       }
       const prior = reserved.record?.outcome;
+      // Cached success from an older runtime cannot bypass a newly installed
+      // evidence gate. A valid host-bound receipt must match this exact action.
+      if (prior && action.requireDomainReceptor === true) {
+        const proof=prior.verification?.independentProof;
+        const exact=prior.ok===true &&
+          proof?.source==='HOST_READER' &&
+          proof?.effectId===action.id &&
+          proof?.domain===action.domain &&
+          proof?.sourceSignal===action.sourceSignal &&
+          typeof proof.evidenceRef==='string' && proof.evidenceRef.trim().length>0;
+        if (!exact) return {
+          action,ok:false,
+          verification:{ok:false,code:'META_REUSED_RESULT_UNWITNESSED'},
+          ledger:{actionKey:prepared.actionKey,state:'UNRESOLVED',reused:true}
+        };
+      }
       if (prior) {
         return {
           ...prior,
