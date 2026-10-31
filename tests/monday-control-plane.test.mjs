@@ -74,8 +74,9 @@ test('revenue cell cannot claim money without observed monetary evidence',()=>{
   const collapse=cp.collapse(swarm,[
     {cellId:swarm.cells[0].id,verified:true,materialDelta:true,score:8,effect:'found lead',moneyClaim:1000000000,moneyObserved:0}
   ]);
-  assert.equal(collapse.survivors[0].moneyClaimAllowed,false);
-  assert.equal(collapse.survivors[0].moneyObserved,0);
+  assert.equal(collapse.survivors.length,0);
+  assert.equal(collapse.rejected[0].moneyClaimAllowed,false);
+  assert.equal(collapse.rejected[0].moneyObserved,0);
 });
 
 test('controller can produce next generation from surviving mechanism without multiplying identity',()=>{
