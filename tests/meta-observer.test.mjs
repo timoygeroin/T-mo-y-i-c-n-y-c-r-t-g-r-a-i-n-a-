@@ -86,7 +86,7 @@ test('whole-organism claims cannot be verified by the executor grading itself',a
   const outcome=await new MondayRuntime({capabilities:caps}).runPass([ask],{maxCycles:2});
   assert.equal(outcome.state,'BLOCKED');
   assert.equal(outcome.final.meta.state,'HOLD');
-  assert.ok(outcome.final.results.every(r=>r.verification.code==='META_INDEPENDENT_READER_MISSING'));
+  assert.ok(outcome.cycles[0].results.length===6 && outcome.cycles[0].results.every(r=>r.verification.code==='META_INDEPENDENT_READER_MISSING'));
   assert.deepEqual(outcome.final.meta.filters.know,[]);
 });
 
@@ -99,7 +99,7 @@ test('host readback for another effect cannot launder a self-certified six-domai
   const outcome=await new MondayRuntime({capabilities:caps,independentReadback:swapped}).runPass([ask],{maxCycles:2});
   assert.equal(outcome.state,'BLOCKED');
   assert.deepEqual(outcome.final.meta.filters.know,[]);
-  assert.ok(outcome.final.results.every(r=>r.verification.code==='META_INDEPENDENT_EFFECT_MISMATCH'));
+  assert.ok(outcome.cycles[0].results.length===6 && outcome.cycles[0].results.every(r=>r.verification.code==='META_INDEPENDENT_EFFECT_MISMATCH'));
 });
 
 test('forged persisted readback without a host-bound witness cannot become KNOW',()=>{
