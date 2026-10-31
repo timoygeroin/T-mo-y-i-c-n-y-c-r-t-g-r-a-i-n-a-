@@ -181,3 +181,51 @@ test('37 recovered backup effect cancels stale primary route without rerunning i
   recheck:async t=>({ok:true,effectObserved:true,taskId:t.id,effectId:t.effectId,objectId:t.objectId})});
  assert.equal(calls,0);assert.equal(x.reused.length,1);assert.equal(x.remaining.length,0);
 });
+test('38 same ID different object cannot silently deduplicate authority',()=>{
+ const x=compileKnownFrontier([task('A',{objectId:'u1'}),task('A',{objectId:'u2'})]);
+ assert.ok(x.failures.some(f=>f.code==='CONFLICTING_TASK_ID'));
+});
+test('39 same ID with humanOnly gate cannot be collapsed into safe task',()=>{
+ const x=compileKnownFrontier([task('A'),task('A',{humanGate:true})]);
+ assert.ok(x.failures.some(f=>f.code==='CONFLICTING_TASK_ID'));
+});
+test('40 same ID with public disclosure cannot be collapsed into private route',()=>{
+ const x=compileKnownFrontier([task('A'),task('A',{externalPublication:true})]);
+ assert.ok(x.failures.some(f=>f.code==='CONFLICTING_TASK_ID'));
+});
+test('41 same-effect same-route but contradictory permissions is a conflict, not duplicate',()=>{
+ const x=compileKnownFrontier([task('A',{effectId:'E',objectId:'o'}),task('B',{effectId:'E',objectId:'o',authorized:false})]);
+ assert.ok(x.failures.some(f=>f.code==='CONFLICTING_EFFECT_AUTHORITY'));
+ assert.equal(x.blocked.A,'CONFLICTING_EFFECT_AUTHORITY');
+});
+test('42 malformed dependency string is not silently normalized to []',()=>{
+ const x=compileKnownFrontier([task('A',{dependsOn:'SAFE_DEP'})]);
+ assert.ok(x.failures.some(f=>f.code==='INVALID_TASK_ARRAY'&&f.field==='dependsOn'));
+});
+test('43 malformed resource string is not silently normalized to []',()=>{
+ const x=compileKnownFrontier([task('A',{resources:'bank-account'})]);
+ assert.ok(x.failures.some(f=>f.code==='INVALID_TASK_ARRAY'&&f.field==='resources'));
+});
+test('44 nonstring dependency element is not silently discarded',()=>{
+ const x=compileKnownFrontier([task('A',{dependsOn:['X',123]})]);
+ assert.ok(x.failures.some(f=>f.code==='INVALID_TASK_ARRAY'&&f.field==='dependsOn'));
+});
+test('45 nonstring resource element is not silently discarded',()=>{
+ const x=compileKnownFrontier([task('A',{resources:[false,'bank-account']})]);
+ assert.ok(x.failures.some(f=>f.code==='INVALID_TASK_ARRAY'&&f.field==='resources'));
+});
+test('46 humanGate string is invalid rather than false',()=>{
+ const x=compileKnownFrontier([task('A',{humanGate:'yes'})]);
+ assert.ok(x.failures.some(f=>f.code==='INVALID_GATE_BOOLEAN'&&f.field==='humanGate'));
+});
+test('47 externalPublication string is invalid rather than false',()=>{
+ const x=compileKnownFrontier([task('A',{externalPublication:'true'})]);
+ assert.ok(x.failures.some(f=>f.code==='INVALID_GATE_BOOLEAN'&&f.field==='externalPublication'));
+});
+test('48 unchanged CAS version is not an accepted durable successor',async()=>{
+ const x=await run([task('A')],{expectedVersion:'7',
+ persist:async()=>({ok:true,version:'7'}),
+ readPersisted:async()=>({taskId:'A',effectId:'effect:A',objectId:'unspecified-object',receiptId:'receipt:A',version:'7'})});
+ assert.equal(x.durableInheritanceConfirmed,false);
+ assert.equal(x.status,'DURABLE_HEAD_RECONCILIATION_REQUIRED');
+});
