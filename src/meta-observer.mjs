@@ -21,6 +21,7 @@ function isEffectProof(entry){
     proof.independentProof?.effectId===entry.action?.id &&
     proof.independentProof?.domain===entry.action?.domain &&
     proof.independentProof?.sourceSignal===entry.action?.sourceSignal &&
+    typeof entry.action?.sourceSignal==='string' && entry.action.sourceSignal.length>0 &&
     typeof proof.independentProof?.evidenceRef==='string' &&
     proof.independentProof.evidenceRef.trim().length>0;
 }
@@ -64,8 +65,7 @@ export function compileMetaObservation({
   // included for pre-persist tests and do not gain priority over proof rules.
   const recorded=[...records(receipts),...arr(results)];
   const proved=recorded.filter(isEffectProof).filter(entry=>
-    active.some(i=>entry?.action?.sourceSignal===i.id ||
-      (active.length===1 && !entry?.action?.sourceSignal))
+    active.some(i=>entry?.action?.sourceSignal===i.id)
   );
 
   const know=required.filter(domain=>proved.some(x=>x.action?.domain===domain &&
