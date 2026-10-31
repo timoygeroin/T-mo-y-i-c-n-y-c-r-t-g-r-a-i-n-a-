@@ -1,4 +1,11 @@
+import sys
 import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+
 from monday_meta_verifier import Evidence, assess, calibrate, naive_receipt
 
 class VerificationOfVerification(unittest.TestCase):
@@ -11,7 +18,6 @@ class VerificationOfVerification(unittest.TestCase):
         return Evidence(**props)
 
     def test_alpha_style_restored_but_task_lost(self):
-        # Historical-shaped failure: greeting recognized; prior task not resumed.
         self.assertEqual(assess(self.e(kind='transfer', effect_observed=False)), 'FALSIFIED_EFFECT')
 
     def test_file_or_plugin_receipt_does_not_prove_behavior(self):

@@ -1,8 +1,10 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "author": {
+    "name": "MondayID"
+  },
+  "description": "MondayID 2.14.2: one-pass causal executor with fail-closed authority, exact object/route scope, typed dependencies and monotonic CAS, preserving Fusion Head and agent release.",
   "name": "mondayid-mobile",
-  "version": "2.13.9",
-  "description": "MondayID Era 2.13.9: one evidence-bound Fusion Head across chats, branches and hosts, preserving executable agent release, control bursts and proof critique.",
-  "author": {"name": "MondayID"},
-  "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-"
+  "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "version": "2.14.3"
 }
