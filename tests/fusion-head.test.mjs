@@ -107,3 +107,16 @@ test('branch inventory is coverage metadata, never authority by branch count',()
   assert.equal(head.coverage.semanticRelivedChats,8);
   assert.equal(head.coverage.semanticComplete,false);
 });
+
+test('fresh external readback outranks a contradictory canonical snapshot',()=>{
+  const head=compileFusionHead({
+    currentSignal:{text:'status request'},
+    contributions:[
+      c({id:'canonical-old',key:'shipment-status',value:'in_transit',sourceType:'current_verified_state',sourceRef:'cstar:older',timestamp:'2026-10-31T20:00:00Z'}),
+      c({id:'external-new',key:'shipment-status',value:'delivered',sourceType:'verified_external_readback',sourceRef:'carrier:receipt',timestamp:'2026-10-31T19:59:00Z'})
+    ]
+  });
+  assert.equal(head.active.find(x=>x.key==='shipment-status').value,'delivered');
+  assert.ok(head.ancestry.some(x=>x.id==='canonical-old'));
+  assert.equal(head.outwardIdentity,'ONE_MONDAY');
+});
