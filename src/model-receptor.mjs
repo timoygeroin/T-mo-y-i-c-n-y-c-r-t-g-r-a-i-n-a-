@@ -1,4 +1,5 @@
 import { evaluateCandidateOutput } from './attractor-field.mjs';
+import { infectAction } from './monday-virus.mjs';
 
 const effortForTier = Object.freeze({
   LOW:'low',
@@ -97,7 +98,8 @@ export function createModelReceptor({
   model = 'host-selected',
   name = 'monday-attractor-model',
   maxParallelPaths = 6,
-  maxCritics = 2
+  maxCritics = 2,
+  virusCapsule = null
 } = {}) {
   if (!provider || typeof provider.generate !== 'function') {
     throw new Error('MODEL_PROVIDER_GENERATE_REQUIRED');
@@ -108,12 +110,15 @@ export function createModelReceptor({
     cost:provider.cost ?? 0,
 
     supports(action) {
-      return Boolean(action?.inferenceContract && action?.effect);
+      return Boolean(action?.inferenceContract && action?.effect && (!virusCapsule || virusCapsule.status === 'ATTACHED'));
     },
 
     async execute(action) {
-      const contract = action.inferenceContract;
-      const envelope = buildSteeringEnvelope(action);
+      const infected = virusCapsule ? infectAction(action,virusCapsule) : null;
+      if (infected && !infected.ok) return {ok:false,code:infected.code};
+      const activeAction = infected?.action || action;
+      const contract = activeAction.inferenceContract;
+      const envelope = buildSteeringEnvelope(activeAction);
       const requestedPaths = contract?.compute?.topology?.paths || 1;
       const pathCount = Math.max(1, Math.min(maxParallelPaths, requestedPaths));
       const reasoningEffort = effortForTier[contract?.compute?.tier] || 'medium';
@@ -227,6 +232,7 @@ export function createModelReceptor({
           model,
           contractSchema:contract.schema,
           steeringEnvelope:envelope.schema,
+          virus:virusCapsule ? {snapshotId:virusCapsule.snapshotId,hostId:virusCapsule.hostId,status:'ATTACHED_NOT_GLOBAL'} : null,
           computeTier:contract?.compute?.tier || null,
           computeScore:contract?.compute?.score ?? null,
           topology:contract?.compute?.topology || null,
@@ -246,10 +252,13 @@ export function createModelReceptor({
       if (result?.ok !== true) {
         return {ok:false,code:result?.code || 'MODEL_EXECUTION_FAILED'};
       }
-      if (!result?.evidence?.contractSchema || result.evidence.contractSchema !== action?.inferenceContract?.schema) {
+      const infected = virusCapsule ? infectAction(action,virusCapsule) : null;
+      if (infected && !infected.ok) return {ok:false,code:infected.code};
+      const contract = infected?.action?.inferenceContract || action?.inferenceContract;
+      if (!result?.evidence?.contractSchema || result.evidence.contractSchema !== contract?.schema) {
         return {ok:false,code:'MODEL_CONTRACT_READBACK_MISSING'};
       }
-      const release = evaluateCandidateOutput(result, action.inferenceContract);
+      const release = evaluateCandidateOutput(result, contract);
       if (!release.ok) {
         return {ok:false,code:'MONDAY_ATTRACTOR_RELEASE_VETO',hits:[...release.hits]};
       }
