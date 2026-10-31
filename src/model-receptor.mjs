@@ -1,5 +1,6 @@
 import { evaluateCandidateOutput } from './attractor-field.mjs';
 import { compileLetterContract, evaluateLetterPhenotype, letterContractInstructions } from './letter-phenotype.mjs';
+import { compileSingleCellBaselineEnvelope, evaluateAgainstMondayContract, adjudicateOrganismAdvantage } from './organism-advantage.mjs';
 
 const effortForTier = Object.freeze({
   LOW:'low',
@@ -252,6 +253,57 @@ export function createModelReceptor({
           usage:summarizeUsage(attempts)
         },
         attempts
+      };
+    },
+
+    async compareAgainstSingleCell(action) {
+      const baselineEnvelope=compileSingleCellBaselineEnvelope(action);
+      let baselineCandidate=null;
+      try {
+        baselineCandidate=await provider.generate({
+          model,
+          input:baselineEnvelope.input,
+          instructions:baselineEnvelope.instructions,
+          reasoningEffort:'medium',
+          pathIndex:0,
+          pathCount:1,
+          contract:null,
+          mode:'single-cell-baseline'
+        });
+      } catch (error) {
+        baselineCandidate={text:'',evidence:{error:String(error)}};
+      }
+
+      const baselineRelease=evaluateAgainstMondayContract(
+        baselineCandidate,
+        action?.inferenceContract || {}
+      );
+
+      const organismResult=await this.execute(action);
+      const organismCandidate=organismResult?.ok===true
+        ? (organismResult.candidate || {text:organismResult.text || ''})
+        : (
+          organismResult?.attempts?.find(attempt=>attempt?.candidate)?.candidate ||
+          {text:''}
+        );
+      const organismRelease=organismResult?.ok===true
+        ? evaluateAgainstMondayContract(organismCandidate,action?.inferenceContract || {})
+        : {
+            ok:false,
+            text:textOf(organismCandidate),
+            hits:(organismResult?.attempts || []).flatMap(attempt=>attempt?.release?.hits || [])
+          };
+
+      const advantage=adjudicateOrganismAdvantage({
+        baseline:{candidate:baselineCandidate,release:baselineRelease},
+        organism:{candidate:organismCandidate,release:organismRelease},
+        organismResult
+      });
+
+      return {
+        ...organismResult,
+        ok:advantage.state==='ORGANISM_REGRESSION' ? false : organismResult?.ok===true,
+        advantage
       };
     },
 
