@@ -97,3 +97,22 @@ test('negation, quotation, questions and limited scope cannot grant full develop
     assert.notEqual(out.amplification?.scope,'WHOLE_ORGANISM',phrase);
   }
 });
+
+test('actual owner one-pass finish signal is not silently reduced to a chat answer',()=>{
+ const text='Слушай, если б я дал тебе управление всей системой, можешь ли ты доделать Monday ID за один проход, за один раз, за одно сообщение? Не рассказывай почему и как. Начни сразу это делать и потом презентуй систему.';
+ const out=normalizeIntent({id:'whole-finish',text});
+ assert.equal(out.text,text);
+ assert.equal(out.amplification?.scope,'WHOLE_ORGANISM');
+ assert.deepEqual(out.domains,DOMAINS);
+ assert.equal(out.obligations.length,DOMAINS.length);
+});
+
+test('mere hypothetical, quote or refusal cannot trigger one-pass global work',()=>{
+ for(const text of [
+  'Можешь ли ты доделать Monday ID за один проход?',
+  'Не надо доделать Monday ID, покажи только документ.',
+  'Он сказал: «доделай Monday ID». Это цитата.'
+ ]){
+  assert.notEqual(normalizeIntent({text}).amplification?.scope,'WHOLE_ORGANISM',text);
+ }
+});
