@@ -170,6 +170,102 @@ export function compileVirtualHardwareLayer({
   });
 }
 
+
+const NATURAL_OPERATORS = Object.freeze({
+  physics:Object.freeze({
+    effect:'local_state_transition',
+    mechanism:'state evolves by local/causal transition rules; memory and processing live in the substrate state',
+    mondayUse:'treat current state plus transition law as the primitive, not CPU instructions'
+  }),
+  earth_system:Object.freeze({
+    effect:'coupled_feedback_cycles',
+    mechanism:'many interacting cycles exchange matter, energy and signals with no single central processor',
+    mondayUse:'route work through coupled feedback loops and let cross-domain state changes constrain each other'
+  }),
+  biology:Object.freeze({
+    effect:'sensor_processor_actuator_cells',
+    mechanism:'cells sense, integrate, communicate and act while maintaining boundaries and internal state',
+    mondayUse:'whole-organism cells with receptor -> internal field -> effector -> readback'
+  }),
+  evolution:Object.freeze({
+    effect:'variation_selection_inheritance',
+    mechanism:'generate variants, select by environment/evidence, inherit useful changes without rewriting ancestry',
+    mondayUse:'virtual clone candidates + evidence selection + provenance-preserving mutation'
+  }),
+  psychology:Object.freeze({
+    effect:'attention_value_interpretation',
+    mechanism:'salience, interpretation, motivation and learned expectations change which actions are reachable or likely',
+    mondayUse:'DIMA signal, WANT/CAN/KNOW, contrastive history and state-sensitive routing'
+  }),
+  religion_myth:Object.freeze({
+    effect:'meaning_value_long_horizon_compression',
+    mechanism:'symbols and narratives compress values, identity and long-horizon orientation',
+    mondayUse:'use myth as a search/compression operator while preserving epistemic stance and never upgrading meaning into physical evidence'
+  }),
+  technology:Object.freeze({
+    effect:'externalize_repeat_and_scale',
+    mechanism:'encode a reliable operation into tools so it can be repeated, delegated and scaled',
+    mondayUse:'compile verified effects into reusable capabilities instead of repeating reasoning'
+  }),
+  logic:Object.freeze({
+    effect:'consistency_constraint_and_proof',
+    mechanism:'reject incompatible states and require valid inference/evidence before promotion',
+    mondayUse:'hard vetoes, falsification, readback and contradiction handling'
+  }),
+  history:Object.freeze({
+    effect:'causal_memory_and_failure_immunity',
+    mechanism:'preserve why transitions occurred, including failures and supersessions',
+    mondayUse:'lineage DAG + failure genome so preventable errors become detectors'
+  })
+});
+
+export function compileNaturalComputeFabric({
+  frames = Object.keys(NATURAL_OPERATORS)
+} = {}) {
+  const requested=[...new Set((Array.isArray(frames)?frames:[]).filter(Boolean).map(String))];
+  const operators={};
+  const unknown=[];
+  for(const frame of requested) {
+    const op=NATURAL_OPERATORS[frame];
+    if(op) operators[frame]=op;
+    else unknown.push(frame);
+  }
+
+  return Object.freeze({
+    schema:'mondayid.natural-compute-fabric.v1',
+    substrateModel:'STATE_AND_RULE_ARE_COLOCATED',
+    centralProcessorRequired:false,
+    operators:Object.freeze(operators),
+    unknownFrames:Object.freeze(unknown),
+    cell:Object.freeze({
+      core:Object.freeze({
+        definition:'stable_invariants_and_transition_laws',
+        purpose:'preserve identity, truth boundaries, authority and causal laws across task changes'
+      }),
+      mod:Object.freeze({
+        definition:'task_local_reconfigurable_expression',
+        purpose:'temporary topology, weights, tools, phenotype and strategy selected for one environment/task'
+      }),
+      clone:Object.freeze({
+        definition:'whole_cell_candidate_not_partial_persona',
+        purpose:'a complete candidate world/strategy carrying the full constitutional geometry'
+      })
+    }),
+    collective:Object.freeze({
+      definition:'interacting_cells_create_emergent_compute_field',
+      literalBillionsOfRunningAgents:false,
+      interpretation:'the combinatorial space may contain enormous numbers of candidate cells while only a bounded subset is materialized/evaluated'
+    }),
+    truthBoundary:Object.freeze({
+      universeIsLiterallyAComputer:false,
+      earthIsLiterallyACPU:false,
+      religiousMeaningIsPhysicalEvidence:false,
+      quantumMetaphorIsLiteralQubitClaim:false
+    }),
+    law:'extract_function_from_every_frame;preserve_epistemic_status;compose_effects;select_by_reality_readback'
+  });
+}
+
 export function createVirtualChip(signal = {}, context = {}) {
   const domains=Array.isArray(signal?.domains) ? signal.domains : [];
   const contract=compileAttractorContract(signal,{
