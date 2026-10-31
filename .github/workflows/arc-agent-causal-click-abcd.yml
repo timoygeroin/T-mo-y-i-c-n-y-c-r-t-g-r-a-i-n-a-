@@ -1,0 +1,84 @@
+name: ARC-AGI-3 causal click refinement official public A-B-C-D
+# Preregistered H0: no improvement over frozen and row96 controls.
+# H1: after 96 stalled click-only level-0 actions, local follow-up of
+#     observed responsive physical clicks improves 25-game public score
+#     and/or first-level action efficiency without losing common wins.
+# H2: distant follow-up (negative spatial control) performs as well as near.
+# Same previously used 25 public games, no held-out or independent seed claim.
+# No change to frozen contest agent, main, Kaggle or legal/identity actions.
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/click_causal_refinement_variant.py'
+      - 'competitions/arc-agi-3/tests/test_click_causal_refinement_candidate.py'
+      - '.github/workflows/arc-agent-causal-click-abcd.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  official_public_abcd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assert frozen agent and run candidate test contracts
+        run: |
+          set -euo pipefail
+          test "$(git hash-object competitions/arc-agi-3/agent/my_agent.py)" = "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+          (cd competitions/arc-agi-3 && python -m unittest discover -s tests -p 'test_click_causal_refinement_candidate.py' -v)
+          (cd competitions/arc-agi-3 && python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v)
+      - name: Fetch and install official public engine
+        run: |
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          (cd arc-starter && make setup PYTHON=python3.12)
+      - name: Frozen control 25 public games x 500 actions
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-frozen.log
+      - name: Previously tested row96 control, same budget
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          sys.path.insert(0,'competitions/arc-agi-3/tools')
+          from click_stagnation_variant import generate
+          source=Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          out=generate(source).replace("self._steps >= 128", "self._steps >= 96")
+          assert "self._steps >= 96" in out
+          Path('arc-starter/agent/my_agent.py').write_text(out)
+          PY
+          python -m py_compile arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-row96.log
+      - name: Isolated local causal follow-up, same budget
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode near
+          python -m py_compile arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-near.log
+      - name: Distant-neighbor negative control, same budget
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_causal_refinement_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py --mode far
+          python -m py_compile arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-causal-far.log
+      - name: Compare official scorecards, no automatic policy promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-frozen.log arc-causal-row96.log --expected-games 25 --output arc-causal-frozen-v-row96.json | tee arc-causal-frozen-v-row96.summary
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-near.log --expected-games 25 --output arc-causal-row96-v-near.json | tee arc-causal-row96-v-near.summary
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-causal-row96.log arc-causal-far.log --expected-games 25 --output arc-causal-row96-v-far.json | tee arc-causal-row96-v-far.summary
+      - name: Preserve all four official public traces and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-causal-click-abcd
+          path: |
+            arc-causal-*.log
+            arc-causal-*.json
+            arc-causal-*.summary
+          if-no-files-found: ignore
