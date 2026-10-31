@@ -1,0 +1,29 @@
+{
+  "schema": "mondayid.arc3.synthetic-ecology-receipt.v1",
+  "date": "2026-10-31",
+  "branch": "monday/arc-agi3-effect-first-world-compiler-20261031",
+  "world_compiler_blob": "92c6d5a606fb8028229fcb2b0445f65552246916",
+  "test_blob": "70d8e611825e4699fc564c6b3a31e955d5569cc1",
+  "seed": 17,
+  "families": 4,
+  "episodes_per_family": 40,
+  "episodes": 160,
+  "result": {
+    "effect_first_mean_actions": 2.0,
+    "habit_mean_actions": 2.25,
+    "effect_first_success_rate": 1.0,
+    "habit_success_rate": 0.75,
+    "families_won": 4
+  },
+  "verified_contracts": [
+    "world-disagreement probe beats uninformative historical success",
+    "failure-genome veto",
+    "shared-latent belief merge",
+    "stigmergic transition replay",
+    "old-agent fossil genome with scoped mixed mutation",
+    "fossil prior cannot override stronger world discrimination",
+    "effect-first hidden-rule ecology advantage"
+  ],
+  "claim_limit": "Synthetic mechanism benchmark only. Not an official ARC-AGI-3 score, not hidden-set evidence, not proof of competition advantage.",
+  "next_gate": "Integrate only the evidence-bound fossil and world-model mechanisms into a candidate agent, then compare against frozen agent under the same trusted runtime and action budget."
+}
