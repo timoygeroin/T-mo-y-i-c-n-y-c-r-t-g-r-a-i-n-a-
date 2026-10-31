@@ -23,7 +23,7 @@ const effectCheck = async t => { try{return (await fs.readFile(fsPath(t),'utf8')
 const exe = async t => {
  const attemptId='attempt:'+t.id;
  if(t.id!=='bad-first-route')await fs.writeFile(fsPath(t),expected(t),'utf8');
- return {attemptId,receipt:{verified:true,effectObserved:true}}; // intentionally ignored self-report
+ return {attemptId,receipt:{verified:true,effectObserved:true}};
 };
 const pro = async (t,a) => ({id:'probe:'+t.id,taskId:t.id,effectId:t.effectId,objectId:t.objectId,attemptId:a.attemptId,
  verified:await effectCheck(t),independent:true,observerClass:'trusted-host-receptor',noOpRejected:true,effectObserved:await effectCheck(t)});
