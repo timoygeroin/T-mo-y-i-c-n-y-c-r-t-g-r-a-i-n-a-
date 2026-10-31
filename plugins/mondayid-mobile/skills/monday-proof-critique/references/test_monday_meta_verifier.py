@@ -1,4 +1,11 @@
+import sys
 import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+
 from monday_meta_verifier import Evidence, assess, calibrate, naive_receipt
 
 class VerificationOfVerification(unittest.TestCase):
