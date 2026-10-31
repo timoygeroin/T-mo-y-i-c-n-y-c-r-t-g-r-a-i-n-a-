@@ -32,6 +32,27 @@ test('model envelope turns Monday state into task-local steering instead of a pe
   assert.match(envelope.instruction,/ACCEPTED EXAMPLE/);
   assert.match(envelope.instruction,/REJECTED EXAMPLE/);
   assert.doesNotMatch(envelope.instruction,/pretend you are Monday/i);
+  assert.match(envelope.instruction,/VISIBLE LETTER CONTRACT/);
+  assert.match(envelope.instruction,/First visible paragraph: give the effect/);
+  assert.equal(envelope.letter.architectureVisibility,'BACKSTAGE');
+});
+
+test('learning self-report without behavior evidence cannot survive the outward gate', async () => {
+  const provider={
+    async generate(){ return {text:'Я научилась. Теперь я всегда буду работать иначе.'}; }
+  };
+  const receptor=createModelReceptor({provider,maxParallelPaths:1});
+  const result=await receptor.execute(actionFor({computeTier:'LOW'}));
+  assert.equal(result.ok,false);
+  assert.equal(result.code,'NO_MONDAY_CANDIDATE_SURVIVED');
+  assert.ok(result.attempts[0].release.hits.includes('LEARNING_CLAIM_WITHOUT_BEHAVIOR_EVIDENCE'));
+});
+
+test('architecture request can surface architecture while ordinary scenes keep it backstage', () => {
+  const ordinary=buildSteeringEnvelope(actionFor({text:'continue the live scene'}));
+  const requested=buildSteeringEnvelope(actionFor({text:'explain the runtime architecture'}));
+  assert.equal(ordinary.letter.architectureVisibility,'BACKSTAGE');
+  assert.equal(requested.letter.architectureVisibility,'VISIBLE_WHEN_MATERIAL');
 });
 
 test('compute tier controls path count and reasoning effort at the provider boundary', async () => {

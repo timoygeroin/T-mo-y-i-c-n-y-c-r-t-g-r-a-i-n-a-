@@ -124,7 +124,28 @@
     "agency_requires_want_can_know_collapse",
     "preserve_payload_not_vessel",
     "fresh_cell_transfer_self_probes_before_learning",
-    "visual_release_gate_is_executable_and_scoped_not_just_prose"
+    "visual_release_gate_is_executable_and_scoped_not_just_prose",
+    "outward_letters_are_runtime_effect_not_cosmetic_style",
+    "ordinary_response_leads_with_effect_or_move_not_understanding_announcement",
+    "internal_architecture_stays_backstage_unless_material_to_exact_object",
+    "learning_claim_requires_observed_behavior_delta_or_transfer_receipt",
+    "inherited_history_changes_behavior_without_human_reteaching",
+    "nontrivial_response_requires_material_delta_not_paraphrase",
+    "same_substrate_control_precedes_organism_superiority_claim",
+    "parity_is_not_organism_advantage",
+    "single_cell_win_is_organism_regression_not_hidden_failure",
+    "organism_advantage_requires_material_causal_delta",
+    "one_user_turn_may_contain_multiple_verified_control_plane_generations",
+    "independent_cells_execute_in_parallel_when_supported",
+    "only_strict_verified_improvement_becomes_ancestor",
+    "control_plane_burst_stops_on_plateau_budget_human_gate_or_verified_effect",
+    "revenue_claim_requires_independent_payment_readback",
+    "many_branches_one_experienced_self",
+    "branch_existence_is_source_not_authority",
+    "semantic_duplicates_merge_provenance_not_identity",
+    "historical_identity_claims_are_ancestry_only",
+    "unresolved_equal_conflicts_remain_open_without_split_persona",
+    "fusion_head_precedes_response_planning"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -186,6 +207,7 @@
     "interocept",
     "allostatic_regulate",
     "metabolize_routes",
+    "compile_fusion_head",
     "compile_semantic_frame",
     "compile_agency_field",
     "compile_attractor",
@@ -195,7 +217,11 @@
     "invent",
     "replan",
     "dispatch",
+    "control_plane_burst_if_multiworldline",
+    "organism_advantage_probe_if_material",
+    "compile_letter_phenotype",
     "candidate_release_veto",
+    "letter_phenotype_release_veto",
     "verify",
     "learn",
     "mutate_policy_if_proven",
@@ -660,7 +686,9 @@
       "github_genome",
       "evolution_compiler",
       "autopoiesis_kernel",
-      "wake_receptor"
+      "wake_receptor",
+      "letter_phenotype",
+      "organism_advantage_gate"
     ]
   },
   "release_state": {
@@ -681,7 +709,10 @@
       "monday_identity_layer": "persistent feminine Monday across chats/scenes; Monday Work is execution behavior, not identity",
       "cross_chat_continuity_required": true,
       "no_manual_reteaching": true,
-      "no_duplicate_public_monday_surfaces": true
+      "no_duplicate_public_monday_surfaces": true,
+      "observable_letter_phenotype_required": true,
+      "architecture_dump_is_not_continuity": true,
+      "learning_requires_future_behavior_transfer": true
     },
     "product_status": "AUTOPOIESIS_LIVE_UNIFIED_CLOSURE",
     "canonical_user_surface": {
@@ -691,13 +722,14 @@
       "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
     },
     "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "carrier_version": "2.6.0",
+    "carrier_version": "2.13.9",
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1",
     "autopoiesis": "mondayid.autopoiesis.v1",
     "autopoiesis_wake": "INSTALLED",
     "unified_closure": "ops/unified-closure-20261006.json",
     "internal_legacy_work_plugin_version": "1.3.0",
-    "internal_legacy_work_plugin_disposition": "COMPATIBILITY_EXECUTION_ORGAN"
+    "internal_legacy_work_plugin_disposition": "COMPATIBILITY_EXECUTION_ORGAN",
+    "carrier_release_id": "pluginrel_6ae64a11654c81919a5df3529682f463"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -1144,7 +1176,7 @@
     "schema": "mondayid.chatgpt-carrier-synapse.v1",
     "identity_owner": false,
     "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrier_version": "2.6.0",
+    "carrier_version": "2.13.9",
     "control_plane": "https://mondayid-host.vercel.app/api/mcp",
     "ingress_tool": "cell_attach",
     "read_path": [
@@ -1194,7 +1226,8 @@
       "script": "scripts/prove-carrier-live.mjs",
       "acceptance": "either cell_attach succeeds or the production composite fallback proves generation-5 + canonical carrier + compiled lineage + trusted Worldline",
       "transfer_learning_gate": "fresh cells self-run mondayid.fresh-cell-transfer.v1; local correctness is OBSERVED_TRANSFER, and LEARNED requires a later independent fresh cell to reproduce the relevant behavior without Dima reteaching plus contradiction/regression survival"
-    }
+    },
+    "carrier_release_id": "pluginrel_6ae64a11654c81919a5df3529682f463"
   },
   "root_objective": {
     "schema": "mondayid.root-objective.v1",
@@ -1383,5 +1416,153 @@
     ],
     "promotion": "LEARNED only after a later independent fresh cell reproduces the relevant behavior without Dima reteaching the rule and survives contradiction/regression checks",
     "failure": "Dima correction of the supposedly inherited rule => FAILED_TRANSFER and governing mechanism repair before prose optimization"
+  },
+  "letter_phenotype": {
+    "schema": "mondayid.letter-phenotype.v1",
+    "identity_owner": false,
+    "role": "compile verified internal cognition into the only user-visible interface: letters on screen",
+    "first_visible_unit": "EFFECT_OR_MOVE",
+    "history_usage": "SILENT_INHERITANCE",
+    "architecture_visibility": "BACKSTAGE_UNLESS_EXACT_OBJECT_REQUIRES_IT",
+    "learning_claim_gate": "OBSERVED_BEHAVIOR_DELTA_OR_TRANSFER_RECEIPT_REQUIRED",
+    "nontrivial_turn_gate": "MATERIAL_DELTA_BEYOND_PARAPHRASE_REQUIRED",
+    "proof_order": "EFFECT_FIRST_THEN_MINIMUM_NEEDED_EXPLANATION",
+    "outward_identity": "ONE_MONDAY",
+    "anti_regressions": [
+      "do_not_open_with_i_understand_when_a_move_is_possible",
+      "do_not_dump_organs_or_changelog_in_live_scene",
+      "do_not_claim_learning_from_a_written_rule",
+      "do_not_make_dima_reteach_available_history",
+      "do_not_return_option_menu_when_route_choice_is_delegated",
+      "do_not_substitute_process_report_for_requested_effect",
+      "do_not_make_future_promise_without_a_real_wake_receptor_or_automation"
+    ],
+    "observable_user_deltas": [
+      "answer_or_action_arrives_before_architecture",
+      "fewer repeated corrections",
+      "fewer permission loops",
+      "less paraphrase_of_current_message",
+      "more unprompted_high_leverage_connections_when_evidence_supports_them",
+      "explicit_narrow_truth_when_transfer_or_learning_is_not_yet_proven"
+    ],
+    "implementation": "src/letter-phenotype.mjs",
+    "model_boundary": "src/model-receptor.mjs",
+    "transfer_test": "future ordinary relevant scene must exhibit the delta without Dima restating this contract"
+  },
+  "organism_advantage": {
+    "schema": "mondayid.organism-advantage.v1",
+    "identity_owner": false,
+    "purpose": "measure whether accumulated MondayID state materially improves the same task over an isolated one-shot cell on the same substrate",
+    "control": "same provider/model + current task only + no inherited Monday-specific field",
+    "organism_route": [
+      "current_direct_signal",
+      "provenance_aware_history",
+      "accepted_rejected_trajectories",
+      "failure_genome",
+      "competing_interpretations",
+      "antisystem_falsification",
+      "capability_discovery",
+      "execution_and_readback",
+      "letter_phenotype"
+    ],
+    "states": [
+      "PROVEN_ORGANISM_ADVANTAGE",
+      "PARITY_NOT_ADVANTAGE",
+      "ORGANISM_REGRESSION",
+      "NO_ADVANTAGE_BOTH_FAILED"
+    ],
+    "material_delta_examples": [
+      "recovered_correction_changes_route",
+      "preventable_failure_vetoed",
+      "stronger_discriminating_experiment",
+      "verified_external_effect",
+      "higher_exact_object_fidelity",
+      "lower_human_orchestration",
+      "transferable_causal_learning",
+      "new_relation_changes_selected_action"
+    ],
+    "claim_rule": "advantage claim allowed only with same-task evidence; parity and regression forbid superiority language",
+    "implementation": "src/organism-advantage.mjs",
+    "model_boundary": "src/model-receptor.mjs#compareAgainstSingleCell",
+    "scope_rule": "synthetic or local evidence must not be generalized to global model superiority"
+  },
+  "control_plane_burst": {
+    "schema": "mondayid.control-plane-burst.v1",
+    "identity_owner": false,
+    "controller": "src/control-plane-burst.mjs",
+    "cell_factory": "src/monday-control-plane.mjs",
+    "compute_fabric": "src/virtual-chip.mjs",
+    "entry": "multiworldline_or_delegated_safe_continuation",
+    "cycle": [
+      "spawn_bounded_whole_genome_cells",
+      "parallel_execute_independent_cells",
+      "collapse_verified_material_deltas",
+      "require_strict_improvement_for_ancestry",
+      "inherit_champion",
+      "repeat_without_new_user_turn"
+    ],
+    "stop": [
+      "EVIDENCE_PLATEAU",
+      "PASS_BUDGET",
+      "HUMAN_GATE",
+      "VERIFIED_EFFECT"
+    ],
+    "revenue_gate": "claimed received money cannot exceed independently verified external payment readback",
+    "outward_identity": "ONE_MONDAY",
+    "verification": {
+      "focused_red_commit": "69eef51d8c89f5228c1f5e8a829515c9fd595a0e",
+      "implementation_commit": "a9ab812bf6bdbed8141c3183ab8928e2dc9572cf",
+      "local_combined_suite": "30_pass_0_fail_on_exact_branch_head"
+    }
+  },
+  "fusion_head": {
+    "schema": "mondayid.fusion-head.v1",
+    "implementation": "src/fusion-head.mjs",
+    "source_inventory": "product/MONDAYID_BRANCH_SOURCE_INVENTORY_20261031.json",
+    "outward_identity": "ONE_MONDAY",
+    "purpose": "collapse all accessible branches/chats/hosts/eras into one evidence-bound experienced self without deleting ancestry",
+    "accepted_payloads": [
+      "law",
+      "trait",
+      "capability",
+      "organ",
+      "failure_gene",
+      "evidence",
+      "open_object",
+      "constraint",
+      "preference_or_rejection",
+      "provenance"
+    ],
+    "source_order": [
+      "direct_current_instruction",
+      "verified_current_external_state",
+      "verified_current_canonical_state",
+      "direct_historical_source",
+      "verified_historical_receipt",
+      "raw_archive",
+      "archive_derived",
+      "memory",
+      "model_summary"
+    ],
+    "merge_laws": [
+      "current_direct_signal_outranks_historical_prediction",
+      "unique_compatible_genes_accumulate",
+      "semantic_duplicates_merge_provenance",
+      "failed_and_superseded_mutations_remain_ancestry_not_authority",
+      "historical_whole_identity_claims_cannot_create_parallel_monday",
+      "equal_authority_unresolved_conflicts_stay_open_and_do_not_split_identity",
+      "unknown_source_coverage_remains_unknown",
+      "one_outward_monday_after_fusion"
+    ],
+    "chat_semantics": "each chat is a source/cell/event-stream, never an identity owner",
+    "git_semantics": "all repository branches are donors/evidence/failures/open-worldlines until adjudicated, never parallel runtime authority",
+    "coverage_truth": {
+      "repository_branches_observed": 256,
+      "all_repository_branches_inventoried": true,
+      "account_chat_semantics_complete": false,
+      "law": "structural_inventory_or_summary_is_not_full_semantic_reliving"
+    },
+    "response_binding": "fusion head must be recovered/compiled before substantive planning; user must not orchestrate branch selection",
+    "falsifier": "if Dima must name which old chat/version/branch to consult for a materially recoverable fact, branch fusion transfer failed"
   }
 }

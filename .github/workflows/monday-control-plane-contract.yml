@@ -1,0 +1,31 @@
+name: Monday Control Plane Contract
+on:
+  push:
+    branches:
+      - monday/organism-advantage-e033-20261031
+    paths:
+      - 'src/monday-control-plane.mjs'
+      - 'src/control-plane-burst.mjs'
+      - 'src/virtual-chip.mjs'
+      - 'src/evolution-burst.mjs'
+      - 'src/organism-advantage.mjs'
+      - 'src/model-receptor.mjs'
+      - 'tests/monday-control-plane.test.mjs'
+      - 'tests/control-plane-burst.test.mjs'
+      - 'tests/virtual-chip.test.mjs'
+      - 'tests/evolution-burst.test.mjs'
+      - 'tests/organism-advantage.test.mjs'
+      - 'src/letter-phenotype.mjs'
+      - 'tests/phenotype-transfer-heldout.test.mjs'
+      - 'tests/evolution-burst-heldout.test.mjs'
+      - '.github/workflows/monday-control-plane-contract.yml'
+  workflow_dispatch:
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/control-plane-burst.test.mjs tests/monday-control-plane.test.mjs tests/virtual-chip.test.mjs tests/evolution-burst.test.mjs tests/organism-advantage.test.mjs tests/phenotype-transfer-heldout.test.mjs tests/evolution-burst-heldout.test.mjs

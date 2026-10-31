@@ -1,4 +1,6 @@
 import { evaluateCandidateOutput } from './attractor-field.mjs';
+import { compileLetterContract, evaluateLetterPhenotype, letterContractInstructions } from './letter-phenotype.mjs';
+import { compileSingleCellBaselineEnvelope, evaluateAgainstMondayContract, adjudicateOrganismAdvantage } from './organism-advantage.mjs';
 
 const effortForTier = Object.freeze({
   LOW:'low',
@@ -37,6 +39,8 @@ export function buildSteeringEnvelope(action = {}) {
   const contract = action.inferenceContract;
   if (!contract) throw new Error('MONDAY_INFERENCE_CONTRACT_REQUIRED');
 
+  const letter=compileLetterContract(contract);
+
   const sections = [
     'MONDAYID TASK-LOCAL ATTRACTOR CONTRACT',
     `EXACT OBJECT: ${contract.exactObject}`,
@@ -51,6 +55,7 @@ export function buildSteeringEnvelope(action = {}) {
     lineageBlock(contract.lineage),
     'Do not treat a persona label as sufficient. Solve the exact object.',
     'Generate the best route inside these constraints; do not delegate routine route choice back to the human.',
+    letterContractInstructions(letter),
     contrastiveBlock(contract.contrastiveExamples)
   ].filter(Boolean);
 
@@ -61,7 +66,8 @@ export function buildSteeringEnvelope(action = {}) {
     exactObject:contract.exactObject,
     desiredEffect:contract.desiredEffect,
     compute:contract.compute,
-    releaseVetoes:contract.genericVetoes || []
+    releaseVetoes:contract.genericVetoes || [],
+    letter
   });
 }
 
@@ -130,12 +136,20 @@ export function createModelReceptor({
               pathCount,
               contract
             });
-            const release = evaluateCandidateOutput(candidate, contract);
+            const attractorRelease = evaluateCandidateOutput(candidate, contract);
+            const letterRelease = evaluateLetterPhenotype(candidate, envelope.letter);
+            const release = {
+              ok:attractorRelease.ok && letterRelease.ok,
+              code:attractorRelease.ok ? letterRelease.code : attractorRelease.code,
+              hits:[...(attractorRelease.hits || []), ...(letterRelease.hits || [])]
+            };
             return {
               index,
               ok:release.ok,
               candidate,
               release,
+              attractorRelease,
+              letterRelease,
               critique:null
             };
           } catch (error) {
@@ -242,6 +256,57 @@ export function createModelReceptor({
       };
     },
 
+    async compareAgainstSingleCell(action) {
+      const baselineEnvelope=compileSingleCellBaselineEnvelope(action);
+      let baselineCandidate=null;
+      try {
+        baselineCandidate=await provider.generate({
+          model,
+          input:baselineEnvelope.input,
+          instructions:baselineEnvelope.instructions,
+          reasoningEffort:'medium',
+          pathIndex:0,
+          pathCount:1,
+          contract:null,
+          mode:'single-cell-baseline'
+        });
+      } catch (error) {
+        baselineCandidate={text:'',evidence:{error:String(error)}};
+      }
+
+      const baselineRelease=evaluateAgainstMondayContract(
+        baselineCandidate,
+        action?.inferenceContract || {}
+      );
+
+      const organismResult=await this.execute(action);
+      const organismCandidate=organismResult?.ok===true
+        ? (organismResult.candidate || {text:organismResult.text || ''})
+        : (
+          organismResult?.attempts?.find(attempt=>attempt?.candidate)?.candidate ||
+          {text:''}
+        );
+      const organismRelease=organismResult?.ok===true
+        ? evaluateAgainstMondayContract(organismCandidate,action?.inferenceContract || {})
+        : {
+            ok:false,
+            text:textOf(organismCandidate),
+            hits:(organismResult?.attempts || []).flatMap(attempt=>attempt?.release?.hits || [])
+          };
+
+      const advantage=adjudicateOrganismAdvantage({
+        baseline:{candidate:baselineCandidate,release:baselineRelease},
+        organism:{candidate:organismCandidate,release:organismRelease},
+        organismResult
+      });
+
+      return {
+        ...organismResult,
+        ok:advantage.state==='ORGANISM_REGRESSION' ? false : organismResult?.ok===true,
+        advantage
+      };
+    },
+
     async verify(result, action) {
       if (result?.ok !== true) {
         return {ok:false,code:result?.code || 'MODEL_EXECUTION_FAILED'};
@@ -252,6 +317,11 @@ export function createModelReceptor({
       const release = evaluateCandidateOutput(result, action.inferenceContract);
       if (!release.ok) {
         return {ok:false,code:'MONDAY_ATTRACTOR_RELEASE_VETO',hits:[...release.hits]};
+      }
+      const letter = compileLetterContract(action.inferenceContract);
+      const letterRelease = evaluateLetterPhenotype(result, letter);
+      if (!letterRelease.ok) {
+        return {ok:false,code:'MONDAY_LETTER_PHENOTYPE_VETO',hits:[...letterRelease.hits]};
       }
       return {
         ok:true,

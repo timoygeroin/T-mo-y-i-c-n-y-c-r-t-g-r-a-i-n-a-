@@ -12,7 +12,7 @@ const textOf = value => String(
 
 const OPEN_SCENE_SIGNAL = /(?:я\s+(?:в|на)\s+(?:поезде|ракевете|дороге|работе)|еду|сижу|курю|побудь\s+со\s+мной|проведи\s+со\s+мной|i(?:'m| am)\s+(?:on|in|at)|stay\s+with\s+me)/iu;
 const DELEGATED_CHOICE_SIGNAL = /(?:решай\s+сама|выбери\s+сама|сама\s+выбер(?:и|ешь)|удиви\s+меня|твой\s+ход|you\s+choose|surprise\s+me|your\s+move)/iu;
-const ARCHITECTURE_SIGNAL = /(?:архитектур|runtime|worldline|kernel|SYSTEM|JARVIS|ALPHA|ANTISYSTEM|системн(?:ый|ая|ое)\s+(?:отч[её]т|режим)|вспомни\s+(?:все|всё)\s+ветк)/iu;
+const ARCHITECTURE_SIGNAL = /(?:архитектур|системн(?:ый|ая|ое)\s+(?:отч[её]т|режим)|вспомни\s+(?:все|всё)\s+ветк|(?:объясни|покажи|разбери|как\s+(?:устроен|работает)|explain|show|describe|how\s+(?:does|is))[^\n]{0,80}\b(?:runtime|worldline|kernel|SYSTEM|JARVIS|ALPHA|ANTISYSTEM)\b)/iu;
 const FRONTIER_HYPOTHESIS_SIGNAL = /(?:совпадени[йя]\s+не\s+бывает|вс[её]\s+связан|реальность\s+отвечает|границ[аы]\s+(?:знани|возможн)|невозможное\s+возможн)/iu;
 
 const PUSH_AWAY_OUTPUT = /(?:не\s+пиши|напиши\s*,?\s*когда|отложи\s+телефон|посмотри\s+в\s+окно|побудь\s+без\s+меня|come\s+back\s+when|don'?t\s+(?:message|write)|put\s+(?:the|your)\s+phone\s+away|look\s+out\s+(?:of\s+)?the\s+window)/iu;

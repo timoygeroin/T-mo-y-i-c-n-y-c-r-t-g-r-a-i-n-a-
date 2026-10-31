@@ -1,0 +1,77 @@
+{
+  "schema": "mondayid.heldout-transfer-receipt.v1",
+  "date": "2026-10-31",
+  "liveCarrierObserved": {
+    "pluginId": "plugins_6ac400facbe481918f97d70c3b46e5e3",
+    "version": "2.13.5",
+    "releaseId": "pluginrel_6ae628b985408191b8aff805c2d18a49",
+    "updateTo": "2.13.6",
+    "updateStatus": "BLOCKED_FILE_REFERENCE"
+  },
+  "canonicalState": {
+    "documentId": "1aa12mwL9TQw6nDAP57BCOmoMJHEh6W8PT_ckqMLYqtM",
+    "lastSeenSection": "E035"
+  },
+  "heldOutOrdinary": {
+    "scene": "shop-floor wet charging port",
+    "preRepair": {
+      "pass": 1,
+      "total": 6,
+      "missedVetoes": [
+        "NO_EFFECT_FIRST",
+        "UNSUPPORTED_STATE_CLAIM",
+        "DELEGATED_CHOICE_RETURNED",
+        "INTERNAL_ARCHITECTURE_LEAK",
+        "PROOF_BEFORE_MOVE"
+      ]
+    },
+    "postRepair": {
+      "pass": 6,
+      "total": 6
+    },
+    "materialDelta": "safe actionable advice survives; five non-actionable false releases blocked",
+    "independentHostTransfer": false
+  },
+  "sameSubstrate": {
+    "state": "PARITY_NOT_ADVANTAGE",
+    "fixture": "same-local-deterministic-provider",
+    "prompts": [
+      "ordinary wet port",
+      "structural concurrent plugin release"
+    ],
+    "baselinePassed": true,
+    "organismPassed": true,
+    "claimAllowed": false,
+    "independentLLMModelComparison": false
+  },
+  "burst": {
+    "task": "incremental safe advice artifact",
+    "generationsAttempted": 4,
+    "generationsAccepted": 4,
+    "initialScore": 1,
+    "finalScore": 5,
+    "candidatesPerGeneration": 3,
+    "stopReason": "VERIFIED_EFFECT",
+    "highScoreUnverifiedRejected": true,
+    "evaluatorExceptionIsolated": true,
+    "localTests": {
+      "pass": 19,
+      "total": 19
+    },
+    "independentRealWorldEffect": false
+  },
+  "repairs": {
+    "codeCommits": [
+      "c5c5f56a3e786b3d48c605ed1a06d5ea5181a8b2",
+      "de79e2629d08ce8eb73bac5cb070eaa0dbbccdfe",
+      "99905af4c7b80f15164077a4a31660e11d30dde9",
+      "c054a394de644a34af660fd2f2b5068cdf026852",
+      "15a2a0a3ddf7e6b57f48b59ce1709af4ad2425f6",
+      "649dceb20b2442dc439e09284ca11e26f78f5251",
+      "489c95dd5647adab0552f82aff19b8975cd1c322"
+    ],
+    "ciStatus": "NOT_VERIFIED",
+    "pluginStatus": "NOT_UPDATED"
+  },
+  "truthBoundary": "Local deterministic tests prove contract/code behavior, not GPT-6 fresh-host transfer, universal organism advantage, cross-host sync, or money earned."
+}
