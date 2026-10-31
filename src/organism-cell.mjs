@@ -87,6 +87,7 @@ export class OrganismCell {
       actionLedger:this.runtime.actionLedger,
       capabilities:options.capabilities || {},
       foundry:options.foundry || null,
+      independentReadback:this.runtime.independentReadback,
       cellId:childId
     });
 
