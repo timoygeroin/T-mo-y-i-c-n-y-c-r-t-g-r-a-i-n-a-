@@ -47,3 +47,53 @@ test('legacy actions without external requirement retain existing behavior',asyn
   const out=await runtime(null).executeAction({...action,requiredVerificationMode:null});
   assert.equal(out.ok,true);
 });
+
+
+test('missing action provenance cannot be laundered by a reader',async()=>{
+  const bad={...action,sourceSignal:null};
+  const out=await runtime(async({action:a})=>({
+    ok:true,effectId:a.id,domain:a.domain,
+    sourceSignal:a.sourceSignal,evidenceRef:'host:unbound'
+  })).executeAction(bad);
+  assert.equal(out.ok,false);
+  assert.equal(out.verification.code,'INDEPENDENT_READBACK_EFFECT_MISMATCH');
+});
+
+test('independent reader must observe a real disk effect, not executor self-report', async()=>{
+  const fs=await import('node:fs/promises');
+  const os=await import('node:os');
+  const path=await import('node:path');
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'monday-readback-'));
+  const effect=path.join(dir,'effect.json');
+  const reader=async({action:requested})=>{
+    try {
+      const observed=JSON.parse(await fs.readFile(effect,'utf8'));
+      return observed.effectId===requested.id &&
+        observed.domain===requested.domain &&
+        observed.sourceSignal===requested.sourceSignal
+        ? {ok:true,effectId:observed.effectId,domain:observed.domain,
+          sourceSignal:observed.sourceSignal,evidenceRef:'fs:'+effect}
+        : {ok:false};
+    }catch{return {ok:false};}
+  };
+  try {
+    const missing=await runtime(reader).executeAction(action);
+    assert.equal(missing.ok,false);
+    assert.equal(missing.ledger.state,'AMBIGUOUS');
+
+    await fs.writeFile(effect,JSON.stringify({
+      effectId:'wrong-id',domain:action.domain,sourceSignal:action.sourceSignal
+    }));
+    const wrong=await runtime(reader).executeAction(action);
+    assert.equal(wrong.ok,false);
+
+    await fs.writeFile(effect,JSON.stringify({
+      effectId:action.id,domain:action.domain,sourceSignal:action.sourceSignal
+    }));
+    const observed=await runtime(reader).executeAction(action);
+    assert.equal(observed.ok,true);
+    assert.equal(observed.verification.independentProof.source,'HOST_READER');
+  } finally {
+    await fs.rm(dir,{recursive:true,force:true});
+  }
+});
