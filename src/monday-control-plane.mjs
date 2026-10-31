@@ -94,15 +94,26 @@ export function createMondayControlPlane({maxCells=8}={}) {
     });
   }
 
-  function collapse(swarm={},results=[]) {
+  function collapse(swarm={},results=[],proof={}) {
+    // Only a separate trusted payment readback can establish observed money.
+    // Candidate-supplied moneyObserved is deliberately ignored.
+    const readback=proof?.paymentReadback;
+    const readbackValid=readback?.verified===true &&
+      readback?.source==='external-payment-provider' &&
+      typeof readback?.receiptId==='string' && readback.receiptId.trim().length>0 &&
+      typeof readback?.currency==='string' && readback.currency.trim().length>0 &&
+      Number.isFinite(Number(readback?.amountReceived)) &&
+      Number(readback.amountReceived)>=0;
+    const externallyObservedMoney=readbackValid?Number(readback.amountReceived):0;
     const cellIds=new Set((swarm.cells||[]).map(c=>c.id));
     const normalized=(Array.isArray(results)?results:[])
       .filter(r=>cellIds.has(r?.cellId))
       .map(r=>{
         const verified=r?.verified===true;
         const materialDelta=r?.materialDelta===true;
-        const moneyObserved=Number.isFinite(Number(r?.moneyObserved))?Number(r.moneyObserved):0;
-        const moneyClaim=Number.isFinite(Number(r?.moneyClaim))?Number(r.moneyClaim):0;
+        const moneyObserved=externallyObservedMoney;
+        const moneyClaim=r?.moneyClaim == null ? 0 : Number(r.moneyClaim);
+        const moneyClaimAllowed=Number.isFinite(moneyClaim) && moneyClaim>=0 && moneyClaim<=moneyObserved && (moneyClaim===0 || (readbackValid && r?.moneyCurrency===readback.currency));
         return Object.freeze({
           ...r,
           verified,
@@ -110,16 +121,16 @@ export function createMondayControlPlane({maxCells=8}={}) {
           score:Number.isFinite(Number(r?.score))?Number(r.score):0,
           moneyObserved,
           moneyClaim,
-          moneyClaimAllowed:moneyClaim<=moneyObserved
+          moneyClaimAllowed
         });
       });
 
     const survivors=normalized
-      .filter(r=>r.verified&&r.materialDelta)
+      .filter(r=>r.verified&&r.materialDelta&&r.moneyClaimAllowed)
       .sort((a,b)=>b.score-a.score);
-    const rejected=normalized.filter(r=>!(r.verified&&r.materialDelta)).map(r=>Object.freeze({
+    const rejected=normalized.filter(r=>!(r.verified&&r.materialDelta&&r.moneyClaimAllowed)).map(r=>Object.freeze({
       ...r,
-      rejectionReason:!r.verified?'UNVERIFIED':!r.materialDelta?'NO_MATERIAL_DELTA':'REJECTED'
+      rejectionReason:!r.verified?'UNVERIFIED':!r.materialDelta?'NO_MATERIAL_DELTA':!r.moneyClaimAllowed?'UNVERIFIED_REVENUE':'REJECTED'
     }));
     const winner=survivors[0]||null;
 
@@ -137,6 +148,7 @@ export function createMondayControlPlane({maxCells=8}={}) {
 
   function evolve(task={},collapseResult={},specs=[]) {
     const winner=collapseResult?.winner||null;
+    if(!winner) throw new Error('CONTROL_PLANE_NO_VERIFIED_ANCESTOR');
     const nextTask={
       ...task,
       generation:Number(collapseResult?.generation||task?.generation||1)+1
