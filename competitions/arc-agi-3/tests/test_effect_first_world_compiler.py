@@ -1,9 +1,9 @@
 import unittest
 
 try:
-    from agent.world_compiler import WorldCompiler
+    from agent.world_compiler import WorldCompiler, SharedLatentField, StigmergicMemory
 except ModuleNotFoundError:
-    WorldCompiler = None
+    WorldCompiler = SharedLatentField = StigmergicMemory = None
 
 
 class EffectFirstWorldCompilerTests(unittest.TestCase):
@@ -57,6 +57,29 @@ class EffectFirstWorldCompilerTests(unittest.TestCase):
 
         self.assertEqual(decision.action, "ACTION2")
         self.assertEqual(decision.reason, "MAX_WORLD_DISCRIMINATION")
+
+
+    def test_shared_latent_field_transmits_belief_without_text_chat(self):
+        self.assertIsNotNone(SharedLatentField)
+        field = SharedLatentField()
+        field.publish("vision", {"door": 0.8, "switch": 0.2}, confidence=0.9)
+        field.publish("causal", {"door": 0.6, "switch": 0.4}, confidence=0.7)
+
+        merged = field.read()
+
+        self.assertGreater(merged["door"], merged["switch"])
+        self.assertAlmostEqual(sum(merged.values()), 1.0, places=6)
+
+    def test_stigmergy_treats_environment_change_as_external_memory(self):
+        self.assertIsNotNone(StigmergicMemory)
+        memory = StigmergicMemory()
+        memory.observe("S0", "ACTION2", "S1")
+        memory.observe("S1", "ACTION2", "S2")
+        memory.observe("S2", "ACTION4", "S3")
+
+        self.assertEqual(memory.predict("S1", "ACTION2"), "S2")
+        self.assertEqual(memory.replay(("S0", "ACTION2", "ACTION2")), "S2")
+        self.assertGreater(memory.novelty("S3"), memory.novelty("S2"))
 
 
 if __name__ == "__main__":
