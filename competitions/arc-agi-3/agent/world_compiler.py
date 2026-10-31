@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 import math
+import random
 from typing import Dict, Iterable, Mapping, MutableMapping, Sequence, Tuple
 
 
@@ -100,6 +101,87 @@ class StigmergicMemory:
         return 1.0 / (1.0 + self._state_visits[str(state)])
 
 
+@dataclass(frozen=True)
+class FossilGene:
+    name: str
+    disposition: str
+    exposed_worlds: int = 0
+    total_worlds: int = 0
+    successes: int = 0
+    regressions: int = 0
+    failure_modes: Tuple[str, ...] = ()
+
+    @property
+    def generalization_weight(self) -> float:
+        if self.disposition == "INHERIT":
+            return 1.0
+        if self.total_worlds <= 0:
+            return 0.0
+        exposure = max(0.0, min(1.0, self.exposed_worlds / self.total_worlds))
+        evidence_balance = (self.successes + 1.0) / (
+            self.successes + self.regressions + 2.0
+        )
+        return exposure * evidence_balance
+
+
+class AgentFossilGenome:
+    """Old-agent behavior converted into scoped inheritance rather than dogma."""
+
+    def __init__(self, genes: Iterable[FossilGene]) -> None:
+        self._genes = {gene.name: gene for gene in genes}
+
+    def gene(self, name: str) -> FossilGene:
+        return self._genes[str(name)]
+
+    def prior_for_action(
+        self,
+        action: str,
+        action_map: Mapping[str, str] | None = None,
+    ) -> float:
+        gene_name = (action_map or {}).get(str(action))
+        if not gene_name or gene_name not in self._genes:
+            return 0.0
+        return self._genes[gene_name].generalization_weight
+
+    @classmethod
+    def from_novelty_agent_retrospective(cls) -> "AgentFossilGenome":
+        # Inherited structural reflexes come from the frozen agent itself.
+        # CLICK_STAGNATION_GATE is deliberately scoped by the retrospective:
+        # 3/25 public trajectories were exposed, with one faster, one slower,
+        # and one still failing to reach the first level.
+        return cls((
+            FossilGene(
+                name="LEGAL_ACTION_DISCIPLINE",
+                disposition="INHERIT",
+                failure_modes=(),
+            ),
+            FossilGene(
+                name="COORDINATE_CLICK_IDENTITY",
+                disposition="INHERIT",
+                failure_modes=(),
+            ),
+            FossilGene(
+                name="TRANSITION_REPLAY",
+                disposition="INHERIT",
+                failure_modes=(),
+            ),
+            FossilGene(
+                name="LOOP_AVOIDANCE",
+                disposition="INHERIT",
+                failure_modes=(),
+            ),
+            FossilGene(
+                name="CLICK_STAGNATION_GATE",
+                disposition="SCOPED_ONLY",
+                exposed_worlds=3,
+                total_worlds=25,
+                successes=1,
+                regressions=1,
+                failure_modes=("mixed_regression", "low_exposure"),
+            ),
+        ))
+
+
 class WorldCompiler:
     """Maintain competing world hypotheses and choose discriminating probes."""
 
@@ -110,6 +192,8 @@ class WorldCompiler:
         predictions: Mapping[str, Mapping[str, str]],
         failure_genome: Mapping[str, Mapping[str, object]] | None = None,
         historical_success: Mapping[str, float] | None = None,
+        fossil_genome: AgentFossilGenome | None = None,
+        fossil_action_map: Mapping[str, str] | None = None,
     ) -> None:
         self._worlds: tuple[str, ...] = tuple(map(str, worlds))
         self._predictions: dict[str, dict[str, str]] = {
@@ -123,6 +207,11 @@ class WorldCompiler:
         self._historical_success = {
             str(action): float(value)
             for action, value in (historical_success or {}).items()
+        }
+        self._fossil_genome = fossil_genome
+        self._fossil_action_map = {
+            str(action): str(gene)
+            for action, gene in (fossil_action_map or {}).items()
         }
 
     @property
@@ -168,8 +257,14 @@ class WorldCompiler:
             # Historical success is only a weak tie-breaker.  Discovery of the
             # world's rules outranks habitual success when success is uninformative.
             success = self._historical_success.get(action, 0.0)
-            ranked.append((information_gain, success * 1e-6, action))
-        information_gain, _tie, action = max(ranked)
+            fossil_prior = (
+                self._fossil_genome.prior_for_action(action, self._fossil_action_map)
+                if self._fossil_genome is not None else 0.0
+            )
+            # Fossil knowledge is a prior only.  It can break a true tie, but it
+            # cannot overpower stronger world discrimination.
+            ranked.append((information_gain, fossil_prior * 1e-6, success * 1e-9, action))
+        information_gain, _fossil_tie, _success_tie, action = max(ranked)
 
         return ProbeDecision(
             action=action,
@@ -189,3 +284,105 @@ class WorldCompiler:
         )
         self._worlds = survivors
         return survivors
+
+
+
+def run_synthetic_ecology(seed: int = 0, episodes_per_family: int = 40) -> dict[str, float | int]:
+    """Compare effect-first discovery with a habit baseline on hidden-rule toys.
+
+    This is a mechanism regression test, not an ARC score estimate.  Each family
+    has four latent worlds.  A diagnostic probe reveals which world is active;
+    exploiting without discovery is a three-guess habit with a hard episode cap.
+    """
+    if episodes_per_family <= 0:
+        raise ValueError("episodes_per_family must be positive")
+
+    rng = random.Random(seed)
+    families = (
+        "color_rule",
+        "symmetry_rule",
+        "causal_gate",
+        "sequence_rule",
+    )
+    total_episodes = len(families) * episodes_per_family
+    effect_actions = 0
+    habit_actions = 0
+    effect_successes = 0
+    habit_successes = 0
+    family_results = []
+
+    for family_index, family in enumerate(families):
+        worlds = tuple(f"{family}:W{i}" for i in range(4))
+        probe = f"{family}:PROBE"
+        exploits = tuple(f"{family}:GOAL{i}" for i in range(4))
+        predictions = {
+            probe: {world: f"OBS{i}" for i, world in enumerate(worlds)}
+        }
+        for action_index, action in enumerate(exploits):
+            predictions[action] = {
+                world: ("WIN" if world_index == action_index else "FAIL")
+                for world_index, world in enumerate(worlds)
+            }
+
+        family_effect_actions = 0
+        family_habit_actions = 0
+        family_effect_successes = 0
+        family_habit_successes = 0
+        offset = rng.randrange(4)
+
+        for episode in range(episodes_per_family):
+            target_index = (episode + offset) % 4
+            target_world = worlds[target_index]
+
+            compiler = WorldCompiler(
+                worlds=worlds,
+                predictions=predictions,
+                fossil_genome=AgentFossilGenome.from_novelty_agent_retrospective(),
+            )
+            first = compiler.choose_probe((probe, *exploits))
+            if first.action != probe:
+                raise AssertionError("effect-first controller failed to choose diagnostic probe")
+            observed = predictions[probe][target_world]
+            survivors = compiler.observe(probe, observed)
+            family_effect_actions += 1
+            if survivors == (target_world,):
+                # Once the latent world is identified, compile the world-specific
+                # action instead of continuing undirected novelty search.
+                goal = exploits[target_index]
+                family_effect_actions += 1
+                if predictions[goal][target_world] == "WIN":
+                    family_effect_successes += 1
+
+            # Habit baseline: replay a fixed historically preferred ordering.
+            # It does not get the diagnostic observation and has at most 3 tries.
+            won = False
+            for action in exploits[:3]:
+                family_habit_actions += 1
+                if predictions[action][target_world] == "WIN":
+                    family_habit_successes += 1
+                    won = True
+                    break
+            if not won:
+                pass
+
+        effect_actions += family_effect_actions
+        habit_actions += family_habit_actions
+        effect_successes += family_effect_successes
+        habit_successes += family_habit_successes
+        effect_rate = family_effect_successes / episodes_per_family
+        habit_rate = family_habit_successes / episodes_per_family
+        effect_mean = family_effect_actions / episodes_per_family
+        habit_mean = family_habit_actions / episodes_per_family
+        family_results.append(
+            effect_rate > habit_rate and effect_mean < habit_mean
+        )
+
+    return {
+        "families": len(families),
+        "episodes": total_episodes,
+        "effect_first_mean_actions": effect_actions / total_episodes,
+        "habit_mean_actions": habit_actions / total_episodes,
+        "effect_first_success_rate": effect_successes / total_episodes,
+        "habit_success_rate": habit_successes / total_episodes,
+        "families_won": sum(bool(x) for x in family_results),
+    }
