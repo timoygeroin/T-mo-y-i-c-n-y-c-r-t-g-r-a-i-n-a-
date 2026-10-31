@@ -1,0 +1,78 @@
+{
+  "schema": "mondayid.arc3.agent-fossil-genome.v1",
+  "status": "EXPERIMENTAL_EVIDENCE_BOUND",
+  "source_agent": {
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "blob_sha": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "policy_name": "monday-novelty-v1"
+  },
+  "retrospective_source": {
+    "artifact": "ARC3_EXPOSURE_20261031_RECEIPT.json",
+    "official_public_games": 25,
+    "identical_full_physical_trace_games": 22,
+    "physically_changed_games": ["ft09", "lp85", "s5i5"],
+    "changed_game_outcomes": {
+      "ft09": "FASTER_FIRST_LEVEL",
+      "lp85": "SLOWER_FIRST_LEVEL",
+      "s5i5": "NO_FIRST_LEVEL_EITHER"
+    },
+    "claim_limit": "Retrospective reused-public evidence; not unseen generalization or causal ARC score."
+  },
+  "inherit": [
+    {
+      "gene": "LEGAL_ACTION_DISCIPLINE",
+      "source": "frozen agent code",
+      "effect": "never intentionally choose actions outside advertised available set"
+    },
+    {
+      "gene": "COORDINATE_CLICK_IDENTITY",
+      "source": "frozen agent code",
+      "effect": "ACTION6 outcomes are keyed by coordinate instead of globally blacklisting the enum"
+    },
+    {
+      "gene": "TRANSITION_REPLAY",
+      "source": "frozen agent code",
+      "effect": "reuse previously observed progress transitions"
+    },
+    {
+      "gene": "LOOP_AVOIDANCE",
+      "source": "frozen agent code",
+      "effect": "penalize immediate repeats and recently revisited predicted states"
+    },
+    {
+      "gene": "HUD_MASKING",
+      "source": "frozen agent code",
+      "effect": "avoid treating known engine boundary counters as game semantics on 64x64 frames"
+    }
+  ],
+  "scoped_only": [
+    {
+      "gene": "CLICK_STAGNATION_GATE",
+      "exposed_worlds": 3,
+      "total_worlds": 25,
+      "support": 1,
+      "regression": 1,
+      "neutral_failure": 1,
+      "failure_modes": ["LOW_EXPOSURE", "MIXED_REGRESSION"],
+      "law": "Never promote a sparse intervention to a global reflex."
+    }
+  ],
+  "anti_genes": [
+    {
+      "id": "VISIBLE_STATE_IS_NOT_LATENT_STATE",
+      "source": "retrospective limitation",
+      "law": "Visible state-hash equality must not be treated as proof of latent-state equivalence."
+    },
+    {
+      "id": "AGGREGATE_SCORE_IS_NOT_EXPOSURE",
+      "source": "22/25 exact trace identity",
+      "law": "Before crediting a mutation, prove which worlds and states it physically changes."
+    },
+    {
+      "id": "HISTORICAL_SUCCESS_IS_NOT_WORLD_MODEL",
+      "source": "old action-level success/trial priors plus new counterexample contract",
+      "law": "Habit can break ties but may not override stronger world discrimination."
+    }
+  ],
+  "promotion_rule": "A fossil gene becomes general only after independent held-out transfer evidence; otherwise keep it scoped or as an anti-gene."
+}
