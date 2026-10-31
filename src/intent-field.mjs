@@ -1,5 +1,6 @@
 import { hash } from './worldline.mjs';
 import { inferDomains } from './compiler.mjs';
+import { amplifyTaskSignal } from './task-amplifier.mjs';
 
 const CLOSED_OBLIGATION_STATES = new Set(['APPLIED','ANSWERED','PERSISTED','SUPERSEDED']);
 
@@ -21,7 +22,8 @@ function normalizeObligations(signal,id,domains){
     text:String(item.text || item.effect || ''),
     effect:String(item.effect || item.text || ''),
     binding:item.binding === 'domain' ? 'domain' : 'obligation',
-    requiredVerificationMode:item.requiredVerificationMode || null,
+    requiredVerificationMode:item.requiredVerificationMode ||
+      (signal.amplification?.scope==='WHOLE_ORGANISM' && item.domain==='integration' ? 'external-exact-readback' : null),
     material:item.material !== false,
     status:CLOSED_OBLIGATION_STATES.has(String(item.status || '').toUpperCase())
       ? String(item.status).toUpperCase()
@@ -31,6 +33,7 @@ function normalizeObligations(signal,id,domains){
 }
 
 export function normalizeIntent(signal = {}, revision = 'root', index = 0) {
+  signal=amplifyTaskSignal(signal);
   const text = String(signal.text ?? signal.intent ?? '');
   const domains = signal.domains || inferDomains(text);
   const id = signal.id || `intent:${hash({ revision, index, text, effect: signal.effect || null }).slice(0, 16)}`;
@@ -61,6 +64,8 @@ export function normalizeIntent(signal = {}, revision = 'root', index = 0) {
     consequence: signal.consequence,
     computeTier: signal.computeTier || signal.forceComputeTier || null,
     strictMonday: signal.strictMonday !== false,
+    requireDomainReceptor:signal.requireDomainReceptor===true,
+    amplification:signal.amplification ? structuredClone(signal.amplification) : null,
     allowDecisionDelegation: signal.allowDecisionDelegation === true,
     source: signal.source || 'human',
     priority: signal.priority ?? 50,

@@ -7,6 +7,7 @@ import { evaluateCandidateOutput } from './attractor-field.mjs';
 import { ensureTasks, updateTasks } from './task-field.mjs';
 import { ActionLedger } from './action-ledger.mjs';
 import { sensePhysiology, regulatePhysiology, allocateMetabolism } from './physiology-field.mjs';
+import { compileMetaObservation } from './meta-observer.mjs';
 
 export class MondayRuntime {
   constructor({
@@ -26,7 +27,7 @@ export class MondayRuntime {
     this.actionLedger = actionLedger || new ActionLedger();
     this.cellId = cellId;
     this.hostPool = Array.isArray(hostPool) ? [...hostPool] : [];
-    // Inject this only from a trusted host that can observe real effects.
+    // Injected by a trusted host, not the executing receptor or a model response.
     this.independentReadback = typeof independentReadback === 'function' ? independentReadback : null;
   }
 
@@ -143,6 +144,14 @@ export class MondayRuntime {
       const intents = Object.values(cycle.intents || {});
       const active = intents.filter(intent => intent?.status === 'active');
       if (active.length === 0) {
+        if (cycle.meta?.state==='HOLD') return {
+          ok:true,
+          state:'BLOCKED',
+          reason:'META_INDEPENDENT_PROOF_REQUIRED',
+          cycles,
+          blockers:cycle.meta.gaps,
+          final:cycle
+        };
         return {
           ok:true,
           state:'FULFILLED',
@@ -178,7 +187,9 @@ export class MondayRuntime {
   }
 
   async executeAction(action) {
-    const receptor = this.capabilities[action.domain] || this.capabilities.general;
+    const receptor = action.requireDomainReceptor===true
+      ? this.capabilities[action.domain]
+      : (this.capabilities[action.domain] || this.capabilities.general);
     const prepared = this.actionLedger.prepare(action,{ cellId:this.cellId });
     if (!prepared.ok) {
       return {
@@ -205,17 +216,24 @@ export class MondayRuntime {
 
     if (reserved.reused === true) {
       const prior = reserved.record?.outcome;
-      // Old persisted successes cannot bypass a newly required independent readback.
-      if (action.requiredVerificationMode === 'external-exact-readback') {
-        const proof = prior?.verification?.independentProof;
-        if (!(prior?.ok === true && proof?.source === 'HOST_READER' &&
-          proof.effectId === action.id && proof.domain === action.domain &&
-          proof.sourceSignal === action.sourceSignal &&
-          typeof proof.evidenceRef === 'string' && proof.evidenceRef.trim())) {
-          return { action, ok:false,
-            verification:{ok:false,code:'CACHED_EXTERNAL_READBACK_UNWITNESSED'},
-            ledger:{actionKey:prepared.actionKey,state:'UNRESOLVED',reused:true} };
-        }
+      // Cached success from an older runtime cannot bypass a newly installed
+      // evidence gate. A valid host-bound receipt must match this exact action.
+      if (prior && (action.requireDomainReceptor === true || action.requiredVerificationMode === 'external-exact-readback')) {
+        const proof=prior.verification?.independentProof;
+        const exact=prior.ok===true &&
+          typeof action.id==='string' && action.id.trim().length>0 &&
+          typeof action.domain==='string' && action.domain.trim().length>0 &&
+          typeof action.sourceSignal==='string' && action.sourceSignal.trim().length>0 &&
+          proof?.source==='HOST_READER' &&
+          proof?.effectId===action.id &&
+          proof?.domain===action.domain &&
+          proof?.sourceSignal===action.sourceSignal &&
+          typeof proof.evidenceRef==='string' && proof.evidenceRef.trim().length>0;
+        if (!exact) return {
+          action,ok:false,
+          verification:{ok:false,code:'META_REUSED_RESULT_UNWITNESSED'},
+          ledger:{actionKey:prepared.actionKey,state:'UNRESOLVED',reused:true}
+        };
       }
       if (reserved.record?.state === 'VERIFIED') {
         this.actionLedger.commit(prepared.actionKey);
@@ -325,6 +343,11 @@ export class MondayRuntime {
       }
 
       let verification = await receptor.verify(result, action);
+      if (verification?.ok === true && action.requireDomainReceptor===true &&
+          (typeof verification.mode!=='string' || !verification.mode.trim() ||
+           typeof verification.evidenceRef!=='string' || !verification.evidenceRef.trim())) {
+        verification={ok:false,code:'META_EFFECT_RECEIPT_MISSING',domain:action.domain};
+      }
       if (verification?.ok === true && action.requiredVerificationMode &&
           (verification.mode !== action.requiredVerificationMode ||
            typeof verification.evidenceRef !== 'string' || !verification.evidenceRef.trim())) {
@@ -335,23 +358,43 @@ export class MondayRuntime {
           observedMode:verification?.mode || null
         };
       }
-      // Receptor.verify() is not an external witness, even if it says so.
-      if (verification?.ok === true && action.requiredVerificationMode === 'external-exact-readback') {
+      // A receptor verifying its own output is still self-attestation. For a
+      // whole-organism claim, require a separate host-injected source reader
+      // to independently observe the exact action and return a stable receipt.
+      // A model-generated field named "independent" never satisfies this gate.
+      if (verification?.ok === true && (action.requireDomainReceptor === true || action.requiredVerificationMode === 'external-exact-readback')) {
         if (!this.independentReadback) {
-          verification = {ok:false,code:'INDEPENDENT_READBACK_READER_MISSING'};
+          verification = {ok:false,code:action.requireDomainReceptor === true ? 'META_INDEPENDENT_READER_MISSING' : 'INDEPENDENT_READBACK_READER_MISSING',domain:action.domain};
         } else {
-          const witness = await this.independentReadback({action,result,claimedVerification:verification});
-          const exact = witness?.ok === true &&
-            typeof action.id === 'string' && action.id.trim() &&
-            typeof action.domain === 'string' && action.domain.trim() &&
-            typeof action.sourceSignal === 'string' && action.sourceSignal.trim() &&
-            witness.effectId === action.id && witness.domain === action.domain &&
-            witness.sourceSignal === action.sourceSignal &&
-            typeof witness.evidenceRef === 'string' && witness.evidenceRef.trim();
-          verification = exact ? {...verification,independentProof:{
-            source:'HOST_READER',effectId:action.id,domain:action.domain,
-            sourceSignal:action.sourceSignal,evidenceRef:witness.evidenceRef.trim()
-          }} : {ok:false,code:'INDEPENDENT_READBACK_EFFECT_MISMATCH'};
+          const witnessed = await this.independentReadback({
+            action, result, claimedVerification:verification
+          });
+          const exact = witnessed?.ok === true &&
+            typeof action.id==='string' && action.id.trim().length>0 &&
+            typeof action.domain==='string' && action.domain.trim().length>0 &&
+            typeof action.sourceSignal==='string' && action.sourceSignal.trim().length>0 &&
+            witnessed.effectId === action.id &&
+            witnessed.domain === action.domain &&
+            witnessed.sourceSignal === action.sourceSignal &&
+            typeof witnessed.evidenceRef === 'string' &&
+            witnessed.evidenceRef.trim().length > 0;
+          if (!exact) {
+            verification = {
+              ok:false,code:action.requireDomainReceptor === true ? 'META_INDEPENDENT_EFFECT_MISMATCH' : 'INDEPENDENT_READBACK_EFFECT_MISMATCH',
+              domain:action.domain
+            };
+          } else {
+            verification = {
+              ...verification,
+              independentProof:{
+                source:'HOST_READER',
+                effectId:action.id,
+                domain:action.domain,
+                sourceSignal:action.sourceSignal,
+                evidenceRef:witnessed.evidenceRef.trim()
+              }
+            };
+          }
         }
       }
       const outcome = {
@@ -484,6 +527,14 @@ export class MondayRuntime {
     const tasksUpdated = updateTasks(this.worldline,{ graph, frontier, results });
     if (!tasksUpdated.ok) return tasksUpdated;
 
+    const materialized=this.worldline.materialize();
+    const meta=compileMetaObservation({
+      intents:materialized.intents,
+      frontier,
+      results,
+      receipts:materialized.receipts
+    });
+
     return {
       ok:true,
       revision:this.worldline.revision(),
@@ -493,8 +544,9 @@ export class MondayRuntime {
       regulation,
       forged,
       results,
-      intents:this.worldline.materialize().intents,
-      state:this.worldline.materialize(),
+      intents:materialized.intents,
+      state:materialized,
+      meta,
       policies:this.policyField.snapshot(),
       actionLedger:this.actionLedger.snapshot()
     };

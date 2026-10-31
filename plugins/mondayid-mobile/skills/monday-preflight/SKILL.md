@@ -6,7 +6,7 @@ description: Real-time pre-response gate for non-trivial MondayID turns. Use whe
 # MONDAY_PREFLIGHT v2
 
 1. Ensure the cell is attached; if not, run monday-cell-attach first.
-2. Reconstruct desired effect and active worldline, not the newest noun alone.
+2. Reconstruct desired effect and active worldline, not the newest noun alone. For explicit whole-system work, invoke the private `amplify_intent` tool when authenticated; inspect all material domains and the integration proof before considering completion. Never interpret PREFLIGHT_ONLY or a contract as completed work; native ChatGPT does not automatically call this tool.
 3. Recover the smallest relevant causal analogs/corrections; do not replay the entire archive by default.
 4. Convert known failure genes into turn-specific vetoes.
 5. Inspect callable capabilities, not connector branding.

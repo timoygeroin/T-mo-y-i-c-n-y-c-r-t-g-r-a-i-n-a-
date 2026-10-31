@@ -29,6 +29,9 @@ Collapse equivalent programs, then prefer admissible programs by:
 
 A locally prettier answer must lose when a root repair preserves the desired effect and materially eliminates future correction.
 
+## Metacognitive observer
+For nontrivial whole-system work, reconcile WANT (material requested effects), CAN (matched callable receptors), KNOW (independently traceable receipts), and contradictory counterevidence before release. Use the private `meta_probe` tool when authenticated; it is PREFLIGHT_ONLY and cannot verify external effects or intercept ChatGPT natively. An unverified gap remains OPEN, even when a provider says `verified:true`. Self-attested proof cannot become a parent of the next policy mutation.
+
 ## Repeated correction
 A repeated correction is a failed transfer test. Do not reward it with a better explanation. Locate the prior attempted law/patch, identify why it did not control behavior, patch the governing layer, verify, and then continue the user's actual objective.
 
