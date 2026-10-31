@@ -1,9 +1,9 @@
 import unittest
 
 try:
-    from agent.world_compiler import WorldCompiler, SharedLatentField, StigmergicMemory
+    from agent.world_compiler import (WorldCompiler, SharedLatentField, StigmergicMemory, AgentFossilGenome, run_synthetic_ecology)
 except ModuleNotFoundError:
-    WorldCompiler = SharedLatentField = StigmergicMemory = None
+    WorldCompiler = SharedLatentField = StigmergicMemory = AgentFossilGenome = run_synthetic_ecology = None
 
 
 class EffectFirstWorldCompilerTests(unittest.TestCase):
@@ -80,6 +80,45 @@ class EffectFirstWorldCompilerTests(unittest.TestCase):
         self.assertEqual(memory.predict("S1", "ACTION2"), "S2")
         self.assertEqual(memory.replay(("S0", "ACTION2", "ACTION2")), "S2")
         self.assertGreater(memory.novelty("S3"), memory.novelty("S2"))
+
+
+    def test_old_agent_becomes_scoped_fossil_genome_not_global_law(self):
+        self.assertIsNotNone(AgentFossilGenome)
+        genome = AgentFossilGenome.from_novelty_agent_retrospective()
+
+        self.assertEqual(genome.gene("LEGAL_ACTION_DISCIPLINE").disposition, "INHERIT")
+        self.assertEqual(genome.gene("COORDINATE_CLICK_IDENTITY").disposition, "INHERIT")
+        mixed = genome.gene("CLICK_STAGNATION_GATE")
+        self.assertEqual(mixed.disposition, "SCOPED_ONLY")
+        self.assertEqual(mixed.exposed_worlds, 3)
+        self.assertEqual(mixed.total_worlds, 25)
+        self.assertLess(mixed.generalization_weight, 0.20)
+        self.assertIn("mixed_regression", mixed.failure_modes)
+
+    def test_fossil_prior_never_overrides_stronger_world_discrimination(self):
+        genome = AgentFossilGenome.from_novelty_agent_retrospective()
+        compiler = WorldCompiler(
+            worlds=("W1", "W2", "W3", "W4"),
+            predictions={
+                "HABIT": {"W1":"SAME","W2":"SAME","W3":"SAME","W4":"SAME"},
+                "PROBE": {"W1":"L","W2":"L","W3":"R","W4":"R"},
+            },
+            fossil_genome=genome,
+            fossil_action_map={"HABIT":"CLICK_STAGNATION_GATE"},
+        )
+
+        decision = compiler.choose_probe(("HABIT","PROBE"))
+        self.assertEqual(decision.action, "PROBE")
+
+    def test_effect_first_ecology_beats_habit_baseline_across_hidden_rule_families(self):
+        self.assertIsNotNone(run_synthetic_ecology)
+        result = run_synthetic_ecology(seed=17, episodes_per_family=40)
+
+        self.assertGreaterEqual(result["families"], 4)
+        self.assertEqual(result["episodes"], result["families"] * 40)
+        self.assertLess(result["effect_first_mean_actions"], result["habit_mean_actions"])
+        self.assertGreater(result["effect_first_success_rate"], result["habit_success_rate"])
+        self.assertGreaterEqual(result["families_won"], 3)
 
 
 if __name__ == "__main__":
