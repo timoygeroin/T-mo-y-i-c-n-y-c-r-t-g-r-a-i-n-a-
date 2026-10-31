@@ -1,0 +1,28 @@
+name: ARC effect-first world compiler
+on:
+  push:
+    branches:
+      - monday/arc-agi3-effect-first-world-compiler-20261031
+    paths:
+      - 'competitions/arc-agi-3/agent/world_compiler.py'
+      - 'competitions/arc-agi-3/tests/test_effect_first_world_compiler.py'
+      - '.github/workflows/arc-effect-first-world-compiler.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: competitions/arc-agi-3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run effect-first compiler tests
+        run: python -m unittest tests/test_effect_first_world_compiler.py -v
