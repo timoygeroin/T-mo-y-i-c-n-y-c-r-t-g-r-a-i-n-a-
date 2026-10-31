@@ -16,7 +16,8 @@ export class MondayRuntime {
     policyField = null,
     actionLedger = null,
     cellId = 'cell:runtime',
-    hostPool = []
+    hostPool = [],
+    independentReadback = null
   } = {}) {
     this.worldline = worldline;
     this.capabilities = capabilities;
@@ -25,6 +26,8 @@ export class MondayRuntime {
     this.actionLedger = actionLedger || new ActionLedger();
     this.cellId = cellId;
     this.hostPool = Array.isArray(hostPool) ? [...hostPool] : [];
+    // Inject this only from a trusted host that can observe real effects.
+    this.independentReadback = typeof independentReadback === 'function' ? independentReadback : null;
   }
 
   routeHost({ desiredEffect, task = {}, regulation = null, hosts = null } = {}) {
@@ -201,10 +204,22 @@ export class MondayRuntime {
     }
 
     if (reserved.reused === true) {
+      const prior = reserved.record?.outcome;
+      // Old persisted successes cannot bypass a newly required independent readback.
+      if (action.requiredVerificationMode === 'external-exact-readback') {
+        const proof = prior?.verification?.independentProof;
+        if (!(prior?.ok === true && proof?.source === 'HOST_READER' &&
+          proof.effectId === action.id && proof.domain === action.domain &&
+          proof.sourceSignal === action.sourceSignal &&
+          typeof proof.evidenceRef === 'string' && proof.evidenceRef.trim())) {
+          return { action, ok:false,
+            verification:{ok:false,code:'CACHED_EXTERNAL_READBACK_UNWITNESSED'},
+            ledger:{actionKey:prepared.actionKey,state:'UNRESOLVED',reused:true} };
+        }
+      }
       if (reserved.record?.state === 'VERIFIED') {
         this.actionLedger.commit(prepared.actionKey);
       }
-      const prior = reserved.record?.outcome;
       if (prior) {
         return {
           ...prior,
@@ -319,6 +334,25 @@ export class MondayRuntime {
           requiredMode:action.requiredVerificationMode,
           observedMode:verification?.mode || null
         };
+      }
+      // Receptor.verify() is not an external witness, even if it says so.
+      if (verification?.ok === true && action.requiredVerificationMode === 'external-exact-readback') {
+        if (!this.independentReadback) {
+          verification = {ok:false,code:'INDEPENDENT_READBACK_READER_MISSING'};
+        } else {
+          const witness = await this.independentReadback({action,result,claimedVerification:verification});
+          const exact = witness?.ok === true &&
+            typeof action.id === 'string' && action.id.trim() &&
+            typeof action.domain === 'string' && action.domain.trim() &&
+            typeof action.sourceSignal === 'string' && action.sourceSignal.trim() &&
+            witness.effectId === action.id && witness.domain === action.domain &&
+            witness.sourceSignal === action.sourceSignal &&
+            typeof witness.evidenceRef === 'string' && witness.evidenceRef.trim();
+          verification = exact ? {...verification,independentProof:{
+            source:'HOST_READER',effectId:action.id,domain:action.domain,
+            sourceSignal:action.sourceSignal,evidenceRef:witness.evidenceRef.trim()
+          }} : {ok:false,code:'INDEPENDENT_READBACK_EFFECT_MISMATCH'};
+        }
       }
       const outcome = {
         action,
