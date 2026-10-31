@@ -13,6 +13,9 @@ on:
       - 'tests/virtual-chip.test.mjs'
       - 'tests/evolution-burst.test.mjs'
       - 'tests/organism-advantage.test.mjs'
+      - 'src/letter-phenotype.mjs'
+      - 'tests/phenotype-transfer-heldout.test.mjs'
+      - 'tests/evolution-burst-heldout.test.mjs'
       - '.github/workflows/monday-control-plane-contract.yml'
   workflow_dispatch:
 jobs:
@@ -23,4 +26,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/monday-control-plane.test.mjs tests/virtual-chip.test.mjs tests/evolution-burst.test.mjs tests/organism-advantage.test.mjs
+      - run: node --test tests/monday-control-plane.test.mjs tests/virtual-chip.test.mjs tests/evolution-burst.test.mjs tests/organism-advantage.test.mjs tests/phenotype-transfer-heldout.test.mjs tests/evolution-burst-heldout.test.mjs
