@@ -18,7 +18,6 @@ class VerificationOfVerification(unittest.TestCase):
         return Evidence(**props)
 
     def test_alpha_style_restored_but_task_lost(self):
-        # Historical-shaped failure: greeting recognized; prior task not resumed.
         self.assertEqual(assess(self.e(kind='transfer', effect_observed=False)), 'FALSIFIED_EFFECT')
 
     def test_file_or_plugin_receipt_does_not_prove_behavior(self):
