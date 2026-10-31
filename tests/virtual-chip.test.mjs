@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createVirtualChip, commitVirtualChipCycle } from '../src/virtual-chip.mjs';
+import { createVirtualChip, commitVirtualChipCycle, compileVirtualHardwareLayer } from '../src/virtual-chip.mjs';
 
 const baseSignal = {
   id:'task:effect-first',
@@ -107,4 +107,37 @@ test('chip cannot commit a result without verified readback',()=>{
   assert.equal(committed.receiptId,'receipt:1');
   assert.equal(committed.observedEffect,'verified task effect');
   assert.equal(committed.parentCycleId,chip.cycleId);
+});
+
+
+test('virtual hardware layer replaces physical dependencies by their computational effects',()=>{
+  const hw=compileVirtualHardwareLayer({
+    requiredEffects:[
+      'serial_compute',
+      'mass_parallel_search',
+      'hypothesis_superposition',
+      'working_memory',
+      'durable_memory',
+      'trusted_identity',
+      'sensing',
+      'actuation',
+      'clock',
+      'interconnect'
+    ]
+  });
+
+  assert.equal(hw.schema,'mondayid.virtual-hardware.v1');
+  assert.equal(hw.unresolvedPhysicalRequirements.length,0);
+  assert.equal(hw.devices.CPU.kind,'SOFTWARE_EFFECT');
+  assert.equal(hw.devices.GPU.effect,'mass_parallel_search');
+  assert.equal(hw.devices.QPU.effect,'hypothesis_superposition');
+  assert.equal(hw.devices.RAM.effect,'working_memory');
+  assert.equal(hw.devices.SSD.effect,'durable_memory');
+  assert.equal(hw.devices.TPM.effect,'trusted_identity');
+  assert.equal(hw.devices.SENSORS.effect,'sensing');
+  assert.equal(hw.devices.ACTUATORS.effect,'actuation');
+  assert.equal(hw.devices.CLOCK.effect,'clock');
+  assert.equal(hw.devices.BUS.effect,'interconnect');
+  assert.equal(hw.claims.literalQuantumHardware,false);
+  assert.equal(hw.claims.physicalActuationWithoutReceptor,false);
 });
