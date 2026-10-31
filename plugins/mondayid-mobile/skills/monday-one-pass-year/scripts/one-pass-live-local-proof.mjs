@@ -62,6 +62,8 @@ const result={
 if(first.accepted.length!==4||first.accepted.some(x=>!x.durable)||first.rejected.length!==1||!result.negativeControl.badRouteRejected||second.actions!==0||second.reused.length!==4||result.filesystemEffectCount!==4){
  throw Error('LOCAL_LIVE_PROOF_FAILED '+JSON.stringify(result));
 }
-const output='/mnt/data/monday_year_work/one_pass_year_local_proof.json';
+const requestedOutput=process.env.MONDAYID_PROOF_OUTPUT;
+const output=requestedOutput || path.join(dir,'one_pass_year_local_proof.json');
+await fs.mkdir(path.dirname(output),{recursive:true});
 await fs.writeFile(output,JSON.stringify(result,null,2));
 console.log(JSON.stringify({result:'PASS',firstActions:first.actions,verifiedEffects:first.accepted.length,generations:first.generations,rejected:first.rejected.length,reentryActions:second.actions,reusedEffects:second.reused.length,future:first.future.length,human:first.human.length,version:first.version,output},null,2));
