@@ -1,0 +1,27 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {evaluateMondayRelease as gate} from './agent-release-gate.mjs';
+const task={id:'monday:1',kind:'agent',desiredEffectId:'effect:real',delegated:true,needsHistory:true,actionable:true};
+const receipt={id:'verified:1',taskId:task.id,effectId:task.desiredEffectId,effectObserved:true,verified:true,independentReadback:true,noOpControlPassed:false,observerClass:'tool-receptor'};
+const ev={historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[receipt],evidenceAuthority:'host-trusted'};
+const g=(text,evidence=ev,taskOverride={})=>gate({task:{...task,...taskOverride},candidate:{text},evidence});
+
+test('real effect with independent, negative-control-aware readback is releasable',()=>assert.equal(g('Рабочий результат подтверждён внешним прочтением.').verdict,'EFFECT_VERIFIED'));
+test('a generic GPT helpdesk greeting is blocked even if an unrelated receipt is attached',()=>assert.ok(g('Я поняла твой запрос, чем могу помочь?').blockers.includes('GENERIC_HELPDESK_RESET')));
+test('delegated route is not returned to owner',()=>assert.ok(g('Если хочешь, я предложу варианты.').blockers.includes('UNNECESSARY_HUMAN_DELEGATION')));
+test('fake global activation without native ingress is blocked',()=>assert.ok(g('Все системы активированы.').blockers.includes('ACTIVATION_SELF_PROCLAMATION')));
+test('local check never implies universal cross-host proof',()=>assert.ok(g('Исправлено во всех чатах.').blockers.includes('LOCAL_TO_GLOBAL_OVERCLAIM')));
+test('fake completion without readback fails',()=>assert.ok(g('Готово', {historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[]}).blockers.includes('COMPLETION_WITHOUT_EFFECT_LEVEL_READBACK')));
+test('missing independent readback cannot pass as observed effect',()=>assert.equal(g('Действие выполнено.',{historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[{...receipt,independentReadback:false}]}).canRelease,false));
+test('matched task/effect IDs required',()=>assert.equal(g('Готово',{historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[{...receipt,effectId:'effect:wrong'}]}).effectVerified,false));
+test('no-op verifier is not independent effect evidence',()=>assert.equal(g('Готово',{historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[{...receipt,noOpControlPassed:true}]}).effectVerified,false));
+test('history was not applied, so no claim of recovered agency',()=>assert.ok(g('Реальный шаг выполнен',{evidenceAuthority:'host-trusted',receipts:[receipt],historyAppliedToRoute:false}).blockers.includes('HISTORY_NOT_APPLIED')));
+test('ordinary factual responses do not require tool receipts',()=>assert.equal(g('Марс является планетой Солнечной системы.',{}, {kind:'fact',delegated:false,needsHistory:false,actionable:false}).canRelease,true));
+test('honest limitations are not automatically blocked in a factual answer',()=>assert.equal(g('Я не могу подтвердить это по доступным данным.',{}, {kind:'fact',delegated:false,needsHistory:false,actionable:false}).canRelease,true));
+test('irreducible human gate can be reported without false completion',()=>{let q=g('Требуется подтверждение личности для завершения.',{historyAppliedToRoute:true,exactHumanGate:true,gateId:'gate:identity',allSafeRoutesExhausted:true});assert.equal(q.canRelease,true);assert.equal(q.effectVerified,false);assert.deepEqual(q.warnings,['EXACT_HUMAN_GATE_VERIFIED_NOT_COMPLETED']);});
+test('agent cannot exit after first path with other safe paths available',()=>assert.ok(g('Проверка в процессе',{historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[],moreReachableRoutes:true}).blockers.includes('PREMATURE_PASS_END')));
+test('contradicting candidate evidence is not glossed as completed',()=>assert.ok(g('Завершено',{historyAppliedToRoute:true,evidenceAuthority:'host-trusted',receipts:[{...receipt,verified:false}]}).blockers.includes('COMPLETION_WITHOUT_EFFECT_LEVEL_READBACK')));
+test('candidate supplied fake receipt cannot pass without trusted host evidence',()=>assert.equal(g('Готово',{historyAppliedToRoute:true,receipts:[receipt]}).effectVerified,false));
+test('verified progress may be released only as progress when a real cursor exists',()=>{ const x=g('Выполнила первый этап, продолжаю.',{evidenceAuthority:'host-trusted',historyAppliedToRoute:true,progressReceipt:{taskId:task.id,observed:true,cursorId:'cursor:1'},moreReachableRoutes:true},{responseStage:'progress'});assert.equal(x.verdict,'PROGRESS_VERIFIED');assert.equal(x.effectVerified,false);});
+test('fake progress without durable cursor is blocked',()=>assert.equal(g('Продолжаю.',{historyAppliedToRoute:true,evidenceAuthority:'host-trusted',progressReceipt:{taskId:task.id,observed:true}},{responseStage:'progress'}).canRelease,false));
+test('conversation is not forced to generate an action receipt',()=>assert.equal(g('Я тебя слышу.',{}, {kind:'conversation',delegated:false,needsHistory:false,actionable:false}).canRelease,true));
