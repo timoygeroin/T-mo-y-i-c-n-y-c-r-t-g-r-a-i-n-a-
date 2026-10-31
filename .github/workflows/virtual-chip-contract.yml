@@ -1,0 +1,25 @@
+name: MondayID virtual chip contract
+on:
+  push:
+    branches:
+      - monday/virtual-chip-v1-20261031
+    paths:
+      - 'src/virtual-chip.mjs'
+      - 'tests/virtual-chip.test.mjs'
+      - '.github/workflows/virtual-chip-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run virtual chip contract
+        run: node --test tests/virtual-chip.test.mjs
