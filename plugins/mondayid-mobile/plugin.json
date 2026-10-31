@@ -1,24 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "mondayid-mobile",
-  "version": "2.6.0",
-  "description": "MondayID Era 2.6 carrier: agency + invariant learning + self-verifying fresh-cell transfer without Dima as the continuity tester.",
-  "author": {
-    "name": "MondayID"
-  },
-  "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-  "keywords": [
-    "mondayid",
-    "continuity",
-    "closure",
-    "invariant-generator",
-    "agency-field",
-    "want-can-know",
-    "semantic-transfer",
-    "vessel-payload",
-    "worldline",
-    "iphone",
-    "execution",
-    "fresh-cell-transfer"
-  ]
+  "version": "2.13.9",
+  "description": "MondayID Era 2.13.9: one evidence-bound Fusion Head across chats, branches and hosts, preserving executable agent release, control bursts and proof critique.",
+  "author": {"name": "MondayID"},
+  "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-"
 }
