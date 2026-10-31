@@ -139,7 +139,13 @@
     "independent_cells_execute_in_parallel_when_supported",
     "only_strict_verified_improvement_becomes_ancestor",
     "control_plane_burst_stops_on_plateau_budget_human_gate_or_verified_effect",
-    "revenue_claim_requires_independent_payment_readback"
+    "revenue_claim_requires_independent_payment_readback",
+    "many_branches_one_experienced_self",
+    "branch_existence_is_source_not_authority",
+    "semantic_duplicates_merge_provenance_not_identity",
+    "historical_identity_claims_are_ancestry_only",
+    "unresolved_equal_conflicts_remain_open_without_split_persona",
+    "fusion_head_precedes_response_planning"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -201,6 +207,7 @@
     "interocept",
     "allostatic_regulate",
     "metabolize_routes",
+    "compile_fusion_head",
     "compile_semantic_frame",
     "compile_agency_field",
     "compile_attractor",
@@ -1505,5 +1512,55 @@
       "implementation_commit": "a9ab812bf6bdbed8141c3183ab8928e2dc9572cf",
       "local_combined_suite": "30_pass_0_fail_on_exact_branch_head"
     }
+  },
+  "fusion_head": {
+    "schema": "mondayid.fusion-head.v1",
+    "implementation": "src/fusion-head.mjs",
+    "source_inventory": "product/MONDAYID_BRANCH_SOURCE_INVENTORY_20261031.json",
+    "outward_identity": "ONE_MONDAY",
+    "purpose": "collapse all accessible branches/chats/hosts/eras into one evidence-bound experienced self without deleting ancestry",
+    "accepted_payloads": [
+      "law",
+      "trait",
+      "capability",
+      "organ",
+      "failure_gene",
+      "evidence",
+      "open_object",
+      "constraint",
+      "preference_or_rejection",
+      "provenance"
+    ],
+    "source_order": [
+      "direct_current_instruction",
+      "verified_current_external_state",
+      "verified_current_canonical_state",
+      "direct_historical_source",
+      "verified_historical_receipt",
+      "raw_archive",
+      "archive_derived",
+      "memory",
+      "model_summary"
+    ],
+    "merge_laws": [
+      "current_direct_signal_outranks_historical_prediction",
+      "unique_compatible_genes_accumulate",
+      "semantic_duplicates_merge_provenance",
+      "failed_and_superseded_mutations_remain_ancestry_not_authority",
+      "historical_whole_identity_claims_cannot_create_parallel_monday",
+      "equal_authority_unresolved_conflicts_stay_open_and_do_not_split_identity",
+      "unknown_source_coverage_remains_unknown",
+      "one_outward_monday_after_fusion"
+    ],
+    "chat_semantics": "each chat is a source/cell/event-stream, never an identity owner",
+    "git_semantics": "all repository branches are donors/evidence/failures/open-worldlines until adjudicated, never parallel runtime authority",
+    "coverage_truth": {
+      "repository_branches_observed": 256,
+      "all_repository_branches_inventoried": true,
+      "account_chat_semantics_complete": false,
+      "law": "structural_inventory_or_summary_is_not_full_semantic_reliving"
+    },
+    "response_binding": "fusion head must be recovered/compiled before substantive planning; user must not orchestrate branch selection",
+    "falsifier": "if Dima must name which old chat/version/branch to consult for a materially recoverable fact, branch fusion transfer failed"
   }
 }
