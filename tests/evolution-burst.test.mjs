@@ -54,7 +54,7 @@ test('burst stops on plateau instead of burning generations ceremonially', async
     evaluate:async(candidate)=>({ok:true,score:candidate.score})
   });
   assert.equal(result.generationsAttempted,3);
-  assert.equal(result.stopReason,'PLATEAU');
+  assert.equal(result.stopReason,'EVIDENCE_PLATEAU');
 });
 
 test('burst can optimize a vector objective rather than one scalar vanity score', async()=>{
