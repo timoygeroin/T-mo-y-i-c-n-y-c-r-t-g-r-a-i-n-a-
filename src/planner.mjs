@@ -27,7 +27,9 @@ export function buildFrontier(graph, capabilities = {}, { sourceRevision = 'unkn
   });
 
   const actions = expandedObjectives.map(o => {
-    const receptor = capabilities[o.domain] || capabilities.general;
+    const receptor = o.requireDomainReceptor===true
+      ? capabilities[o.domain]
+      : (capabilities[o.domain] || capabilities.general);
     const candidate = {
       id: `action:${o.id}`,
       objectiveId: o.id,
@@ -36,6 +38,7 @@ export function buildFrontier(graph, capabilities = {}, { sourceRevision = 'unkn
       requiredVerificationMode: o.requiredVerificationMode || null,
       domain: o.domain,
       effect: o.effect,
+      requireDomainReceptor:o.requireDomainReceptor===true,
       receptor: receptor?.name || null,
       priority: o.priority,
       verifiable: Boolean(receptor?.verify),
