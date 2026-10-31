@@ -51,7 +51,12 @@ def generate(source: str, mode: str = "near") -> str:
                             point = (px, py)
                             if point not in local:
                                 local.append(point)
-                points = local + uniform + [p for p in points if p not in local and p not in uniform]
+                # A response without level progress must not trap the
+                # policy on the same previously rewarded coordinate.
+                # This exclusion is limited to the stalled click-only gate.
+                responsive_coords = {(rx, ry) for _, _, rx, ry in responsive[:3]}
+                uniform = [p for p in uniform if p not in responsive_coords]
+                points = local + uniform + [p for p in points if p not in local and p not in uniform and p not in responsive_coords]
 """.replace("OFFSETS", repr(offsets))
     result = result.replace(ROW, injection, 1)
     compile(result, "<causal-click-"+mode+">", "exec")
