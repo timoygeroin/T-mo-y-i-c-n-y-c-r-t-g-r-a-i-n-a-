@@ -1,14 +1,20 @@
-const finite=value=>Number.isFinite(Number(value)) ? Number(value) : -Infinity;
+const finite=value=>value == null || !Number.isFinite(Number(value)) ? -Infinity : Number(value);
 
 async function scoreCandidate(candidate,evaluate){
-  const verdict=await evaluate(candidate);
-  return {
-    candidate,
-    ok:verdict?.ok===true,
-    score:finite(verdict?.score ?? candidate?.score),
-    metrics:verdict?.metrics ?? candidate?.metrics ?? null,
-    verdict
-  };
+  try {
+    const verdict=await evaluate(candidate);
+    return {
+      candidate,ok:verdict?.ok===true,
+      score:finite(verdict?.score ?? candidate?.score),
+      metrics:verdict?.metrics ?? candidate?.metrics ?? null,
+      terminal:verdict?.ok===true && verdict?.terminal===true,
+      verdict,
+      failureReason:verdict?.ok===true?null:'VERIFICATION_FAILED'
+    };
+  } catch(error) {
+    return {candidate,ok:false,score:-Infinity,metrics:null,terminal:false,
+      verdict:null,failureReason:'EVALUATION_ERROR',error:String(error)};
+  }
 }
 
 export async function runEvolutionBurst({
@@ -31,23 +37,23 @@ export async function runEvolutionBurst({
   let attempted=0;
   let accepted=0;
   let plateau=0;
-  let stopReason='BUDGET_EXHAUSTED';
+  let stopReason=championEval.terminal?'VERIFIED_EFFECT':'PASS_BUDGET';
 
-  for(let generation=1;generation<=Math.max(0,Number(generations)||0);generation+=1){
+  if(!championEval.terminal) for(let generation=1;generation<=Math.max(0,Number(generations)||0);generation+=1){
     attempted+=1;
     const produced=await mutate(champion,generation,lineage);
     const candidates=Array.isArray(produced) ? produced.filter(Boolean) : [];
     if(!candidates.length){
       plateau+=1;
       rejections.push({generation,reason:'NO_CANDIDATES'});
-      if(plateau>=plateauLimit){stopReason='PLATEAU';break;}
+      if(plateau>=plateauLimit){stopReason='EVIDENCE_PLATEAU';break;}
       continue;
     }
 
     const evaluated=await Promise.all(candidates.map(candidate=>scoreCandidate(candidate,evaluate)));
     const verified=evaluated.filter(x=>x.ok).sort((a,b)=>b.score-a.score);
     for(const item of evaluated.filter(x=>!x.ok)){
-      rejections.push({generation,candidate:item.candidate,reason:'VERIFICATION_FAILED',score:item.score});
+      rejections.push({generation,candidate:item.candidate,reason:item.failureReason,score:item.score,error:item.error||null});
     }
 
     const winner=verified[0] || null;
@@ -56,7 +62,7 @@ export async function runEvolutionBurst({
       for(const item of verified){
         rejections.push({generation,candidate:item.candidate,reason:'NO_STRICT_IMPROVEMENT',score:item.score});
       }
-      if(plateau>=plateauLimit){stopReason='PLATEAU';break;}
+      if(plateau>=plateauLimit){stopReason='EVIDENCE_PLATEAU';break;}
       continue;
     }
 
@@ -68,6 +74,7 @@ export async function runEvolutionBurst({
     accepted+=1;
     plateau=0;
     lineage.push({generation,candidate:champion,score:winner.score,metrics:winner.metrics});
+    if(winner.terminal){stopReason='VERIFIED_EFFECT';break;}
   }
 
   return Object.freeze({
