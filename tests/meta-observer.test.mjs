@@ -6,6 +6,11 @@ import { renderHumanSurface } from '../src/interface.mjs';
 
 const WHOLE=['continuity','host','code','vision','research','integration'];
 const ask={id:'meta-whole',text:'Пересобери всю систему MondayID'};
+// Host-owned independent receptor; the executor cannot supply this.
+const externalReader=async ({action})=>({
+  ok:true,effectId:action.id,domain:action.domain,
+  sourceSignal:action.sourceSignal,evidenceRef:'provider-readback:'+action.id
+});
 const receptor=(domain,withProof)=>({
   name:'receptor-'+domain,
   execute:async()=>({ok:true,verified:true,receipt:'self-claimed'}),
@@ -45,7 +50,7 @@ test('whole-organism action rejects a verifier that asserts success without a tr
 
 test('valid six-domain evidence closes one whole-organism intent only after independent integration proof',async()=>{
   const caps=Object.fromEntries(WHOLE.map(domain=>[domain,receptor(domain,true)]));
-  const runtime=new MondayRuntime({capabilities:caps});
+  const runtime=new MondayRuntime({capabilities:caps,independentReadback:externalReader});
   const pass=await runtime.runPass([ask],{maxCycles:2});
   assert.equal(pass.state,'FULFILLED');
   assert.equal(pass.final.meta.state,'VERIFIED');
@@ -74,4 +79,37 @@ test('ordinary narrow task keeps existing verification semantics',async()=>{
   }}).runPass([{id:'narrow',text:'say hello'}],{maxCycles:2});
   assert.equal(pass.state,'FULFILLED');
   assert.equal(pass.final.meta.state,'TASK_LOCAL');
+});
+
+test('whole-organism claims cannot be verified by the executor grading itself',async()=>{
+  const caps=Object.fromEntries(WHOLE.map(domain=>[domain,receptor(domain,true)]));
+  const outcome=await new MondayRuntime({capabilities:caps}).runPass([ask],{maxCycles:2});
+  assert.equal(outcome.state,'BLOCKED');
+  assert.equal(outcome.final.meta.state,'HOLD');
+  assert.ok(outcome.final.results.every(r=>r.verification.code==='META_INDEPENDENT_READER_MISSING'));
+  assert.deepEqual(outcome.final.meta.filters.know,[]);
+});
+
+test('host readback for another effect cannot launder a self-certified six-domain success',async()=>{
+  const caps=Object.fromEntries(WHOLE.map(domain=>[domain,receptor(domain,true)]));
+  const swapped=async({action})=>({
+    ok:true,effectId:action.id+':WRONG_EFFECT',domain:action.domain,
+    sourceSignal:action.sourceSignal,evidenceRef:'unrelated-evidence'
+  });
+  const outcome=await new MondayRuntime({capabilities:caps,independentReadback:swapped}).runPass([ask],{maxCycles:2});
+  assert.equal(outcome.state,'BLOCKED');
+  assert.deepEqual(outcome.final.meta.filters.know,[]);
+  assert.ok(outcome.final.results.every(r=>r.verification.code==='META_INDEPENDENT_EFFECT_MISMATCH'));
+});
+
+test('forged persisted readback without a host-bound witness cannot become KNOW',()=>{
+  const intent={id:'meta-whole',status:'fulfilled',amplification:{scope:'WHOLE_ORGANISM'},
+    obligations:WHOLE.map(domain=>({id:'o:'+domain,domain,status:'APPLIED',material:true}))};
+  const fake=WHOLE.map(domain=>({
+    action:{id:'fake:'+domain,domain,sourceSignal:'meta-whole'},ok:true,
+    verification:{ok:true,mode:'external-exact-readback',evidenceRef:'self:'+domain}
+  }));
+  const out=compileMetaObservation({intents:{'meta-whole':intent},results:fake});
+  assert.equal(out.state,'HOLD');
+  assert.deepEqual(out.filters.know,[]);
 });
