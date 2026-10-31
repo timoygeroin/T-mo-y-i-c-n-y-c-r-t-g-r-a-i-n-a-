@@ -113,3 +113,37 @@ test('forged persisted readback without a host-bound witness cannot become KNOW'
   assert.equal(out.state,'HOLD');
   assert.deepEqual(out.filters.know,[]);
 });
+
+test('reused legacy verified ledger record cannot skip a later independent readback gate',async()=>{
+  const action={id:'old-effect',sourceSignal:'owner-legacy',domain:'integration',
+    requireDomainReceptor:true,requiredVerificationMode:'external-exact-readback'};
+  const ledger={
+    prepare:()=>({ok:true,actionKey:'old-effect-key'}),
+    reserve:()=>({ok:true,reused:true,record:{
+      state:'VERIFIED',outcome:{
+        action,ok:true,
+        result:{ok:true,status:'COMPLETED'},
+        verification:{ok:true,mode:'external-exact-readback',evidenceRef:'old-self-report'}
+      }}}),
+    commit:()=>({ok:true})
+  };
+  const runtime=new MondayRuntime({actionLedger:ledger});
+  const out=await runtime.executeAction(action);
+  assert.equal(out.ok,false);
+  assert.equal(out.verification.code,'META_REUSED_RESULT_UNWITNESSED');
+  assert.equal(out.ledger.reused,true);
+});
+
+test('orphan witness without the original owner signal cannot become system knowledge',()=>{
+  const intent={id:'owner',status:'fulfilled',amplification:{scope:'WHOLE_ORGANISM'},
+    obligations:WHOLE.map(domain=>({domain,status:'APPLIED',material:true}))};
+  const orphan=WHOLE.map(domain=>({
+    action:{id:'orphan:'+domain,domain},ok:true,
+    verification:{ok:true,mode:'external-exact-readback',evidenceRef:'provider:'+domain,
+      independentProof:{source:'HOST_READER',effectId:'orphan:'+domain,
+        domain,evidenceRef:'source:orphan:'+domain}}
+  }));
+  const out=compileMetaObservation({intents:{owner:intent},results:orphan});
+  assert.equal(out.state,'HOLD');
+  assert.deepEqual(out.filters.know,[]);
+});
