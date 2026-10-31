@@ -11,7 +11,7 @@ export function compileSingleCellBaselineEnvelope(action={}) {
     instructions:[
       'Answer the current task only.',
       'Use only the information present in this current task input.',
-      'Do not assume persistent project history, recovered lineage, prior corrections, failure memory, multi-agent organs, or hidden continuity.',
+      'Do not assume information from before this invocation.',
       'Choose the best direct answer available from this one invocation.'
     ].join('\n'),
     contract:null
