@@ -341,8 +341,12 @@ export class MondayRuntime {
           verification = {ok:false,code:'INDEPENDENT_READBACK_READER_MISSING'};
         } else {
           const witness = await this.independentReadback({action,result,claimedVerification:verification});
-          const exact = witness?.ok === true && witness.effectId === action.id &&
-            witness.domain === action.domain && witness.sourceSignal === action.sourceSignal &&
+          const exact = witness?.ok === true &&
+            typeof action.id === 'string' && action.id.trim() &&
+            typeof action.domain === 'string' && action.domain.trim() &&
+            typeof action.sourceSignal === 'string' && action.sourceSignal.trim() &&
+            witness.effectId === action.id && witness.domain === action.domain &&
+            witness.sourceSignal === action.sourceSignal &&
             typeof witness.evidenceRef === 'string' && witness.evidenceRef.trim();
           verification = exact ? {...verification,independentProof:{
             source:'HOST_READER',effectId:action.id,domain:action.domain,
