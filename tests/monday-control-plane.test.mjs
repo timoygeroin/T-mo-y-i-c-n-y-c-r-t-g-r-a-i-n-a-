@@ -22,6 +22,10 @@ test('control plane creates specialized whole-genome cells, not competing identi
   assert.ok(swarm.cells.every(c=>c.genomeRef==='mondayid:whole-organism'));
   assert.ok(swarm.cells.every(c=>c.identityOwner===false));
   assert.equal(new Set(swarm.cells.map(c=>c.role)).size,4);
+  assert.ok(swarm.cells.every(c=>c.compute?.chipSchema==='mondayid.virtual-chip.v1'));
+  assert.ok(swarm.cells.every(c=>c.compute?.hardware?.includes('CPU')));
+  assert.ok(swarm.cells.every(c=>c.compute?.hardware?.includes('QPU')));
+  assert.ok(swarm.cells.every(c=>c.compute?.fabric==='STATE_AND_RULE_ARE_COLOCATED'));
 });
 
 test('duplicate role/objective cells are compressed instead of multiplied',()=>{
@@ -86,4 +90,35 @@ test('controller can produce next generation from surviving mechanism without mu
   assert.ok(g2.cells.every(c=>c.genomeRef==='mondayid:whole-organism'));
   assert.ok(g2.cells.every(c=>c.identityOwner===false));
   assert.equal(g2.parentWinner.effect,'v1');
+});
+
+
+test('different cell roles receive task-specific compute topology over the same genome',()=>{
+  const cp=createMondayControlPlane({maxCells:4});
+  const swarm=cp.spawn({
+    ...baseTask,
+    signal:{
+      text:'solve by competing hypotheses and evidence',
+      novelty:0.95,
+      ambiguity:0.9,
+      historicalDepth:1,
+      recurrenceCost:0.8,
+      consequence:0.8
+    }
+  },[
+    {role:'builder',objective:'implement patch'},
+    {role:'falsifier',objective:'find counterexample'},
+    {role:'revenue',objective:'find monetizable effect'}
+  ]);
+  assert.ok(swarm.cells.every(c=>['HIGH','MAX'].includes(c.compute.tier)));
+  assert.ok(swarm.cells.every(c=>c.compute.genomeRef==='mondayid:whole-organism'));
+  assert.ok(swarm.cells.every(c=>c.compute.naturalOperators.includes('evolution')));
+  assert.ok(swarm.cells.every(c=>c.compute.naturalOperators.includes('logic')));
+});
+
+test('control plane does not pretend virtual hardware performed external actions',()=>{
+  const cp=createMondayControlPlane({maxCells:1});
+  const swarm=cp.spawn(baseTask,[{role:'builder',objective:'implement'}]);
+  assert.equal(swarm.cells[0].compute.externalActions,0);
+  assert.equal(swarm.cells[0].externalActions,0);
 });
