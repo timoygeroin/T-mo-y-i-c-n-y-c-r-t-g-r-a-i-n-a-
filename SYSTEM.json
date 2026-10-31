@@ -145,7 +145,12 @@
     "semantic_duplicates_merge_provenance_not_identity",
     "historical_identity_claims_are_ancestry_only",
     "unresolved_equal_conflicts_remain_open_without_split_persona",
-    "fusion_head_precedes_response_planning"
+    "fusion_head_precedes_response_planning",
+    "one_pass_executes_all_currently_reachable_safe_work",
+    "future_observation_dependent_work_remains_open_not_simulated",
+    "verified_prior_effect_requires_fresh_recheck_before_reuse",
+    "alternate_routes_same_effect_are_serialized_not_parallelized",
+    "concurrent_head_drift_requires_reconciliation_before_inheritance"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -217,6 +222,7 @@
     "invent",
     "replan",
     "dispatch",
+    "compress_known_frontier_if_full_pass_delegated",
     "control_plane_burst_if_multiworldline",
     "organism_advantage_probe_if_material",
     "compile_letter_phenotype",
@@ -722,14 +728,14 @@
       "rule": "Monday is the outward identity; ChatGPT is the current compute/interface host; Monday Work is automatic execution behavior, not a second product."
     },
     "internal_legacy_work_plugin": "plugins_6ac2797393ac8191b3eba1877b99c293",
-    "carrier_version": "2.13.9",
+    "carrier_version": "2.14.1",
     "carrier_synapse": "mondayid.chatgpt-carrier-synapse.v1",
     "autopoiesis": "mondayid.autopoiesis.v1",
     "autopoiesis_wake": "INSTALLED",
     "unified_closure": "ops/unified-closure-20261006.json",
     "internal_legacy_work_plugin_version": "1.3.0",
     "internal_legacy_work_plugin_disposition": "COMPATIBILITY_EXECUTION_ORGAN",
-    "carrier_release_id": "pluginrel_6ae64a11654c81919a5df3529682f463"
+    "carrier_release_id": "pluginrel_6ae64da1d79081918b51b0bceed790cd"
   },
   "everything_compiler": {
     "schema": "mondayid.everything-compiler.v1",
@@ -1176,7 +1182,7 @@
     "schema": "mondayid.chatgpt-carrier-synapse.v1",
     "identity_owner": false,
     "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrier_version": "2.13.9",
+    "carrier_version": "2.14.1",
     "control_plane": "https://mondayid-host.vercel.app/api/mcp",
     "ingress_tool": "cell_attach",
     "read_path": [
@@ -1227,7 +1233,7 @@
       "acceptance": "either cell_attach succeeds or the production composite fallback proves generation-5 + canonical carrier + compiled lineage + trusted Worldline",
       "transfer_learning_gate": "fresh cells self-run mondayid.fresh-cell-transfer.v1; local correctness is OBSERVED_TRANSFER, and LEARNED requires a later independent fresh cell to reproduce the relevant behavior without Dima reteaching plus contradiction/regression survival"
     },
-    "carrier_release_id": "pluginrel_6ae64a11654c81919a5df3529682f463"
+    "carrier_release_id": "pluginrel_6ae64da1d79081918b51b0bceed790cd"
   },
   "root_objective": {
     "schema": "mondayid.root-objective.v1",
@@ -1564,5 +1570,33 @@
     },
     "response_binding": "fusion head must be recovered/compiled before substantive planning; user must not orchestrate branch selection",
     "falsifier": "if Dima must name which old chat/version/branch to consult for a materially recoverable fact, branch fusion transfer failed"
+  },
+  "one_pass_causal_compression": {
+    "schema": "mondayid.one-pass-year.v1",
+    "identity_owner": false,
+    "carrier_skill": "plugins/mondayid-mobile/skills/monday-one-pass-year/SKILL.md",
+    "implementation": "plugins/mondayid-mobile/skills/monday-one-pass-year/scripts/one-pass-year.mjs",
+    "trigger": "owner delegates all currently reachable work or compresses future-planned passes into one present execution pass",
+    "laws": [
+      "calendar_time_is_not_unit_of_compute",
+      "compile_known_open_obligations_into_exact_effect_task_dag",
+      "execute_all_safe_free_reversible_currently_reachable_work_within_pass_budget",
+      "reuse_prior_effect_only_after_fresh_independent_recheck",
+      "failed_route_does_not_end_effect_if_safe_alternative_exists",
+      "same_object_effect_alternative_routes_do_not_execute_concurrently",
+      "model_self_report_never_authenticates_effect",
+      "durable_inheritance_requires_versioned_write_and_matching_readback",
+      "future_or_unknown_events_remain_open",
+      "concurrent_head_conflict_stops_dependent_inheritance_for_reconciliation"
+    ],
+    "stop": [
+      "VERIFIED_TARGET_EFFECT",
+      "EVIDENCE_PLATEAU",
+      "PASS_BUDGET",
+      "DURABLE_HEAD_RECONCILIATION_REQUIRED",
+      "HUMAN_GATE"
+    ],
+    "claim_scope": "KNOWN_CURRENT_FRONTIER_ONLY_NOT_FUTURE_YEAR_COMPLETED",
+    "tests": "37 deterministic contracts + local filesystem effect/readback/reentry proof; external host transfer remains separately evidence-gated"
   }
 }
