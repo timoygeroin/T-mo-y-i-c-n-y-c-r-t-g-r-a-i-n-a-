@@ -8,6 +8,7 @@ const text = x => typeof x === 'string' ? x.trim() : '';
 const uniq = xs => [...new Set(xs)];
 const nval = (v,lo,hi,def) => Number.isInteger(v) ? Math.max(lo,Math.min(hi,v)) : def;
 const frozen = obj => Object.freeze(obj);
+const authorityIdentity = t => JSON.stringify({effectId:text(t.effectId),objectId:text(t.objectId)||'unspecified-object',routeId:text(t.routeId)||'default-route',dependsOn:uniq((Array.isArray(t.dependsOn)?t.dependsOn:[]).map(text).filter(Boolean)).sort(),resources:uniq((Array.isArray(t.resources)?t.resources:[]).map(text).filter(Boolean)).sort(),notBefore:t.notBefore||null,authorized:t.authorized===true,reversible:t.reversible===true,cost:t.cost,humanGate:t.humanGate===true,externalPublication:t.externalPublication===true});
 const canExecute = task => task.authorized === true && task.reversible === true && task.cost === 0 && task.humanGate !== true && task.externalPublication !== true;
 const urgent = t => ((t.currentOwnerPriority === true ? 100000 : 0) + (Number(t.impact) || 0)*100 + (Number(t.recurrenceCost) || 0)*10 + (Number(t.informationGain) || 0));
 
@@ -17,9 +18,12 @@ export function compileKnownFrontier(tasks, {asOf=new Date().toISOString()}={}) 
   for(const item of Array.isArray(tasks) ? tasks : []) {
     const id=text(item?.id), effectId=text(item?.effectId);
     if(!id || !effectId) {failures.push({code:'INVALID_TASK_ID_OR_EFFECT',id:id||null});continue;}
+    const badArray=['dependsOn','resources'].find(k=>Object.prototype.hasOwnProperty.call(item,k)&&(!Array.isArray(item[k])||item[k].some(x=>typeof x!=='string'||!x.trim())));
+    const badBoolean=['humanGate','externalPublication'].find(k=>Object.prototype.hasOwnProperty.call(item,k)&&typeof item[k]!=='boolean');
+    if(badArray||badBoolean){failures.push({code:badArray?'INVALID_TASK_ARRAY':'INVALID_GATE_BOOLEAN',id,field:badArray||badBoolean});continue;}
     if(byId.has(id)) {
       const p=byId.get(id);
-      if(p.effectId!==effectId || JSON.stringify(p.dependsOn||[])!==JSON.stringify(item.dependsOn||[]))
+      if(authorityIdentity(p)!==authorityIdentity(item))
         failures.push({code:'CONFLICTING_TASK_ID',id});
       else duplicateIds.push(id);
       continue;
@@ -54,8 +58,14 @@ export function compileKnownFrontier(tasks, {asOf=new Date().toISOString()}={}) 
   const fingerprint=new Map();
   for(const task of byId.values()) {
     const key=JSON.stringify({objectId:task.objectId,effectId:task.effectId,routeId:task.routeId,dependsOn:task.dependsOn,resources:task.resources,notBefore:task.notBefore||null});
-    if(fingerprint.has(key)){ blocked.set(task.id,'DUPLICATE_EFFECT');duplicateIds.push(task.id); }
-    else fingerprint.set(key,task.id);
+    if(fingerprint.has(key)){
+      const previous=fingerprint.get(key);
+      if(authorityIdentity(previous)!==authorityIdentity(task)){
+        failures.push({code:'CONFLICTING_EFFECT_AUTHORITY',id:task.id,otherId:previous.id});
+        blocked.set(task.id,'CONFLICTING_EFFECT_AUTHORITY');
+        blocked.set(previous.id,'CONFLICTING_EFFECT_AUTHORITY');
+      } else {blocked.set(task.id,'DUPLICATE_EFFECT');duplicateIds.push(task.id);}
+    } else fingerprint.set(key,task);
   }
   return frozen({schema:'mondayid.known-frontier.v1',asOf,
     tasks:frozen([...byId.values()]),
@@ -163,7 +173,7 @@ export async function compressKnownYear({
         attemptedDurableWrite=true;
         try{
           const written=await persist({expectedVersion:version,record});
-          if(written?.ok===true && text(written.version)){
+          if(written?.ok===true && text(written.version) && String(written.version)!==String(version)){
             const checked=await readPersisted({taskId:x.task.id,version:written.version});
             durable=checked?.taskId===x.task.id && checked?.effectId===x.task.effectId && checked?.objectId===x.task.objectId &&
               checked?.receiptId===x.outcome.id && String(checked?.version)===String(written.version);
