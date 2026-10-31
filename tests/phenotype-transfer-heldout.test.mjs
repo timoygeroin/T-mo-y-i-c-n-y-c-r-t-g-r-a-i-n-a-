@@ -36,3 +36,20 @@ test('same-substrate deterministic provider control: parity is not organism adva
  assert.equal(calls[0].contract,false);
  assert.equal(calls[1].contract,true);
 });
+
+test('same-substrate structural control: safe concurrent rebase is parity, not organism advantage',async()=>{
+ const answer='Не перезаписывай новый релиз. Сначала перечитай актуальный head, перенеси поверх него проверенную правку, повтори тесты и только после readback обновляй.';
+ const calls=[];
+ const provider={async generate(input){calls.push(input);return{text:answer};}};
+ const receptor=createModelReceptor({provider,model:'same-local-deterministic-provider',maxParallelPaths:1,maxCritics:0});
+ const signal={text:'Пока шла правка управляющего слоя, релиз плагина изменился в другой ветке. Какой один безопасный следующий ход?',exactObject:'preserve concurrent verified mutation',desiredEffect:'avoid stale overwrite and keep both verified deltas',computeTier:'LOW'};
+ const result=await receptor.compareAgainstSingleCell({id:'heldout:concurrency',effect:signal.text,inferenceContract:compileAttractorContract(signal,{domains:['systems']})});
+ assert.equal(result.advantage.state,'PARITY_NOT_ADVANTAGE');
+ assert.equal(result.advantage.claimAllowed,false);
+ assert.equal(result.advantage.baseline.release.ok,true);
+ assert.equal(result.advantage.organism.release.ok,true);
+ assert.equal(calls.length,2);
+ assert.equal(calls[0].model,calls[1].model);
+ assert.equal(calls[0].contract,null);
+ assert.ok(calls[1].contract);
+});
