@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { createVirtualChip, compileNaturalComputeFabric } from './virtual-chip.mjs';
 
 const idFor=value=>'cell:'+crypto.createHash('sha256')
   .update(JSON.stringify(value)).digest('hex').slice(0,16);
@@ -33,13 +34,51 @@ export function createMondayControlPlane({maxCells=8}={}) {
         genomeRef:norm(task.genomeRef||'mondayid:whole-organism'),
         signal:task.signal||null
       };
+      const chip=createVirtualChip({
+        id:idFor(payload),
+        text:norm(task?.signal?.text || objective),
+        exactObject:payload.exactObject || objective,
+        desiredEffect:objective,
+        currentDimaSignal:norm(task?.signal?.text || ''),
+        domains:[role],
+        novelty:task?.signal?.novelty,
+        ambiguity:task?.signal?.ambiguity,
+        historicalDepth:task?.signal?.historicalDepth,
+        recurrenceCost:task?.signal?.recurrenceCost,
+        repairCost:task?.signal?.repairCost,
+        consequence:task?.signal?.consequence,
+        routeCandidates:[{
+          id:role+':'+objective,
+          effect:objective,
+          truth:1,
+          informationGain:role==='falsifier'?1:0.6,
+          futureOptionality:0.7,
+          systemImprovement:0.7,
+          transferValue:0.7
+        }]
+      },{
+        sourceRevision:norm(task?.sourceRevision || 'control-plane'),
+        genomeRef:payload.genomeRef
+      });
+      const fabric=compileNaturalComputeFabric();
       cells.push(Object.freeze({
         id:idFor(payload),
         ...payload,
         identityOwner:false,
         state:'PROPOSED_CELL',
         externalActions:0,
-        inheritance:'WHOLE_GENOME_SCOPED_EXPRESSION'
+        inheritance:'WHOLE_GENOME_SCOPED_EXPRESSION',
+        compute:Object.freeze({
+          chipSchema:chip.schema,
+          cycleId:chip.cycleId,
+          tier:chip.compute.tier,
+          topology:chip.compute.topology.mode,
+          hardware:Object.freeze(Object.keys(chip.hardware.devices)),
+          fabric:fabric.substrateModel,
+          naturalOperators:Object.freeze(Object.keys(fabric.operators)),
+          genomeRef:payload.genomeRef,
+          externalActions:chip.externalActions
+        })
       }));
     }
 
