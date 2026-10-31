@@ -2,8 +2,8 @@ import crypto from 'node:crypto';
 
 const SOURCE_RANK=Object.freeze({
   current_signal:0,
-  current_verified_state:1,
-  verified_external_readback:2,
+  verified_external_readback:1,
+  current_verified_state:2,
   direct_historical_source:3,
   historical_chat:4,
   archive_derived:5,
