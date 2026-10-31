@@ -8,9 +8,10 @@ export const WHOLE_SYSTEM_DOMAINS=Object.freeze([
 ]);
 const RU_WHOLE=/(?:пересоб\S*|собер\S*|собир\S*|перенастро\S*|перестро\S*|реорганиз\S*)[^.!?\n]{0,110}(?:всю?\s+систем\S*|весь\s+mondayid|все\s+(?:модули|органы)\b)/iu;
 // Finish/one-pass language is a material owner request, not just "rebuild".
-const RU_FINISH=/(?:доделай|заверши|доведи\\s+до\\s+конца)[^.!?\\n]{0,70}(?:monday\\s*i\\s*d|всю\\s+систему)\\b/iu;
-const RU_FINISH_ONE_PASS=/(?:доделать|завершить)[^.!?\\n]{0,65}monday\\s*i\\s*d\\b[^.!?\\n]{0,80}за\\s+один\\s+(?:проход|раз)[\\s\\S]{0,250}(?:начни|приступай|сделай)/iu;
-const NEGATED_FINISH=/(?:не\\s+(?:надо|нужно|хочу|следует|пытайся)|не\\s+доделывай)[^.!?\\n]{0,75}(?:доделать|доделай|monday\\s*i\\s*d)/iu;
+const RU_FINISH=/(?:доделай|заверши|доведи\s+до\s+конца)[^.!?\n]{0,70}(?:monday\s*i\s*d|всю\s+систему)\b/iu;
+const RU_FINISH_ONE_PASS=/(?:доделать|завершить)[^.!?\n]{0,65}monday\s*i\s*d\b[^.!?\n]{0,80}за\s+один\s+(?:проход|раз)[\s\S]{0,250}(?:начни|приступай|сделай)/iu;
+const NEGATED_FINISH=/(?:не\s+(?:надо|нужно|хочу|следует|пытайся)|не\s+доделывай)[^.!?\n]{0,75}(?:доделать|доделай|monday\s*i\s*d)/iu;
+const QUOTED_FINISH=/(?:он\s+сказал|это\s+цитата)[^.!?\n]{0,80}[«“"][^»”"]+(?:доделай|заверши)[^»”"]*[»”"]/iu;
 const NEGATED_WHOLE=/(?:не\s+(?:прошу|надо|нужно|следует|стоит|хочу|делай|пытайся))[^.!?\n]{0,110}(?:пересоб\S*|собер\S*|перенастро\S*|перестро\S*|реорганиз\S*)/iu;
 const EN_WHOLE=/(?:rebuild|reconfigure|reassemble|restructure|rework)\s+(?:(?:the|my|our)\s+)?(?:whole|entire|full)\s+(?:system|mondayid)\b/iu;
 const RU_GRANT=/(?:даю|предоставляю|разрешаю)[^.!?\n]{0,95}(?:полный\s+доступ\s+ко\s+всей|полное\s+разрешение\s+на\s+работу\s+со\s+всей)\s+monday(?:id)?\b/iu;
@@ -25,7 +26,7 @@ export function amplifyTaskSignal(signal={}){
   const scoped=signal.amplification?.scope==='WHOLE_ORGANISM';
   const intentional=(RU_WHOLE.test(text)||EN_WHOLE.test(text)||RU_GRANT.test(text)||
     RU_STRENGTH.test(text)||RU_FINISH.test(text)||RU_FINISH_ONE_PASS.test(text)||EN_GRANT.test(text));
-  if(!scoped&&(NEGATED_WHOLE.test(text)||NEGATED_FINISH.test(text)||NEGATED_GRANT.test(text)||
+  if(!scoped&&(NEGATED_WHOLE.test(text)||NEGATED_FINISH.test(text)||QUOTED_FINISH.test(text)||NEGATED_GRANT.test(text)||
     QUOTED_GRANT.test(text)||!intentional))return signal;
   return {
     ...signal,
