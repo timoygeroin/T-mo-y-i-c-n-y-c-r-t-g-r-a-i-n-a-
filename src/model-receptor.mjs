@@ -1,4 +1,5 @@
 import { evaluateCandidateOutput } from './attractor-field.mjs';
+import { compileLetterContract, evaluateLetterPhenotype, letterContractInstructions } from './letter-phenotype.mjs';
 
 const effortForTier = Object.freeze({
   LOW:'low',
@@ -37,6 +38,8 @@ export function buildSteeringEnvelope(action = {}) {
   const contract = action.inferenceContract;
   if (!contract) throw new Error('MONDAY_INFERENCE_CONTRACT_REQUIRED');
 
+  const letter=compileLetterContract(contract);
+
   const sections = [
     'MONDAYID TASK-LOCAL ATTRACTOR CONTRACT',
     `EXACT OBJECT: ${contract.exactObject}`,
@@ -51,6 +54,7 @@ export function buildSteeringEnvelope(action = {}) {
     lineageBlock(contract.lineage),
     'Do not treat a persona label as sufficient. Solve the exact object.',
     'Generate the best route inside these constraints; do not delegate routine route choice back to the human.',
+    letterContractInstructions(letter),
     contrastiveBlock(contract.contrastiveExamples)
   ].filter(Boolean);
 
@@ -61,7 +65,8 @@ export function buildSteeringEnvelope(action = {}) {
     exactObject:contract.exactObject,
     desiredEffect:contract.desiredEffect,
     compute:contract.compute,
-    releaseVetoes:contract.genericVetoes || []
+    releaseVetoes:contract.genericVetoes || [],
+    letter
   });
 }
 
@@ -130,12 +135,20 @@ export function createModelReceptor({
               pathCount,
               contract
             });
-            const release = evaluateCandidateOutput(candidate, contract);
+            const attractorRelease = evaluateCandidateOutput(candidate, contract);
+            const letterRelease = evaluateLetterPhenotype(candidate, envelope.letter);
+            const release = {
+              ok:attractorRelease.ok && letterRelease.ok,
+              code:attractorRelease.ok ? letterRelease.code : attractorRelease.code,
+              hits:[...(attractorRelease.hits || []), ...(letterRelease.hits || [])]
+            };
             return {
               index,
               ok:release.ok,
               candidate,
               release,
+              attractorRelease,
+              letterRelease,
               critique:null
             };
           } catch (error) {
@@ -252,6 +265,11 @@ export function createModelReceptor({
       const release = evaluateCandidateOutput(result, action.inferenceContract);
       if (!release.ok) {
         return {ok:false,code:'MONDAY_ATTRACTOR_RELEASE_VETO',hits:[...release.hits]};
+      }
+      const letter = compileLetterContract(action.inferenceContract);
+      const letterRelease = evaluateLetterPhenotype(result, letter);
+      if (!letterRelease.ok) {
+        return {ok:false,code:'MONDAY_LETTER_PHENOTYPE_VETO',hits:[...letterRelease.hits]};
       }
       return {
         ok:true,
