@@ -19,7 +19,7 @@ Recover newest accessible Fusion Head C* and scoped worldlines, verified receipt
 3. Deduplicate exact same-object/effect/route, but keep genuinely different alternate routes. A failed primary route does not end the objective; execute a safe backup. Do not run multiple alternative routes for one exact effect concurrently.
 4. Execute independent resource-disjoint tasks concurrently where trustworthy effectors exist. Recompute dependencies after each verified effect; execute successor tasks in the SAME pass. Continue through bounded generations rather than stopping at a first successful action.
 5. Never let a candidate model self-report authenticate success. Use a separate trusted host receptor, exact task/effect/object matching, no-op negative controls, independent readback. Promote only effect-level observations at their correct scope. Challenge verifier proxy success.
-6. For durable lineage, require version-checked write plus independent readback of the **same** effect receipt. On head drift or ambiguous write, stop the dependent mutation branch and reconcile, never blind retry an external action.
+6. For durable lineage, require a *changed* version after version-checked write plus independent readback of the **same** effect receipt. On head drift or ambiguous write, stop the dependent mutation branch and reconcile, never blind retry an external action.
 7. A previously verified effect becomes an ancestor for subsequent generations only at its verified scope. An unsafe/unapproved action remains blocked. Events dependent on future observations remain FUTURE/UNKNOWN, never magically completed today.
 8. Before the outward release, run existing Monday Agent Release and Letter Phenotype gates. Return the achieved effect with counts/proof and only exact irreducible open boundary; do not list artificial hourly forecasts or demand confirmation of delegated safe steps.
 
@@ -43,4 +43,7 @@ Stop the invocation only on VERIFIED_TARGET_EFFECT, EVIDENCE_PLATEAU, PASS_BUDGE
 - A full-year ambition is equated with unit tests or a pretty dashboard.
 
 ## Proven implementation scope
-Initial version has 37 deterministic test cases and one offline real filesystem 5-generation write/readback/reentry experiment. That proves only scoped mechanisms. Independent unseen ChatGPT-host and second-host transfer and real-year outcomes require separate effect-level evidence. Preserve the existing Fusion Head and all prior organs when updating.
+Current version has 48 deterministic test cases and one offline real filesystem 5-generation write/readback/reentry experiment. That proves only scoped mechanisms. Independent unseen ChatGPT-host and second-host transfer and real-year outcomes require separate effect-level evidence. Preserve the existing Fusion Head and all prior organs when updating.
+
+## Independent E042 adverse feedback folded back (2026-10-31)
+A concurrently running existing World Breakthrough agent found 11 falsifying cases in 2.14.0 and stored a private Library E042 candidate. Release 2.14.2 imported and re-tested that exact patch and added 11 tests: conflicting same task/effect permissions/object, malformed dependency/resource arrays, nonboolean human/public gates and unchanged storage version accepted as success. Current 48/48 deterministic tests plus 19 existing agent gate regressions PASS; local real filesystem effect/reentry proof PASS. No claim of independent real-user effect or cross-host transfer.
