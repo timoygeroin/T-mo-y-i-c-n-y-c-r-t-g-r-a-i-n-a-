@@ -16,7 +16,13 @@ function isEffectProof(entry){
   return entry?.ok===true &&
     proof?.ok===true &&
     typeof proof.mode==='string' && proof.mode.trim().length>0 &&
-    typeof proof.evidenceRef==='string' && proof.evidenceRef.trim().length>0;
+    typeof proof.evidenceRef==='string' && proof.evidenceRef.trim().length>0 &&
+    proof.independentProof?.source==='HOST_READER' &&
+    proof.independentProof?.effectId===entry.action?.id &&
+    proof.independentProof?.domain===entry.action?.domain &&
+    proof.independentProof?.sourceSignal===entry.action?.sourceSignal &&
+    typeof proof.independentProof?.evidenceRef==='string' &&
+    proof.independentProof.evidenceRef.trim().length>0;
 }
 
 /**
