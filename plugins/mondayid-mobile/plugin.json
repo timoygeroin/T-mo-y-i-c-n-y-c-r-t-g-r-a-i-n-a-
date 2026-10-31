@@ -3,8 +3,8 @@
   "author": {
     "name": "MondayID"
   },
-  "description": "MondayID 2.14.0: one-pass causal work compression with verified reentry, alternative routes, readback and future-open obligations; preserves Fusion Head and existing agent organs.",
+  "description": "MondayID 2.14.2: one-pass causal executor with fail-closed authority, exact object/route scope, typed dependencies and monotonic CAS, preserving Fusion Head and agent release.",
   "name": "mondayid-mobile",
   "repository": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
-  "version": "2.14.1"
+  "version": "2.14.3"
 }
