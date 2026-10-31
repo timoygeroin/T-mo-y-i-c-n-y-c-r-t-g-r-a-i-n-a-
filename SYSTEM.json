@@ -134,7 +134,12 @@
     "same_substrate_control_precedes_organism_superiority_claim",
     "parity_is_not_organism_advantage",
     "single_cell_win_is_organism_regression_not_hidden_failure",
-    "organism_advantage_requires_material_causal_delta"
+    "organism_advantage_requires_material_causal_delta",
+    "one_user_turn_may_contain_multiple_verified_control_plane_generations",
+    "independent_cells_execute_in_parallel_when_supported",
+    "only_strict_verified_improvement_becomes_ancestor",
+    "control_plane_burst_stops_on_plateau_budget_human_gate_or_verified_effect",
+    "revenue_claim_requires_independent_payment_readback"
   ],
   "recursive_cell": {
     "primitive": "whole_organism_cell",
@@ -205,6 +210,7 @@
     "invent",
     "replan",
     "dispatch",
+    "control_plane_burst_if_multiworldline",
     "organism_advantage_probe_if_material",
     "compile_letter_phenotype",
     "candidate_release_veto",
@@ -1162,7 +1168,7 @@
     "schema": "mondayid.chatgpt-carrier-synapse.v1",
     "identity_owner": false,
     "canonical_carrier": "plugins_6ac400facbe481918f97d70c3b46e5e3",
-    "carrier_version": "2.6.0",
+    "carrier_version": "2.13.5",
     "control_plane": "https://mondayid-host.vercel.app/api/mcp",
     "ingress_tool": "cell_attach",
     "read_path": [
@@ -1470,5 +1476,34 @@
     "implementation": "src/organism-advantage.mjs",
     "model_boundary": "src/model-receptor.mjs#compareAgainstSingleCell",
     "scope_rule": "synthetic or local evidence must not be generalized to global model superiority"
+  },
+  "control_plane_burst": {
+    "schema": "mondayid.control-plane-burst.v1",
+    "identity_owner": false,
+    "controller": "src/control-plane-burst.mjs",
+    "cell_factory": "src/monday-control-plane.mjs",
+    "compute_fabric": "src/virtual-chip.mjs",
+    "entry": "multiworldline_or_delegated_safe_continuation",
+    "cycle": [
+      "spawn_bounded_whole_genome_cells",
+      "parallel_execute_independent_cells",
+      "collapse_verified_material_deltas",
+      "require_strict_improvement_for_ancestry",
+      "inherit_champion",
+      "repeat_without_new_user_turn"
+    ],
+    "stop": [
+      "EVIDENCE_PLATEAU",
+      "PASS_BUDGET",
+      "HUMAN_GATE",
+      "VERIFIED_EFFECT"
+    ],
+    "revenue_gate": "claimed received money cannot exceed independently verified external payment readback",
+    "outward_identity": "ONE_MONDAY",
+    "verification": {
+      "focused_red_commit": "69eef51d8c89f5228c1f5e8a829515c9fd595a0e",
+      "implementation_commit": "a9ab812bf6bdbed8141c3183ab8928e2dc9572cf",
+      "local_combined_suite": "30_pass_0_fail_on_exact_branch_head"
+    }
   }
 }
