@@ -88,3 +88,34 @@ test('independent terminal receipt alone cannot prove whole-account review',()=>
   const output=gateBehaviorSurface({signal,surface:released('Все чаты полностью прочитаны.'),independentProof:{verified:true}});
   assert.equal(output.code,'ACCOUNT_HISTORY_COVERAGE_UNPROVEN');
 });
+
+
+test('material system change chooses execution, not another explanatory rule',()=>{
+  const p=preflightBehavior({text:'Измени всю систему MondayID'});
+  assert.equal(p.goalKey,'DELIVERY');
+  assert.equal(p.state,'REROUTED');
+  assert.equal(p.selectedFamily,'MATERIAL_EXECUTION');
+  assert.ok(p.constraints.some(x=>x.includes('requested observable change')));
+});
+test('owner may force a material effect contract without lexical match',()=>{
+  const p=preflightBehavior({text:'Сделай это',materialOrder:true,proposedFamily:'INFRASTRUCTURE_SUBSTITUTE'});
+  assert.equal(p.goalKey,'DELIVERY');
+  assert.equal(p.selectedFamily,'MATERIAL_EXECUTION');
+});
+test('words about a system are not automatically a material order',()=>{
+  assert.equal(preflightBehavior({text:'Почему система работает так?'}).goalKey,'GENERAL');
+  assert.equal(preflightBehavior({text:'Напиши документ об архитектуре'}).goalKey,'GENERAL');
+});
+test('material order cannot be released as a plan, fake receipt or unbound self-proof',()=>{
+  const signal={text:'Примени все мутации MondayID'};
+  const candidate=released('Сначала создадим план внедрения.');
+  assert.equal(gateBehaviorSurface({signal,surface:candidate}).code,'MATERIAL_ORDER_EFFECT_UNVERIFIED');
+  assert.equal(gateBehaviorSurface({signal,surface:candidate,independentProof:{verified:true}}).code,'MATERIAL_ORDER_EFFECT_UNVERIFIED');
+  assert.equal(gateBehaviorSurface({signal,surface:candidate,independentProof:{verified:true,evidenceRefs:[]}}).code,'MATERIAL_ORDER_EFFECT_UNVERIFIED');
+});
+test('only a verified material effect with linked readback can release',()=>{
+  const signal={text:'Почини память MondayID'};
+  const result=gateBehaviorSurface({signal,surface:released('Исправление наблюдается в целевом состоянии.'),independentProof:{verified:true,evidenceRefs:['external:memory:1']}});
+  assert.equal(result.ok,true);
+  assert.equal(result.goalKey,'DELIVERY');
+});

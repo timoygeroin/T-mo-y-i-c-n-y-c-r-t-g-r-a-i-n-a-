@@ -7,6 +7,30 @@ import { enforceFullCoverageClaim } from './archive-coverage.mjs';
 
 export const BEHAVIOR_CORRECTIONS = Object.freeze([
   Object.freeze({
+    id:'material-order-not-explanation-20261101',
+    goalKey:'DELIVERY',
+    rejectedFamily:'EXPLANATION_ONLY',
+    replacementFamily:'MATERIAL_EXECUTION',
+    source:'direct-user-correction-2026-11-01',
+    invariant:'For a material MondayID order, execute the requested observable change. An explanation, plan, rule or promise is not the effect.'
+  }),
+  Object.freeze({
+    id:'material-order-not-infrastructure-proxy-20261101',
+    goalKey:'DELIVERY',
+    rejectedFamily:'INFRASTRUCTURE_SUBSTITUTE',
+    replacementFamily:'MATERIAL_EXECUTION',
+    source:'direct-user-correction-2026-11-01',
+    invariant:'A host, plugin, site, game, PR or code change does not alone prove a change in MondayID behavior. Verify the exact requested target and downstream effect.'
+  }),
+  Object.freeze({
+    id:'material-order-not-progress-theater-20261101',
+    goalKey:'DELIVERY',
+    rejectedFamily:'PROGRESS_THEATER',
+    replacementFamily:'MATERIAL_EXECUTION',
+    source:'direct-user-correction-2026-11-01',
+    invariant:'Do not release a progress narrative as the completed material order. Require independent effect readback; preserve unresolved obligations truthfully.'
+  }),
+  Object.freeze({
     id:'premiere-not-mock-ui-20261101',
     goalKey:'PREMIERE',
     rejectedFamily:'MOCK_UI',
@@ -44,15 +68,20 @@ const norm = x => String(x ?? '').trim();
 const looksLikePremiere = t => /(?:monday|манд[еэе]й|монд[еэе]й|mondayid)/iu.test(t) &&
   /(?:премьер|презентац|демонстрац|покажи|showcase|premiere|demo|полност[ьюий]|пользоват)/iu.test(t);
 const terminalStop = x => x === 'STOP_ALL';
+// Only direct system-change imperatives trigger a material-effects contract.
+// Ordinary conversations, factual requests and textual artifacts remain valid.
+const materialOrderIntent = t =>
+  /(?:^|[.!?\n]\s*)(?:ну\s+|тогда\s+|пожалуйста\s+|манд[еэ]й[,!]?\s+){0,4}(?:примени|применяй|поменяй|измени|переделай|перестрой|пересобери|почини|исправь|наладь|доделай|заверши|закончи|перепиши|перенастрой)(?:\s|$|[,.!?])/iu.test(t) &&
+  /(?:monday|манд[еэ]й|mondayid|модел|автопилот|памят|систем|интеллект|ядро|механизм|мутаци|правил)/iu.test(t);
 const finishOnlyIntent = t => /(?:не\s+отвечай\s+пока|только\s+полный\s+финал|если\s+не\s+закончила[^.!?\n]{0,70}продолжай|посередине\s+ответ\s+мне\s+не\s+нужен)/iu.test(t);
 const replacements = new Map(BEHAVIOR_CORRECTIONS.map(x=>[`${x.goalKey}:${x.rejectedFamily}`,x]));
 
 function classifySignal(signal={}) {
   const text=norm(signal.text);
   const finishOnly = signal.finishOnly === true || finishOnlyIntent(text);
-  const goalKey=finishOnly ? 'TERMINAL' : (norm(signal.goalKey) || (looksLikePremiere(text) ? 'PREMIERE' : 'GENERAL'));
+  const goalKey=finishOnly ? 'TERMINAL' : (norm(signal.goalKey) || ((signal.materialOrder === true || (signal.materialOrder !== false && materialOrderIntent(text))) ? 'DELIVERY' : (looksLikePremiere(text) ? 'PREMIERE' : 'GENERAL')));
   const renderExplicit=signal.explicitImageIntent===true || signal.imageRequested===true;
-  const family=norm(signal.proposedFamily) || (goalKey === 'TERMINAL' ? 'PARTIAL_STATUS' : (goalKey === 'PREMIERE' ? 'VERIFIABLE_EFFECT' : 'GENERAL'));
+  const family=norm(signal.proposedFamily) || (goalKey === 'TERMINAL' ? 'PARTIAL_STATUS' : (goalKey === 'DELIVERY' ? 'EXPLANATION_ONLY' : (goalKey === 'PREMIERE' ? 'VERIFIABLE_EFFECT' : 'GENERAL')));
   const directive=norm(signal.directive) || 'CONTINUE';
   return {goalKey,family,directive,renderExplicit};
 }
@@ -99,6 +128,8 @@ export function gateBehaviorSurface({signal={},preflight=null,surface=null,indep
     return Object.freeze({ok:false,code:'UNSUPPORTED_GLOBAL_ACTIVATION'});
   if(route.goalKey==='TERMINAL' && independentProof?.verified !== true)
     return Object.freeze({ok:false,code:'TERMINAL_PROOF_REQUIRED'});
+  if(route.goalKey==='DELIVERY' && !(independentProof?.verified === true && Array.isArray(independentProof.evidenceRefs) && independentProof.evidenceRefs.length > 0))
+    return Object.freeze({ok:false,code:'MATERIAL_ORDER_EFFECT_UNVERIFIED'});
   if(route.goalKey==='PREMIERE' && MOCK_PRESENTATION.test(message) && signal?.explicitImageIntent!==true)
     return Object.freeze({ok:false,code:'KNOWN_MOCK_PRESENTATION_RECURRED'});
   return Object.freeze({ok:true,code:'BOUNDED_RELEASE',goalKey:route.goalKey,selectedFamily:route.selectedFamily});

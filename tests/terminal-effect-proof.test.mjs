@@ -57,3 +57,20 @@ test('unfinished runtime and unreleased model text cannot unlock proof',()=>{
   assert.equal(assessTerminalEffectProof({signal,pass:{...passFor(results),state:'BLOCKED'},surface}).verified,false);
   assert.equal(assessTerminalEffectProof({signal,pass:passFor(results),surface:{released:false}}).verified,false);
 });
+
+
+test('material order requires observed target delta and a passing negative control',()=>{
+  const material={...signal,requireObservableDelta:true};
+  const missing=signal.obligations.map(o=>witnessed(o));
+  assert.equal(assessTerminalEffectProof({signal:material,pass:passFor(missing),surface}).verified,false);
+  const present=signal.obligations.map(o=>witnessed(o));
+  for(const r of present){
+    r.verification.independentProof.effectObserved=true;
+    r.verification.independentProof.noOpControlPassed=false;
+  }
+  const proved=assessTerminalEffectProof({signal:material,pass:passFor(present),surface});
+  assert.equal(proved.verified,true);
+  assert.equal(proved.evidenceRefs.length,2);
+  present[0].verification.independentProof.noOpControlPassed=true;
+  assert.equal(assessTerminalEffectProof({signal:material,pass:passFor(present),surface}).verified,false);
+});
