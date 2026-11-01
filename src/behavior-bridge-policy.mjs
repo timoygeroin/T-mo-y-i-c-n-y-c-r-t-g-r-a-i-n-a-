@@ -93,7 +93,9 @@ export function gateBehaviorSurface({signal={},preflight=null,surface=null,indep
   if(!surface || surface.released!==true) return Object.freeze({ok:false,code:'CANDIDATE_NOT_RELEASED'});
   const message=norm(surface.message || surface.text);
   if(!message) return Object.freeze({ok:false,code:'EMPTY_SURFACE'});
-  if(UNPROVEN_ACCOUNT_TOTAL.test(message) && !enforceFullCoverageClaim(archiveCoverageProof || {}).ok)\n    return Object.freeze({ok:false,code:'ACCOUNT_HISTORY_COVERAGE_UNPROVEN'});\n  if(FALSE_ACTIVATION.test(message) && independentProof?.verified!==true)
+  if(UNPROVEN_ACCOUNT_TOTAL.test(message) && !enforceFullCoverageClaim(archiveCoverageProof || {}).ok)
+    return Object.freeze({ok:false,code:'ACCOUNT_HISTORY_COVERAGE_UNPROVEN'});
+  if(FALSE_ACTIVATION.test(message) && independentProof?.verified!==true)
     return Object.freeze({ok:false,code:'UNSUPPORTED_GLOBAL_ACTIVATION'});
   if(route.goalKey==='TERMINAL' && independentProof?.verified !== true)
     return Object.freeze({ok:false,code:'TERMINAL_PROOF_REQUIRED'});
