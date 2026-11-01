@@ -37,6 +37,8 @@ test('independent semantics and account-wide proof are ALL necessary', () => {
   x.counts.tasks.observed=x.counts.tasks.expected;
   x.counts.ideas.observed=x.counts.ideas.expected;
   x.taskReviewIndependent=true;x.ideaReviewIndependent=true;
+  x.contentParts={observed:85280,expected:85280,scope:'six-export-shards-source-text'};
+  x.contentReadbackIndependentlyVerified=true;
   assert.equal(evaluateArchiveCoverage(x).semanticComplete,true);
   assert.equal(evaluateArchiveCoverage(x).accountComplete,false);
   x.counts.effects.observed=x.counts.effects.expected;
