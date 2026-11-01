@@ -286,3 +286,65 @@ test('Behavior Bridge withholds an unsupported full activation claim', async () 
   assert.equal(out.behavior.gate.code,'UNSUPPORTED_GLOBAL_ACTIVATION');
   assert.equal(out.receipt,null);
 });
+
+
+test('finish-only host releases completion only after independent exact effect readback',async()=>{
+  let executionCount=0,readerCount=0;
+  const domainActuator={
+    name:'trusted-domain-actuator',
+    async execute(){executionCount++;return {ok:true,text:'Effect independently observed.'};},
+    async verify(){return {ok:true,mode:'external-exact-readback',evidenceRef:'actuator:readback'};}
+  };
+  const signal={
+    id:'terminal-real-1',text:'Закончи и сдай проверенный эффект.',
+    finishOnly:true,requireDomainReceptor:true,computeTier:'LOW',
+    obligations:[{
+      binding:'obligation',id:'one',domain:'general',
+      status:'OPEN',effect:'Perform a bounded effect',
+      requiredVerificationMode:'external-exact-readback'
+    }]
+  };
+  const out=await runChatHost({
+    signal,env:liveEnv,fetchImpl:worldlineFetch,
+    provider:{async generate(){throw Error('model not needed');}},
+    domainReceptors:{general:domainActuator},
+    async independentReadback({action}){
+      readerCount++;
+      return {ok:true,effectId:action.id,domain:action.domain,
+        sourceSignal:action.sourceSignal,evidenceRef:'external:exact:one'};
+    }
+  });
+  assert.equal(executionCount,1);
+  assert.equal(readerCount,1);
+  assert.equal(out.ok,true);
+  assert.equal(out.surface.released,true);
+  assert.equal(out.behavior.preflight.goalKey,undefined);
+  assert.equal(out.behavior.gate.code,'BOUNDED_RELEASE');
+  assert.equal(out.completionProof.verified,true);
+  assert.deepEqual([...out.completionProof.evidenceRefs],['external:exact:one']);
+});
+
+test('finish-only host with no independent reader fails closed, not as a false completion',async()=>{
+  const domainActuator={
+    name:'self-verifying-actuator',
+    async execute(){return {ok:true,text:'I finished.'};},
+    async verify(){return {ok:true,mode:'external-exact-readback',evidenceRef:'self:claimed'};}
+  };
+  const out=await runChatHost({
+    signal:{
+      id:'terminal-false-1',text:'Заверши эффект.',finishOnly:true,
+      requireDomainReceptor:true,computeTier:'LOW',
+      obligations:[{
+        binding:'obligation',id:'one',domain:'general',status:'OPEN',
+        effect:'A verifiable effect',requiredVerificationMode:'external-exact-readback'
+      }]
+    },
+    env:liveEnv,fetchImpl:worldlineFetch,
+    provider:{async generate(){throw Error('model not needed');}},
+    domainReceptors:{general:domainActuator}
+  });
+  assert.equal(out.ok,false);
+  assert.equal(out.surface.released,false);
+  assert.equal(out.completionProof.verified,false);
+  assert.equal(out.receipt,null);
+});
