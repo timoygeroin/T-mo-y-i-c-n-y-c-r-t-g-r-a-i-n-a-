@@ -156,7 +156,7 @@ export async function runChatHost({
   // before releasing the answer. A response receipt written *after* release
   // cannot substitute for proof that the requested work was done.
   const completionProof = assessTerminalEffectProof({
-    signal:{...signal,id:incoming.id},pass,surface:candidateSurface
+    signal:{...signal,id:incoming.id,requireObservableDelta:behaviorPreflight.goalKey==='DELIVERY'},pass,surface:candidateSurface
   });
   const behaviorGate = gateBehaviorSurface({
     signal,preflight:behaviorPreflight,surface:candidateSurface,
@@ -224,7 +224,7 @@ export async function runChatHost({
     state:behaviorGate.ok ? pass.state : 'BLOCKED',
     reason:behaviorGate.ok ? pass.reason : behaviorGate.code,
     behavior:{preflight:{state:behaviorPreflight.state,code:behaviorPreflight.code,selectedFamily:behaviorPreflight.selectedFamily,blockedBy:behaviorPreflight.blockedBy},gate:behaviorGate},
-    completionProof:behaviorPreflight.goalKey==='TERMINAL' ? completionProof : null,
+    completionProof:['TERMINAL','DELIVERY'].includes(behaviorPreflight.goalKey) ? completionProof : null,
     worldline:{
       trust:recovered.trust,
       schema:recovered.snapshot?.schema || null,
