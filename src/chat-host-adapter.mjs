@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { selectInvariantEffect } from './semantic-frame.mjs';
 import { assessTerminalEffectProof } from './terminal-effect-proof.mjs';
 import { preflightBehavior, applyBehaviorConstraints, gateBehaviorSurface } from './behavior-bridge-policy.mjs';
 import { TrustedWorldlineReceptor } from './trusted-worldline-receptor.mjs';
@@ -120,10 +121,11 @@ export async function runChatHost({
     independentReadback
   });
 
+  const selectedEffect=selectInvariantEffect(signal || {});
   const incoming = applyBehaviorConstraints({
     id:signal?.id || `chat:${Date.now()}`,
     text:String(signal?.text || ''),
-    effect:signal?.desiredEffect || signal?.effect || String(signal?.text || ''),
+    effect:selectedEffect.effect,
     exactObject:signal?.exactObject || null,
     desiredEffect:signal?.desiredEffect || null,
     obligations:Array.isArray(signal?.obligations) ? structuredClone(signal.obligations) : [],

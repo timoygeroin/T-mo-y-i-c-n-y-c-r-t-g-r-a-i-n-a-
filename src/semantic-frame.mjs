@@ -43,6 +43,21 @@ export function compileInterpretationField(signal = {}) {
   });
 }
 
+/**
+ * Selection is operational, not cosmetic prompt expansion: a shared effect
+ * changes the planned objective, while explicit human effects outrank it.
+ */
+export function selectInvariantEffect(signal={}) {
+  const explicit=String(signal.effect || signal.desiredEffect || '').trim();
+  const field=compileInterpretationField(signal);
+  const text=String(signal.text ?? signal.intent ?? '').trim();
+  return Object.freeze({
+    effect:explicit || field.sharedEffect || text,
+    source:explicit ? 'EXPLICIT_HUMAN_EFFECT' : field.sharedEffect ? 'SHARED_CANDIDATE_EFFECT' : 'RAW_SIGNAL',
+    interpretationState:field.state
+  });
+}
+
 export function frameSignal(signal = {}) {
   const raw = String(signal.text ?? signal.intent ?? '');
   const requested = String(signal.epistemicStance ?? signal.epistemic ?? 'unspecified');
