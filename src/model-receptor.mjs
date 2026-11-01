@@ -46,7 +46,7 @@ function interpretationInstructions(field) {
       ? `COMMON EFFECT: ${field.sharedEffect}. Prefer actions consistent with every candidate.`
       : 'OPEN FORK: do not invent one winning interpretation. Seek a common safe reversible move; if external actions diverge, require discriminating evidence.',
     'Do not treat unverified interpretations as facts or user authorization.'
-  ].join('\\n');
+  ].join('\n');
 }
 
 export function buildSteeringEnvelope(action = {}) {
