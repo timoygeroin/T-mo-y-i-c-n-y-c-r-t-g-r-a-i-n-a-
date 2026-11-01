@@ -419,3 +419,78 @@ test('live host preserves direct user effect instead of replacing it with candid
   assert.equal(out.ok,true);
   assert.equal(calls[0].input,'audit only');
 });
+
+
+test('whole-system signal cannot collapse to a general model echo (2026-11-01)',async()=>{
+  let modelCalls=0;
+  const out=await runChatHost({
+    signal:{id:'whole-system-no-echo',text:'Пересобери всю систему MondayID',computeTier:'LOW'},
+    env:liveEnv,fetchImpl:worldlineFetch,
+    provider:{async generate(){modelCalls++;return {ok:true,text:'Everything repaired.'};}}
+  });
+  assert.equal(modelCalls,0);
+  assert.equal(out.ok,false);
+  assert.equal(out.surface.released,false);
+  assert.equal(out.receipt,null);
+});
+
+test('multi-domain material obligations preserve domains instead of becoming general inference',async()=>{
+  let modelCalls=0;
+  const out=await runChatHost({
+    signal:{id:'material-multi',text:'Apply and independently verify both changes',
+      computeTier:'LOW',finishOnly:true,domains:['general'],
+      obligations:[
+        {id:'code-fix',binding:'obligation',domain:'code',status:'OPEN',material:true,effect:'Commit code repair',requiredVerificationMode:'external-exact-readback'},
+        {id:'host-fix',binding:'obligation',domain:'host',status:'OPEN',material:true,effect:'Verify running host',requiredVerificationMode:'external-exact-readback'}
+      ]},
+    env:liveEnv,fetchImpl:worldlineFetch,
+    provider:{async generate(){modelCalls++;return {ok:true,text:'I fixed everything.'};}}
+  });
+  assert.equal(modelCalls,0);
+  assert.equal(out.ok,false);
+  assert.equal(out.surface.released,false);
+  assert.equal(out.completionProof.verified,false);
+  assert.equal(out.receipt,null);
+});
+
+test('even a material general obligation cannot be satisfied by text generation',async()=>{
+  let modelCalls=0;
+  const out=await runChatHost({
+    signal:{id:'material-general',text:'Execute and prove a real general effect',
+      computeTier:'LOW',finishOnly:true,
+      obligations:[{id:'real-effect',binding:'obligation',domain:'general',status:'OPEN',
+        effect:'An external observable effect',requiredVerificationMode:'external-exact-readback'}]},
+    env:liveEnv,fetchImpl:worldlineFetch,
+    provider:{async generate(){modelCalls++;return {ok:true,text:'Done.'};}}
+  });
+  assert.equal(modelCalls,0);
+  assert.equal(out.ok,false);
+  assert.equal(out.completionProof.verified,false);
+});
+
+test('trusted domain receptor plus separate reader satisfies the preserved code obligation',async()=>{
+  let modelCalls=0,executions=0,reads=0;
+  const out=await runChatHost({
+    signal:{id:'material-code-positive',text:'Execute one code effect and verify',computeTier:'LOW',
+      finishOnly:true,obligations:[{id:'one',binding:'obligation',domain:'code',
+        status:'OPEN',effect:'Real bounded code change',requiredVerificationMode:'external-exact-readback'}]},
+    env:liveEnv,fetchImpl:worldlineFetch,
+    provider:{async generate(){modelCalls++;throw Error('Never use the model as a code actuator');}},
+    domainReceptors:{code:{
+      name:'trusted-code-receptor',
+      async execute(){executions++;return {ok:true,text:'Bounded code effect confirmed by receptor.'};},
+      async verify(){return {ok:true,mode:'external-exact-readback',evidenceRef:'code:internal:readback'};}
+    }},
+    async independentReadback({action}){
+      reads++;return {ok:true,effectId:action.id,domain:action.domain,
+        sourceSignal:action.sourceSignal,evidenceRef:'code:independent:readback'};
+    }
+  });
+  assert.equal(modelCalls,0);
+  assert.equal(executions,1);
+  assert.equal(reads,1);
+  assert.equal(out.ok,true);
+  assert.equal(out.surface.released,true);
+  assert.equal(out.completionProof.verified,true);
+  assert.deepEqual([...out.completionProof.evidenceRefs],['code:independent:readback']);
+});
