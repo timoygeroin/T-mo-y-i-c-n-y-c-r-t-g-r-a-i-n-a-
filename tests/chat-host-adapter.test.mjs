@@ -236,3 +236,53 @@ test('a successful write without matching independent readback is not durable', 
   assert.equal(out.receipt.persistence,'UNVERIFIED');
   assert.equal(out.receipt.verification,null);
 });
+
+
+test('Behavior Bridge stops a user STOP_ALL without inference or a budget gate', async () => {
+  let calls=0;
+  const provider={async generate(){calls++;return {ok:true,text:'Should not happen'};}};
+  const out=await runChatHost({signal:{goalKey:'PREMIERE',text:'stop',directive:'STOP_ALL'},env:liveEnv,provider});
+  assert.equal(out.ok,false);
+  assert.equal(out.state,'STOPPED');
+  assert.equal(out.code,'USER_STOP_ALL');
+  assert.equal(calls,0);
+});
+
+test('Behavior Bridge reroutes an inherited mock dashboard before calling the model', async () => {
+  const calls=[];
+  const provider={async generate(req){calls.push(req);return {ok:true,text:'A verified bounded result.'};}};
+  const out=await runChatHost({
+    signal:{id:'premiere-1',text:'Покажи презентацию Monday',goalKey:'PREMIERE',proposedFamily:'MOCK_UI',computeTier:'LOW'},
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(out.behavior.preflight.state,'REROUTED');
+  assert.equal(out.behavior.preflight.selectedFamily,'VERIFIABLE_EFFECT');
+  assert.equal(calls.length,1);
+  assert.match(calls[0].instructions,/functioning, verified effects/);
+});
+
+test('Behavior Bridge rejects a repeated picture-only premiere even if provider says success', async () => {
+  const provider={async generate(){return {ok:true,text:'Вот картинка интерфейса Monday'};}};
+  const out=await runChatHost({
+    signal:{id:'premiere-2',text:'Покажи презентацию Monday',goalKey:'PREMIERE',computeTier:'LOW'},
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,false);
+  assert.equal(out.surface.released,false);
+  assert.equal(out.surface.message,null);
+  assert.equal(out.behavior.gate.code,'KNOWN_MOCK_PRESENTATION_RECURRED');
+  assert.equal(out.receipt,null);
+});
+
+test('Behavior Bridge withholds an unsupported full activation claim', async () => {
+  const provider={async generate(){return {ok:true,text:'Все модули полностью активированы.'};}};
+  const out=await runChatHost({
+    signal:{id:'premiere-3',text:'Покажи презентацию Monday',goalKey:'PREMIERE',computeTier:'LOW'},
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,false);
+  assert.equal(out.surface.message,null);
+  assert.equal(out.behavior.gate.code,'UNSUPPORTED_GLOBAL_ACTIVATION');
+  assert.equal(out.receipt,null);
+});
