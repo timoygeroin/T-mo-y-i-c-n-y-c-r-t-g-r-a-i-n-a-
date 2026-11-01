@@ -1,5 +1,6 @@
 import { compileLineageForSignal } from './lineage-genome.mjs';
 import { compileRecurrenceContext, evaluateRecurrenceVeto } from './recurrence-veto.mjs';
+import { compileInterpretationField } from './semantic-frame.mjs';
 
 const clamp01 = value => Math.max(0, Math.min(1, Number.isFinite(Number(value)) ? Number(value) : 0));
 const unique = values => [...new Set((values || []).filter(Boolean).map(String))];
@@ -204,6 +205,7 @@ export function compileAttractorContract(signal = {}, { domains = [], state = {}
     recurrence:compileRecurrenceContext(signal),
     allowDecisionDelegation:signal.allowDecisionDelegation === true,
     contrastiveExamples:Object.freeze(compileContrastiveExamples(signal, state)),
+    interpretationField:compileInterpretationField(signal),
     lineage,
     compute:estimateComputeProfile(signal, { domains, state }),
     weights:DEFAULT_STEERING_WEIGHTS,
