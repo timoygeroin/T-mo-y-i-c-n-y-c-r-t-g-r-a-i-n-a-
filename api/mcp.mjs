@@ -8,6 +8,7 @@ import { compileProjectLineage, projectToCapabilityDelta } from '../src/everythi
 import { describeWorkReadiness } from '../src/work-readiness.mjs';
 import { buildCarrierAttachSnapshot } from '../src/chatgpt-carrier-synapse.mjs';
 import { assessVisualTransition } from '../src/visual-release-gate.mjs';
+import { preflightBehavior, gateBehaviorSurface } from '../src/behavior-bridge-policy.mjs';
 import { normalizeIntent } from '../src/intent-field.mjs';
 import { compileMetaObservation } from '../src/meta-observer.mjs';
 import { simulateBoundedDeus0, DEUS_LIMITS, deus0ErrorCode } from '../src/deus-zero-access.mjs';
@@ -19,6 +20,11 @@ const serverInfo = Object.freeze({ name:'monday-work', version:'1.2.0' });
 const protocolVersion = '2025-03-26';
 
 const tools = Object.freeze([
+  {
+    name:'behavior_bridge',
+    description:'PRIVATE read-only MondayID correction preflight, with optional candidate release veto. Uses versioned direct corrections; does not intercept native ChatGPT messages or execute effects.',
+    inputSchema:{type:'object',properties:{signal:{type:'object'},surface:{type:'object'}},required:['signal'],additionalProperties:false}
+  },
   {
     name:'visual_release_gate',
     description:'Fail-closed MondayVision preflight and post-render identity/scene/wardrobe transaction. Does not intercept arbitrary native ChatGPT image generation.',
@@ -119,6 +125,16 @@ function jsonRpcError(id, code, message, data = undefined) {
 }
 
 async function callTool(name, args = {}, req = {}) {
+  if (name === 'behavior_bridge') {
+    if (!args?.signal || typeof args.signal !== 'object' || Array.isArray(args.signal)) {
+      const value={ok:false,state:'BLOCKED',code:'OBJECT_SIGNAL_REQUIRED'};
+      return {isError:true,content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+    }
+    const preflight=preflightBehavior(args.signal);
+    const postflight=args.surface ? gateBehaviorSurface({signal:args.signal,preflight,surface:args.surface}) : null;
+    const value={schema:'mondayid.behavior-bridge.mcp.v1',state:'PREFLIGHT_ONLY',preflight,postflight,executed:false,nativeChatInterceptor:false};
+    return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};
+  }
   if (name === 'visual_release_gate') {
     const value=assessVisualTransition(args);
     return {content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};

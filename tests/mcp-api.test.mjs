@@ -34,6 +34,7 @@ test('MCP tools/list exposes read tools plus bounded trusted write proof',async(
   assert.equal(res.statusCode,200);
   const names=res.body.result.tools.map(tool=>tool.name);
   assert.deepEqual(names,[
+    'behavior_bridge',
     'visual_release_gate',
     'meta_probe',
     'amplify_intent',
@@ -242,4 +243,30 @@ test('MCP visual_release_gate blocks a render without approved identity bytes',a
  assert.equal(res.statusCode,200);
  assert.equal(res.body.result.structuredContent.status,'HOLD');
  assert.equal(res.body.result.structuredContent.code,'IDENTITY_ANCHOR_REQUIRED');
+});
+
+
+test('MCP Behavior Bridge is private and performs bounded preflight plus postflight',async()=>{
+  const name='behavior_bridge';
+  const params={name,arguments:{signal:{text:'Покажи презентацию Monday',goalKey:'PREMIERE',proposedFamily:'MOCK_UI'},surface:{released:true,message:'Вот картинка интерфейса Monday'}}};
+  const noAuth=response();
+  await mcpHandler({method:'POST',body:{jsonrpc:'2.0',id:701,method:'tools/call',params}},noAuth);
+  assert.equal(noAuth.body.error.message,'PRIVATE_TOOL_AUTH_REQUIRED');
+  const old=process.env.MONDAYID_HOST_TOKEN;
+  process.env.MONDAYID_HOST_TOKEN='mondayid-bridge-contract-secret';
+  try{
+    const res=response();
+    await mcpHandler({method:'POST',headers:{authorization:'Bearer mondayid-bridge-contract-secret'},body:{jsonrpc:'2.0',id:702,method:'tools/call',params}},res);
+    assert.equal(res.statusCode,200);
+    const v=res.body.result.structuredContent;
+    assert.equal(v.schema,'mondayid.behavior-bridge.mcp.v1');
+    assert.equal(v.preflight.selectedFamily,'VERIFIABLE_EFFECT');
+    assert.equal(v.preflight.state,'REROUTED');
+    assert.equal(v.postflight.code,'KNOWN_MOCK_PRESENTATION_RECURRED');
+    assert.equal(v.nativeChatInterceptor,false);
+    assert.equal(v.executed,false);
+  }finally{
+    if(old===undefined)delete process.env.MONDAYID_HOST_TOKEN;
+    else process.env.MONDAYID_HOST_TOKEN=old;
+  }
 });
