@@ -43,7 +43,7 @@ const norm = x => String(x ?? '').trim();
 const looksLikePremiere = t => /(?:monday|манд[еэе]й|монд[еэе]й|mondayid)/iu.test(t) &&
   /(?:премьер|презентац|демонстрац|покажи|showcase|premiere|demo|полност[ьюий]|пользоват)/iu.test(t);
 const terminalStop = x => x === 'STOP_ALL';
-const finishOnlyIntent = t => /(?:не\s+отвечай\s+пока|только\s+полный\s+финал|если\s+не\s+закончила[^.!?\n]{0,70}продолжай|посередине\s+ответ\s+мне\s+не\s+нужен)/iu.test(t);
+const finishOnlyIntent = t => /(?:не\s+отвечай\s+пока|только\s+полный\s+финал|если\s+не\s+закончила[^.!?\n]{0,70}продолжай|посередине\s+ответ\s+мне\s+не\s+нужен|сегодня\s+день\s+сдачи|(?:ничего\s+)?кроме\s+сданн[\p{L}]*\s+работ[\p{L}]*|только\s+(?:сданн[\p{L}]*|полностью\s+готов[\p{L}]*)\s+работ[\p{L}]*|не\s+отправляй\s+(?:мне\s+)?(?:частичн[\p{L}]*|промежуточн[\p{L}]*)\s+ответ)/iu.test(t);
 const replacements = new Map(BEHAVIOR_CORRECTIONS.map(x=>[`${x.goalKey}:${x.rejectedFamily}`,x]));
 
 function classifySignal(signal={}) {
