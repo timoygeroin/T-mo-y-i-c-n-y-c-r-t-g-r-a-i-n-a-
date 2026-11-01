@@ -81,3 +81,49 @@ test('trusted schema without authenticated writer marker is rejected', async () 
   assert.equal(out.ok,false);
   assert.equal(out.code,'WORLDLINE_SCHEMA_MISMATCH');
 });
+
+test('memory replay prefers the newest verified fact despite newest-first server ordering', () => {
+  const newer = {
+    ...trustedSnapshot.events[0],
+    eventId:'memory:new',
+    timestampIso:'2026-11-01T16:00:00Z',
+    subject:'memory:active-rule',
+    valueJson:'{"version":2,"rule":"current"}'
+  };
+  const older = {
+    ...trustedSnapshot.events[0],
+    eventId:'memory:old',
+    timestampIso:'2026-10-30T08:00:00Z',
+    subject:'memory:active-rule',
+    valueJson:'{"version":1,"rule":"superseded"}'
+  };
+  const output = seedWorldlineFromSnapshot({
+    ...trustedSnapshot,
+    generatedAtIso:'2026-11-01T16:01:00Z',
+    events:[newer,older]
+  });
+  assert.equal(output.ok,true);
+  assert.equal(output.imported,2);
+  assert.deepEqual(output.worldline.materialize().facts['memory:active-rule'].value,
+    {version:2,rule:'current'});
+});
+
+test('undated source cannot overwrite a timestamped newer memory correction', () => {
+  const dated = {
+    ...trustedSnapshot.events[0],
+    eventId:'memory:dated',
+    timestampIso:'2026-11-01T16:00:00Z',
+    subject:'memory:active-rule',
+    valueJson:'{"rule":"dated"}'
+  };
+  const undated = {
+    ...trustedSnapshot.events[0],
+    eventId:'memory:undated',
+    timestampIso:null,
+    subject:'memory:active-rule',
+    valueJson:'{"rule":"unknown-date"}'
+  };
+  const output = seedWorldlineFromSnapshot({...trustedSnapshot,events:[dated,undated]});
+  assert.equal(output.ok,true);
+  assert.equal(output.worldline.materialize().facts['memory:active-rule'].value.rule,'dated');
+});

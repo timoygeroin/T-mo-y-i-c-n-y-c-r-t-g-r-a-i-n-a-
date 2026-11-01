@@ -81,7 +81,9 @@ export async function runChatHost({
 
   const recovered = await recoverWorldline({
     baseUrl:env.MONDAYID_WORLDLINE_URL,
-    limit:10,
+    // Use the largest supported bounded trusted window; this is not a
+    // claim of complete account-wide history or permanent ChatGPT memory.
+    limit:100,
     trust:'trusted',
     fetchImpl
   });
