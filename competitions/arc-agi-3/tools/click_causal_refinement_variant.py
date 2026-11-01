@@ -61,8 +61,8 @@ def generate(source: str, mode: str = "near") -> str:
     if mode.startswith("burst"):
         cutoff = int(mode[5:])
         injection = injection.replace(
-            "                local = []\\n",
-            f"                if self._steps >= {cutoff}: responsive = []\\n                local = []\\n",
+            "                local = []\n",
+            f"                if self._steps >= {cutoff}: responsive = []\n                local = []\n",
             1,
         )
     result = result.replace(ROW, injection, 1)
