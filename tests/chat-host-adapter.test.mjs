@@ -387,3 +387,35 @@ test('live host retains an unresolved interpretation fork without forcing a sing
   assert.match(calls[0].instructions,/OPEN FORK:/);
   assert.doesNotMatch(calls[0].instructions,/COMMON EFFECT:/);
 });
+
+
+test('live host actually selects common effect as model input when original text is ambiguous',async()=>{
+  const calls=[];
+  const provider={async generate(request){calls.push(request);return {ok:true,text:'Existing MondayID continuation.'};}};
+  const out=await runChatHost({
+    signal:{
+      id:'selected-invariant-001',text:'Интегрируй mondayiD',computeTier:'LOW',
+      interpretations:[
+        {meaning:'continuity',effect:'advance existing MondayID'},
+        {meaning:'integration',effect:'advance existing MondayID'}
+      ]
+    },
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(calls[0].input,'advance existing MondayID');
+  assert.match(calls[0].instructions,/COMMON EFFECT: advance existing MondayID/);
+});
+
+test('live host preserves direct user effect instead of replacing it with candidate inference',async()=>{
+  const calls=[];
+  const provider={async generate(request){calls.push(request);return {ok:true,text:'Audit complete at bounded scope.'};}};
+  const out=await runChatHost({
+    signal:{id:'explicit-owner-001',text:'audit it',effect:'audit only',computeTier:'LOW',
+      interpretations:[{meaning:'possible route',effect:'deploy now'}]
+    },
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,true);
+  assert.equal(calls[0].input,'audit only');
+});
