@@ -1,4 +1,4 @@
-import { frameSignal } from './semantic-frame.mjs';
+import { frameSignal, selectInvariantEffect } from './semantic-frame.mjs';
 import { compileAttractorContract } from './attractor-field.mjs';
 import { amplifyTaskSignal } from './task-amplifier.mjs';
 
@@ -20,6 +20,7 @@ export function compileSignals(signals = [], { state = {}, policies = {} } = {})
   for (const received of signals) {
     const signal=amplifyTaskSignal(received);
     const text = String(signal.text ?? signal.intent ?? '');
+    const selectedEffect=selectInvariantEffect(signal);
     const domains = signal.domains || inferDomains(text);
     const completedDomains = Array.isArray(signal.completedDomains) ? signal.completedDomains : [];
     const semanticFrame = frameSignal(signal);
@@ -64,7 +65,7 @@ export function compileSignals(signals = [], { state = {}, policies = {} } = {})
           obligationId:obligation?.id || null,
           requiredVerificationMode:obligation?.requiredVerificationMode || null,
           dependsOn: [rootId],
-          effect: obligation ? (obligation.effect || obligation.text) : (signal.effect || signal.desiredEffect || text)
+          effect: obligation ? (obligation.effect || obligation.text) : selectedEffect.effect
         });
       }
     }
