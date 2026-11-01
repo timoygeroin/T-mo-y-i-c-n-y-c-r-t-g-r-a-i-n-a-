@@ -1,0 +1,56 @@
+{
+  "schema": "mondayid.arc.public_ab.negative.v1",
+  "experiment": "UL003-cardinal-visible-effect-momentum",
+  "status": "VERIFIED_OFFICIAL_PUBLIC_NULL_NO_ACTION_ENUM_DIVERGENCE_NOT_PROMOTED",
+  "preregistration_test_commit": "0f14dba7291654d1c7d999c7d985dd5a6f4e1176",
+  "red": {
+    "run": 40963676153,
+    "job": 123762632891,
+    "result": "EXPECTED ModuleNotFoundError; 347 tests, 1 error; job log inspected"
+  },
+  "green": {
+    "commit": "bf81fcae5fb95f6b06ae48c0ef93080d3e4c8b84",
+    "run": 40963801789,
+    "job": 123763028405,
+    "result": "350/350 PASS; job log inspected"
+  },
+  "public": {
+    "runner": "official ARC-AGI-3 Kaggle Starter Python 3.12 make play-local STEPS=500",
+    "run": 40963801851,
+    "job": 123763028778,
+    "artifact": 12937745530,
+    "conclusion": "SUCCESS",
+    "games": 25,
+    "configured_steps": 500,
+    "printed_actions_per_game": 501,
+    "baseline": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "H1_effect": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "H2_inverted": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "matched_game_action_index_action_enum_rows_per_arm": 12381,
+    "action_enum_differences_H1": 0,
+    "action_enum_differences_H2": 0,
+    "first_level_action_differences_H1": 0,
+    "first_level_action_differences_H2": 0,
+    "level_regressions_H1": 0,
+    "level_regressions_H2": 0
+  },
+  "interpretation": "The +0.85 effect/inverted momentum bonuses did not change printed action enums on this 25-game public cohort. No intervention contrast at action-enum level, so this does not test the causal value of visual change. ACTION6 coordinates and latent seed pairing not independently authenticated.",
+  "decision": "REJECT_BOTH_NO_PROMOTION",
+  "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "limitations": [
+    "Same previously used 25 public games, no independent held-out cohort or matched latent seeds.",
+    "No action-enum divergence; cannot claim causal world-hypothesis discrimination.",
+    "Local public score is not Kaggle hidden score.",
+    "STATE.json full rewrite previously safety-blocked; do not bypass.",
+    "No Kaggle submission, spending, tokens, terms, legal/licensing/publication choice or prize."
+  ]
+}

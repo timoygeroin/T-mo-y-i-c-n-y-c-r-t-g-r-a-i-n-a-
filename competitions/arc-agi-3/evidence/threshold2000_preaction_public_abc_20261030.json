@@ -1,0 +1,154 @@
+{
+  "schema": "mondayid.arc3.threshold2000.preaction_public_abc.verified.v1",
+  "date_utc": "2026-10-30",
+  "repo": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "branch": "monday/arc-agi3-offline-agent-20261026",
+  "pr": 196,
+  "source_head": "5d4e97dfcfcae80df4e05ba0cc98a529b522757f",
+  "source_ci": "12/12 exact-commit SUCCESS",
+  "workflow_run_id": 40996189172,
+  "job_id": 123869752891,
+  "artifact_id": 12952100906,
+  "artifact_zip_sha256": "6a58e979497a108985e5ad244baf9c2827ca4821c4e3d5f4fb4536171005c56a",
+  "frozen_agent_blob_sha": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "state_json_blob_sha": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+  "preregistration": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/pull/196#issuecomment-6514056185",
+  "protocol": {
+    "engine": "official ARC-AGI-3 Python 3.12 public starter",
+    "games": 25,
+    "configured_action_cap_each_arm": 2000,
+    "baseline_unchanged": true,
+    "held_out": false,
+    "independent_latent_pairing": false,
+    "all_games_previously_tested": true
+  },
+  "hypotheses": {
+    "H0": "Frozen no worse",
+    "H1": "Gate96 improves progress/action efficiency",
+    "H2": "Threshold sensitivity creates ft09/lp85 tradeoff"
+  },
+  "scores": {
+    "frozen": {
+      "first_levels": 10,
+      "local_score": 0.5024346195754061,
+      "preaction_rows": 49399
+    },
+    "gate96": {
+      "first_levels": 10,
+      "local_score": 0.5059495010482379,
+      "delta_vs_frozen": 0.0035148814728317435,
+      "preaction_rows": 49384
+    },
+    "gate128": {
+      "first_levels": 10,
+      "local_score": 0.5058498479030465,
+      "delta_vs_frozen": 0.003415228327640407,
+      "preaction_rows": 49383
+    },
+    "level_regressions_vs_frozen": 0
+  },
+  "first_observed_level_one_preaction_step": {
+    "frozen": {
+      "ar25": 675,
+      "cd82": 45,
+      "ft09": 1467,
+      "lf52": 96,
+      "lp85": 745,
+      "m0r0": 420,
+      "r11l": 41,
+      "sp80": 97,
+      "tn36": 46,
+      "vc33": 7
+    },
+    "gate96": {
+      "ar25": 675,
+      "cd82": 45,
+      "ft09": 307,
+      "lf52": 96,
+      "lp85": 1199,
+      "m0r0": 420,
+      "r11l": 41,
+      "sp80": 97,
+      "tn36": 46,
+      "vc33": 7
+    },
+    "gate128": {
+      "ar25": 675,
+      "cd82": 45,
+      "ft09": 311,
+      "lf52": 96,
+      "lp85": 1366,
+      "m0r0": 420,
+      "r11l": 41,
+      "sp80": 97,
+      "tn36": 46,
+      "vc33": 7
+    },
+    "interpretation": "Step index of observed pre-action level state, not causal action attribution."
+  },
+  "action_cost_delta_vs_frozen": {
+    "gate96": {
+      "ft09": -1160,
+      "lp85": 454,
+      "other_eight": 0,
+      "sum_10_shared_wins": -706
+    },
+    "gate128": {
+      "ft09": -1156,
+      "lp85": 621,
+      "other_eight": 0,
+      "sum_10_shared_wins": -535
+    }
+  },
+  "strict_prior_progress_forecast": {
+    "positive_predictions_each_arm": 0,
+    "eligible_next_frame_pairs": {
+      "frozen": 49374,
+      "gate96": 49359,
+      "gate128": 49358
+    },
+    "accuracy": {
+      "frozen": 0.9997974642524405,
+      "gate96": 0.9997974027026479,
+      "gate128": 0.9997973985979983
+    },
+    "interpretation": "All-negative forecast; accuracy dominated by class imbalance, zero demonstrated predictive discrimination of progress."
+  },
+  "matched_visible_prestate_exact_physical_action_next_observation": {
+    "frozen_gate96": {
+      "paired_game_steps": 49384,
+      "matched_visible_prestates": 45067,
+      "different_ACTION6_coordinates": 1298,
+      "identical_next_observations": 43747,
+      "divergent_next_observations": 0
+    },
+    "frozen_gate128": {
+      "paired_game_steps": 49383,
+      "matched_visible_prestates": 44896,
+      "different_ACTION6_coordinates": 1055,
+      "identical_next_observations": 43819,
+      "divergent_next_observations": 0
+    },
+    "gate96_gate128": {
+      "paired_game_steps": 49383,
+      "matched_visible_prestates": 46433,
+      "different_ACTION6_coordinates": 1800,
+      "identical_next_observations": 44611,
+      "divergent_next_observations": 0
+    },
+    "caveat": "Matched game/step, level, visible hash and physical action; no proof of independent latent resets or causal generalization."
+  },
+  "decision": {
+    "promote": false,
+    "reason": "Same reused 25 games; zero first-level gain at 2000, lp85 action-cost regression, no held-out variation; score improvement is in-sample only.",
+    "agent_unchanged": true,
+    "official_schedule_unchanged": true,
+    "collector_unchanged": true,
+    "temporary_workflow_to_remove": true,
+    "STATE_json": "Not rewritten: previous full rewrite was safety-blocked; do not bypass.",
+    "kaggle_hidden_score": "UNKNOWN",
+    "kaggle_submission": "NONE",
+    "spend": 0
+  },
+  "next_gate": "Independently varying permitted official public games/resets and preregistered paired outcomes, or explicit human Kaggle Phase-B action."
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "mondayid.arc-agi3.stagnation-gated-click-public-log-audit.v1",
+  "date_utc": "2026-10-29",
+  "status": "NOT_PROMOTED_IN_SAMPLE_MIXED_ACTION_EFFICIENCY_UNPAIRED",
+  "source": {
+    "pr": 196,
+    "commit": "86ed4efe7ad8266f4fe1e0c4753e29ba5ea04a3e",
+    "run_id": 40935110793,
+    "job_id": 123663474231,
+    "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40935110793",
+    "job_conclusion": "success",
+    "engine": "official ARC-AGI-3 Kaggle Starter Python 3.12 public offline runner"
+  },
+  "hypotheses": {
+    "H0": "After 128 actions, click-only uniform-first exploration provides no robust same-budget improvement over the frozen salient-first policy.",
+    "H1": "After 128 actions with zero completed levels, click-only uniform-first exploration finds first-level solutions faster across public games.",
+    "H2": "Any apparent positive score delta may reflect action-efficiency tradeoffs and unpaired game-state/seed differences rather than a generalizable policy gain."
+  },
+  "protocol": {
+    "games": 25,
+    "requested_steps_per_game": 2000,
+    "temporary_max_actions_identical_per_arm": 2000,
+    "official_competition_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "candidate": "stagnation-gated click-only uniform-first at step>=128 and level 0",
+    "same_game_ids": true,
+    "seed_pairing_verified": false,
+    "held_out_games": false,
+    "click_coordinates_logged": false,
+    "hidden_kaggle_score": false
+  },
+  "scorecard": {
+    "baseline_completed_first_levels": 10,
+    "candidate_completed_first_levels": 10,
+    "baseline_local_score": 0.5024346195754061,
+    "candidate_local_score": 0.5058498479030465,
+    "local_score_delta": 0.003415228327640407,
+    "level_delta": 0,
+    "improved_level_games": [],
+    "regressed_level_games": []
+  },
+  "real_public_action_trace_audit": {
+    "method": "Parsed public runner job log per arm using game_id, action enum, count and levels completed. Compared only identical game_id+count keys; ACTION6 coordinates, latent resets and seeds unavailable.",
+    "frozen_printed_action_rows": 49399,
+    "candidate_printed_action_rows": 49383,
+    "matching_game_count_keys": 49365,
+    "unpaired_frozen_keys": 34,
+    "unpaired_candidate_keys": 18,
+    "action_type_disagreements_on_matching_keys": 0,
+    "level_disagreements_on_matching_keys": 1760,
+    "action_type_disagreements_before_count_128": 0,
+    "first_level_timing_differences": {
+      "ft09": {
+        "baseline_first_level_at_action_count": 1471,
+        "candidate_first_level_at_action_count": 311,
+        "candidate_actions_saved": 1160
+      },
+      "lp85": {
+        "baseline_first_level_at_action_count": 748,
+        "candidate_first_level_at_action_count": 1373,
+        "candidate_extra_actions": 625
+      }
+    },
+    "other_games_first_level_timing_differences": 0
+  },
+  "interpretation": "A positive aggregate local score delta of 0.003415 is not robust causal evidence: 10/10 first-level totals unchanged; candidate improves ft09 action efficiency but worsens lp85, on the same previously exposed public cohort with unverified paired seeds. ACTION6 action coordinates are not printed, so identical action enums do not prove identical actions or trajectories. No promotion or Kaggle score claim.",
+  "safety": {
+    "agent_policy_changed": false,
+    "collector_changed": false,
+    "official_evaluation_schedule_changed": false,
+    "submission": false,
+    "spending": false,
+    "legal_or_terms_decision": false
+  },
+  "next_gate": "Preregister genuinely unseen public episodes with independent matched latent seeds if supported, log ACTION6 coordinates and pre-action H0/H1/H2 predictions, then run same-budget multi-game A/B before considering promotion."
+}

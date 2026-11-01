@@ -1,0 +1,85 @@
+{
+  "schema": "mondayid.arc.public_ab.negative.v1",
+  "experiment": "UL-002-bounded-visible-click-feedback",
+  "date_utc": "2026-10-29",
+  "status": "VERIFIED_OFFICIAL_PUBLIC_SAME_BUDGET_NULL_NOT_PROMOTED",
+  "hypotheses": {
+    "H0": "Frozen positive reinforcement of visibly responsive clicks is no worse at the same budget.",
+    "H1": "After two visible responses, penalizing further same-coordinate responses avoids non-progressing loops, improves action efficiency or completed levels.",
+    "H2": "Repeated clicks are essential for progress; penalizing them causes regressions."
+  },
+  "preregistration_commit": "9ef3c2a7eb908d881b1076c5b834af398120cb34",
+  "red": {
+    "commit": "bd2094d421a4b13847514b706ff05c1bff75299d",
+    "contract_run": 40955110216,
+    "job": 123733066683,
+    "observed": "347 tests, expected one ModuleNotFoundError for missing candidate generator; inspected raw job log"
+  },
+  "green": {
+    "commit": "2e9fb7b293af115607c7d63ff6eb09fd410267d9",
+    "contract_run": 40955252995,
+    "job": 123733567485,
+    "observed": "350/350 PASS; four new focused tests; inspected raw job log"
+  },
+  "official_public_ab": {
+    "runner": "arcprize/ARC-AGI-3-Kaggle-Starter, Python 3.12, make play-local STEPS=500",
+    "run": 40955479306,
+    "job": 123734352417,
+    "artifact": 12932578151,
+    "conclusion": "SUCCESS",
+    "games": 25,
+    "configured_steps_per_game": 500,
+    "printed_actions_per_game": 501,
+    "baseline": {
+      "completed_first_levels": 7,
+      "local_score": 0.5019709375909188,
+      "clicks_logged": 3953,
+      "clicks_after_3_prior_responses": 386,
+      "click_level_advances_observed": 4
+    },
+    "candidate": {
+      "completed_first_levels": 7,
+      "local_score": 0.5019709375909188,
+      "clicks_logged": 3978,
+      "clicks_after_3_prior_responses": 79,
+      "click_level_advances_observed": 4
+    },
+    "delta": {
+      "completed_first_levels": 0,
+      "local_score": 0,
+      "improved_level_games": 0,
+      "regressed_level_games": 0
+    },
+    "first_level_action_indices_identical": {
+      "m0r0": 420,
+      "sp80": 98,
+      "tn36": 44,
+      "r11l": 39,
+      "lf52": 94,
+      "vc33": 5,
+      "cd82": 43
+    },
+    "observed_trace": {
+      "games_with_clicks": 19,
+      "matched_same_game_action_index_clicks": 3868,
+      "divergent_click_coordinates": 2716,
+      "interpretation": "Candidate changes action-coordinate trajectories and suppresses repeated responsive clicks but does not improve first-level completions, first-level timing, or aggregate local score. Matched game/action indices do NOT prove matched latent state."
+    }
+  },
+  "readback": {
+    "baseline_log_sha256": "b9afea289e5c6fafe81c1bc29b30096177adb4eb8118fb68a06f0753c069815e",
+    "candidate_log_sha256": "25797493fc8c2415ab25a577bfc7989cac80a264c1f8f44321fd8edca87aae02",
+    "source": "GitHub Actions job log and artifact; pre-action click coordinates and post-action pixel delta logged identically for both arms."
+  },
+  "decision": "REJECT_CANDIDATE_AND_REMOVE_EXPERIMENTAL_FILES_KEEP_NEGATIVE_EVIDENCE",
+  "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "limitations": [
+    "Previously tested public 25 games, no genuinely held-out games or independent latent seed pairing.",
+    "Click-coordinate divergences and visible deltas do not prove causal game-rule learning.",
+    "Action count per game is capped at 500 and runner prints 501 actions; action efficiency measured by first-level timing and score, not merely logged action count.",
+    "Local public score is not Kaggle hidden score.",
+    "No promotion, Kaggle submission, spend, credentials, legal/licensing/publication decision or prize claim.",
+    "STATE.json previously safety-blocked for full-file rewrite; restriction not bypassed."
+  ],
+  "human_gate": "Kaggle Phase-B requires authenticated entrant action with exact completed notebook slug/version and deliberate final competition submission; not executed."
+}

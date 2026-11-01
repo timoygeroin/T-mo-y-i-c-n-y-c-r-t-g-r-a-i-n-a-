@@ -1,0 +1,549 @@
+"""Pure, read-only preregistration ledger for future PUBLIC three-world trials.
+
+Sealing an outcome-blind plan BEFORE observing a treatment outcome and later
+scoring a separate matched control are different operations. The SHA256 is
+a content commitment, NOT proof of when the plan was sealed: a Git commit or
+other independently timestamped record must precede gameplay to establish
+chronology. Matching visible scenes does NOT establish matching latent state.
+This module never executes actions, reads Kaggle, or modifies the agent.
+"""
+from __future__ import annotations
+
+from hashlib import sha256
+import json
+import re
+import unicodedata
+
+PROTOCOL = "arc-agi3.prospective-three-world-matched-pair-v3"
+WORLDS = ("H0_static", "H1_absolute", "H2_anchor_relative")
+PLAN_KEYS = frozenset(("game", "episode", "control_episode", "turn", "before",
+                       "treatment_action", "control_action",
+                       "donor_snapshot_sha256", "forecasts", "control_forecasts"))
+OUTCOME_KEYS = frozenset(("game", "episode", "turn", "before", "action", "after"))
+# Canonical decimal coordinates: zero padding would alias the same physical click.
+ACTION = re.compile(r"(?:ACTION[1-5]|ACTION6@(0|[1-9][0-9]*),(0|[1-9][0-9]*))\Z")
+DIGEST = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def _scene(raw):
+    if not isinstance(raw, (list, tuple)):
+        raise ValueError("scene must be a sequence")
+    objects = []
+    for obj in raw:
+        if (not isinstance(obj, (list, tuple)) or len(obj) != 6 or
+                any(type(v) is not int for v in obj)):
+            raise ValueError("invalid object descriptor")
+        color, area, x0, y0, x1, y1 = obj
+        if (color < 0 or area < 1 or
+                not (0 <= x0 <= x1 < 64 and 0 <= y0 <= y1 < 64) or
+                area > (x1 - x0 + 1) * (y1 - y0 + 1)):
+            raise ValueError("object descriptor outside visible frame")
+        objects.append(tuple(obj))
+    if len(set(objects)) != len(objects):
+        raise ValueError("duplicate object descriptor")
+    return [list(obj) for obj in sorted(objects)]
+
+
+def _text(value):
+    # Machine identity keys must be canonical. Whitespace padding can relabel
+    # one real episode as several supposedly independent observations.
+    if (not isinstance(value, str) or not value or
+            unicodedata.normalize("NFKC", value) != value or
+            any(ch.isspace() or unicodedata.category(ch).startswith("C")
+                for ch in value)):
+        raise ValueError("noncanonical trial identity")
+    return value
+
+
+def _action(value):
+    if not isinstance(value, str) or not ACTION.fullmatch(value):
+        raise ValueError("not a bounded exact public action")
+    if value.startswith("ACTION6@"):
+        x, y = (int(v) for v in value.split("@")[1].split(","))
+        if not (0 <= x < 64 and 0 <= y < 64):
+            raise ValueError("click outside frame")
+    return value
+
+
+def _canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+
+
+def _hash(value):
+    return sha256(_canonical(value).encode("utf-8")).hexdigest()
+
+
+
+def _single_cardinal_translation(before, after):
+    """H1/H2 must each move exactly one rigid descriptor along one axis.
+
+    Different hypotheses MAY select different movers. This validates
+    observable forecast semantics, not the donor support or causal truth.
+    """
+    if len(before) != len(after):
+        return False
+    removed = set(map(tuple, before)) - set(map(tuple, after))
+    added = set(map(tuple, after)) - set(map(tuple, before))
+    if len(removed) != 1 or len(added) != 1:
+        return False
+    old, new = next(iter(removed)), next(iter(added))
+    dx, dy = new[2] - old[2], new[3] - old[3]
+    return (old[:2] == new[:2] and
+            new[4] - old[4] == dx and new[5] - old[5] == dy and
+            (dx == 0) != (dy == 0))
+
+
+def _anchor_relative_axis(before, after):
+    """H2 movement must lie on the unique nearest pre-action anchor axis.
+
+    The anchor is selected from BEFORE descriptors using Manhattan distance
+    between doubled bounding-box centers, matching the shadow relative-world
+    role convention. Both toward and away motion are allowed. A diagonal
+    anchor or an equal-distance tie makes the relation unidentifiable.
+    """
+    removed = set(map(tuple, before)) - set(map(tuple, after))
+    added = set(map(tuple, after)) - set(map(tuple, before))
+    if len(removed) != 1 or len(added) != 1:
+        return False
+    old, new = next(iter(removed)), next(iter(added))
+    others = [obj for obj in map(tuple, before) if obj != old]
+    if not others:
+        return False
+    cx, cy = old[2] + old[4], old[3] + old[5]
+    distances = [(abs(obj[2] + obj[4] - cx) +
+                  abs(obj[3] + obj[5] - cy), obj) for obj in others]
+    nearest_distance = min(d for d, _ in distances)
+    nearest = [obj for d, obj in distances if d == nearest_distance]
+    if len(nearest) != 1:
+        return False
+    anchor = nearest[0]
+    ax, ay = anchor[2] + anchor[4] - cx, anchor[3] + anchor[5] - cy
+    dx, dy = new[2] - old[2], new[3] - old[3]
+    return ((ax != 0 and ay == 0 and dx != 0 and dy == 0) or
+            (ax == 0 and ay != 0 and dx == 0 and dy != 0))
+
+
+def seal_trial(plan):
+    """Validate a BEFORE-action three-world forecast, then seal its bytes.
+
+    No after/outcome keys are allowed. The caller must persist the returned
+    commitment in an independent pre-action Git/CI record before any gameplay.
+    """
+    if not isinstance(plan, dict) or set(plan) != PLAN_KEYS:
+        raise ValueError("plan fields must be exactly the preregistered contract")
+    if type(plan["turn"]) is not int or plan["turn"] < 0:
+        raise ValueError("invalid pre-action turn")
+    donor = plan["donor_snapshot_sha256"]
+    if not isinstance(donor, str) or not DIGEST.fullmatch(donor):
+        raise ValueError("missing immutable donor-snapshot digest")
+    treatment = _action(plan["treatment_action"])
+    control = _action(plan["control_action"])
+    if treatment == control:
+        raise ValueError("treatment and control actions must differ")
+    before = _scene(plan["before"])
+    forecasts = plan["forecasts"]
+    if not isinstance(forecasts, dict) or set(forecasts) != set(WORLDS):
+        raise ValueError("exactly three named world forecasts required")
+    normalized = {h: _scene(forecasts[h]) for h in WORLDS}
+    if normalized["H0_static"] != before or len({_canonical(x) for x in normalized.values()}) != 3:
+        raise ValueError("counterfactual worlds must disagree with static baseline")
+    if not all(_single_cardinal_translation(before, normalized[h])
+               for h in WORLDS[1:]):
+        raise ValueError("moving-world forecast must be one cardinal rigid translation")
+    if not _anchor_relative_axis(before, normalized["H2_anchor_relative"]):
+        raise ValueError("H2 requires a unique axis-aligned nearest pre-action anchor")
+    # Precommit the counterfactual prediction for BOTH arms. Without the
+    # control-arm forecast, choosing an observed control after treatment could
+    # be mistaken for discrimination among competing world hypotheses.
+    control_forecasts = plan["control_forecasts"]
+    if not isinstance(control_forecasts, dict) or set(control_forecasts) != set(WORLDS):
+        raise ValueError("exactly three control-action world forecasts required")
+    normalized_control = {h: _scene(control_forecasts[h]) for h in WORLDS}
+    if normalized_control["H0_static"] != before:
+        raise ValueError("control H0 must predict the unchanged scene")
+    for h in WORLDS[1:]:
+        candidate = normalized_control[h]
+        if candidate != before and not _single_cardinal_translation(before, candidate):
+            raise ValueError("control moving-world prediction must be static or a cardinal rigid translation")
+        if (h == "H2_anchor_relative" and candidate != before and
+                not _anchor_relative_axis(before, candidate)):
+            raise ValueError("control H2 movement must follow the nearest-anchor axis")
+    episode = _text(plan["episode"])
+    control_episode = _text(plan["control_episode"])
+    if control_episode == episode:
+        raise ValueError("control episode must be distinct and precommitted")
+    sealed_plan = dict(game=_text(plan["game"]), episode=episode,
+                       control_episode=control_episode,
+                       turn=plan["turn"], before=before,
+                       treatment_action=treatment, control_action=control,
+                       donor_snapshot_sha256=donor, forecasts=normalized,
+                       control_forecasts=normalized_control)
+    return dict(plan=sealed_plan, sha256=_hash(sealed_plan))
+
+
+def _outcome(row):
+    if not isinstance(row, dict) or set(row) != OUTCOME_KEYS:
+        raise ValueError("unexpected outcome fields")
+    if type(row["turn"]) is not int or row["turn"] < 0:
+        raise ValueError("invalid outcome turn")
+    return dict(game=_text(row["game"]), episode=_text(row["episode"]),
+                turn=row["turn"], before=_scene(row["before"]),
+                action=_action(row["action"]), after=_scene(row["after"]))
+
+
+def evaluate_pair(sealed, treatment, control):
+    """Score two already observed episodes against the sealed predictions.
+
+    This is a *visible-scene matched observational pair*. No causal effect
+    is inferred without independently verified reset/latent-state equivalence
+    and a prospective pre-action timestamp for the sealed commitment.
+    """
+    if (not isinstance(sealed, dict) or set(sealed) != {"plan", "sha256"} or
+            not isinstance(sealed["sha256"], str)):
+        raise ValueError("invalid sealed commitment")
+    original = seal_trial(sealed["plan"])
+    if original["sha256"] != sealed["sha256"]:
+        raise ValueError("sealed pre-action plan was modified")
+    plan = original["plan"]
+    a, b = _outcome(treatment), _outcome(control)
+    if (a["game"] != plan["game"] or b["game"] != plan["game"] or
+            a["episode"] != plan["episode"] or
+            b["episode"] != plan["control_episode"] or
+            a["turn"] != plan["turn"] or b["turn"] != plan["turn"] or
+            a["before"] != plan["before"] or b["before"] != plan["before"] or
+            a["action"] != plan["treatment_action"] or
+            b["action"] != plan["control_action"]):
+        raise ValueError("treatment/control are not the preregistered matched pair")
+    treatment_hits = {h: a["after"] == plan["forecasts"][h] for h in WORLDS}
+    control_hits = {h: b["after"] == plan["control_forecasts"][h] for h in WORLDS}
+    # Each world earns 0..2 exact hits, one per precommitted arm. A unique
+    # complete fit is diagnostic only: it cannot authenticate pre-action timing
+    # or equivalence of the two latent game states.
+    fit_counts = {h: int(treatment_hits[h]) + int(control_hits[h]) for h in WORLDS}
+    complete_fits = [h for h in WORLDS if fit_counts[h] == 2]
+    unique_complete_fit = complete_fits[0] if len(complete_fits) == 1 else None
+    # A complete two-arm fit need not mean both arms distinguished worlds:
+    # identical control forecasts make all discrimination treatment-only.
+    # Record the pairwise forecast contrasts, without claiming causality.
+    pairwise_arms = {}
+    for i, left in enumerate(WORLDS):
+        for right in WORLDS[i + 1:]:
+            arms = []
+            if plan["forecasts"][left] != plan["forecasts"][right]:
+                arms.append("treatment")
+            if plan["control_forecasts"][left] != plan["control_forecasts"][right]:
+                arms.append("control")
+            pairwise_arms[f"{left}|{right}"] = arms
+    control_discriminating_pairs = sum(
+        "control" in arms for arms in pairwise_arms.values())
+    # Distinguish a *potential* contrast from its observed result. When two
+    # forecasts coincide, neither can win that arm, even if both are correct.
+    # When forecasts differ, at most one can match the observed visible scene.
+    observed_winners = {}
+    for i, left in enumerate(WORLDS):
+        for right in WORLDS[i + 1:]:
+            key = f"{left}|{right}"
+            observed_winners[key] = {}
+            for arm, forecasts, actual in (
+                    ("treatment", plan["forecasts"], a["after"]),
+                    ("control", plan["control_forecasts"], b["after"])):
+                if forecasts[left] == forecasts[right]:
+                    winner = ("NON_DISCRIMINATING" if forecasts[left] == actual
+                              else "NEITHER")
+                elif forecasts[left] == actual:
+                    winner = left
+                elif forecasts[right] == actual:
+                    winner = right
+                else:
+                    winner = "NEITHER"
+                observed_winners[key][arm] = winner
+    # A hypothesis pair has two-arm observational corroboration only when
+    # BOTH actions distinguish the hypotheses and the SAME world wins each.
+    # Opposing winners are negative evidence, not a world-model victory.
+    two_arm_evidence = {}
+    for pair, winners in observed_winners.items():
+        left = winners["treatment"]
+        right = winners["control"]
+        if "NEITHER" in (left, right):
+            status, winner = "NEITHER", None
+        elif "NON_DISCRIMINATING" in (left, right):
+            status, winner = "NON_DISCRIMINATING", None
+        elif left == right:
+            status, winner = "CONSISTENT", left
+        else:
+            status, winner = "OPPOSING", None
+        two_arm_evidence[pair] = {"status": status, "winner": winner}
+    return dict(protocol=PROTOCOL, sha256=original["sha256"],
+                world_exact_hits=treatment_hits,
+                control_world_exact_hits=control_hits,
+                paired_world_exact_hits={h: treatment_hits[h] and control_hits[h]
+                                         for h in WORLDS},
+                paired_world_fit_counts=fit_counts,
+                unique_paired_world_fit=unique_complete_fit,
+                pairwise_discriminating_arms=pairwise_arms,
+                pairwise_observed_winner_by_arm=observed_winners,
+                pairwise_two_arm_evidence=two_arm_evidence,
+                control_discriminating_pairs=control_discriminating_pairs,
+                control_static=b["after"] == plan["before"],
+                interpretation="OBSERVATIONAL_MATCHED_PAIR_ONLY",
+                causal_effect_proven=False, effect_on_agent="NONE_SHADOW_ONLY")
+
+
+
+def _forecast_design_sha(plan):
+    """Identify physical action/forecast designs, independent of arm labels.
+
+    Episode labels and treatment/control ordering do not create new world
+    predictions. This diagnostic does NOT prove independent public resets.
+    """
+    action_predictions = sorted((
+        (plan["treatment_action"], plan["forecasts"]),
+        (plan["control_action"], plan["control_forecasts"]),
+    ), key=lambda pair: pair[0])
+    return _hash(dict(game=plan["game"], turn=plan["turn"],
+                      before=plan["before"],
+                      donor_snapshot_sha256=plan["donor_snapshot_sha256"],
+                      action_predictions=action_predictions))
+
+
+def audit_trial_registry(sealed_trials):
+    """Fail closed on episode reuse across independent H0/H1/H2 trial pairs.
+
+    A treatment or control episode can appear in at most one matched-pair
+    preregistration for its game. Reusing it under a different forecast seal,
+    arm, or turn is not independent evidence and enables cherry-picking.
+    This is structural integrity only: it cannot establish that any seal
+    preceded gameplay, that episodes were real, or that resets matched.
+    """
+    if not isinstance(sealed_trials, (list, tuple)):
+        raise ValueError("registry must be a sequence of sealed trial pairs")
+    seen_episodes = set()
+    action_forecasts = {}
+    # Same precommitted forecast design may recur under independent episode
+    # names. Keep that replication count distinct from model-design diversity.
+    design_counts = {}
+    digests = []
+    for sealed in sealed_trials:
+        if (not isinstance(sealed, dict) or set(sealed) != {"plan", "sha256"} or
+                not isinstance(sealed["sha256"], str)):
+            raise ValueError("invalid sealed registry entry")
+        verified = seal_trial(sealed["plan"])
+        if verified["sha256"] != sealed["sha256"]:
+            raise ValueError("modified preregistration in registry")
+        plan = verified["plan"]
+        for episode in (plan["episode"], plan["control_episode"]):
+            key = (plan["game"], episode)
+            if key in seen_episodes:
+                raise ValueError("episode reused across independent trial pairs")
+            seen_episodes.add(key)
+        # Across separately named episodes, the same pre-action model
+        # snapshot must make the same forecast for an identical visible
+        # decision context and physical action. Otherwise the registry could
+        # retrofit different world predictions after seeing outcomes.
+        # Different donor snapshots remain distinct model versions.
+        context = (plan["game"], plan["turn"], _canonical(plan["before"]),
+                   plan["donor_snapshot_sha256"])
+        for action_key, forecast_key in (
+                ("treatment_action", "forecasts"),
+                ("control_action", "control_forecasts")):
+            key = context + (plan[action_key],)
+            forecast = plan[forecast_key]
+            if key in action_forecasts and action_forecasts[key] != forecast:
+                raise ValueError("conflicting world forecasts for one pre-action action")
+            action_forecasts[key] = forecast
+        design_sha = _forecast_design_sha(plan)
+        design_counts[design_sha] = design_counts.get(design_sha, 0) + 1
+        digests.append(verified["sha256"])
+    return dict(trial_count=len(digests),
+                distinct_forecast_designs=len(design_counts),
+                max_forecast_design_reuse=max(design_counts.values(), default=0),
+                distinct_episodes=len(seen_episodes),
+                sha256s=digests,
+                interpretation="REGISTRY_INTEGRITY_ONLY",
+                chronology_authenticated=False,
+                independent_public_episodes_authenticated=False)
+
+
+def evaluate_trial_registry(rows):
+    """Aggregate two-arm world evidence only after registry-wide integrity audit.
+
+    Reject any reused treatment/control episode or invalid matched outcome
+    before counting. Statuses are observational, not independent evidence of
+    pre-action chronology, matched latent resets, causality, or policy gain.
+    This pure helper never executes gameplay or modifies the contest agent.
+    """
+    if not isinstance(rows, (list, tuple)):
+        raise ValueError("scored registry must be a sequence")
+    if any(not isinstance(row, dict) or
+           set(row) != {"sealed", "treatment", "control"} for row in rows):
+        raise ValueError("invalid scored registry row")
+    registry = audit_trial_registry([row["sealed"] for row in rows])
+    # Evaluate every row before returning any aggregate: no partial counts
+    # from a cherry-picked subset of otherwise invalid observations.
+    evaluated = [evaluate_pair(row["sealed"], row["treatment"], row["control"])
+                 for row in rows]
+    # Preserve per-world falsification independently of pairwise winners.
+    # A world can lose an arm even when another pair is NON_DISCRIMINATING;
+    # totals are exact-scene observational counts, never causal evidence.
+    arm_hits = {arm: {world: sum(int(row[key][world]) for row in evaluated)
+                      for world in WORLDS}
+                for arm, key in (("treatment", "world_exact_hits"),
+                                 ("control", "control_world_exact_hits"))}
+    arm_misses = {arm: {world: len(evaluated) - hits
+                        for world, hits in counts.items()}
+                  for arm, counts in arm_hits.items()}
+    complete_hits = {world: sum(int(row["paired_world_exact_hits"][world])
+                                for row in evaluated) for world in WORLDS}
+    statuses = ("CONSISTENT", "OPPOSING", "NON_DISCRIMINATING", "NEITHER")
+    pair_names = [f"{left}|{right}" for i, left in enumerate(WORLDS)
+                  for right in WORLDS[i + 1:]]
+    status_counts = {pair: {status: 0 for status in statuses}
+                     for pair in pair_names}
+    winner_counts = {pair: {world: 0 for world in pair.split("|")}
+                     for pair in pair_names}
+    # Repeated episode names are not independent forecast designs. If the
+    # SAME frozen H0/H1/H2 design yields a complete H0 winner in one matched
+    # observation and a complete H1 winner in another, record the conflict
+    # instead of presenting both raw counts as corroborating discoveries.
+    # Different donor snapshots remain distinct hypothesis versions.
+    design_winners = {pair: {} for pair in pair_names}
+    # Keep every paired result per frozen design, including non-winners.
+    # An apparently stable winner cannot be inferred from a cherry-picked
+    # subset that omits contradictory or nondiscriminating replications.
+    design_pair_evidence = {pair: {} for pair in pair_names}
+    # Track actual visible outcomes by frozen physical action, not by arm
+    # label. Distinct observed scenes under the same action/design are
+    # replication instability, including cases with no opposing full winners.
+    # This cannot identify whether resets, stochasticity, or hidden state
+    # caused the divergence.
+    design_action_outcomes = {}
+    for source, result in zip(rows, evaluated):
+        normalized_plan = seal_trial(source["sealed"]["plan"])["plan"]
+        design_sha = _forecast_design_sha(normalized_plan)
+        by_action = design_action_outcomes.setdefault(design_sha, {})
+        for action_key, observed_key in (
+                ("treatment_action", "treatment"),
+                ("control_action", "control")):
+            action = normalized_plan[action_key]
+            actual = _scene(source[observed_key]["after"])
+            by_action.setdefault(action, set()).add(_canonical(actual))
+        for pair in pair_names:
+            evidence = result["pairwise_two_arm_evidence"][pair]
+            design_pair_evidence[pair].setdefault(design_sha, []).append(evidence)
+            status_counts[pair][evidence["status"]] += 1
+            if evidence["status"] == "CONSISTENT":
+                winner_counts[pair][evidence["winner"]] += 1
+                design_winners[pair].setdefault(design_sha, set()).add(
+                    evidence["winner"])
+    divergent_design_actions = [
+        sum(len(observed) > 1 for observed in by_action.values())
+        for by_action in design_action_outcomes.values()]
+    designs_with_divergent_actions = sum(n > 0 for n in divergent_design_actions)
+    divergent_design_action_pairs = sum(divergent_design_actions)
+    opposing_replications = {
+        pair: sum(len(winners) > 1 for winners in designs.values())
+        for pair, designs in design_winners.items()}
+    # Report at most one internally stable observational winner per design.
+    # Require >=2 differently named pairs, identical visible outcomes for
+    # each physical action, and unanimous CONSISTENT two-arm winners across
+    # ALL repetitions. These checks do NOT authenticate independent resets.
+    repeated_stable = {pair: {world: 0 for world in pair.split("|")}
+                       for pair in pair_names}
+    for pair, designs in design_pair_evidence.items():
+        for design_sha, evidence_rows in designs.items():
+            if len(evidence_rows) < 2:
+                continue
+            if any(len(scenes) != 1 for scenes in
+                   design_action_outcomes[design_sha].values()):
+                continue
+            if any(e["status"] != "CONSISTENT" for e in evidence_rows):
+                continue
+            winners = {e["winner"] for e in evidence_rows}
+            if len(winners) == 1:
+                repeated_stable[pair][next(iter(winners))] += 1
+    return dict(protocol=PROTOCOL,
+                trial_count=registry["trial_count"],
+                distinct_episodes=registry["distinct_episodes"],
+                distinct_forecast_designs=registry["distinct_forecast_designs"],
+                max_forecast_design_reuse=registry["max_forecast_design_reuse"],
+                pairwise_status_counts=status_counts,
+                consistent_winner_counts=winner_counts,
+                designs_with_opposing_replication_winners_by_pair=opposing_replications,
+                designs_with_divergent_action_outcomes=designs_with_divergent_actions,
+                divergent_design_action_pairs=divergent_design_action_pairs,
+                repeated_design_stable_winners_by_pair=repeated_stable,
+                world_arm_exact_hits=arm_hits,
+                world_arm_misses=arm_misses,
+                world_complete_pair_hits=complete_hits,
+                interpretation="REGISTRY_OBSERVATIONAL_TWO_ARM_ONLY",
+                chronology_authenticated=False,
+                independent_public_episodes_authenticated=False,
+                causal_effect_proven=False,
+                effect_on_agent="NONE_SHADOW_ONLY")
+
+
+def select_discriminating_trial(candidates):
+    """Choose an outcome-blind H0/H1/H2 two-arm experiment or abstain.
+
+    Rank only *pre-action* counterfactual forecast contrasts, never observed
+    outcomes, game identifiers, generic action entropy, or hidden scores.
+    A pair of hypotheses earns two-arm coverage only if their predictions
+    differ under BOTH preregistered actions. Every candidate is validated
+    before selection, so malformed plans cannot be silently cherry-picked.
+    This does not execute gameplay or authenticate chronology/latent resets.
+    """
+    if not isinstance(candidates, (list, tuple)):
+        raise ValueError("candidate designs must be a sequence")
+    ranked = []
+    cohort = None
+    action_forecasts = {}
+    # All competing action designs must concern one frozen pre-action
+    # decision point. Otherwise ranking can silently cherry-pick a different
+    # game, reset, donor snapshot, or visible scene as the "best" probe.
+    cohort_keys = ("game", "episode", "control_episode", "turn",
+                   "before", "donor_snapshot_sha256")
+    for candidate in candidates:
+        sealed = seal_trial(candidate)
+        plan = sealed["plan"]
+        candidate_cohort = {key: plan[key] for key in cohort_keys}
+        if cohort is None:
+            cohort = candidate_cohort
+        elif candidate_cohort != cohort:
+            raise ValueError("candidate probes must share one pre-action cohort")
+        # A frozen decision point and donor snapshot define ONE prediction
+        # per (world, action). Reusing an action with contradictory forecasts
+        # across candidate rows/arms is forecast cherry-picking, not a
+        # legitimate counterfactual comparison.
+        for action_key, forecasts_key in (
+                ("treatment_action", "forecasts"),
+                ("control_action", "control_forecasts")):
+            action = plan[action_key]
+            forecasts = plan[forecasts_key]
+            if action in action_forecasts and action_forecasts[action] != forecasts:
+                raise ValueError("conflicting world forecasts for one pre-action action")
+            action_forecasts[action] = forecasts
+        both = 0
+        control = 0
+        for i, left in enumerate(WORLDS):
+            for right in WORLDS[i + 1:]:
+                treatment_differs = plan["forecasts"][left] != plan["forecasts"][right]
+                control_differs = (plan["control_forecasts"][left] !=
+                                   plan["control_forecasts"][right])
+                both += int(treatment_differs and control_differs)
+                control += int(control_differs)
+        ranked.append((
+            -both, -control, plan["treatment_action"],
+            plan["control_action"], sealed["sha256"], sealed))
+    if not ranked:
+        return None
+    best = min(ranked)
+    if -best[0] == 0:
+        return None
+    return dict(protocol=PROTOCOL, sealed=best[-1],
+                two_arm_discriminating_pairs=-best[0],
+                control_discriminating_pairs=-best[1],
+                interpretation="PROSPECTIVE_DESIGN_ONLY",
+                chronology_authenticated=False,
+                latent_reset_authenticated=False,
+                causal_effect_proven=False,
+                effect_on_agent="NONE_SHADOW_ONLY")
