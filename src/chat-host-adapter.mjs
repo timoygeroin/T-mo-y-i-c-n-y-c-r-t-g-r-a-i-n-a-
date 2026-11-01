@@ -126,6 +126,7 @@ export async function runChatHost({
     rejectedSubstitutions:Array.isArray(signal?.rejectedSubstitutions) ? signal.rejectedSubstitutions : [],
     failureGenes:Array.isArray(signal?.failureGenes) ? signal.failureGenes : [],
     contrastiveExamples:Array.isArray(signal?.contrastiveExamples) ? signal.contrastiveExamples : [],
+    interpretations:Array.isArray(signal?.interpretations) ? structuredClone(signal.interpretations).slice(0,12) : [],
     complexity:signal?.complexity || null,
     computeTier:signal?.computeTier || null,
     strictMonday:signal?.strictMonday !== false,
