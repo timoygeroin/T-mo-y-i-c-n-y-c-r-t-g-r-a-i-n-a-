@@ -1,3 +1,4 @@
+import { enforceFullCoverageClaim } from './archive-coverage.mjs';
 /**
  * MondayID Behavior Bridge: enforced host-level correction inheritance.
  * Conservative policy boundary: no claim of native ChatGPT interception.
@@ -81,15 +82,18 @@ export function preflightBehavior(signal={}) {
 
 // Deliberately narrow strong assertions. No semantic inference of universal truth.
 const FALSE_ACTIVATION = /(?:^|[.!?\n]\s*)(?:все\s+(?:модули|системы|хосты)\s+(?:полностью\s+)?(?:активированы|синхронизированы)|(?:вся|полная)\s+(?:история|память)\s+(?:полностью\s+)?синхронизирована|(?:all\s+modules\s+activated|all\s+hosts\s+synced))/iu;
+// Only affirmative, global account-coverage assertions are gated here. Scoped
+// source inventory counts and explicit NOT_COMPLETE statements are allowed.
+const UNPROVEN_ACCOUNT_TOTAL = /(?:^|[.!?\n]\\s*)(?:я\\s+(?:полностью\\s+)?(?:прочитал[аи]?|изучил[аи]?|проверил[аи]?)\\s+(?:все|каждый)\\s+(?:чаты|чат|диалоги|ветки)|(?:все|каждый)\\s+(?:чаты|чат|диалоги|ветки)\\s+(?:полностью\\s+)?(?:изучены|проверены|прочитаны)|(?:изучен[аыо]|проверен[аыо]|прочитан[аыо])\\s+(?:вся|все)\\s+(?:история|переписк[аи]|диалоги)\\s+(?:за\\s+)?(?:все\\s+)?(?:четыре|4)\\s+года|(?:all\\s+(?:my\\s+)?(?:chats|conversations)\\s+(?:fully\\s+)?(?:reviewed|read|analyzed)))/iu;
 const MOCK_PRESENTATION = /(?:вот\s+(?:картинка|изображение|макет|нарисованн\w+\s+интерфейс)|(?:я\s+)?нарисовал[аи]?\s+(?:тебе\s+)?(?:панел[ьи]|дашборд|интерфейс)|here\s+is\s+(?:a\s+)?mockup)/iu;
 
-export function gateBehaviorSurface({signal={},preflight=null,surface=null,independentProof=null}={}) {
+export function gateBehaviorSurface({signal={},preflight=null,surface=null,independentProof=null,archiveCoverageProof=null}={}) {
   const route=preflight || preflightBehavior(signal);
   if(!route.ok) return Object.freeze({ok:false,code:route.code});
   if(!surface || surface.released!==true) return Object.freeze({ok:false,code:'CANDIDATE_NOT_RELEASED'});
   const message=norm(surface.message || surface.text);
   if(!message) return Object.freeze({ok:false,code:'EMPTY_SURFACE'});
-  if(FALSE_ACTIVATION.test(message) && independentProof?.verified!==true)
+  if(UNPROVEN_ACCOUNT_TOTAL.test(message) && !enforceFullCoverageClaim(archiveCoverageProof || {}).ok)\n    return Object.freeze({ok:false,code:'ACCOUNT_HISTORY_COVERAGE_UNPROVEN'});\n  if(FALSE_ACTIVATION.test(message) && independentProof?.verified!==true)
     return Object.freeze({ok:false,code:'UNSUPPORTED_GLOBAL_ACTIVATION'});
   if(route.goalKey==='TERMINAL' && independentProof?.verified !== true)
     return Object.freeze({ok:false,code:'TERMINAL_PROOF_REQUIRED'});
