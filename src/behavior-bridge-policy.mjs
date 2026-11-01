@@ -84,7 +84,7 @@ export function preflightBehavior(signal={}) {
 const FALSE_ACTIVATION = /(?:^|[.!?\n]\s*)(?:все\s+(?:модули|системы|хосты)\s+(?:полностью\s+)?(?:активированы|синхронизированы)|(?:вся|полная)\s+(?:история|память)\s+(?:полностью\s+)?синхронизирована|(?:all\s+modules\s+activated|all\s+hosts\s+synced))/iu;
 // Only affirmative, global account-coverage assertions are gated here. Scoped
 // source inventory counts and explicit NOT_COMPLETE statements are allowed.
-const UNPROVEN_ACCOUNT_TOTAL = /(?:^|[.!?\n]\\s*)(?:я\\s+(?:полностью\\s+)?(?:прочитал[аи]?|изучил[аи]?|проверил[аи]?)\\s+(?:все|каждый)\\s+(?:чаты|чат|диалоги|ветки)|(?:все|каждый)\\s+(?:чаты|чат|диалоги|ветки)\\s+(?:полностью\\s+)?(?:изучены|проверены|прочитаны)|(?:изучен[аыо]|проверен[аыо]|прочитан[аыо])\\s+(?:вся|все)\\s+(?:история|переписк[аи]|диалоги)\\s+(?:за\\s+)?(?:все\\s+)?(?:четыре|4)\\s+года|(?:all\\s+(?:my\\s+)?(?:chats|conversations)\\s+(?:fully\\s+)?(?:reviewed|read|analyzed)))/iu;
+const UNPROVEN_ACCOUNT_TOTAL = /(?:^|[.!?\n]\s*)(?:я\s+(?:полностью\s+)?(?:прочитал[аи]?|изучил[аи]?|проверил[аи]?)\s+(?:все|каждый)\s+(?:чаты|чат|диалоги|ветки)|(?:все|каждый)\s+(?:чаты|чат|диалоги|ветки)\s+(?:полностью\s+)?(?:изучены|проверены|прочитаны)|(?:изучен[аыо]|проверен[аыо]|прочитан[аыо])\s+(?:вся|все)\s+(?:история|переписк[аи]|диалоги)\s+(?:за\s+)?(?:все\s+)?(?:четыре|4)\s+года|(?:all\s+(?:my\s+)?(?:chats|conversations)\s+(?:fully\s+)?(?:reviewed|read|analyzed)))/iu;
 const MOCK_PRESENTATION = /(?:вот\s+(?:картинка|изображение|макет|нарисованн\w+\s+интерфейс)|(?:я\s+)?нарисовал[аи]?\s+(?:тебе\s+)?(?:панел[ьи]|дашборд|интерфейс)|here\s+is\s+(?:a\s+)?mockup)/iu;
 
 export function gateBehaviorSurface({signal={},preflight=null,surface=null,independentProof=null,archiveCoverageProof=null}={}) {
