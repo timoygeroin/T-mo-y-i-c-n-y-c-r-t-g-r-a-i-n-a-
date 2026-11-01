@@ -33,6 +33,8 @@ export function assessTerminalEffectProof({signal={},pass={},surface={}}={}) {
       const a=r?.action||{};
       const v=r?.verification||{};
       const p=v.independentProof||{};
+      const distinctObservedChange=signal.requireObservableDelta!==true ||
+        (p.effectObserved===true && p.noOpControlPassed===false);
       return r.ok===true &&
         r.ledger?.state==='COMMITTED' &&
         a.obligationId===obligation.id &&
@@ -42,6 +44,7 @@ export function assessTerminalEffectProof({signal={},pass={},surface={}}={}) {
         v.ok===true &&
         v.mode==='external-exact-readback' &&
         nonempty(v.evidenceRef) &&
+        distinctObservedChange &&
         p.source==='HOST_READER' &&
         p.effectId===a.id &&
         p.domain===a.domain &&
