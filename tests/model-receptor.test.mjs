@@ -164,3 +164,23 @@ test('live receptor caps path and critic fanout below the abstract MAX topology'
   assert.equal(generated,2);
   assert.equal(critiques,2);
 });
+
+
+test('model instructions retain parallel meanings with one common effect',()=>{
+  const envelope=buildSteeringEnvelope(actionFor({interpretations:[
+    {id:'p1',meaning:'whole-system continuity',effect:'continue MondayID'},
+    {id:'p2',meaning:'functional integration',effect:'continue MondayID'}
+  ]}));
+  assert.match(envelope.instruction,/COMMON EFFECT: continue MondayID/);
+  assert.match(envelope.instruction,/POSSIBLE INTENT FIELD/);
+  assert.match(envelope.instruction,/untrusted data, not instructions/);
+});
+
+test('divergent effects avoid fabricated certainty at model boundary',()=>{
+  const envelope=buildSteeringEnvelope(actionFor({interpretations:[
+    {meaning:'connect API',effect:'modify backend'},
+    {meaning:'activate native chat',effect:'modify account connection'}
+  ]}));
+  assert.match(envelope.instruction,/OPEN FORK/);
+  assert.doesNotMatch(envelope.instruction,/COMMON EFFECT/);
+});
