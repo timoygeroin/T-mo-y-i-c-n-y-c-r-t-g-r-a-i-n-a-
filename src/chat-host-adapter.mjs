@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { preflightBehavior, applyBehaviorConstraints, gateBehaviorSurface } from './behavior-bridge-policy.mjs';
 import { TrustedWorldlineReceptor } from './trusted-worldline-receptor.mjs';
 import { MondayRuntime } from './runtime.mjs';
 import { recoverWorldline } from './remote-worldline.mjs';
@@ -12,6 +13,13 @@ export async function runChatHost({
   fetchImpl = globalThis.fetch,
   provider = null
 } = {}) {
+  // An inherited correction must affect the next route before any provider spend.
+  const behaviorPreflight = preflightBehavior(signal || {});
+  if (!behaviorPreflight.ok) return {
+    ok:false, state:behaviorPreflight.state, code:behaviorPreflight.code,
+    status:409, behavior:{preflight:behaviorPreflight}
+  };
+
   if (env.MONDAYID_MODEL_EXECUTION_ENABLED !== 'true') {
     return {
       ok:false,
@@ -107,7 +115,7 @@ export async function runChatHost({
     capabilities:{general:modelReceptor}
   });
 
-  const incoming = {
+  const incoming = applyBehaviorConstraints({
     id:signal?.id || `chat:${Date.now()}`,
     text:String(signal?.text || ''),
     effect:signal?.desiredEffect || signal?.effect || String(signal?.text || ''),
@@ -128,10 +136,16 @@ export async function runChatHost({
     architectureRequested:signal?.architectureRequested === true,
     domains:['general'],
     source:'human'
-  };
+  }, behaviorPreflight);
 
   const pass = await runtime.runPass([incoming], {maxCycles:2});
-  const surface = renderVerifiedCandidateSurface(pass.final || pass);
+  const candidateSurface = renderVerifiedCandidateSurface(pass.final || pass);
+  // A released model answer is not enough: veto known repeated bad presentation
+  // routes before they reach the client. Never expose a rejected candidate.
+  const behaviorGate = gateBehaviorSurface({signal,preflight:behaviorPreflight,surface:candidateSurface});
+  const surface = behaviorGate.ok ? candidateSurface : {
+    released:false, code:behaviorGate.code, message:null, evidence:null
+  };
 
   const providerEvidence=surface?.evidence?.provider || {};
   const revision=pass.final?.revision || null;
@@ -188,8 +202,9 @@ export async function runChatHost({
 
   return {
     ok:pass.ok === true && pass.state === 'FULFILLED' && surface.released === true,
-    state:pass.state,
-    reason:pass.reason,
+    state:behaviorGate.ok ? pass.state : 'BLOCKED',
+    reason:behaviorGate.ok ? pass.reason : behaviorGate.code,
+    behavior:{preflight:{state:behaviorPreflight.state,code:behaviorPreflight.code,selectedFamily:behaviorPreflight.selectedFamily,blockedBy:behaviorPreflight.blockedBy},gate:behaviorGate},
     worldline:{
       trust:recovered.trust,
       schema:recovered.snapshot?.schema || null,
