@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {assessOutcome} from '../src/outcome-gate.mjs';
+const x={requestedEffect:'visible-change',attemptedRoutes:['renderer'],remainingRoutes:[]};
+const receipt={effectId:'visible-change',source:'external-readback',observedAt:'2026-11-01T17:00:00Z',observation:'independent',matchesRequestedEffect:true};
+test('effect required',()=>assert.equal(assessOutcome({}).code,'REQUESTED_EFFECT_REQUIRED'));
+test('plan is not completion',()=>assert.equal(assessOutcome({...x,status:'PLANNED'}).release,false));
+test('tool call is not completion',()=>assert.equal(assessOutcome({...x,status:'EXECUTED'}).release,false));
+test('self-check is not independent',()=>assert.equal(assessOutcome({...x,status:'VERIFIED',receipt:{...receipt,observation:'self'}}).release,false));
+test('wrong effect cannot release',()=>assert.equal(assessOutcome({...x,status:'VERIFIED',receipt:{...receipt,effectId:'other'}}).release,false));
+test('missing readback cannot release',()=>assert.equal(assessOutcome({...x,status:'VERIFIED'}).release,false));
+test('verified effect can release',()=>assert.equal(assessOutcome({...x,status:'VERIFIED',receipt}).release,true));
+test('blocker without route is not settled',()=>assert.equal(assessOutcome({...x,status:'BLOCKED',attemptedRoutes:[]}).state,'ACTIVE'));
+test('remaining route prevents terminal blocker',()=>assert.equal(assessOutcome({...x,status:'BLOCKED',remainingRoutes:['alternate']}).state,'ACTIVE'));
+test('stable blocker is not success',()=>assert.equal(assessOutcome({...x,status:'BLOCKED'}).release,false));
