@@ -49,3 +49,34 @@ test('compiler carries semantic frame into both signal and objectives', () => {
   assert.equal(signal.semanticFrame.languageMode,'translation-interface');
   assert.deepEqual(objective.semanticFrame,signal.semanticFrame);
 });
+
+
+test('shared effect is compiled without choosing a favored metaphor or inventing external proof', () => {
+  const frame=frameSignal({text:'Integrate MondayID',interpretations:[
+    {id:'a',meaning:'continue existing organism',effect:'update existing MondayID'},
+    {id:'b',meaning:'connect the active runtime',effect:'update existing MondayID'}
+  ]});
+  assert.equal(frame.interpretationField.state,'SHARED_EFFECT');
+  assert.equal(frame.interpretationField.sharedEffect,'update existing MondayID');
+  assert.equal(frame.interpretationField.forcedWinner,false);
+  assert.equal(frame.interpretationField.candidates[0].verified,false);
+});
+
+test('divergent plausible interpretations remain an open fork instead of an invented common goal', () => {
+  const graph=compileSignals([{id:'fork',text:'integrate',interpretations:[
+    {meaning:'merge app code',effect:'merge repository'},
+    {meaning:'connect account',effect:'connect external account'}
+  ]}]);
+  const signal=graph.nodes.find(node=>node.type==='signal');
+  const objective=graph.nodes.find(node=>node.type==='objective');
+  assert.equal(signal.semanticFrame.interpretationField.state,'OPEN_INTERPRETATION_FORK');
+  assert.equal(signal.semanticFrame.interpretationField.sharedEffect,null);
+  assert.equal(objective.attractorContract.interpretationField.state,'OPEN_INTERPRETATION_FORK');
+});
+
+test('no candidates never fabricates a hidden intention', () => {
+  const field=frameSignal({text:'strange metaphor'}).interpretationField;
+  assert.equal(field.state,'NO_EXPLICIT_CANDIDATES');
+  assert.equal(field.sharedEffect,null);
+  assert.deepEqual(field.candidates,[]);
+});
