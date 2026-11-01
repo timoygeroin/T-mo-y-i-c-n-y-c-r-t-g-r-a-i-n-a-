@@ -391,7 +391,10 @@ export class MondayRuntime {
                 effectId:action.id,
                 domain:action.domain,
                 sourceSignal:action.sourceSignal,
-                evidenceRef:witnessed.evidenceRef.trim()
+                evidenceRef:witnessed.evidenceRef.trim(),
+                // Scope-limited material-effect observations from trusted reader.
+                effectObserved:witnessed.effectObserved===true,
+                noOpControlPassed:witnessed.noOpControlPassed===false ? false : true
               }
             };
           }
