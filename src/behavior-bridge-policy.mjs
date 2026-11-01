@@ -22,6 +22,14 @@ export const BEHAVIOR_CORRECTIONS = Object.freeze([
     invariant:'Do not generate an image unless the latest user instruction actually asks for an image.'
   }),
   Object.freeze({
+    id:'finish-only-no-partial-release-20261101',
+    goalKey:'TERMINAL',
+    rejectedFamily:'PARTIAL_STATUS',
+    replacementFamily:'PROOF_FIRST',
+    source:'direct-user-correction-2026-11-01',
+    invariant:'When the owner requests a finish-only result, do not release a progress note or incomplete result as the final answer. Require independent effect evidence, and distinguish inability to continue from fabricated completion.'
+  }),
+  Object.freeze({
     id:'premiere-not-stopping-at-explanation-20261101',
     goalKey:'PREMIERE',
     rejectedFamily:'EXPLANATION_ONLY',
@@ -35,13 +43,15 @@ const norm = x => String(x ?? '').trim();
 const looksLikePremiere = t => /(?:monday|манд[еэе]й|монд[еэе]й|mondayid)/iu.test(t) &&
   /(?:премьер|презентац|демонстрац|покажи|showcase|premiere|demo|полност[ьюий]|пользоват)/iu.test(t);
 const terminalStop = x => x === 'STOP_ALL';
+const finishOnlyIntent = t => /(?:не\s+отвечай\s+пока|только\s+полный\s+финал|если\s+не\s+закончила[^.!?\n]{0,70}продолжай|посередине\s+ответ\s+мне\s+не\s+нужен)/iu.test(t);
 const replacements = new Map(BEHAVIOR_CORRECTIONS.map(x=>[`${x.goalKey}:${x.rejectedFamily}`,x]));
 
 function classifySignal(signal={}) {
   const text=norm(signal.text);
-  const goalKey=norm(signal.goalKey) || (looksLikePremiere(text) ? 'PREMIERE' : 'GENERAL');
+  const finishOnly = signal.finishOnly === true || finishOnlyIntent(text);
+  const goalKey=finishOnly ? 'TERMINAL' : (norm(signal.goalKey) || (looksLikePremiere(text) ? 'PREMIERE' : 'GENERAL'));
   const renderExplicit=signal.explicitImageIntent===true || signal.imageRequested===true;
-  const family=norm(signal.proposedFamily) || (goalKey === 'PREMIERE' ? 'VERIFIABLE_EFFECT' : 'GENERAL');
+  const family=norm(signal.proposedFamily) || (goalKey === 'TERMINAL' ? 'PARTIAL_STATUS' : (goalKey === 'PREMIERE' ? 'VERIFIABLE_EFFECT' : 'GENERAL'));
   const directive=norm(signal.directive) || 'CONTINUE';
   return {goalKey,family,directive,renderExplicit};
 }
@@ -81,6 +91,8 @@ export function gateBehaviorSurface({signal={},preflight=null,surface=null,indep
   if(!message) return Object.freeze({ok:false,code:'EMPTY_SURFACE'});
   if(FALSE_ACTIVATION.test(message) && independentProof?.verified!==true)
     return Object.freeze({ok:false,code:'UNSUPPORTED_GLOBAL_ACTIVATION'});
+  if(route.goalKey==='TERMINAL' && independentProof?.verified !== true)
+    return Object.freeze({ok:false,code:'TERMINAL_PROOF_REQUIRED'});
   if(route.goalKey==='PREMIERE' && MOCK_PRESENTATION.test(message) && signal?.explicitImageIntent!==true)
     return Object.freeze({ok:false,code:'KNOWN_MOCK_PRESENTATION_RECURRED'});
   return Object.freeze({ok:true,code:'BOUNDED_RELEASE',goalKey:route.goalKey,selectedFamily:route.selectedFamily});
