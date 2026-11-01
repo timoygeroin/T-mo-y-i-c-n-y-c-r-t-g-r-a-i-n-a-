@@ -80,3 +80,30 @@ test('no candidates never fabricates a hidden intention', () => {
   assert.equal(field.sharedEffect,null);
   assert.deepEqual(field.candidates,[]);
 });
+
+
+test('shared invariant changes actual runtime objective, not only prompt language',()=>{
+  const input={id:'effect',text:'Интегрируй mondayiD',interpretations:[
+    {meaning:'carry state',effect:'continue the existing MondayID'},
+    {meaning:'connect organs',effect:'continue the existing MondayID'}
+  ]};
+  const graph=compileSignals([input]);
+  const objective=graph.nodes.find(x=>x.type==='objective');
+  assert.equal(objective.effect,'continue the existing MondayID');
+  assert.equal(objective.attractorContract.desiredEffect,'continue the existing MondayID');
+  assert.equal(objective.semanticFrame.raw,input.text);
+});
+
+test('explicit human effect outranks candidates, and divergent candidates do not choose',()=>{
+  const interpretations=[
+    {meaning:'A',effect:'connect API'},
+    {meaning:'B',effect:'connect API'}
+  ];
+  const explicit=compileSignals([{text:'connect',effect:'audit only',interpretations}]);
+  assert.equal(explicit.nodes.find(x=>x.type==='objective').effect,'audit only');
+  const fork=compileSignals([{text:'do work',interpretations:[
+    {meaning:'A',effect:'merge'},
+    {meaning:'B',effect:'deploy'}
+  ]}]);
+  assert.equal(fork.nodes.find(x=>x.type==='objective').effect,'do work');
+});
