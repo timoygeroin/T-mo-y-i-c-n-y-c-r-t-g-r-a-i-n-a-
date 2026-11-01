@@ -286,3 +286,42 @@ test('Behavior Bridge withholds an unsupported full activation claim', async () 
   assert.equal(out.behavior.gate.code,'UNSUPPORTED_GLOBAL_ACTIVATION');
   assert.equal(out.receipt,null);
 });
+
+
+test('live host passes shared-effect interpretation field into provider steering', async () => {
+  const calls=[];
+  const provider={
+    async generate(request){calls.push(request);return {ok:true,text:'Continuing existing MondayID runtime.'};},
+    async critique(){return {ok:true,score:1,reasons:[]};}
+  };
+  const out=await runChatHost({
+    signal:{
+      id:'interpretation-transfer-001',text:'Интегрируй mondayiD',computeTier:'LOW',
+      interpretations:[
+        {id:'one',meaning:'preserve continuity',effect:'continue existing MondayID'},
+        {id:'two',meaning:'connect execution organs',effect:'continue existing MondayID'}
+      ]
+    },
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,true);
+  assert.ok(calls.length>0);
+  assert.match(calls[0].instructions,/COMMON EFFECT: continue existing MondayID/);
+  assert.match(calls[0].instructions,/POSSIBLE INTENT FIELD/);
+  assert.equal(out.receipt.durable,false);
+});
+
+test('live host retains an unresolved interpretation fork without forcing a single action', async () => {
+  const calls=[];
+  const provider={async generate(req){calls.push(req);return {ok:true,text:'Checking the existing state without making an external change.'};}};
+  const out=await runChatHost({
+    signal:{id:'interpretation-fork-001',text:'integrate',computeTier:'LOW',interpretations:[
+      {meaning:'merge code',effect:'update repo'},
+      {meaning:'connect account',effect:'change external account'}
+    ]},
+    env:liveEnv,fetchImpl:worldlineFetch,provider
+  });
+  assert.equal(out.ok,true);
+  assert.match(calls[0].instructions,/OPEN FORK:/);
+  assert.doesNotMatch(calls[0].instructions,/COMMON EFFECT:/);
+});
