@@ -37,6 +37,8 @@ test('independent semantics and account-wide proof are ALL necessary', () => {
   x.counts.tasks.observed=x.counts.tasks.expected;
   x.counts.ideas.observed=x.counts.ideas.expected;
   x.taskReviewIndependent=true;x.ideaReviewIndependent=true;
+  x.contentParts={observed:85280,expected:85280,scope:'six-export-shards-source-text'};
+  x.contentReadbackIndependentlyVerified=true;
   assert.equal(evaluateArchiveCoverage(x).semanticComplete,true);
   assert.equal(evaluateArchiveCoverage(x).accountComplete,false);
   x.counts.effects.observed=x.counts.effects.expected;
@@ -52,4 +54,24 @@ test('does not allow 101 percent or unknown gaps to masquerade as complete', () 
   assert.equal(evaluateArchiveCoverage(a).dimensions.nodes.status,'UNMEASURED');
   const b=base();b.unavailableSources=null;
   assert.equal(evaluateArchiveCoverage(b).unknowns.unavailableSources,null);
+});
+
+test('account-complete vetoes a recovered 650/650 index when original audio text is not searchable',()=>{
+  const x=base();
+  x.counts.tasks.observed=x.counts.tasks.expected;
+  x.counts.ideas.observed=x.counts.ideas.expected;
+  x.counts.effects.observed=x.counts.effects.expected;
+  x.taskReviewIndependent=true;
+  x.ideaReviewIndependent=true;
+  x.allAccountSourcesEnumerated=true;
+  x.allActiveBranchesReconciled=true;
+  x.unavailableSources=0;
+  x.unresolvedSourceGaps=0;
+  x.effectReceiptsIndependentlyVerified=true;
+  x.contentParts={observed:82180,expected:85280,scope:'original-six-shard-text-parts'};
+  x.contentReadbackIndependentlyVerified=false;
+  assert.equal(enforceFullCoverageClaim(x).ok,false,'Missing 3100 transcriptions must veto 100%');
+  x.contentParts.observed=85280;
+  x.contentReadbackIndependentlyVerified=true;
+  assert.equal(enforceFullCoverageClaim(x).ok,true,'Exactly recovered original content parts may release when other gates pass');
 });

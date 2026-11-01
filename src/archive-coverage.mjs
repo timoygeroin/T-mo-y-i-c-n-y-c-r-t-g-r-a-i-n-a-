@@ -26,6 +26,14 @@ export function evaluateArchiveCoverage(report = {}) {
       typeof source.file === 'string' && source.file &&
       /^[0-9a-f]{64}$/i.test(source.sha256 || '') &&
       source.hashMatched === true && source.rawReadable === true);
+  // An indexed conversation/node is not proof that the original text parts
+  // were searchable. In particular, multimodal audio transcriptions can be
+  // present inside content.parts while absent from a text-only FTS index.
+  const contentParts = count(report.contentParts);
+  const contentComplete = contentParts.qualified &&
+    contentParts.expected > 0 &&
+    contentParts.observed === contentParts.expected &&
+    report.contentReadbackIndependentlyVerified === true;
   const anomalous = !nonnegative(report.anomalies) || report.anomalies > 0;
   const bounded = Boolean(archiveWindow?.start && archiveWindow?.end);
   const structuralComplete = bounded && sourcesVerified && !anomalous &&
@@ -33,9 +41,10 @@ export function evaluateArchiveCoverage(report = {}) {
     dimensions.nodes.complete &&
     dimensions.signals.complete;
   // Semantic work is deliberately separate from heuristic keyword extraction.
-  const semanticComplete = structuralComplete && dimensions.tasks.complete &&
+  const semanticsReviewed = dimensions.tasks.complete &&
     dimensions.ideas.complete && report.taskReviewIndependent === true &&
     report.ideaReviewIndependent === true;
+  const semanticComplete = structuralComplete && semanticsReviewed && contentComplete;
   const accountComplete = semanticComplete && dimensions.effects.complete &&
     report.allAccountSourcesEnumerated === true &&
     report.allActiveBranchesReconciled === true &&
@@ -48,10 +57,16 @@ export function evaluateArchiveCoverage(report = {}) {
     archiveWindow,
     dimensions,
     structuralComplete,
+    contentComplete,
+    contentParts:{...contentParts,scope:report.contentParts?.scope || null,
+      status:!contentParts.qualified ? 'UNMEASURED' :
+        contentComplete ? 'RECOVERED_AND_VERIFIED' : 'CONTENT_RECOVERY_OPEN'},
     semanticComplete,
     accountComplete,
     releaseGate: accountComplete ? 'COVERAGE_VERIFIED' :
       !structuralComplete ? 'STRUCTURAL_OPEN' :
+      !semanticsReviewed ? 'SEMANTIC_OPEN' :
+      !contentComplete ? 'CONTENT_RECOVERY_OPEN' :
       !semanticComplete ? 'SEMANTIC_OPEN' : 'ACCOUNT_OR_EFFECT_OPEN',
     unknowns: {
       allAccountSourcesEnumerated: report.allAccountSourcesEnumerated === true,
