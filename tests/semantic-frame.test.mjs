@@ -107,3 +107,16 @@ test('explicit human effect outranks candidates, and divergent candidates do not
   ]}]);
   assert.equal(fork.nodes.find(x=>x.type==='objective').effect,'do work');
 });
+
+
+test('concrete executable effect survives a distinct aspirational desiredEffect in cross-host transfer',()=>{
+  const graph=compileSignals([{
+    id:'transfer-proof',text:'prove host transfer',
+    effect:'prove clean-host transfer with external write/readback',
+    desiredEffect:'make evidence recoverable by another host',
+    domains:['continuity']
+  }]);
+  const objective=graph.nodes.find(x=>x.type==='objective');
+  assert.equal(objective.effect,'prove clean-host transfer with external write/readback');
+  assert.equal(objective.attractorContract.desiredEffect,'make evidence recoverable by another host');
+});
