@@ -118,12 +118,6 @@ export async function runChatHost({
     maxCritics
   });
 
-  const runtime = new MondayRuntime({
-    worldline:recovered.worldline,
-    capabilities:{general:modelReceptor,...(domainReceptors || {})},
-    independentReadback
-  });
-
   const selectedEffect=selectInvariantEffect(signal || {});
   // IMPORTANT: A host adapter must not discard the compiled goal. The old
   // hard-coded ['general'] route silently converted multi-domain and real
@@ -174,6 +168,20 @@ export async function runChatHost({
       ? structuredClone(amplifiedSignal.routeCandidates) : [],
     source:'human'
   }, behaviorPreflight);
+
+  // In effect-only mode the generic language-model receptor cannot masquerade
+  // as the concrete executor of a material 'general' obligation. The only
+  // general effect executor admitted here is an explicitly injected trusted
+  // host domain receptor, which still needs independent exact readback.
+  const capabilities={general:modelReceptor,...(domainReceptors || {})};
+  if(requireDomainReceptor && !domainReceptors?.general) {
+    delete capabilities.general;
+  }
+  const runtime = new MondayRuntime({
+    worldline:recovered.worldline,
+    capabilities,
+    independentReadback
+  });
 
   const pass = await runtime.runPass([incoming], {maxCycles:2});
   const candidateSurface = renderVerifiedCandidateSurface(pass.final || pass);
