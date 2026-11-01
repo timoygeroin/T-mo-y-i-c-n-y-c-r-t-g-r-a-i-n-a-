@@ -48,7 +48,7 @@ export function compileInterpretationField(signal = {}) {
  * changes the planned objective, while explicit human effects outrank it.
  */
 export function selectInvariantEffect(signal={}) {
-  const explicit=String(signal.desiredEffect || signal.effect || '').trim();
+  const explicit=String(signal.effect || signal.desiredEffect || '').trim();
   const field=compileInterpretationField(signal);
   const text=String(signal.text ?? signal.intent ?? '').trim();
   return Object.freeze({
