@@ -25,7 +25,8 @@ export function compileInterpretationField(signal = {}) {
       meaning:String(item.meaning || item.text || '').trim().slice(0,500),
       effect:String(item.effect || item.desiredEffect || '').trim().slice(0,500),
       sourceRef:String(item.sourceRef || 'current-signal').trim().slice(0,200),
-      verified:item.verified === true && Boolean(item.sourceRef)
+      verified:false,
+      claimedVerified:item.verified === true
     }))
     .filter(item=>item.meaning || item.effect);
   const distinctEffects=[...new Set(candidates.map(item=>item.effect).filter(Boolean))];
