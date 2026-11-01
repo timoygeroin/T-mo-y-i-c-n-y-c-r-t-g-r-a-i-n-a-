@@ -24,7 +24,7 @@ export function compileSignals(signals = [], { state = {}, policies = {} } = {})
     const domains = signal.domains || inferDomains(text);
     const completedDomains = Array.isArray(signal.completedDomains) ? signal.completedDomains : [];
     const semanticFrame = frameSignal(signal);
-    const attractorContract = compileAttractorContract(signal, { domains, state, policies });
+    const attractorContract = compileAttractorContract({...signal,effect:selectedEffect.effect}, { domains, state, policies });
     const rootId = signal.id || `signal:${nodes.length}`;
     nodes.push({
       id: rootId,
