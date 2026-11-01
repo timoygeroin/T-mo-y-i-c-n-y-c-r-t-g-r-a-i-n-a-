@@ -75,3 +75,16 @@ test('finish-only verified independent evidence can release',()=>{
 test('ordinary requests do not acquire terminal gate',()=>{
   assert.equal(gateBehaviorSurface({signal:{text:'Привет'},surface:released('Привет!')}).ok,true);
 });
+
+test('all-chat claims require account-wide coverage proof, not six-shard count',()=>{
+  const signal={text:'Каждый чат на сто процентов'};
+  const unproved=gateBehaviorSurface({signal,surface:released('Я прочитала все чаты за четыре года.')});
+  assert.equal(unproved.code,'ACCOUNT_HISTORY_COVERAGE_UNPROVEN');
+  const scoped=gateBehaviorSurface({signal,surface:released('В шести архивных файлах проиндексировано 650 из 650 чатов. Полный аккаунт не проверен.')});
+  assert.equal(scoped.ok,true);
+});
+test('independent terminal receipt alone cannot prove whole-account review',()=>{
+  const signal={finishOnly:true,text:'Сделай всё'};
+  const output=gateBehaviorSurface({signal,surface:released('Все чаты полностью прочитаны.'),independentProof:{verified:true}});
+  assert.equal(output.code,'ACCOUNT_HISTORY_COVERAGE_UNPROVEN');
+});
