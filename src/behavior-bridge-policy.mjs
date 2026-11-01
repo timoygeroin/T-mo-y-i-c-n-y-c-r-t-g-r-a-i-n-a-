@@ -71,7 +71,7 @@ const terminalStop = x => x === 'STOP_ALL';
 // Only direct system-change imperatives trigger a material-effects contract.
 // Ordinary conversations, factual requests and textual artifacts remain valid.
 const materialOrderIntent = t =>
-  /(?:^|[.!?\n]\s*)(?:ну\s+|тогда\s+|пожалуйста\s+|манд[еэ]й[,!]?\s+){0,4}(?:примени|применяй|поменяй|измени|переделай|перестрой|пересобери|почини|исправь|наладь|доделай|заверши|закончи|перепиши|перенастрой)\b/iu.test(t) &&
+  /(?:^|[.!?\n]\s*)(?:ну\s+|тогда\s+|пожалуйста\s+|манд[еэ]й[,!]?\s+){0,4}(?:примени|применяй|поменяй|измени|переделай|перестрой|пересобери|почини|исправь|наладь|доделай|заверши|закончи|перепиши|перенастрой)(?:\s|$|[,.!?])/iu.test(t) &&
   /(?:monday|манд[еэ]й|mondayid|модел|автопилот|памят|систем|интеллект|ядро|механизм|мутаци|правил)/iu.test(t);
 const finishOnlyIntent = t => /(?:не\s+отвечай\s+пока|только\s+полный\s+финал|если\s+не\s+закончила[^.!?\n]{0,70}продолжай|посередине\s+ответ\s+мне\s+не\s+нужен)/iu.test(t);
 const replacements = new Map(BEHAVIOR_CORRECTIONS.map(x=>[`${x.goalKey}:${x.rejectedFamily}`,x]));
