@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { assessTerminalEffectProof } from './terminal-effect-proof.mjs';
 import { preflightBehavior, applyBehaviorConstraints, gateBehaviorSurface } from './behavior-bridge-policy.mjs';
 import { TrustedWorldlineReceptor } from './trusted-worldline-receptor.mjs';
 import { MondayRuntime } from './runtime.mjs';
@@ -11,7 +12,10 @@ export async function runChatHost({
   signal,
   env = process.env,
   fetchImpl = globalThis.fetch,
-  provider = null
+  provider = null,
+  // Trusted server-only integrations. Never populated from HTTP request data.
+  domainReceptors = null,
+  independentReadback = null
 } = {}) {
   // An inherited correction must affect the next route before any provider spend.
   const behaviorPreflight = preflightBehavior(signal || {});
@@ -112,7 +116,8 @@ export async function runChatHost({
 
   const runtime = new MondayRuntime({
     worldline:recovered.worldline,
-    capabilities:{general:modelReceptor}
+    capabilities:{general:modelReceptor,...(domainReceptors || {})},
+    independentReadback
   });
 
   const incoming = applyBehaviorConstraints({
@@ -142,7 +147,16 @@ export async function runChatHost({
   const candidateSurface = renderVerifiedCandidateSurface(pass.final || pass);
   // A released model answer is not enough: veto known repeated bad presentation
   // routes before they reach the client. Never expose a rejected candidate.
-  const behaviorGate = gateBehaviorSurface({signal,preflight:behaviorPreflight,surface:candidateSurface});
+  // Material completion is judged against exact external host readback,
+  // before releasing the answer. A response receipt written *after* release
+  // cannot substitute for proof that the requested work was done.
+  const completionProof = assessTerminalEffectProof({
+    signal:{...signal,id:incoming.id},pass,surface:candidateSurface
+  });
+  const behaviorGate = gateBehaviorSurface({
+    signal,preflight:behaviorPreflight,surface:candidateSurface,
+    independentProof:completionProof
+  });
   const surface = behaviorGate.ok ? candidateSurface : {
     released:false, code:behaviorGate.code, message:null, evidence:null
   };
@@ -205,6 +219,7 @@ export async function runChatHost({
     state:behaviorGate.ok ? pass.state : 'BLOCKED',
     reason:behaviorGate.ok ? pass.reason : behaviorGate.code,
     behavior:{preflight:{state:behaviorPreflight.state,code:behaviorPreflight.code,selectedFamily:behaviorPreflight.selectedFamily,blockedBy:behaviorPreflight.blockedBy},gate:behaviorGate},
+    completionProof:behaviorPreflight.goalKey==='TERMINAL' ? completionProof : null,
     worldline:{
       trust:recovered.trust,
       schema:recovered.snapshot?.schema || null,
