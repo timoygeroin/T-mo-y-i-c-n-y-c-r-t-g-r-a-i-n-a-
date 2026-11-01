@@ -75,3 +75,20 @@ test('finish-only verified independent evidence can release',()=>{
 test('ordinary requests do not acquire terminal gate',()=>{
   assert.equal(gateBehaviorSurface({signal:{text:'Привет'},surface:released('Привет!')}).ok,true);
 });
+
+
+test('day of delivery words trigger proof-first before model generation',()=>{
+  for(const phrase of [
+    'Сегодня день сдачи. Нужно закончить Monday.',
+    'Меня не интересует ничего, кроме сданной работы.',
+    'Не отправляй мне промежуточный ответ.'
+  ]) {
+    const p=preflightBehavior({text:phrase});
+    assert.equal(p.goalKey,'TERMINAL',phrase);
+    assert.equal(p.selectedFamily,'PROOF_FIRST',phrase);
+  }
+});
+test('discussion ABOUT a day of delivery remains possible with explicit nonterminal goal',()=>{
+  const p=preflightBehavior({text:'Пожалуйста объясни даты прошлых дедлайнов',goalKey:'RESEARCH'});
+  assert.equal(p.goalKey,'RESEARCH');
+});
