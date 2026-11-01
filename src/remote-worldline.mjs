@@ -81,7 +81,20 @@ export function seedWorldlineFromSnapshot(snapshot, worldline = new Worldline())
   let revision = worldline.revision();
   let imported = 0;
 
-  for (const external of snapshot?.events || []) {
+  // The remote snapshot endpoint returns newest records first. Worldline
+  // materialization is last-write-wins, so replay must be oldest -> newest.
+  // Invalid/missing timestamps must never overwrite a dated verified record.
+  const chronological = [...(snapshot?.events || [])].sort((a, b) => {
+    const atA = Date.parse(a?.timestampIso || a?.at || '');
+    const atB = Date.parse(b?.timestampIso || b?.at || '');
+    const validA = Number.isFinite(atA);
+    const validB = Number.isFinite(atB);
+    if (validA !== validB) return validA ? 1 : -1;
+    if (!validA) return 0;
+    return atA - atB;
+  });
+
+  for (const external of chronological) {
     const local = externalEventToLocal(external);
     if (!local.id) continue;
     const out = worldline.append(local, revision);
