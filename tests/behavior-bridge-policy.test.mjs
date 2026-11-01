@@ -55,3 +55,23 @@ test('explicit image request is not rejected just for being visual',()=>{
   const x={...s,explicitImageIntent:true};
   assert.equal(gateBehaviorSurface({signal:x,surface:released('Вот изображение, которое ты попросил.')}).ok,true);
 });
+test('finish-only instruction reroutes progress answer before inference',()=>{
+  const p=preflightBehavior({text:'Если не закончила, продолжай. Посередине ответ мне не нужен.'});
+  assert.equal(p.goalKey,'TERMINAL');
+  assert.equal(p.state,'REROUTED');
+  assert.equal(p.selectedFamily,'PROOF_FIRST');
+  assert.ok(p.corrections.some(x=>x.id==='finish-only-no-partial-release-20261101'));
+});
+test('finish-only response without external proof cannot release',()=>{
+  const signal={finishOnly:true,text:'Заверши всё'};
+  assert.equal(gateBehaviorSurface({signal,surface:released('Работа частично выполнена.')}).code,'TERMINAL_PROOF_REQUIRED');
+  assert.equal(gateBehaviorSurface({signal,surface:released('Все готово!'),independentProof:{selfReported:true}}).code,'TERMINAL_PROOF_REQUIRED');
+});
+test('finish-only verified independent evidence can release',()=>{
+  const signal={finishOnly:true,text:'Заверши всё'};
+  const result=gateBehaviorSurface({signal,surface:released('Все обязательства выполнены и проверены.'),independentProof:{verified:true}});
+  assert.equal(result.ok,true);
+});
+test('ordinary requests do not acquire terminal gate',()=>{
+  assert.equal(gateBehaviorSurface({signal:{text:'Привет'},surface:released('Привет!')}).ok,true);
+});
