@@ -5,13 +5,13 @@ import { selectInvariantEffect } from './semantic-frame.mjs';
 
 const CLOSED_OBLIGATION_STATES = new Set(['APPLIED','ANSWERED','PERSISTED','SUPERSEDED']);
 
-function normalizeObligations(signal,id,domains){
+function normalizeObligations(signal,id,domains,selectedEffect){
   const explicit=Array.isArray(signal.obligations) && signal.obligations.length
     ? signal.obligations
     : domains.map(domain => ({
         id:`${id}:${domain}`,
         domain,
-        text:signal.effect || signal.desiredEffect || signal.text || signal.intent || domain,
+        text:selectedEffect || signal.text || signal.intent || domain,
         binding:'domain',
         material:true,
         status:(signal.completedDomains || []).includes(domain) ? 'APPLIED' : 'OPEN'
@@ -38,8 +38,8 @@ export function normalizeIntent(signal = {}, revision = 'root', index = 0) {
   const text = String(signal.text ?? signal.intent ?? '');
   const domains = signal.domains || inferDomains(text);
   const selectedEffect=selectInvariantEffect(signal);
-  const id = signal.id || `intent:${hash({ revision, index, text, effect: signal.effect || null }).slice(0, 16)}`;
-  const obligations=normalizeObligations(signal,id,domains);
+  const id = signal.id || `intent:${hash({ revision, index, text, effect: selectedEffect.effect }).slice(0, 16)}`;
+  const obligations=normalizeObligations(signal,id,domains,selectedEffect.effect);
   return {
     id,
     text,
