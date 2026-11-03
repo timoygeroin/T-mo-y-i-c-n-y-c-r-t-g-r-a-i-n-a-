@@ -1,0 +1,124 @@
+name: ARC-AGI-3 autonomous Kaggle Phase-A bridge
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - '.github/workflows/arc-kaggle-autonomous-phase-a.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  phase_a:
+    if: >-
+      github.repository == 'timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.head_ref == 'monday/arc-agi3-offline-agent-20261026'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check secret presence without exposing credential
+        id: gate
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_ACCESS_TOKEN: ${{ secrets.KAGGLE_ACCESS_TOKEN }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          if [ -n "$KAGGLE_API_TOKEN" ] || [ -n "$KAGGLE_ACCESS_TOKEN" ] || [ -n "$KAGGLE_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "[GATE] Authenticated Kaggle credential candidate configured (contents never printed)."
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "[GATE] NO KAGGLE SECRET PRESENT — no Kaggle write attempted."
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          python-version: '3.12'
+      - name: Prepare official starter and preserve frozen agent
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          test "$(git hash-object competitions/arc-agi-3/agent/my_agent.py)" = "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('arc-starter/scripts/build_notebook.py')
+          source=p.read_text()
+          assert 'ACCELERATOR = "t4"' in source, 'starter accelerator changed'
+          p.write_text(source.replace('ACCELERATOR = "t4"','ACCELERATOR = "cpu"',1))
+          meta=Path('arc-starter/notebooks/kernel-metadata.json')
+          obj=json.loads(meta.read_text())
+          assert obj['id'].startswith('REPLACE_WITH_YOUR_USERNAME/')
+          obj['id']='mondayid/arc-prize-2026-arc-agi-3-mondayid'
+          obj['title']='MondayID ARC-AGI-3 Offline Agent'
+          obj['is_private']=True
+          obj['enable_internet']=False
+          obj['enable_gpu']=False
+          meta.write_text(json.dumps(obj,indent=2)+'\n')
+          print('[BUILD] Frozen agent; CPU; no internet; private kernel')
+          PY
+          (cd arc-starter && make setup PYTHON=python3.12 && make notebook)
+          python competitions/arc-agi-3/tools/harden_notebook_draft.py arc-starter/notebooks/submission.ipynb
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          agent=Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          assert hashlib.sha256(agent.encode()).hexdigest()=='4ce707c6d7861fa8f64a49c30885913662d363b86b9627138945db528a4bbaad'
+          nb=json.loads(Path('arc-starter/notebooks/submission.ipynb').read_text())
+          code='\n'.join(''.join(c['source']) for c in nb['cells'] if c['cell_type']=='code')
+          assert agent in code
+          assert nb['metadata']['kaggle']['isInternetEnabled'] is False
+          assert nb['metadata']['kaggle']['isGpuEnabled'] is False
+          print('[CHECK] exact-source notebook and offline policy OK')
+          PY
+      - name: Push ONLY Phase A to MondayID Kaggle (when secret exists)
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_ACCESS_TOKEN: ${{ secrets.KAGGLE_ACCESS_TOKEN }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p arc-starter/.kaggle
+          umask 077
+          if [ -n "$KAGGLE_API_TOKEN" ]; then
+            printf '%s' "$KAGGLE_API_TOKEN" > arc-starter/.kaggle/access_token
+          elif [ -n "$KAGGLE_ACCESS_TOKEN" ]; then
+            printf '%s' "$KAGGLE_ACCESS_TOKEN" > arc-starter/.kaggle/access_token
+          else
+            printf '%s' "$KAGGLE_KEY" > arc-starter/.kaggle/access_token
+          fi
+          cd arc-starter
+          make submit
+          echo "[PHASE A] Kaggle notebook push returned success. Competition rerun still requires a separate authenticated submission."
+          make status
+      - name: Record gate and verify non-competition status
+        if: always()
+        env:
+          AUTH_READY: ${{ steps.gate.outputs.ready }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          Path('arc-kaggle-bridge-receipt.json').write_text(json.dumps({
+            'schema':'mondayid.arc.kaggle_bridge.v1',
+            'kaggle_secret_present':os.environ.get('AUTH_READY')=='true',
+            'offline_source_frozen':'eb7bd0288cfa794f7997f6a93191c0a0c2c2787c',
+            'phase_b_competition_submitted':False,
+            'prize_eligibility':False,
+            'disclaimer':'GitHub job success alone is NOT Kaggle competition submission ID'
+          },indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arc-kaggle-autonomous-phase-a-receipt
+          path: |
+            arc-kaggle-bridge-receipt.json
+            arc-starter/notebooks/submission.ipynb
+          if-no-files-found: ignore
