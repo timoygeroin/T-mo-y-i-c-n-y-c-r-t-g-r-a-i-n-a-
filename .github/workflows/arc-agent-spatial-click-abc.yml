@@ -1,0 +1,64 @@
+name: ARC-AGI-3 isolated spatial click coverage public A-B-C
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/click_coverage_variant.py'
+      - 'competitions/arc-agi-3/tests/test_click_coverage_candidates.py'
+      - '.github/workflows/arc-agent-spatial-click-abc.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  spatial_click_abc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify test-first isolated variants
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_click_coverage_candidates.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official public ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official Python 3.12 offline public runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN baseline 25 public games 500 steps
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-spatial-baseline.log
+      - name: Candidate A full 8x8 coverage 25 public games 500 steps
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_coverage_variant.py --kind coverage --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-spatial-coverage.log
+      - name: Candidate B uniform-first 25 public games 500 steps
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/click_coverage_variant.py --kind grid_first --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-spatial-grid-first.log
+      - name: Compare official public scorecards without auto-promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-spatial-baseline.log arc-spatial-coverage.log --output arc-spatial-coverage-ab.json | tee arc-spatial-coverage-summary.log
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-spatial-baseline.log arc-spatial-grid-first.log --output arc-spatial-grid-first-ab.json | tee arc-spatial-grid-first-summary.log
+      - name: Preserve complete public evidence, including negative results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-spatial-click-public-abc
+          path: |
+            arc-spatial-baseline.log
+            arc-spatial-coverage.log
+            arc-spatial-grid-first.log
+            arc-spatial-coverage-ab.json
+            arc-spatial-grid-first-ab.json
+            arc-spatial-coverage-summary.log
+            arc-spatial-grid-first-summary.log
+          if-no-files-found: ignore

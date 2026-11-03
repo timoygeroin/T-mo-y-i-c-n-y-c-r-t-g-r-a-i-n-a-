@@ -1,0 +1,116 @@
+{
+  "schema": "mondayid.arc3.evidence.morton_spatial_public_abc.v1",
+  "status": "OFFICIAL_PUBLIC_NULL_VS_FROZEN_AND_REGRESSION_VS_ROW96_REJECTED_NOT_PROMOTED",
+  "date_utc": "2026-10-30",
+  "worldline": {
+    "repo": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "source_head": "1cac52b85d2b0380b449c7888a17a9068b6ea30d",
+    "source_exact_commit_ci": "12/12 SUCCESS",
+    "experimental_head": "f3f3bc06cca794f407a2ea437dc185ed799fc5a1",
+    "state_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "canonical": "MONDAYID_CANONICAL_CSTAR latest ARC threshold and seeded-reset checkpoint read before mutation"
+  },
+  "hypotheses_before_public_outcome": {
+    "H0": "Frozen agent no worse at equal 500-action budget.",
+    "H1": "After 96 stalled level-zero click-only actions, spatially dispersed Morton-prefix 8x8 exploration improves first-level completion and/or action efficiency over row-major and frozen.",
+    "H2": "Row-major 8x8 ordering is superior because spatial locality/trajectory ordering matters."
+  },
+  "test_first": {
+    "red_commit": "13e69c42f39dfe735bcd64cd94c7bd543a53ddd6",
+    "red_run": 40981024644,
+    "red": "Expected missing click_morton_variant module, 351 tests with exactly one import error, job logs inspected.",
+    "generator_commit": "7358fb2cfea6795984fbc1adc0f6904d1d9df63e",
+    "test_fix_commit": "7ea94c5c2e9f260987530da3f42b62eb1296feb2",
+    "green_run": 40981237343,
+    "green": "355/355 PASS; new tests verify first four dispersed click targets, gate, frozen pre-gate parity, mixed-action protection, source guards.",
+    "official_run_contract": 40981537267
+  },
+  "official_public_ab_c": {
+    "run_id": 40981537220,
+    "job_id": 123822516672,
+    "conclusion": "SUCCESS",
+    "engine": "official ARC-AGI-3 Kaggle Starter, Python 3.12",
+    "games": 25,
+    "configured_action_cap": 500,
+    "reported_actions_per_game": 501,
+    "reported_total_actions_per_arm": 12525,
+    "arms_order": [
+      "frozen",
+      "row96",
+      "morton96"
+    ],
+    "same_public_game_ids": true,
+    "independent_latent_seed_pairing": false,
+    "unseen_holdout": false,
+    "artifact_id": 12945261017,
+    "artifact_zip_sha256": "217c6fb0a1fa9ad5396910d765707c402c9aca8d03da308ac75a3f4bc4d6c467",
+    "frozen": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "row96": {
+      "first_levels": 8,
+      "local_score": 0.5056835206170455,
+      "delta_vs_frozen_levels": 1,
+      "delta_vs_frozen_score": 0.003712583026126648,
+      "improved_games": [
+        "ft09"
+      ],
+      "regressed_games": [],
+      "ft09_first_observed_level_one_preaction_step": 307
+    },
+    "morton96": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188,
+      "delta_vs_frozen_levels": 0,
+      "delta_vs_frozen_score": 0,
+      "improved_games": [],
+      "regressed_games": []
+    },
+    "morton_vs_row96": {
+      "delta_levels": -1,
+      "delta_score": -0.003712583026126648,
+      "regressed_games": [
+        "ft09"
+      ]
+    },
+    "shared_first_level_action_cost": {
+      "games": [
+        "cd82",
+        "lf52",
+        "m0r0",
+        "r11l",
+        "sp80",
+        "tn36",
+        "vc33"
+      ],
+      "row96_delta_each": 0,
+      "morton96_delta_each": 0
+    },
+    "observed_policy_difference": "Only the ordering of 8x8 uniform click targets differs between generated row96 and morton96 copies, confirmed by generated-source diff. No ACTION6 coordinate trace was authenticated in the public run."
+  },
+  "decision": {
+    "morton_candidate": "REJECTED_AND_REVERTED",
+    "row96": "RESEARCH_ONLY_NOT_PROMOTED",
+    "frozen_agent": "UNCHANGED",
+    "official_schedule": "UNCHANGED",
+    "collector": "UNCHANGED",
+    "state_json": "UNCHANGED_PRIOR_SAFETY_BLOCK_DO_NOT_BYPASS",
+    "promotion_gate": "NOT_MET: no improvement over frozen and no unseen holdout or independent latent reset variation.",
+    "next_gate": "Obtain genuinely independent public/authorized holdout episode with authenticated reset and pre-action exact ACTION6 x/y, or human-only Kaggle Phase-B; no automatic submission.",
+    "kaggle_hidden_score": "UNKNOWN",
+    "kaggle_submission": "NOT_PERFORMED",
+    "money_tokens_terms_legal_publication": "NO_ACTION",
+    "victory_prize": "NOT_CLAIMED"
+  },
+  "limitations": [
+    "25 repeatedly used public games; no statistically independent generalization evidence.",
+    "Action budget 500 configured, runner reports 501 due reset/count semantics.",
+    "Visible scene changes and target coverage are not validated causal level-progress proxies.",
+    "Requested seed values in previous sweep did not yield distinct initial frames or level/action-enum trajectories.",
+    "No hidden Kaggle evaluation or submission."
+  ]
+}

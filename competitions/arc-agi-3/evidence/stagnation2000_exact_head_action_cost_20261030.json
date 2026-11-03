@@ -1,0 +1,93 @@
+{
+  "schema": "mondayid.arc3.evidence.stagnation2000_exact_head_action_cost.v1",
+  "date_utc": "2026-10-30",
+  "source": {
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "head": "42f506ab70efd658e52f23a27152f2446038ec1c",
+    "exact_head_ci": "12/12 SUCCESS",
+    "workflow_run": 40986538389,
+    "job_id": 123838777377,
+    "artifact_id": 12947252744,
+    "artifact_zip_sha256": "9772e864086b40b70da2e58365b462865245053d3c4b6b5ba85f718eec2068f4",
+    "workflow_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40986538389",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "state_json_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7"
+  },
+  "hypotheses": {
+    "H0": "Frozen policy is no worse than isolated click-only stagnation-gated policy at the same 2000-action cap.",
+    "H1": "Stagnation-gated click-only exploration improves first-level action efficiency without losing first-level completions.",
+    "H2": "Some games improve and others regress in action cost, with no demonstrated generalizable gain."
+  },
+  "public_evaluation": {
+    "engine": "Official ARC-AGI-3 public Python 3.12 starter; isolated cap-only copy of original agent used in both arms",
+    "games": 25,
+    "configured_action_cap_per_game": 2000,
+    "logged_counter_rows_per_game": 2001,
+    "baseline": {
+      "first_levels": 10,
+      "local_score": 0.5024346195754061
+    },
+    "candidate": {
+      "first_levels": 10,
+      "local_score": 0.5058498479030465
+    },
+    "delta": {
+      "first_levels": 0,
+      "local_score": 0.003415228327640407
+    },
+    "improved_level_games": [],
+    "regressed_level_games": [],
+    "first_level_observed_action_index": {
+      "baseline": {
+        "ar25": 682,
+        "cd82": 43,
+        "r11l": 39,
+        "lf52": 94,
+        "vc33": 5,
+        "m0r0": 420,
+        "ft09": 1471,
+        "sp80": 98,
+        "tn36": 44,
+        "lp85": 748
+      },
+      "candidate": {
+        "ar25": 682,
+        "cd82": 43,
+        "r11l": 39,
+        "lf52": 94,
+        "vc33": 5,
+        "m0r0": 420,
+        "ft09": 311,
+        "sp80": 98,
+        "tn36": 44,
+        "lp85": 1373
+      }
+    },
+    "first_level_action_cost_delta_candidate_minus_baseline": {
+      "ft09": -1160,
+      "lp85": 625,
+      "other_eight_shared_wins": 0,
+      "sum_over_ten_shared_wins": -535
+    },
+    "measurement": "First printed level>=1 action count parsed independently from complete completed GitHub Actions job log, split by the two 25-game arm start markers; no inference from scorecard alone."
+  },
+  "decision": {
+    "policy_promotion": false,
+    "reason": "No first-level count gain; mixed first-level action-cost regressions, repeated public cohort, no independent matched latent reset/seed or unseen holdout.",
+    "agent": "UNCHANGED",
+    "official_schedule": "UNCHANGED",
+    "collector": "UNCHANGED",
+    "state_json": "UNCHANGED_PREEXISTING_SAFETY_BLOCK_DO_NOT_BYPASS",
+    "kaggle_hidden_score": "UNKNOWN",
+    "kaggle_submission": "NOT_PERFORMED",
+    "money_tokens_terms_legal_publication": "NO_ACTION"
+  },
+  "limitations": [
+    "All 25 public games previously evaluated; this is NOT held-out generalization.",
+    "First level action indices are observed stdout counts, not causal action at that exact count.",
+    "Both arms used equal configured 2000-action cap but latent seeds not independently paired.",
+    "A positive local score delta is not a demonstrated generalized performance gain.",
+    "No new policy code or official collector changes."
+  ]
+}

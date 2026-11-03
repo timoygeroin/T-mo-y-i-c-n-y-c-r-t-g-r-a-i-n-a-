@@ -1,0 +1,65 @@
+name: ARC-AGI-3 isolated strict-prior no-op public A-B
+# Pre-registered BEFORE official public execution, no agent policy promotion.
+# H0: no same-budget improvement over exact frozen baseline.
+# H1: strict-prior observed no-ops reduce wasted cardinal actions, increasing
+#     completed levels and/or official public local RHAE score.
+# H2: no-ops include reversible/setup actions; soft penalty hurts progress.
+# Forecast: click-only trajectories should match frozen action-for-action;
+# any mixed-action effect is evaluated, not assumed. Reused 25-game public
+# cohort is NOT independent held-out generalization.
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/tools/prior_noop_penalty_variant.py'
+      - 'competitions/arc-agi-3/tests/test_prior_noop_penalty_candidate.py'
+      - '.github/workflows/arc-agent-prior-noop-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify isolated candidate contracts and comparator
+        working-directory: competitions/arc-agi-3
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_prior_noop_penalty_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+          test "$(git hash-object agent/my_agent.py)" = "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+      - name: Fetch official public ARC-AGI-3 starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official Python 3.12 public runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN original agent 25 public games 500 actions each
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-prior-noop-frozen.log
+      - name: ISOLATED strict-prior soft no-op candidate same 25 games and budget
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/prior_noop_penalty_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          python -m py_compile arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-prior-noop-candidate.log
+      - name: Compare paired public games and action costs without auto-promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-prior-noop-frozen.log arc-prior-noop-candidate.log --expected-games 25 --output arc-prior-noop-result.json | tee arc-prior-noop-summary.log
+      - name: Preserve raw public evidence even for regressions or failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-prior-noop-public-ab
+          path: |
+            arc-prior-noop-frozen.log
+            arc-prior-noop-candidate.log
+            arc-prior-noop-result.json
+            arc-prior-noop-summary.log
+          if-no-files-found: ignore

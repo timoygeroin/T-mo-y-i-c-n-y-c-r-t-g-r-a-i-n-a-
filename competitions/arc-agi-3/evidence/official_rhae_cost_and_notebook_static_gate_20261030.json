@@ -1,0 +1,117 @@
+{
+  "schema": "mondayid.arc.public_evidence.v1",
+  "date_utc": "2026-10-30",
+  "source_head_before_evidence": "3d999c2f43981ad0c6ae4f815915bfd70b8a5c2c",
+  "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "state_json_blob_unchanged": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+  "official_public_ab": {
+    "run_id": 41070464793,
+    "job_id": 124112869237,
+    "game_count": 25,
+    "action_budget_per_game": 500,
+    "logged_rows_per_arm": 12525,
+    "includes_reset": true,
+    "reused_public_games": true,
+    "frozen": {
+      "first_levels": 7,
+      "raw_local_score": 0.5019709375909188
+    },
+    "click_only": {
+      "first_levels": 8,
+      "raw_local_score": 0.23498456250078095
+    },
+    "local_score_delta": -0.2669863750901379,
+    "first_level_observed_pre_action_count": {
+      "cd82": {
+        "frozen": 43,
+        "candidate": 43
+      },
+      "lf52": {
+        "frozen": 94,
+        "candidate": 94
+      },
+      "lp85": {
+        "frozen": null,
+        "candidate": 196
+      },
+      "m0r0": {
+        "frozen": 420,
+        "candidate": 420
+      },
+      "r11l": {
+        "frozen": 39,
+        "candidate": 241
+      },
+      "sp80": {
+        "frozen": 98,
+        "candidate": 98
+      },
+      "tn36": {
+        "frozen": 44,
+        "candidate": 260
+      },
+      "vc33": {
+        "frozen": 5,
+        "candidate": 76
+      }
+    },
+    "regressions_on_common_wins": {
+      "r11l": 202,
+      "tn36": 216,
+      "vc33": 71
+    },
+    "sum_extra_observed_actions_on_common_wins": 489,
+    "theoretical_uncapped_relative_level_efficiency_candidate_vs_frozen": {
+      "r11l": 0.02618756564108745,
+      "tn36": 0.028639053254437875,
+      "vc33": 0.004328254847645429
+    },
+    "efficiency_ratio_caution": "Ratios are algebraic uncapped RHAE factors for equal human baseline, not independently recomputed official per-game scores; cap at 1.15 can alter ratios. Counts are first observed pre-action level>=1, not causal attribution.",
+    "score_scale": "Official RHAE is 0 to 100; raw 0.5019709 is about 0.502 percent, NOT 50.2 percent.",
+    "source": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/41070464793",
+    "official_scoring_methodology": "https://github.com/arcprize/docs/blob/main/methodology.mdx"
+  },
+  "kaggle_notebook_artifact_static_validation": {
+    "workflow_run": 41070464710,
+    "artifact_id": 12983459774,
+    "zip_sha256": "4417a9ac5f59ed002fc94af77897c2e7cbfd5fd90ac95e7851ceef6255f2fa69",
+    "zip_crc": "PASS",
+    "notebook_sha256": "2531c10810cd653c37fc6ca9050186b0191de6354ccca3cda3b52e14fe9ce7a7",
+    "embedded_agent_sha256": "4ce707c6d7861fa8f64a49c30885913662d363b86b9627138945db528a4bbaad",
+    "nbformat_schema": "PASS",
+    "all_four_code_cells_ipython_transformed_syntax": "PASS",
+    "embedded_agent_python_syntax": "PASS",
+    "internet_disabled": true,
+    "owner_slug_placeholder": true,
+    "offline_execution": "NOT_RUN",
+    "reason": "Kaggle-mounted offline wheels and competition gateway sidecar unavailable in this environment; authenticated Kaggle owner execution not performed.",
+    "shell_failure_propagation_probe": {
+      "method": "In local IPython, a cell with !false followed by marker assignment returned success=true, no exception, and executed marker.",
+      "result": "VERIFIED_LOCAL",
+      "implication": "Generated rerun cell uses !curl, !cp and !python without explicit return-code assertions; shell failures may not fail the notebook cell. Not evidence of an actual Kaggle failure."
+    },
+    "notebook_commit_mode_contains_dummy_parquet": true,
+    "notebook_commit_mode_dummy_is_not_hidden_score": true
+  },
+  "competing_hypotheses": {
+    "H0": "Frozen policy is no worse under equal public action budget.",
+    "H1": "A qualitative world model with belief revision improves first-level action efficiency on independent episodes.",
+    "H2": "Exploration adds actions and public-set selection effects erase or reverse apparent level-count gains."
+  },
+  "promotion_decision": "NO_PROMOTION",
+  "generalizable_gain_proven": false,
+  "new_public_ab_this_run": false,
+  "new_gameplay_this_run": false,
+  "blocker": "All 25 public games previously used for design and testing; explicit SDK seeds 0,1,2,3,4,7,17,42,2026,65535 showed no logged first-16-action diversity; no authenticated unseen or independent-reset cohort to establish out-of-sample effect. Public engine execution unavailable in current local container.",
+  "hidden_kaggle_score": "UNKNOWN",
+  "human_only_phase_b": "Notebook owner slug and authenticated Phase-A execution needed, followed by deliberate owner-authorized final competition submission; no automated Kaggle action.",
+  "official_final_deadline_utc": "2026-11-02T23:59:00Z",
+  "agent_policy_changed": false,
+  "official_schedule_changed": false,
+  "collector_changed": false,
+  "state_json_changed": false,
+  "spend": 0,
+  "credentials_used": false,
+  "kaggle_submission": false,
+  "license_or_publication_decision": false
+}

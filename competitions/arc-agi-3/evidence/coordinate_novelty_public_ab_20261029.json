@@ -1,0 +1,87 @@
+{
+  "schema": "mondayid.arc-agi3.negative-evidence.v1",
+  "date_utc": "2026-10-29",
+  "experiment": "isolated_coordinate_aware_action6_novelty_public_ab",
+  "status": "REJECTED_PUBLIC_REGRESSION_REVERTED",
+  "hypotheses": {
+    "H0": "Frozen action-level ACTION6 attempt count is at least as effective.",
+    "H1": "Distinct ACTION6 x,y coordinates are independent exploration opportunities; a fresh target should not inherit unrelated click attempt counts.",
+    "H2": "Extra click exploration displaces productive non-click actions and regresses levels."
+  },
+  "treatment": "Candidate computes ACTION6 novelty from minimum per-state per-coordinate click visits among salient candidates instead of total ACTION6 attempts; all other scoring unchanged.",
+  "test_first": {
+    "red_commit": "25de44fa3aeb17837f680eac4c7079227c6ad31a",
+    "red_contract_run": 40911388720,
+    "red_result": "Expected one FileNotFoundError among 333 tests; job log inspected.",
+    "green_commit": "2930243c6c22f3401acf4f5ca5ab19242954642c",
+    "green_contract_run": 40911546043,
+    "green_result": "335/335 PASS including 3 new synthetic behavioral gates."
+  },
+  "official_public_ab": {
+    "workflow_run": 40911704529,
+    "workflow_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40911704529",
+    "job_conclusion": "SUCCESS",
+    "games": 25,
+    "engine": "official public Python 3.12 runner",
+    "seed_pairing_verified": false,
+    "auto_promoted": false,
+    "same_budget_120": {
+      "baseline_levels": 6,
+      "candidate_levels": 5,
+      "baseline_local_score": 0.5010037315187991,
+      "candidate_local_score": 0.47127304793971464,
+      "score_delta": -0.029730683579084427,
+      "improved_games": [],
+      "regressed_games": [
+        "sp80"
+      ],
+      "recorded_actions_each_arm": 3025
+    },
+    "same_budget_500": {
+      "baseline_levels": 7,
+      "candidate_levels": 6,
+      "baseline_local_score": 0.5019709375909188,
+      "candidate_local_score": 0.47361126370122586,
+      "score_delta": -0.02835967388969296,
+      "improved_games": [],
+      "regressed_games": [
+        "m0r0"
+      ],
+      "recorded_actions_each_arm": 12525
+    },
+    "predeclared_public_subgroup": {
+      "games": [
+        "su15",
+        "bp35",
+        "wa30",
+        "ft09",
+        "sk48",
+        "re86",
+        "m0r0",
+        "s5i5",
+        "sb26"
+      ],
+      "baseline_levels_120": 0,
+      "candidate_levels_120": 0,
+      "baseline_levels_500": 1,
+      "candidate_levels_500": 0,
+      "regressed_game_500": "m0r0",
+      "note": "Previously aggregate-benchmarked PUBLIC, not uncontaminated holdout."
+    }
+  },
+  "rollback": {
+    "candidate_promoted": false,
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "removed": [
+      "competitions/arc-agi-3/agent/candidate_coordinate_novelty.py",
+      "competitions/arc-agi-3/tests/test_coordinate_novelty_candidate.py",
+      ".github/workflows/arc-agent-coordinate-novelty-ab.yml"
+    ]
+  },
+  "interpretation": "Treating ACTION6 coordinates as independent in action-level novelty displaced productive non-click behavior on at least one public game per budget; this candidate is not generalizable on measured public evidence.",
+  "limitations": [
+    "One A/B per budget, no independently matched stochastic seeds.",
+    "No hidden Kaggle evaluation or uncontaminated held-out game.",
+    "No submission, spend, credentials, terms, licensing, prize or earnings."
+  ]
+}

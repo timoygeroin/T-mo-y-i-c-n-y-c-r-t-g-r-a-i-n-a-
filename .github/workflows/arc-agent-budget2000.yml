@@ -1,0 +1,54 @@
+name: ARC-AGI-3 isolated 500-vs-2000 action budget
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-agent-budget2000.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  long_budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch and install official public runner
+        run: |
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          cd arc-starter && make setup PYTHON=python3.12
+      - name: Control original 500-action self-cap on 25 public games
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-budget500-control.log
+      - name: Isolated candidate identical agent except 2000-action cap
+        run: |
+          set -o pipefail
+          python - <<'PY'
+          from pathlib import Path
+          src = Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          assert src.count('    MAX_ACTIONS = 500') == 1
+          out = src.replace('    MAX_ACTIONS = 500', '    MAX_ACTIONS = 2000')
+          Path('arc-starter/agent/my_agent.py').write_text(out)
+          assert '    MAX_ACTIONS = 2000' in out
+          PY
+          python -m py_compile arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=2000) | tee arc-budget2000-candidate.log
+      - name: Compare long-budget local scorecards and game regressions
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-budget500-control.log arc-budget2000-candidate.log --output arc-budget2000-result.json | tee arc-budget2000-summary.log
+      - name: Preserve action-budget sensitivity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-500-vs-2000-public
+          path: |
+            arc-budget500-control.log
+            arc-budget2000-candidate.log
+            arc-budget2000-result.json
+            arc-budget2000-summary.log
+          if-no-files-found: ignore

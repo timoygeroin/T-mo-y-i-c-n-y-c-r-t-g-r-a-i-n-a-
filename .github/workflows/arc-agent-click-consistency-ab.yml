@@ -1,0 +1,55 @@
+name: ARC-AGI-3 isolated click-feedback public A-B
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/agent/candidate_click_consistency.py'
+      - 'competitions/arc-agi-3/tests/test_click_consistency_candidate.py'
+      - 'competitions/arc-agi-3/tools/compare_public_logs.py'
+      - '.github/workflows/arc-agent-click-consistency-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify candidate click-feedback behavior and scorecard comparator
+        working-directory: competitions/arc-agi-3
+        run: |
+          python -m unittest discover -s tests -p 'test_click_consistency_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Fetch official ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official public game runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN original agent 25 games 120 actions each
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=120) | tee arc-click-baseline.log
+      - name: ISOLATED click consistency candidate 25 games 120 actions each
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/candidate_click_consistency.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=120) | tee arc-click-candidate.log
+      - name: Evaluate outcome deltas and negative evidence without auto-promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-click-baseline.log arc-click-candidate.log --output arc-click-ab-result.json | tee arc-click-ab-summary.log
+      - name: Preserve raw and derived results even if a candidate fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-click-consistency-public-ab
+          path: |
+            arc-click-baseline.log
+            arc-click-candidate.log
+            arc-click-ab-result.json
+            arc-click-ab-summary.log
+          if-no-files-found: ignore

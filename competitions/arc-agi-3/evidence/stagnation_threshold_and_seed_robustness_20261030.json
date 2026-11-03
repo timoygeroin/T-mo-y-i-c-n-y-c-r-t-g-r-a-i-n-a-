@@ -1,0 +1,134 @@
+{
+  "schema": "mondayid.arc3.evidence.stagnation_threshold_and_seed_robustness.v1",
+  "status": "REAL_OFFICIAL_PUBLIC_TESTED_NO_HELDOUT_GENERALIZATION_NO_POLICY_PROMOTION",
+  "competition": "ARC Prize 2026 ARC-AGI-3",
+  "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+  "pr": 196,
+  "branch": "monday/arc-agi3-offline-agent-20261026",
+  "source_checkpoint": {
+    "source_head": "322ac3acfd00ba73949db3517322c8be42f658fe",
+    "source_exact_commit_ci": "12/12 SUCCESS",
+    "canonical": "MONDAYID_CANONICAL_CSTAR, newest ARC stagnation500 exact-HEAD closure read before mutation",
+    "state_json_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+  },
+  "pre_outcome_hypotheses": {
+    "H0": "Frozen agent remains no worse at identical 500-action budgets.",
+    "H1": "Stagnation-triggered click-only uniform-first policy has an advantage robust across threshold changes and independently varied game reset seeds.",
+    "H2": "The earlier ft09 gain is trajectory-sensitive and repeats without independent environment variation; visible response is not a sufficient progress signal."
+  },
+  "threshold_sweep": {
+    "engine": "official ARC-AGI-3 public Python 3.12 runner",
+    "run_id": 40978261668,
+    "job_id": 123811573294,
+    "conclusion": "SUCCESS",
+    "source_commit": "6961f560ab9201a7086573e76b748130d786ce8c",
+    "artifact_id": 12943318893,
+    "artifact_zip_sha256": "fd30cb37527a4ef7fe730ebb8037a88ffd8c73b870ef3c9fecfdee4f2dcc2525",
+    "games": 25,
+    "configured_action_cap_per_game": 500,
+    "frozen": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "thresholds_precommitted": [
+      64,
+      96,
+      128,
+      192,
+      256
+    ],
+    "candidate_results": {
+      "64": {
+        "first_levels": 7,
+        "local_score": 0.5019709375909188,
+        "first_level_ft09": null,
+        "improved_games": [],
+        "regressed_games": []
+      },
+      "96": {
+        "first_levels": 8,
+        "local_score": 0.5056835206170455,
+        "first_level_ft09_preaction_step": 307,
+        "improved_games": [
+          "ft09"
+        ],
+        "regressed_games": []
+      },
+      "128": {
+        "first_levels": 8,
+        "local_score": 0.5055889364012254,
+        "first_level_ft09_preaction_step": 311,
+        "improved_games": [
+          "ft09"
+        ],
+        "regressed_games": []
+      },
+      "192": {
+        "first_levels": 7,
+        "local_score": 0.5019709375909188,
+        "first_level_ft09": null,
+        "improved_games": [],
+        "regressed_games": []
+      },
+      "256": {
+        "first_levels": 8,
+        "local_score": 0.5046734220423156,
+        "first_level_ft09_preaction_step": 360,
+        "improved_games": [
+          "ft09"
+        ],
+        "regressed_games": []
+      }
+    },
+    "action_cost": "All seven shared first-level completions had identical first-observed preaction steps versus frozen across all thresholds. Only ft09 added a first level at thresholds 96,128,256. Runner reports 501 actions per game due counter semantics despite configured 500 cap.",
+    "contract": "Existing test_click_stagnation_candidate and compare_public_logs contracts passed; five generated threshold variants compiled and passed synthetic exact-threshold gate checks before gameplay. No artificial RED was claimed.",
+    "interpretation": "Non-monotonic threshold response: +1 first level only for 96,128,256; 64 and 192 null. No level regressions in the same 25 public games. Not evidence of unseen-game generalization."
+  },
+  "paired_seed_sweep": {
+    "engine": "official arc-agi Python 3.12 with documented Arcade.make(game_id,seed=...) argument in temporary starter copy",
+    "run_id": 40978833760,
+    "job_id": 123813467003,
+    "conclusion": "SUCCESS",
+    "source_commit": "86960c98ee888bfe573c7114c3dc67a88f12c690",
+    "artifact_id": 12943159202,
+    "artifact_zip_sha256": "fa7f24d2b91a7e1b0ad07b86a7769e3dbbfc7f419484e9794d43e8e5a0145c29",
+    "seeds_precommitted": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "games_per_seed": 25,
+    "configured_action_cap_per_game": 500,
+    "order": "counterbalanced: even seeds frozen then candidate; odd seeds candidate then frozen",
+    "every_seed_result": {
+      "frozen_first_levels": 7,
+      "candidate_first_levels": 8,
+      "frozen_local_score": 0.5019709375909188,
+      "candidate_local_score": 0.5055889364012254,
+      "improved_games": [
+        "ft09"
+      ],
+      "regressed_games": [],
+      "first_level_shared_action_cost_deltas": "all 7 shared first-level wins: 0 actions"
+    },
+    "initial_visible_state_hashes": "25/25 matched across arms at each seed; no game had differing initial visible frame hash across requested seeds 0,1,2,3",
+    "action_trace_cross_seed_audit": "Downloaded raw artifact and normalized per-game order; for each arm, all 25 per-game ACTION enum/count/levels-completed traces were identical across seeds 0,1,2,3. ACTION6 coordinates and latent RNG state not attested in this sweep.",
+    "effective_independent_reset_diversity": "NOT_DEMONSTRATED",
+    "interpretation": "The API accepted seed parameters, but requested seeds did not yield observable new initial frames or per-game action-enum/level trajectories. Four repetitions are not four independent evidence samples for this cohort. No unseen public game IDs or hidden Kaggle data."
+  },
+  "decision": {
+    "candidate": "RESEARCH_ONLY_NOT_PROMOTED",
+    "frozen_agent": "UNCHANGED",
+    "official_schedule": "UNCHANGED",
+    "blocked_collector": "UNCHANGED",
+    "state_json": "UNCHANGED_DUE_PREEXISTING_SAFETY_BLOCK_DO_NOT_BYPASS",
+    "promotion_gate": "NOT_MET: threshold response non-monotonic, public cohort repeatedly reused, no effective independent seed/reset variation or unseen game evidence",
+    "next_gate": "Genuinely new independently observed official public game/seed variation, or separately authorized Kaggle Phase-B hidden evaluation; do not treat the latter as automatic or authorized.",
+    "kaggle_hidden_score": "UNKNOWN",
+    "kaggle_submission": "NOT_PERFORMED",
+    "money_tokens_terms_legal_publication": "NO_ACTION",
+    "prize_victory_claim": "NONE"
+  }
+}

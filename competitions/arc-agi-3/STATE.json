@@ -1,0 +1,3493 @@
+{
+  "schema": "mondayid.arc-agi3.state.v1",
+  "updated_at": "2026-10-30T21:32:57Z",
+  "authority": {
+    "competition": "ARC Prize 2026 — ARC-AGI-3",
+    "repository": "timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-",
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "pull_request": 196,
+    "status": "DRAFT_UNMERGED"
+  },
+  "kaggle": {
+    "rules_accepted": {
+      "status": "SUPPORTED_BY_USER_AUTHENTICATED_UI_SCREENSHOT",
+      "date": "2026-10-26"
+    },
+    "final_submission": "NOT_VERIFIED",
+    "leaderboard_score": "NOT_CLAIMED",
+    "prize": "NOT_CLAIMED",
+    "spend_ils": 0,
+    "official_timeline_readback": {
+      "checked_on": "2026-10-29",
+      "source": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview",
+      "entry_deadline_utc": "2026-10-26T23:59:00Z",
+      "final_submission_deadline_utc": "2026-11-02T23:59:00Z",
+      "status": "PUBLIC_RULES_TIMELINE_ONLY_NOT_AUTHENTICATED_SUBMISSION"
+    }
+  },
+  "verified_public_checkpoint": {
+    "engine": "official ARC-AGI-3 Python 3.12 public engine",
+    "games": 25,
+    "action_cap_per_game": 120,
+    "completed_levels": 6,
+    "raw_local_scorecard": 0.5010037315187991,
+    "solved_level_game_ids": [
+      "vc33",
+      "sp80",
+      "cd82",
+      "r11l",
+      "lf52",
+      "tn36"
+    ],
+    "note": "Local public benchmark only; not Kaggle hidden evaluation or percentage of games solved."
+  },
+  "controls": {
+    "official_random_observed_raw": [
+      0.19047619047619047,
+      0
+    ],
+    "caution": "Random is not a strong control and run-to-run variation is material."
+  },
+  "active_agent": {
+    "object_abstraction": "PRESENT_EXPERIMENTAL_NOT_DRIVING_ACTION_SELECTION",
+    "exact_state_proven_transition_replay": "ACTIVE",
+    "action_information_gain_helper": "PRESENT_TESTED_NOT_DRIVING_ACTION_SELECTION",
+    "online_transition_memory": "ACTIVE",
+    "hud_mask": "ACTIVE"
+  },
+  "rejected_experiments": [
+    {
+      "id": "cross_level_action_type_transfer",
+      "outcome": "NO_IMPROVEMENT",
+      "public_result": {
+        "completed_levels": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "action": "REMOVED"
+    },
+    {
+      "id": "action_level_information_gain_vote",
+      "outcome": "REGRESSION",
+      "public_result": {
+        "completed_levels": 4,
+        "raw_local_scorecard": 0.28170925398031627
+      },
+      "action": "REMOVED"
+    }
+  ],
+  "next_experiment": {
+    "id": "approved_runner_public_probe_v2_with_authenticated_terminal_evidence",
+    "goal": "Before any NEW permitted bounded PUBLIC gameplay, independently timestamp a v3 treatment/control pair with pre-action H0/H1/H2 predictions for BOTH actions; evaluate both arms on the exact preregistered episodes with strict-prior donors, without automatic agent promotion. Existing frozen v2 public probe schedule remains unchanged.",
+    "constraints": [
+      "Collector previously blocked; do not bypass tool safety",
+      "Short early-win episodes abstain as donors absent separately authenticated terminal provenance",
+      "No Kaggle submission, spending, terms, secrets or legal decisions"
+    ]
+  },
+  "sync_protocol": [
+    "READ this file before mutating PR #196",
+    "VERIFY branch head and CI before assuming prior claims",
+    "WRITE only evidence-backed deltas",
+    "REJECT and record regressions instead of accumulating features",
+    "UPDATE C* with compact verified state after material checkpoints"
+  ],
+  "human_gates": {
+    "kaggle_phase_b_submission": "Needs exact completed notebook slug/version and deliberate final competition submission; do not guess placeholders or spend a daily submission on an unverified build.",
+    "legal_license_publication": "Not authorized by solver work."
+  },
+  "experiments": {
+    "explicit_competing_world_hypotheses": {
+      "status": "CONTRACT_VERIFIED_SHADOW_ONLY",
+      "path": "competitions/arc-agi-3/experiments/causal_hypotheses.py",
+      "test_path": "competitions/arc-agi-3/tests/test_causal_hypotheses.py",
+      "implementation_commit": "b201e77afb71226042d2c5fdc8a1bbfb832faccf",
+      "method": "Observed object-scene transitions induce concrete no-op/translation/recolor hypotheses; rank legal probes by predicted-scene disagreement only if exact same-level A->B->A reversal was witnessed.",
+      "evidence": {
+        "test_first": "Local tests failed before implementation (missing module); passed after implementation.",
+        "local_contract_tests": "10/10 PASS",
+        "local_seeded_synthetic_scene_pairs": "2000/2000 PASS; synthetic only, not ARC games",
+        "github_actions_contract": "SUCCESS",
+        "github_actions_system_proof": "SUCCESS",
+        "github_actions_public_game_smoke": "SUCCESS",
+        "github_actions_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40410380110",
+        "github_actions_public_game_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40410380112",
+        "unchanged_agent_official_public_suite": {
+          "games": 25,
+          "cap": 120,
+          "first_levels_completed": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "effect_on_competition_agent": "NONE_NOT_IMPORTED",
+      "public_score_change": "NONE; official public smoke reran unchanged submission agent with 6 first-level completions and raw local scorecard 0.5010037315187991; no shadow-module performance evidence.",
+      "limitations": [
+        "Past witnessed reversal is context-specific and does not guarantee safe future reversibility",
+        "No held-out game evidence",
+        "No agent-policy integration or contest submission",
+        "Posterior-style weights are not calibrated probabilities"
+      ]
+    },
+    "public_transition_prequential_audit": {
+      "status": "REAL_PUBLIC_TRACE_DIAGNOSTIC_NO_PREDICTIVE_GAIN",
+      "implementation_commit": "d423a012f23a039b4781e1f350b5da0335e2fe7c",
+      "paths": [
+        "competitions/arc-agi-3/experiments/shadow_trace.py",
+        "competitions/arc-agi-3/tests/test_shadow_trace.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "test_first": "Local import failed before module; 8/8 new tests passed after implementation.",
+      "ci": {
+        "contract": "SUCCESS 48/48",
+        "contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40418074080",
+        "public_smoke": "SUCCESS",
+        "public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40418074086"
+      },
+      "public_trace": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "turns_per_game": 12,
+        "records": 24,
+        "same_level_records": 23,
+        "eligible_prequential_predictions": 11,
+        "exact_scene_correct": 1,
+        "static_baseline_correct_on_same_subset": 1,
+        "non_static_top_predictions": 0,
+        "witnessed_probe_candidates": 0
+      },
+      "controls": [
+        "No current-outcome leakage",
+        "Per-game/per-level history only",
+        "ACTION6 keyed by exact click x,y",
+        "No policy import or gameplay mutation"
+      ],
+      "interpretation": "No predictive advantage over static scene in this limited two-game 24-turn public trace (1/11 vs 1/11); negative integration evidence, not general failure proof.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "official_public_suite_unchanged": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "limitations": [
+        "Only 2 public games, 12 actions each",
+        "Not held-out or strong matched control",
+        "Object abstraction may alias states",
+        "No Kaggle submission"
+      ]
+    },
+    "scene_alias_observation_audit": {
+      "status": "REAL_PUBLIC_TRACE_OBSERVATION_ALIAS_VERIFIED",
+      "purpose": "Measure whether raw public observation changes are invisible to the current object-scene abstraction, and whether same-scene/action contexts have divergent observed outcomes.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/scene_alias_audit.py",
+        "competitions/arc-agi-3/tests/test_scene_alias_audit.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "evidence": {
+        "test_first": "Local import failed before implementation; 8/8 new tests passed after implementation.",
+        "local_contract_tests": "8/8 PASS (Python 3.13)",
+        "github_contract": "SUCCESS 56/56",
+        "github_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40424759709",
+        "github_system_proof": "SUCCESS",
+        "github_system_proof_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40424759791",
+        "github_public_smoke": "SUCCESS",
+        "github_public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40424759798",
+        "public_trace": {
+          "games": [
+            "ls20",
+            "vc33"
+          ],
+          "records": 24,
+          "same_level_records": 23,
+          "pixel_changed_scene_static": 8,
+          "scene_alias_groups": 4,
+          "same_scene_action_conflicts": 0,
+          "scene_changed_pixel_static": 0
+        },
+        "causal_shadow_unchanged": {
+          "eligible_predictions": 11,
+          "exact_correct": 1,
+          "static_correct": 1,
+          "non_static_top_predictions": 0
+        },
+        "official_public_suite_unchanged": {
+          "games": 25,
+          "action_cap_per_game": 120,
+          "first_levels_completed": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "In 8/23 same-level public transitions, visible pixels changed while the six-field object scene did not. Four per-episode/per-level object-scene keys mapped to multiple visible frame hashes. This falsifies full observation sufficiency of the current descriptor on this limited trace; it does not establish hidden-state aliasing, semantic game physics loss, or improved action selection. HUD/animation remain possible causes.",
+      "limitations": [
+        "Only two public games and 24 transitions; not held-out.",
+        "Pixel hashes represent visible frames, not latent environment state.",
+        "HUD, effects, animation, occlusion or discarded geometry may explain differences.",
+        "No policy integration, no Kaggle submission or hidden score."
+      ],
+      "implementation_commit": "f1639bc3ead6138d1648059fd5666196b1de709f"
+    },
+    "spatial_alias_localization": {
+      "status": "REAL_PUBLIC_TRACE_EDGE_ONLY_ALIAS_OBSERVED_SHADOW_ONLY",
+      "implementation_commit": "ca9299e43a49c0df295ca33424f82dc6f835eae7",
+      "paths": [
+        "competitions/arc-agi-3/experiments/spatial_delta_audit.py",
+        "competitions/arc-agi-3/tests/test_spatial_delta_audit.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "method": "Frozen 8-pixel outer band on 64x64 visible public frames; count changed pixels in non-overlapping 8x8 tiles and inner 48x48 area. This is a geometric partition, not a semantic HUD/gameplay classifier.",
+      "test_first": "Local red: missing spatial_delta_audit import; local green: 9/9 synthetic tests.",
+      "ci": {
+        "contract": "SUCCESS 65/65",
+        "contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40431028451",
+        "system_proof": "SUCCESS",
+        "system_proof_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40431028456",
+        "official_public_smoke": "SUCCESS",
+        "official_public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40431028575"
+      },
+      "public_trace": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "records": 24,
+        "same_level_records": 23,
+        "object_scene_static_pixel_changed_transitions": 8,
+        "alias_border_only": 8,
+        "alias_interior_only": 0,
+        "alias_mixed": 0,
+        "alias_border_changed_pixels": 12,
+        "alias_interior_changed_pixels": 0,
+        "top_alias_tiles": [
+          [
+            7,
+            0,
+            8
+          ],
+          [
+            2,
+            7,
+            4
+          ]
+        ]
+      },
+      "unchanged_submission_agent_public_suite": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "All eight previously detected pixel-only/object-scene-static transitions changed only 12 pixels within the fixed outer 8px band, with no changed interior pixels, in this two-game public trace. This favors an edge-localized observational explanation over missing central visible geometry in this trace; it does not prove HUD, animation, or gameplay irrelevance.",
+      "limitations": [
+        "Same two diagnostic games, not independent held-out.",
+        "Edge pixels can be gameplay relevant; interior pixels can be HUD.",
+        "No latent-state observations or causal advantage.",
+        "No policy integration, Kaggle submission, hidden score, or contest result."
+      ]
+    },
+    "disjoint_public_spatial_replication": {
+      "status": "REAL_PUBLIC_DISJOINT_SAMPLE_EDGE_ONLY_ALIAS_REPLICATED_SHADOW_ONLY",
+      "sample_precommitted_before_ci": true,
+      "sample_method": "SHA256('mondayid-arc3-spatial-v1:' + public_game_id) ascending, six lowest after excluding ls20/vc33; public roster from official 25-game list, not selected by score/pixels",
+      "sample_games": [
+        "cd82",
+        "sc25",
+        "lf52",
+        "tn36",
+        "cn04",
+        "ka59"
+      ],
+      "prior_diagnostic_games": [
+        "ls20",
+        "vc33"
+      ],
+      "sample_turns_per_game": 12,
+      "frozen_geometry": {
+        "frame_size": 64,
+        "edge_band_px": 8,
+        "tile_size_px": 8
+      },
+      "paths": [
+        "competitions/arc-agi-3/experiments/disjoint_public_sample.py",
+        "competitions/arc-agi-3/tests/test_disjoint_public_sample.py",
+        "competitions/arc-agi-3/scripts/inspect_public_games.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "evidence": {
+        "test_first": "Isolated local import failed before implementation; 5/5 sample contract tests passed after implementation.",
+        "github_contract": "SUCCESS 70/70",
+        "github_contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40437161828",
+        "github_system_proof": "SUCCESS",
+        "github_system_proof_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40437161766",
+        "github_public_smoke": "SUCCESS",
+        "github_public_smoke_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40437161924",
+        "disjoint_public_trace": {
+          "games": 6,
+          "records": 72,
+          "same_level_records": 72,
+          "pixel_changed_scene_static": 22,
+          "scene_alias_groups": 9,
+          "same_scene_action_conflicts": 0,
+          "alias_transitions": 22,
+          "alias_border_only": 22,
+          "alias_interior_only": 0,
+          "alias_mixed": 0,
+          "alias_border_changed_pixels": 25,
+          "alias_interior_changed_pixels": 0,
+          "top_alias_tiles": [
+            [
+              0,
+              0,
+              8
+            ],
+            [
+              6,
+              0,
+              6
+            ],
+            [
+              1,
+              0,
+              4
+            ],
+            [
+              7,
+              0,
+              4
+            ],
+            [
+              7,
+              7,
+              3
+            ]
+          ]
+        },
+        "original_two_game_trace_unchanged": {
+          "records": 24,
+          "alias_transitions": 8,
+          "alias_border_only": 8,
+          "alias_interior_only": 0
+        },
+        "unchanged_submission_agent_official_public_suite": {
+          "games": 25,
+          "action_cap_per_game": 120,
+          "first_levels_completed": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "In six disjoint public games, all 22 pixel-changed/object-scene-static transitions occurred exclusively in the frozen 8px edge band (25 changed pixels). This replicates the geometric localization across additional public observations, but does not show HUD semantics, causal irrelevance, predictive superiority or a hidden holdout gain.",
+      "limitations": [
+        "Disjoint public sample, not independent hidden holdout or score evidence.",
+        "Only 12 early actions per game; six selected games are public and score histories may already exist.",
+        "Edge-only pixels may be gameplay relevant; no intervention on edge pixels.",
+        "No change to agent policy, Kaggle submission, licensing or spend."
+      ]
+    },
+    "edge_alias_prequential_predictive_audit": {
+      "status": "REAL_PUBLIC_TRACE_CI_REPLICATED_SHADOW_ONLY_NO_ROBUST_GAIN",
+      "source_artifact": {
+        "workflow_run": 40437476131,
+        "artifact_id": 12704359774,
+        "zip_sha256": "f7cff1e26130dc5f2911dd2acdc2ce26492b51a3e10d1350c1ff0b741d916afb",
+        "zip_crc": "PASS"
+      },
+      "paths": [
+        "competitions/arc-agi-3/experiments/edge_predictive_audit.py",
+        "competitions/arc-agi-3/tests/test_edge_predictive_audit.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "method": "Within each game and level, prequentially predict next transition binary object-scene change and level advance from previous edge-only alias flag using Laplace-smoothed prior labeled pairs. Compare on exactly same pairs against marginal, temporal-persistence and static controls with Brier loss. Reset on game/level boundaries; no current-outcome leakage; 8px geometry frozen; not causal identification.",
+      "test_first": "Local missing-module import failed; after implementation 10/10 synthetic contract tests PASS. One implementation defect in max_records guard detected by RED test and fixed before commit.",
+      "diagnostic_2_public_games": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "trace_records": 24,
+        "evaluated_pairs": 21,
+        "prior_edge_alias_pairs": 8,
+        "scene_change_events": 14,
+        "level_advance_events": 1,
+        "scene_brier": {
+          "edge": 0.2717814250920827,
+          "marginal": 0.2711469417303266,
+          "temporal": 0.2857142857142857,
+          "static": 0.6666666666666666
+        },
+        "progress_brier": {
+          "edge": 0.10255507714549664,
+          "marginal": 0.10544862299358797,
+          "temporal": 0.047619047619047616,
+          "static": 0.047619047619047616
+        }
+      },
+      "disjoint_6_public_games": {
+        "games": [
+          "cd82",
+          "sc25",
+          "lf52",
+          "tn36",
+          "cn04",
+          "ka59"
+        ],
+        "trace_records": 72,
+        "evaluated_pairs": 66,
+        "prior_edge_alias_pairs": 19,
+        "scene_change_events": 39,
+        "level_advance_events": 0,
+        "scene_brier": {
+          "edge": 0.1860507546960961,
+          "marginal": 0.19359209333690347,
+          "temporal": 0.2878787878787879,
+          "static": 0.5909090909090909
+        },
+        "progress_brier": {
+          "edge": 0.05663425454264035,
+          "marginal": 0.05136151258371841,
+          "temporal": 0,
+          "static": 0
+        }
+      },
+      "interpretation": "Small scene-change Brier gain vs marginal on six public games (0.18605 vs 0.19359), but not replicated on prior two games (0.27178 vs 0.27115); no level progress events in six-game sample and edge predictor worse than static. Public, short, non-independent data; not causal edge relevance or policy gain. No integration.",
+      "limitations": [
+        "Only 12 actions per game; six games selected earlier for spatial test, not prospective prediction holdout.",
+        "Feature is a prior transition observation, not an intervention or causal model.",
+        "Small differences and no uncertainty quantification; model hyperparameters selected before reading this artifact, but hypothesis of edge relevance was motivated by previous public traces.",
+        "Submission agent unchanged; no Kaggle submission, spending, licensing or prize claim."
+      ],
+      "ci": {
+        "contract": {
+          "status": "SUCCESS",
+          "tests": "80/80",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40442957140"
+        },
+        "system_proof": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40442957122"
+        },
+        "public_smoke": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40442957100",
+          "metrics": "Exact Brier values in STATE reproduced in official GitHub Actions log; unchanged 25-game suite raw 0.5010037315187991."
+        }
+      }
+    },
+    "action_conditioned_edge_counterfactual_control": {
+      "status": "REAL_PUBLIC_CI_VERIFIED_SHADOW_ONLY_NO_REPLICATED_INCREMENTAL_GAIN",
+      "implementation_commits": [
+        "67384e2dbb2c843f6055eafdaa51132e26a09d84",
+        "76cf833bc6f2b3d7a9a01dc6355beac939f8283f",
+        "a26686ae2d2e763c64f895ff4710ecdb4144a710"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/action_conditioned_audit.py",
+        "competitions/arc-agi-3/tests/test_action_conditioned_audit.py",
+        ".github/workflows/arc-agent-game-smoke.yml"
+      ],
+      "method": "Same previously observed public traces, same prequential pairs, Laplace-smoothed within-game/level action-only vs joint(action, prior edge-only alias), with edge-only/marginal/temporal/static matched controls. ACTION6 exact coordinates are distinct action identities. Only past labels used; unknown joint contexts fall back to action-only. Episode-wise Brier deltas and support counts are emitted.",
+      "test_first": "Local missing-module import failed before implementation. Local 13/13 synthetic tests passed after implementation, including original edge model parity and no future leakage. GitHub Actions 93/93 tests passed.",
+      "diagnostic_two_public_games": {
+        "games": [
+          "ls20",
+          "vc33"
+        ],
+        "evaluated_pairs": 21,
+        "episodes": 3,
+        "seen_action_pairs": 11,
+        "seen_joint_pairs": 7,
+        "scene_change_events": 14,
+        "level_advance_events": 1,
+        "scene_brier": {
+          "action_edge": 0.24908301239366998,
+          "action_only": 0.24445338276404036,
+          "edge_only": 0.2717814250920827,
+          "marginal": 0.2711469417303266,
+          "temporal": 0.2857142857142857,
+          "static": 0.6666666666666666
+        },
+        "progress_brier": {
+          "action_edge": 0.11414237873279824,
+          "action_only": 0.11744925703967654,
+          "edge_only": 0.10255507714549664,
+          "marginal": 0.10544862299358797,
+          "temporal": 0.047619047619047616,
+          "static": 0.047619047619047616
+        }
+      },
+      "disjoint_six_public_games": {
+        "games": [
+          "cd82",
+          "sc25",
+          "lf52",
+          "tn36",
+          "cn04",
+          "ka59"
+        ],
+        "evaluated_pairs": 66,
+        "episodes": 6,
+        "seen_action_pairs": 28,
+        "seen_joint_pairs": 25,
+        "scene_change_events": 39,
+        "level_advance_events": 0,
+        "scene_brier": {
+          "action_edge": 0.1935089864328271,
+          "action_only": 0.19394669687053756,
+          "edge_only": 0.1860507546960961,
+          "marginal": 0.19359209333690347,
+          "temporal": 0.2878787878787879,
+          "static": 0.5909090909090909
+        },
+        "progress_brier": {
+          "action_edge": 0.07206448052247771,
+          "action_only": 0.07098703944503662,
+          "edge_only": 0.05663425454264035,
+          "marginal": 0.05136151258371841,
+          "temporal": 0,
+          "static": 0
+        }
+      },
+      "interpretation": "Incremental edge-after-action scene Brier gain is tiny in six public games (0.193509 vs action-only 0.193947), but regresses in earlier two (0.249083 vs 0.244453). Stronger action-only control itself improves two-game scene Brier vs marginal but not six-game marginal. Joint contexts have prior support in only 25/66 and 7/21 evaluated pairs; sparse. Zero level progress events in six-game sample. This does NOT justify edge-based action selection or causal claims.",
+      "ci": {
+        "contract": {
+          "status": "SUCCESS",
+          "tests": "93/93",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40447929824"
+        },
+        "system_proof": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40447929804"
+        },
+        "official_public_smoke": {
+          "status": "SUCCESS",
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40447929823"
+        }
+      },
+      "unchanged_submission_agent": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "limitations": [
+        "These are previously studied PUBLIC traces, not prospective or hidden holdout.",
+        "No policy integration, no causal edge intervention or verified generalization.",
+        "Short within-game episodes and sparse exact action/edge support.",
+        "No Kaggle submission, spending, prize, legal or licensing action."
+      ]
+    },
+    "prospective_public_action_causal_audit": {
+      "status": "REAL_PUBLIC_LONGER_TRACE_NEGATIVE_GATE_FAILED_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-causal.v1",
+      "preregistration": {
+        "seed": "mondayid-arc3-prospective-causal-v1:",
+        "games": [
+          "lp85",
+          "tr87",
+          "sp80",
+          "g50t",
+          "dc22",
+          "r11l",
+          "tu93",
+          "ar25"
+        ],
+        "sample_size": 8,
+        "horizon_actions_per_game": 96,
+        "excludes_prior_2_and_6_public_diagnostic_games": true,
+        "commits": [
+          "9f95bf37dc072a97f9e7c08e32e865279c725b80",
+          "9a0801142878babbafc32933bb8ba9f6b013d76a"
+        ],
+        "note": "Selected by frozen SHA256 game-id rank BEFORE this detailed trace, not based on scores. Public games already seen in aggregate 25-game benchmark; NOT a hidden holdout."
+      },
+      "evidence": {
+        "ci_contract": {
+          "status": "SUCCESS",
+          "tests": "102/102",
+          "run_id": 40455644207,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40455644207"
+        },
+        "ci_system_proof": {
+          "status": "SUCCESS",
+          "run_id": 40455644211,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40455644211"
+        },
+        "ci_official_public": {
+          "status": "SUCCESS",
+          "run_id": 40455644205,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40455644205"
+        },
+        "artifact": {
+          "id": 12712248319,
+          "sha256": "39e3d930174f45787f6566c2f2a591ecd28f1e9fa70db7379e1c58df22ceb6fe",
+          "zip_crc": "PASS",
+          "trace_sha256": "cbf8fab991718ccb036e37caf2922b497d5bacd3e60b7a80b620990fc8dcc5bb"
+        },
+        "test_first": "Local RED missing prospective sample module; GREEN 5/5. Later CI RED 4 new RESET-boundary tests; GREEN after fix, total 102/102.",
+        "reset_boundary_bug": {
+          "observed": "6 real RESET special actions were absent from advertised legal gameplay actions; initial prospective shadow CI failed action legality and action-conditioned history would leak across RESET.",
+          "fix": "Allow exact RESET as special episode boundary; exclude RESET transitions from shadow prediction/training and clear both action-conditioned and edge-model evidence; do not alter submission agent.",
+          "implementation_commits": [
+            "9b6fab828e7d81086fe6fa180f511a7b7c30b3db",
+            "26cd192609c872d355d65197effaf911613e8db9",
+            "b3e32cb4cd776742e4eee5c54b459bf345dbe216"
+          ],
+          "regression_tests": "4/4 new RESET tests PASS; earlier tests also pass."
+        }
+      },
+      "public_trace": {
+        "records": 768,
+        "games": 8,
+        "reset_actions": 6,
+        "level_advance_events_raw": 1,
+        "shadow": {
+          "same_level_records": 761,
+          "evaluated": 555,
+          "exact_correct": 112,
+          "static_correct": 112,
+          "non_static_predictions": 0,
+          "probe_candidates": 0
+        },
+        "action_conditioned": {
+          "evaluated_pairs": 747,
+          "episodes": 15,
+          "scene_change_events": 526,
+          "level_advance_events": 1,
+          "seen_action_pairs": 545,
+          "seen_joint_pairs": 485,
+          "scene_brier": {
+            "action_edge": 0.16785331275994633,
+            "action_only": 0.1643093551933434,
+            "edge_only": 0.14742838039622902,
+            "marginal": 0.16200218928098123,
+            "static": 0.7041499330655957,
+            "temporal": 0.32396251673360105
+          },
+          "progress_brier": {
+            "action_edge": 0.03783065997895601,
+            "action_only": 0.03270551543208772,
+            "edge_only": 0.01767504017896135,
+            "marginal": 0.01339694457806937,
+            "static": 0.0013386880856760374,
+            "temporal": 0.0013386880856760374
+          }
+        }
+      },
+      "preregistered_acceptance": {
+        "min_progress_events": 3,
+        "observed_progress_events": 1,
+        "pass_progress": false,
+        "min_evaluated_pairs": 100,
+        "observed_evaluated_pairs": 747,
+        "pass_pairs": true,
+        "min_seen_joint_fraction": 0.25,
+        "observed_fraction": 0.6492637215528781,
+        "pass_support": true,
+        "require_nonregression_vs_action_only": true,
+        "pass_scene_nonregression": false,
+        "automatic_policy_promotion": false,
+        "final": "REJECT_POLICY_INTEGRATION"
+      },
+      "unchanged_submission_agent": {
+        "games": 25,
+        "action_cap_per_game": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "interpretation": "Prospectively chosen longer detailed PUBLIC trace exposed RESET episode-boundary bug, fixed and regression-tested. Explicit world-hypothesis shadow still matches static baseline exactly (112/555), no non-static top predictions or reversible probes. Joint action+edge Brier regresses vs action-only for scene and progress; one progress event fails preregistered minimum. This is negative evidence against promoting the current feature/model, not a general impossibility result.",
+      "limitations": [
+        "Not hidden or independent benchmark; game roster already publicly benchmarked in aggregate.",
+        "Only one level-advance event, inadequate for progress prediction.",
+        "No causal interventions or matched gameplay policy A/B.",
+        "No Kaggle final submission, prize, licensing/publication, spend or income claim."
+      ]
+    },
+    "concrete_action_effect_coverage": {
+      "status": "REAL_PUBLIC_TRACE_SHADOW_DIAGNOSTIC_VERIFIED_NO_POLICY_INTEGRATION",
+      "module": "competitions/arc-agi-3/experiments/effect_coverage_audit.py",
+      "tests": "competitions/arc-agi-3/tests/test_effect_coverage_audit.py",
+      "test_first_red_commit": "7a6054f0e111ea849515964e2fd5e621f9c6ad46",
+      "implementation_commit": "5021bd8a0f1f66664e788867772f499e1c131886",
+      "frozen_input": {
+        "origin": "GitHub Actions run 40456155541, artifact 12712980381, previously frozen eight-game prospective public trace",
+        "archive_sha256": "444e5bdd6d67e0b7456f8e7cc37937b7fe3c9a1c28c7943d8154b1e3417ecb32",
+        "trace_sha256": "cbf8fab991718ccb036e37caf2922b497d5bacd3e60b7a80b620990fc8dcc5bb",
+        "zip_crc": "PASS",
+        "game_count": 8,
+        "transition_records": 768
+      },
+      "observed_effect_classes": {
+        "same_level_records": 761,
+        "reset_records": 6,
+        "level_advance_records": 1,
+        "static": 228,
+        "global_translate": 0,
+        "global_recolor": 0,
+        "single_object_translate": 143,
+        "single_object_recolor": 0,
+        "object_count_change": 105,
+        "unexplained": 285,
+        "posthoc_global_expressible_including_static": 228,
+        "posthoc_global_or_single_expressible_including_static": 371
+      },
+      "prequential_exact_scene_action_replay": {
+        "evaluated_repeated_contexts": 84,
+        "exact_correct": 78,
+        "static_correct_on_same_contexts": 0,
+        "nonstatic_replay_predictions": 80,
+        "conflicting_contexts_fell_back_to_static": 4,
+        "scope": "same contiguous game+level episode; RESET clears memory; ACTION6 exact coordinates",
+        "warning": "Repeated-context subset is highly selected, not a full-suite forecast or independent holdout; no policy score improvement shown."
+      },
+      "evidence": {
+        "local_test_first": "Missing-module import RED then 10/10 GREEN",
+        "github_test_first_red": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457033098",
+        "github_contract_green": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457089567",
+        "github_contract_tests": "112/112 PASS",
+        "github_system_proof": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457089789",
+        "github_public_smoke": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40457089844",
+        "real_trace_audit_execution": "Independent local Python execution against byte-verified GitHub Actions artifact; not a GitHub workflow step",
+        "unchanged_agent_public_suite": {
+          "games": 25,
+          "cap": 120,
+          "completed_first_levels": 6,
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "interpretation": "Existing global static/whole-scene translate/recolor hypothesis family has no nonstatic post-hoc coverage in this 761-transition public trace; one-object translations explain 143 additional outcomes post hoc, while 105 change object count and 285 remain unexplained. Exact scene+action replay predicts 78/84 repeated contexts correctly using only earlier observations, vs static 0/84 on those same selected contexts. This diagnoses representational mismatch and reusable local action effects; it does NOT prove causal generalization, reversibility, policy benefit, hidden score, novelty or income.",
+      "effect_on_agent": "NONE_SHADOW_ONLY"
+    },
+    "single_object_effect_prequential": {
+      "status": "REAL_PUBLIC_SAME_TRACE_GAME_CONCENTRATED_GAIN_SHADOW_ONLY",
+      "module": "competitions/arc-agi-3/experiments/single_object_prequential.py",
+      "tests": "competitions/arc-agi-3/tests/test_single_object_prequential.py",
+      "method": "Conservative action+object-signature (color,area,width,height) -> single-object displacement from prior observed transitions in the same contiguous game/level episode. Exact scene/action replay has priority; conflicting evidence, duplicate signatures, multiple possible movers, out-of-bounds moves and RESET cause abstention. Matched static, replay, effect-only and combined forecasts are scored before learning each current outcome.",
+      "commits": {
+        "test_first_red": "8f00fe43cf2e04b65354eb93de654ffefc03fce5",
+        "test_correction": "67fd71145ea2d385f205d2ca9e99de27437a09a7",
+        "implementation": "58a4949d2e0787dad50ab1f66c62dc2d9b80f020",
+        "ci_integration": "30356593e6c71cf7a3bebf00100b448e7e431851"
+      },
+      "ci": {
+        "red_contract": {
+          "run": 40459454126,
+          "status": "EXPECTED_FAILURE_MISSING_MODULE"
+        },
+        "green_contract": {
+          "run": 40459663942,
+          "status": "SUCCESS",
+          "tests": "122/122"
+        },
+        "system_proof": {
+          "run": 40459664243,
+          "status": "SUCCESS"
+        },
+        "official_public_smoke": {
+          "run": 40459664188,
+          "status": "SUCCESS"
+        }
+      },
+      "frozen_public_trace": {
+        "games": [
+          "lp85",
+          "tr87",
+          "sp80",
+          "g50t",
+          "dc22",
+          "r11l",
+          "tu93",
+          "ar25"
+        ],
+        "records": 768,
+        "same_level_records": 761,
+        "reset_records": 6,
+        "level_advance_records": 1,
+        "trace_sha256": "cbf8fab991718ccb036e37caf2922b497d5bacd3e60b7a80b620990fc8dcc5bb",
+        "artifact_id": 12713922140,
+        "artifact_sha256": "51e3562ffef58abb79862cdd4a81bf6e2be79048a05194b851e364e6c4f33504",
+        "zip_crc": "PASS"
+      },
+      "matched_forecasts": {
+        "same_level": 761,
+        "static_correct": 228,
+        "exact_replay_with_static_fallback_correct": 306,
+        "one_object_effect_with_static_fallback_correct": 280,
+        "combined_replay_then_effect_then_static_correct": 358,
+        "combined_gain_over_replay_correct": 52,
+        "exact_replay_used": 80,
+        "effect_nonstatic_forecasts": 70,
+        "effect_nonstatic_correct": 60,
+        "effect_on_unseen_exact_scene_action_contexts": 70,
+        "effect_unseen_correct": 60,
+        "combined_effect_used": 70,
+        "combined_nonstatic_correct": 138,
+        "ambiguous_effect_abstentions": 71
+      },
+      "independent_verification": "Separate Python evaluator against previously frozen 768-row ZIP produced exactly the same 16 numeric counters as new GitHub Actions diagnostic; identical trace SHA256 in both artifacts. Per-game decomposition: sp80 +54 correct, dc22 -2, remaining six games 0; 64/70 effect forecasts occur in sp80.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "Aggregate +52 correct on same previously studied public trace is almost entirely one-game-specific: sp80 +54, dc22 -2, six other games unchanged. 64/70 effect forecasts and 58/60 correct effect forecasts came from sp80. No cross-game generalization, causal transfer, progress improvement or policy value established. Hypothesis selection was motivated by post-hoc study of the same trace; retain shadow only.",
+      "limitations": [
+        "Per-game concentration: sp80 alone accounts for all positive gain; dc22 regresses by two correct forecasts; other six games have no effect contribution.",
+        "Same 8 PUBLIC games and trace used to motivate one-object hypothesis; NOT independent holdout.",
+        "One level-advance event; no reliable progress-prediction or policy value evidence.",
+        "Action-conditioned observational trace under existing agent, not intervention or matched action-policy A/B.",
+        "No Kaggle hidden score, final submission, money, license/publication or novelty claim."
+      ],
+      "per_game_gain_vs_exact_replay": {
+        "sp80": {
+          "same_level": 93,
+          "combined_correct": 69,
+          "replay_correct": 15,
+          "delta_correct": 54,
+          "effect_nonstatic": 64,
+          "effect_nonstatic_correct": 58
+        },
+        "dc22": {
+          "same_level": 96,
+          "combined_correct": 70,
+          "replay_correct": 72,
+          "delta_correct": -2,
+          "effect_nonstatic": 6,
+          "effect_nonstatic_correct": 2
+        },
+        "ar25": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "g50t": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "lp85": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "r11l": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "tr87": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        },
+        "tu93": {
+          "delta_correct": 0,
+          "effect_nonstatic": 0
+        }
+      }
+    },
+    "remaining_public_replication": {
+      "status": "REAL_PUBLIC_NINE_GAME_REPLICATION_NEGATIVE_GENERALIZATION_GATE_FAILED",
+      "protocol": "arc-agi3.remaining-public-v1",
+      "sample_games": [
+        "su15",
+        "bp35",
+        "wa30",
+        "ft09",
+        "sk48",
+        "re86",
+        "m0r0",
+        "s5i5",
+        "sb26"
+      ],
+      "max_actions_per_game": 96,
+      "sample_definition": "Exact complement of 2 diagnostic + 6 spatial + 8 prospective public games in official 25-game roster; frozen before reading these nine detailed traces.",
+      "protocol_code": "competitions/arc-agi-3/experiments/remaining_public_sample.py",
+      "contract_tests": "competitions/arc-agi-3/tests/test_remaining_public_sample.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "test_first": "Local import RED (ModuleNotFoundError) before implementation; 9/9 GREEN on frozen selection, no-leak, RESET, ordering, roster and 96-turn guards. CI result pending.",
+      "frozen_gates": {
+        "min_positive_games": 3,
+        "max_negative_games": 0,
+        "min_effect_forecasts": 30,
+        "min_games_with_effect_forecasts": 3,
+        "min_progress_events": 3,
+        "automatic_policy_promotion": false
+      },
+      "controls": [
+        "No per-game model tuning",
+        "Unchanged prequential exact replay then conservative one-object effect then static",
+        "One evaluator instance per game, reset on level and RESET",
+        "Exact ACTION6 coordinates retained",
+        "Per-game correct counts and regressions mandatory",
+        "No policy import, no Kaggle action"
+      ],
+      "caveat": "All 25 games already appeared in public aggregate benchmark; nine detailed games are not hidden or uncontaminated holdout.",
+      "evidence": {
+        "test_first": "Local import RED then 9/9 GREEN; official Python 3.12 frozen-protocol CI tests 9/9 PASS.",
+        "contract_ci": {
+          "status": "SUCCESS",
+          "tests": "131/131",
+          "run_id": 40465716660,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40465716660"
+        },
+        "system_proof": {
+          "status": "SUCCESS",
+          "run_id": 40465716657,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40465716657"
+        },
+        "public_smoke": {
+          "status": "SUCCESS",
+          "run_id": 40465716818,
+          "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40465716818",
+          "unchanged_scorecard": 0.5010037315187991
+        },
+        "frozen_replication_runs": [
+          40465656682,
+          40465716738
+        ],
+        "frozen_replication_status": "SUCCESS_BOTH_INDEPENDENT_CI_RUNS_IDENTICAL_METRICS_AND_TRACE_SHA256",
+        "artifact_ids": [
+          12716237466,
+          12716199260
+        ],
+        "artifact_sha256": [
+          "e5487ded241d3183815666ce47c03ee08e61aae6fe43bccba592187459a1092e",
+          "71886dd8a61504383d6a9654e07986f19f20571e31bba32d62b90a3cf365e3d9"
+        ],
+        "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "caveat": "Artifact ZIP digests differ between CI runs; extracted public trace SHA256 and all reported numerical counters match."
+      },
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "public_trace": {
+        "games": 9,
+        "records": 864,
+        "max_actions_per_game": 96,
+        "reset_records": 7,
+        "level_advance_events": 0,
+        "same_level_records": 857,
+        "matched_correct": {
+          "static": 330,
+          "exact_replay_with_static_fallback": 339,
+          "combined_replay_effect_static": 362
+        },
+        "combined_delta_vs_replay": 23,
+        "nonstatic_effect_forecasts": 25,
+        "nonstatic_effect_correct": 23,
+        "per_game_delta_correct_vs_replay": {
+          "su15": 0,
+          "bp35": 0,
+          "wa30": 0,
+          "ft09": 0,
+          "sk48": 0,
+          "re86": 23,
+          "m0r0": 0,
+          "s5i5": 0,
+          "sb26": 0
+        },
+        "effect_games": 1,
+        "positive_games": 1,
+        "negative_games": 0,
+        "re86": {
+          "same_level": 96,
+          "static_correct": 9,
+          "replay_correct": 9,
+          "combined_correct": 32,
+          "effect_nonstatic": 25,
+          "effect_nonstatic_correct": 23,
+          "delta_correct": 23
+        },
+        "preregistered_gate_result": "REJECT_POLICY_INTEGRATION",
+        "failed_gates": [
+          "positive_games 1 < required 3",
+          "effect_forecasts 25 < required 30",
+          "effect_games 1 < required 3",
+          "progress_events 0 < required 3"
+        ],
+        "interpretation": "Positive aggregate +23 is entirely concentrated in re86, with no gain in eight other public games and no level progress. This is second distinct public-trace concentration (prior sp80 +54, dc22 -2). It does not demonstrate cross-game causal transfer, policy value or hidden Kaggle performance."
+      }
+    },
+    "cross_game_leave_one_public_game_out": {
+      "status": "REAL_PUBLIC_TRACE_NEGATIVE_NO_CROSS_GAME_TRANSFER_SHADOW_ONLY",
+      "protocol": "arc-agi3.cross-game-leave-one-out-v1",
+      "module": "competitions/arc-agi-3/experiments/cross_game_transfer_audit.py",
+      "tests": "competitions/arc-agi-3/tests/test_cross_game_transfer_audit.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "method": "Leave each of nine frozen PUBLIC games out of ALL donor learning; compare matched static, prior within-game replay->one-object-effect->static, and donor-consensus transfer requiring one or two distinct donor games. Match action (including exact ACTION6 x,y), object signature and level; reject static/conflicting evidence and ambiguous objects; target-local baseline learns only after scoring. No policy import.",
+      "test_first": {
+        "red_contract_run": 40471673656,
+        "red_cause": "ModuleNotFoundError: No module named cross_game_transfer_audit",
+        "initial_green_failure_run": 40471870772,
+        "initial_green_failure": "One test fixture mistakenly expected no donor forecast on first previously unseen target action; fixture corrected before final GREEN.",
+        "green_contract_run": 40472052560,
+        "green_contract_tests": "141/141 PASS"
+      },
+      "verification": {
+        "implementation_head": "69698acca8fdaa6364d88aad1e6c9b3ab7eeaf17",
+        "contract": {
+          "run": 40472052560,
+          "status": "SUCCESS",
+          "tests": "141/141"
+        },
+        "system_proof": {
+          "run": 40472052537,
+          "status": "SUCCESS"
+        },
+        "public_replication": {
+          "run": 40472052476,
+          "status": "SUCCESS"
+        },
+        "unchanged_public_smoke": {
+          "run": 40472052454,
+          "status": "SUCCESS"
+        },
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "trace_records": 864,
+        "reset_records": 7,
+        "same_level_records": 857,
+        "level_advances": 0
+      },
+      "matched_forecasts": {
+        "static_correct": 330,
+        "within_game_baseline_correct": 362,
+        "one_donor_unanimous_correct": 362,
+        "two_donor_unanimous_correct": 362,
+        "one_donor_used_forecasts": 0,
+        "two_donor_used_forecasts": 0,
+        "one_donor_correct_forecasts": 0,
+        "two_donor_correct_forecasts": 0,
+        "games_with_two_donor_forecasts": 0,
+        "strict_positive_games": 0,
+        "strict_negative_games": 0,
+        "strict_supporting_rules_per_heldout_game": 0,
+        "single_donor_rule_support_in_eight_heldout_games": 2,
+        "single_donor_rule_support_in_re86": 0
+      },
+      "acceptance": "REJECT_POLICY_INTEGRATION",
+      "interpretation": "No learned cross-game one-object displacement produced an applicable held-out forecast on 857 same-level transitions. Even the permissive one-donor variant had 0 applicable forecasts; requiring two independent donor games yielded zero consensus movement rules. Exact matched baseline remained 362/857, versus static 330/857. This falsifies applicability of the CURRENT exact action+color/area/width/height displacement representation on this nine-game PUBLIC trace, not general cross-game causality or all world-model transfer. No progress events, no gameplay A/B, no hidden Kaggle score.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Nine PUBLIC games already included in previous aggregate 25-game benchmark; not an uncontaminated holdout.",
+        "Donor evidence can come from later chronological episodes of other games, so leave-one-game-out independence is not global temporal prequentiality.",
+        "Zero applicable forecasts does not imply zero latent transferable mechanics; object signatures/action semantics may be incomparable across games.",
+        "No Kaggle submission, spend, token request, terms, licensing/publication or policy mutation."
+      ]
+    },
+    "relative_geometry_leave_one_public_game_out": {
+      "status": "REAL_PUBLIC_NEGATIVE_ZERO_RELATIVE_DONOR_SUPPORT_SHADOW_ONLY",
+      "protocol": "arc-agi3.relative-geometry-leave-one-public-game-out-v1",
+      "module": "competitions/arc-agi-3/experiments/relative_geometry_transfer_audit.py",
+      "tests": "competitions/arc-agi-3/tests/test_relative_geometry_transfer_audit.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "implementation_commits": {
+        "test_first_red": "8a858b55e90c3f570343e7fa0883c25010edae8e",
+        "implementation": "f6fa1dd11403877b4048e9d9e110375bcc105d68",
+        "ci_integration": "f9b66e0b38df1c1c51294cf3aaa4509b84bd9410"
+      },
+      "hypotheses": [
+        "static",
+        "within-game exact replay then one-object effect then static",
+        "leave-one-game-out >=1 donor relative geometry",
+        "leave-one-game-out >=2 distinct donor games relative geometry"
+      ],
+      "representation": "No color/absolute object size or coordinates: coarse shape + strict relative area rank + nearest-anchor direction; one-pixel cardinal displacement, exact action and level. Reject duplicate roles, ties, static/conflicting evidence, invalid geometry.",
+      "test_first": {
+        "red_contract_run": 40478211307,
+        "red_reason": "ModuleNotFoundError: relative_geometry_transfer_audit (expected)",
+        "green_contract_run": 40478352058,
+        "final_contract_run": 40478534369,
+        "final_tests": "151/151 PASS"
+      },
+      "ci": {
+        "contract": {
+          "run": 40478534369,
+          "status": "SUCCESS"
+        },
+        "system": {
+          "run": 40478534243,
+          "status": "SUCCESS"
+        },
+        "frozen_public": {
+          "run": 40478534127,
+          "status": "SUCCESS"
+        },
+        "unchanged_public_smoke": {
+          "run": 40478534121,
+          "status": "SUCCESS"
+        }
+      },
+      "frozen_trace": {
+        "games": 9,
+        "records": 864,
+        "same_level": 857,
+        "level_advances": 0,
+        "sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "matched_forecasts": {
+        "static_correct": 330,
+        "within_game_baseline_correct": 362,
+        "one_donor_relative_correct": 362,
+        "two_donor_relative_correct": 362,
+        "one_donor_relative_forecasts": 0,
+        "two_donor_relative_forecasts": 0,
+        "one_donor_rules_per_heldout_game": 0,
+        "two_donor_rules_per_heldout_game": 0,
+        "strict_positive_games": 0,
+        "strict_negative_games": 0
+      },
+      "acceptance": "REJECT_POLICY_INTEGRATION",
+      "interpretation": "Even the color/absolute-size invariant strict nearest-anchor representation produced zero donor-supported one-pixel cardinal rules on the frozen nine-game PUBLIC trace. No transferable forecast, no gain, no regressions; zero level progress. This is negative evidence for this specific representation and eligibility filter, NOT for all relational world models.",
+      "limitations": [
+        "Donor outcomes may be chronologically later in other games: not globally prequential.",
+        "Frozen public games have already been aggregate benchmarked, not independent hidden holdout.",
+        "Strict area rank, unique nearest anchor and unit-step constraints may exclude real game mechanics.",
+        "No policy integration, Kaggle submission, spending, tokens, legal/license/publication decision, prize or income."
+      ]
+    },
+    "relative_support_veto_diagnostic": {
+      "status": "FROZEN_PUBLIC_TRACE_VERIFIED_NONUNIT_MOTION_FIRST_VETO_SHADOW_ONLY",
+      "protocol": "arc-agi3.relative-support-veto-diagnostic-v1",
+      "module": "competitions/arc-agi-3/experiments/relative_support_diagnostics.py",
+      "tests": "competitions/arc-agi-3/tests/test_relative_support_diagnostics.py",
+      "workflow": ".github/workflows/arc-agent-remaining-public.yml",
+      "method": "Frozen 9-game PUBLIC trace; post-hoc same-level effect class and one-object displacement length, strict role eligibility, donor movement-key support and held-out action/level/role overlap. Reuses original frozen validator and existing relative role/consensus logic; no hypothesis relaxation or agent import.",
+      "test_first": {
+        "red_run": 40485623256,
+        "red_reason": "Expected missing relative_support_diagnostics module; 152 tests with import error",
+        "fixture_corrections": "Initial GREEN attempt exposed synthetic duplicate-role fixture moving two objects; fixture corrected to move only target while duplicate stays fixed. No agent regression.",
+        "green_run": 40485989485,
+        "green_tests": "157/157 PASS"
+      },
+      "ci": {
+        "contract": {
+          "run": 40485989485,
+          "status": "SUCCESS"
+        },
+        "system": {
+          "run": 40485989458,
+          "status": "SUCCESS"
+        },
+        "frozen_public": {
+          "run": 40485989378,
+          "status": "SUCCESS",
+          "artifact_id": 12725685485,
+          "artifact_zip_sha256": "99b8bacaecde687e69cbe9763c868195fc4bb6e3b6ae7ab71b59ac3388c4b9c4"
+        },
+        "unchanged_public_smoke": {
+          "run": 40485989503,
+          "status": "SUCCESS",
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "trace": {
+        "games": 9,
+        "records": 864,
+        "same_level": 857,
+        "static": 330,
+        "other_effects": 473,
+        "single_object_translate": 54,
+        "unit_cardinal_moves": 0,
+        "nonunit_moves": 54,
+        "diagonal_moves": 0,
+        "eligible_unit_moves": 0,
+        "role_rejections": {},
+        "movement_keys": 0,
+        "multi_donor_movement_keys": 0,
+        "conflicted_movement_keys": 0,
+        "weak_or_strict_target_key_overlap": 0,
+        "source_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "conclusion": "The first observable bottleneck is the one-pixel cardinal displacement filter: ALL 54 single-object translations in this frozen PUBLIC sample have non-unit displacement; zero movement witnesses reach the strict role/donor stage. Therefore zero donor support here cannot be attributed to action mismatch or ambiguous roles without relaxing displacement in a separate preregistered shadow test. No causal transfer or policy gain.",
+      "acceptance": "NO_POLICY_INTEGRATION",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Post-hoc PUBLIC evidence, no hidden holdout or causal intervention.",
+        "Donor observations can be globally later than held-out target.",
+        "Zero eligible unit movement makes later veto stages unidentifiable; absence of role rejections is not evidence that roles are sufficient.",
+        "No Kaggle submission, spending, tokens, terms, legal/license/publication decisions, prize or income."
+      ]
+    },
+    "relative_nonunit_cardinal_transfer": {
+      "status": "VERIFIED_PUBLIC_SHADOW_NEGATIVE_NO_SUPPORT",
+      "protocol": "arc-agi3.relative-cardinal-nonunit-leave-one-public-game-out-v1",
+      "hypothesis": "Allow any nonzero cardinal displacement magnitude while keeping all role, action, level, donor-unanimity and abstention constraints fixed; compare against strict unit model, same-game prequential baseline and static control on exactly the same frozen public transitions.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relative_nonunit_transfer_audit.py",
+        "competitions/arc-agi-3/tests/test_relative_nonunit_transfer_audit.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "test_first": {
+        "red_commit": "db926be97e62fb943a03b46ed8b93dac97f716a2",
+        "red_contract_run": 40493425148,
+        "red_result": "FAILED expected ModuleNotFoundError for absent new module",
+        "implementation_commit": "501b113d9a6cc82f25d0b543413b2071190684de",
+        "workflow_commit": "f0b7009a1efe48d462bbaa4e75b009ace74f4c13",
+        "green_contract": "SUCCESS 167/167",
+        "green_contract_run": 40493545608
+      },
+      "ci": {
+        "system_proof_run": 40493545629,
+        "system_proof": "SUCCESS",
+        "official_public_smoke_run": 40493545640,
+        "official_public_smoke": "SUCCESS",
+        "frozen_public_replication_run": 40493545650,
+        "frozen_public_replication": "SUCCESS",
+        "artifact_id": 12729331361,
+        "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "public_evidence": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "static_correct": 330,
+        "within_game_baseline_correct": 362,
+        "strict_unit_relative_correct": 362,
+        "nonunit_cardinal_relative_correct": 362,
+        "strict_unit_forecasts": 0,
+        "nonunit_cardinal_forecasts": 0,
+        "nonunit_donor_rules": 0,
+        "positive_games": 0,
+        "negative_games": 0,
+        "delta_vs_strict": 0,
+        "research_gates_passed": false
+      },
+      "interpretation": "Relaxing one-pixel displacement alone did NOT create a single eligible donor rule or forecast on frozen public trace. First observed bottleneck was unit displacement, but additional vetoes remain; cannot infer role/action support. No predictive gain, no progress, no policy promotion. This is negative evidence against this isolated relaxation, not all relational causal transfer.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limits": [
+        "PUBLIC exploratory sample previously aggregate-benchmarked; not hidden holdout",
+        "Donor observations can be later globally; leave-one-game-out only",
+        "No intervention or gameplay A/B",
+        "No Kaggle submission, spending, tokens, terms, licensing or publication"
+      ]
+    },
+    "nonunit_veto_ladder": {
+      "status": "VERIFIED_FROZEN_PUBLIC_SHADOW_ALL_NONUNIT_MOTION_ROLE_REJECTED",
+      "protocol": "arc-agi3.nonunit-cardinal-veto-ladder-v1",
+      "paths": [
+        "competitions/arc-agi-3/experiments/nonunit_veto_diagnostics.py",
+        "competitions/arc-agi-3/tests/test_nonunit_veto_diagnostics.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "hypothesis": "Post-hoc decompose existing nonunit-cardinal donor failures into movement-role eligibility, exact action/level, relative-role overlap, independent donor support and static/conflicting evidence without relaxing any gate.",
+      "test_first": {
+        "red_commit": "547615631e78e14b50e6dfeeed46293130088409",
+        "red_run": 40501026591,
+        "red_result": "EXPECTED ModuleNotFoundError for absent nonunit_veto_diagnostics",
+        "initial_green_failure_run": 40501196169,
+        "initial_green_failure": "Synthetic single-object scene classified as global translation, not one-object translation; fixture corrected to two objects with ambiguous area rank. No agent regression.",
+        "final_contract_run": 40501355422,
+        "final_contract": "SUCCESS 174/174"
+      },
+      "implementation_commits": {
+        "module": "5b29a71fd73db0c3ace7748b316d4355254fda16",
+        "workflow": "3fa15619555067499f9f53a3fb1b09189f88385e",
+        "fixture_correction": "3172eb1b5f928642bebb3b244fc2b297b881a34f"
+      },
+      "ci": {
+        "contract": {
+          "run": 40501355422,
+          "status": "SUCCESS",
+          "tests": "174/174"
+        },
+        "system_proof": {
+          "run": 40501355712,
+          "status": "SUCCESS"
+        },
+        "frozen_public": {
+          "run": 40501355419,
+          "status": "SUCCESS",
+          "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+        },
+        "unchanged_public_smoke": {
+          "run": 40501355593,
+          "status": "SUCCESS",
+          "raw_local_scorecard": 0.5010037315187991
+        }
+      },
+      "public_evidence": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "single_object_nonunit_cardinal_moves": 54,
+        "movement_by_game": {
+          "m0r0": 29,
+          "re86": 25
+        },
+        "role_eligible_moves": 0,
+        "role_rejected_moves": 54,
+        "role_rejection_reasons": {
+          "area_rank_ambiguous": 54
+        },
+        "donor_nonzero_keys_per_heldout_game": 0,
+        "donor_action_level_overlap": 0,
+        "donor_exact_role_key_overlap": 0,
+        "one_donor_rules": 0,
+        "two_donor_rules": 0,
+        "delta_vs_existing_model": 0
+      },
+      "interpretation": "All 54 observed nonunit cardinal one-object movements fail the existing strict relative area-rank role assignment (29 m0r0, 25 re86). No nonzero donor movement keys reach action/level or donor-consensus stages. Those later gates are unidentifiable on this sample, not proven sufficient. This is PUBLIC post-hoc eligibility evidence, not cross-game causal generalization, policy gain or hidden score.",
+      "acceptance": "REJECT_POLICY_INTEGRATION",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "PUBLIC previously aggregate-benchmarked trace, not hidden/uncontaminated holdout.",
+        "Donor outcomes may occur globally after held-out target episodes.",
+        "Area-rank veto is first observed remaining bottleneck; relaxing it is untested and may not improve any prediction.",
+        "No Kaggle submission, spend, tokens, terms, legal/license/publication, prize or income claim."
+      ]
+    },
+    "relative_area_rank_single_relaxation_counterfactual": {
+      "status": "VERIFIED_NEGATIVE_LESSON_REJECT_POLICY_INTEGRATION",
+      "protocol": "arc-agi3.area-rank-unrestricted-leave-one-public-game-out-v1",
+      "method": "Only strict relative-area-rank removed; shape, unique nearest-anchor direction, duplicate-role abstention, cardinal displacement, exact action incl ACTION6 coordinates, level, static/conflict veto, independent donor consensus, target-game exclusion and local replay precedence unchanged.",
+      "test_first": {
+        "red_commit": "25be0b1f1b475d4174a0d3e8a2aceeae4569650f",
+        "red_run": 40517673137,
+        "red_reason": "ModuleNotFoundError for absent relative_area_rank_transfer_audit",
+        "green_run": 40517866037,
+        "green_tests": "186/186 PASS"
+      },
+      "implementation": {
+        "test_commit": "25be0b1f1b475d4174a0d3e8a2aceeae4569650f",
+        "module_commit": "fab62198761f32be2d83b17e70c1a745e2223821",
+        "workflow_commit": "6e5cbbc0ecd0a8a29d90d3b69c85f98e3b763904",
+        "paths": [
+          "competitions/arc-agi-3/tests/test_relative_area_rank_transfer_audit.py",
+          "competitions/arc-agi-3/experiments/relative_area_rank_transfer_audit.py",
+          ".github/workflows/arc-agent-remaining-public.yml"
+        ]
+      },
+      "evidence": {
+        "frozen_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "public_games": 9,
+        "records": 864,
+        "same_level": 857,
+        "level_advances": 0,
+        "static_correct": 330,
+        "within_game_correct": 362,
+        "strict_nonunit_correct": 362,
+        "area_unranked_correct": 362,
+        "area_unranked_forecasts": 0,
+        "one_donor_forecasts": 0,
+        "two_donor_rules_each_game": 0,
+        "positive_games": 0,
+        "negative_games": 0,
+        "synthetic_two_donor_transfer_contract": "PASS",
+        "ci": {
+          "contract": "SUCCESS 186/186",
+          "contract_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866037",
+          "system": "SUCCESS",
+          "system_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866355",
+          "frozen_public": "SUCCESS",
+          "frozen_public_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866310",
+          "artifact_id": 12740551766,
+          "unchanged_agent_public": "SUCCESS",
+          "unchanged_agent_public_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40517866078"
+        }
+      },
+      "interpretation": "Removing ONLY strict area-rank did not produce a two-independent-donor rule or any applicable donor forecast on the frozen nine PUBLIC games. This falsifies the isolated area-rank-only transfer gain hypothesis on this sample, not all relational transfer. Remaining vetoes, especially static/conflict donor evidence and cross-game action/role overlap, are unresolved. Do not claim gameplay or policy improvement.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Exploratory public trace, not hidden holdout or causal intervention.",
+        "Other donor games may be chronologically later than held-out target.",
+        "No new level advances, no matched-budget gameplay A/B.",
+        "No Kaggle submission, money, tokens, terms, license/publication decision, prize or income claim."
+      ]
+    },
+    "unranked_donor_veto_attribution": {
+      "status": "VERIFIED_PUBLIC_SHADOW_DIAGNOSTIC_NO_TRANSFER",
+      "protocol": "arc-agi3.unranked-donor-veto-attribution-v1",
+      "paths": [
+        "competitions/arc-agi-3/experiments/unranked_donor_veto_diagnostic.py",
+        "competitions/arc-agi-3/tests/test_unranked_donor_veto.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "hypotheses": [
+        "H0_no_cross_game_support",
+        "H1_action_level_mismatch",
+        "H2_relative_role_mismatch",
+        "H3_insufficient_independent_donors",
+        "H4_static_or_conflicting_effect",
+        "H5_eligible_two_donor_key"
+      ],
+      "test_first": {
+        "red_commit": "ba369d071ad3b3a0316329dc63bdde41d2039871",
+        "red_contract_run": 40528359902,
+        "red_result": "EXPECTED ModuleNotFoundError for missing unranked_donor_veto_diagnostic",
+        "initial_green_commit": "06326861dd973be21ae07c6d03c801301db43e23",
+        "initial_green_run": 40528606694,
+        "fixture_correction": "Synthetic ACTION2 absent from fixture legal_actions; corrected without changing agent",
+        "fixture_fix_commit": "a61a4d199a327e6bb50743e97fb691b1d7c4700e",
+        "final_contract_run": 40528861555,
+        "final_contract": "SUCCESS 195/195"
+      },
+      "ci": {
+        "system_run": 40528861638,
+        "system": "SUCCESS",
+        "frozen_public_run": 40528861537,
+        "frozen_public": "SUCCESS",
+        "artifact_id": 12744139913,
+        "artifact_zip_sha256": "16c9af849fdfdf3775155eb9ee49fd4918097f16641054394676ab1983125eee",
+        "unchanged_public_smoke_run": 40528861660,
+        "unchanged_public_smoke": "SUCCESS"
+      },
+      "public_trace": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "source_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "cardinal_single_object_moves": 54,
+        "unranked_role_eligible_moves": 42,
+        "unranked_role_rejected_moves": 12,
+        "prior_unranked_forecasts": 0,
+        "per_heldout_game_nonzero_candidate_key_veto_counts": {
+          "action_level_mismatch": 50,
+          "relative_role_mismatch": 28,
+          "insufficient_independent_donor_games": 7,
+          "static_or_conflicting_effect": 3,
+          "eligible_two_donor_key": 0
+        },
+        "total_per_target_candidate_key_exposures": 88
+      },
+      "interpretation": "After only removing strict area rank, 42/54 observed cardinal single-object movements have eligible unranked roles, but zero eligible two-donor target keys and zero forecasts. On the frozen nine-game PUBLIC trace, the ordered per-heldout-target nonzero candidate-key veto partition is 50 exact action/level mismatches, 28 relative-role mismatches, 7 insufficient independent donor games, 3 static/conflicting effects, zero eligible keys. These 88 counts are repeated per-target key exposures, NOT 88 independent transitions or predictions. The attribution order affects categories; not a proof of which isolated relaxation would improve forecasting. No agent change or policy promotion.",
+      "unchanged_agent_public": {
+        "games": 25,
+        "cap": 120,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "acceptance": "VERIFIED_NEGATIVE_LESSON_NO_POLICY_INTEGRATION",
+      "limitations": [
+        "PUBLIC post-hoc trace already aggregate benchmarked; not hidden holdout or prospective causal intervention.",
+        "Donor observations can be globally later than target.",
+        "Action/role veto counts are sequential and gate-order dependent; no policy benefit established.",
+        "No Kaggle submission, money, tokens, legal/license/publication decision, prize, novelty or income claim."
+      ]
+    },
+    "action_role_projected_counterfactual": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.action-role-projected-counterfactual-v1",
+      "hypothesis": "Separately remove exact non-click action, exact relative role, or both from donor matching while preserving level, ACTION6 coordinates, >=2 independent other games, unanimous nonstatic effect, unique candidate, bounds and prequential local precedence.",
+      "hypotheses": [
+        "static",
+        "within_game_replay_effect_static",
+        "exact_action_exact_role",
+        "action_ablated_role_exact",
+        "action_exact_role_ablated",
+        "action_and_role_ablated"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/action_role_counterfactual_audit.py",
+        "competitions/arc-agi-3/tests/test_action_role_counterfactual_audit.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "test_first": {
+        "red_commit": "a411af1d8f1ac199b89ea516d42c60c2658dfc3b",
+        "red_run": 40537863642,
+        "red_expected_error": "ModuleNotFoundError for action_role_counterfactual_audit",
+        "green_commit": "907f6f29efa7a8707fe10d2c20e8a4b83c5ed8b0",
+        "contract_run": 40538018917,
+        "contract_tests": "204/204 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40538018905,
+        "official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40538018904,
+        "frozen_public_replication": "SUCCESS",
+        "frozen_run": 40538018940,
+        "artifact_id": 12749621281,
+        "artifact_sha256": "bd273da93a6b5aea9a3568c8a1198688018331bd36027d70ccc84facf0f4de61"
+      },
+      "frozen_public": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "static_correct": 330,
+        "within_game_correct": 362,
+        "exact_correct": 362,
+        "action_ablated_correct": 362,
+        "role_ablated_correct": 362,
+        "both_ablated_correct": 362,
+        "exact_forecasts": 0,
+        "action_ablated_forecasts": 0,
+        "role_ablated_forecasts": 0,
+        "both_ablated_forecasts": 0,
+        "two_donor_unanimous_nonstatic_projected_rules_per_target": 0
+      },
+      "interpretation": "None of four projected donor representations produces an eligible >=2-other-game unanimous nonstatic rule or applicable held-out forecast on this frozen PUBLIC trace. No gain or regression. This is negative evidence for these isolated projected representations, not proof cross-game causal structure is absent. Synthetic test demonstrates action-only projection can predict when two agreeing donor games exist; conflicting/static witnesses and ambiguous roles abstain.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "limitations": [
+        "PUBLIC post-hoc donor observations may be globally later than target turns; not globally prequential.",
+        "ACTION6 coordinates deliberately remain exact; action ablation is only for non-click actions.",
+        "Projection changes representation, not a proven causal invariant.",
+        "No hidden holdout, Kaggle submission, money, token, terms or legal/publication decision."
+      ]
+    },
+    "projected_donor_consensus_diagnostic": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.projected-donor-consensus-decomposition-v1",
+      "test_first": {
+        "red_commit": "d317f93c99f5a4e74f18e1348bb400da10c4395d",
+        "red_run": 40548169265,
+        "red_reason": "expected ModuleNotFoundError",
+        "green_tests": "213/213",
+        "green_run": 40548473436
+      },
+      "implementation_commit": "e33930f64ea80ee2493492d08859a3d0237d0c4e",
+      "workflow_commit": "5bf95bb7d4a97b7ccfe2d026c9d853ae08857e63",
+      "ci": {
+        "contract": 40548473436,
+        "system_proof": 40548473147,
+        "official_public_smoke": 40548473127,
+        "frozen_nine_public_games": 40548473116,
+        "all": "SUCCESS"
+      },
+      "public_trace": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "target_key_exposure_note": "Counts below sum over held-out target games; they are not independent transitions or scored forecasts."
+      },
+      "projected_support_by_variant": {
+        "exact": {
+          "insufficient_donor_games": 7520,
+          "static_only": 721,
+          "contradictory_or_mixed": 35,
+          "unanimous_nonstatic": 0
+        },
+        "action": {
+          "insufficient_donor_games": 7204,
+          "static_only": 700,
+          "contradictory_or_mixed": 31,
+          "unanimous_nonstatic": 0
+        },
+        "role": {
+          "insufficient_donor_games": 1198,
+          "static_only": 314,
+          "contradictory_or_mixed": 32,
+          "unanimous_nonstatic": 0
+        },
+        "both": {
+          "insufficient_donor_games": 1194,
+          "static_only": 296,
+          "contradictory_or_mixed": 9,
+          "unanimous_nonstatic": 0
+        }
+      },
+      "target_overlap_by_variant": {
+        "exact": {
+          "insufficient_donor_games": 231,
+          "static_only": 6,
+          "contradictory_or_mixed": 3,
+          "unanimous_nonstatic": 0
+        },
+        "action": {
+          "insufficient_donor_games": 201,
+          "static_only": 16,
+          "contradictory_or_mixed": 12,
+          "unanimous_nonstatic": 0
+        },
+        "role": {
+          "insufficient_donor_games": 15,
+          "static_only": 93,
+          "contradictory_or_mixed": 13,
+          "unanimous_nonstatic": 0
+        },
+        "both": {
+          "insufficient_donor_games": 11,
+          "static_only": 88,
+          "contradictory_or_mixed": 7,
+          "unanimous_nonstatic": 0
+        }
+      },
+      "interpretation": "Across four projected hypotheses, no held-out target has a projected key with >=2 independent OTHER donor games and one unanimous nonstatic effect. Most exact/action key exposures have only one donor; relaxed role/both projections yield more static-only and conflicting evidence, not transferable nonstatic consensus. Sequential partition puts donor insufficiency before effect analysis. Post-hoc public attribution, not globally prequential or hidden holdout.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED_NO_VERIFIED_GAIN",
+      "limitations": [
+        "Public frozen sample only; donor evidence can be globally later",
+        "Key exposure counts are not independent game outcomes",
+        "No causal intervention, hidden evaluation, or score improvement"
+      ]
+    },
+    "conditional_geometry_conflict_audit": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.geometry-conditioned-donor-conflicts-v1",
+      "hypotheses": [
+        "H0_unconditional_conflict",
+        "H1_bounds_conditioned",
+        "H2_bounds_and_bbox_occupancy_conditioned"
+      ],
+      "test_first": {
+        "red_commit": "8e49eb52cfddbb808a846d1a587da73a2dcd450c",
+        "red_run": 40558006931,
+        "red_reason": "expected ModuleNotFoundError for absent conditional_world_conflict_audit",
+        "implementation_commit": "dc2b01eaf1e1a0a32f1e40886f356c7510405ad1",
+        "workflow_commit": "812559a7f2ec90f46c3462103ba139c3e61d60a3",
+        "green_tests": "221/221"
+      },
+      "ci": {
+        "contract_run": 40558393539,
+        "system_run": 40558393484,
+        "official_public_smoke_run": 40558393519,
+        "frozen_nine_public_run": 40558393609,
+        "all": "SUCCESS",
+        "artifact_id": 12757544026
+      },
+      "public_trace": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "witnesses": 1318,
+        "per_heldout_target_key_exposures_not_independent_transitions": {
+          "exact": {
+            "mixed": 35,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 3
+          },
+          "action": {
+            "mixed": 31,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 12
+          },
+          "role": {
+            "mixed": 32,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 13
+          },
+          "both": {
+            "mixed": 9,
+            "boundary_explained": 0,
+            "collision_explained": 0,
+            "target_overlap_mixed": 7
+          }
+        },
+        "two_independent_moving_donor_keys_after_collision_conditioning": 0
+      },
+      "interpretation": "Neither pre-action 64x64 boundary feasibility nor coarse destination bounding-box occupancy explains ANY of the mixed static/nonstatic projected donor keys on frozen PUBLIC data. Counts are repeated per-heldout-target key exposures. Negative evidence for THESE geometry-conditioned hypotheses, not all contextual world models. No donor forecasts or gameplay gain claimed.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "limitations": [
+        "Public post-hoc trace, no hidden holdout or randomized intervention",
+        "Donor games may be later in global chronology",
+        "Bounding-box collision is conservative and may not represent game semantics",
+        "No Kaggle submission, spend, tokens, terms, legal/license/publication decision, prize, novelty or income claim"
+      ]
+    },
+    "history_conditioned_conflicts": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.history-conditioned-donor-conflicts-v1",
+      "hypotheses": [
+        "H0_unconditional",
+        "H1_previous_exact_action",
+        "H2_previous_observed_scene_change",
+        "H3_joint_previous_action_and_scene_change"
+      ],
+      "test_first": {
+        "red_commit": "4c4d3a2f2ef0332ca26bb4f6a6b07ab8fded93df",
+        "red_contract_run": 40567089292,
+        "red_reason": "Expected ModuleNotFoundError for absent history_conditioned_conflicts; 222 discovered tests, 1 import error",
+        "green_candidate_commit": "f12e09efa81d5351af8e6170a52180a34ee30660",
+        "workflow_commit": "44391ee37196939a4ed4567ed52fd683aa55f1dc",
+        "green_tests": "232/232",
+        "contract_run": 40567273907
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40567273893,
+        "official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40567274002,
+        "frozen_nine_public": "SUCCESS",
+        "frozen_run": 40567273750
+      },
+      "public_trace": {
+        "games": 9,
+        "records": 864,
+        "same_level_transitions": 857,
+        "level_advances": 0,
+        "witnesses": 1318,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "per_heldout_target_key_exposures_not_independent_transitions": {
+          "exact": {
+            "mixed": 35,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 7,
+            "prior_action_still_conflicting": 28
+          },
+          "action": {
+            "mixed": 31,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 2,
+            "prior_action_still_conflicting": 29
+          },
+          "role": {
+            "mixed": 32,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 0,
+            "prior_action_still_conflicting": 32
+          },
+          "both": {
+            "mixed": 9,
+            "resolved_prev_action": 0,
+            "resolved_prev_change": 0,
+            "resolved_joint": 0,
+            "prior_action_insufficient": 0,
+            "prior_action_still_conflicting": 9
+          }
+        },
+        "supported_moving_contexts_all_variants_all_hypotheses": 0
+      },
+      "interpretation": "Pre-action prior exact action, prior observed scene-change, and their joint context did not resolve ANY mixed static/moving donor key with >=2 independent OTHER games in every observed conditional stratum. H1/H2/H3 produced zero supported moving conditional contexts and zero eligible cross-game forecasts. This is negative evidence for these observable history factors on the frozen PUBLIC trace, not proof that history or causal transfer never matters.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "limitations": [
+        "PUBLIC post-hoc key exposures are not independent predictions or a hidden holdout",
+        "Other donor games may be globally later; no randomized intervention",
+        "History derived from prior completed transitions only; RESET/level/turn boundaries clear state",
+        "Zero new gameplay/progress evidence; no Kaggle submission, spending, token request, terms, legal/license/publication decision, prize, novelty or income claim"
+      ]
+    },
+    "anchor_relative_world_factorization": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.anchor-relative-world-factorization-v1",
+      "hypotheses": [
+        "H0 local replay/effect/static",
+        "H1 absolute displacement under same pre-action nearest-anchor axis",
+        "H2 toward/away nearest anchor with signed axis and magnitude"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "test_first": {
+        "red_commit": "9cafc7faa6bc3929338ec0bb6084e019967c64f4",
+        "red_contract_run": 40576479795,
+        "red_reason": "expected missing module import",
+        "green_commit": "c3d08577523ec0fd22ebf37b79090eb45f238b99",
+        "green_tests": "241/241 PASS",
+        "green_contract_run": 40577227482,
+        "system_proof_run": 40577227462,
+        "unchanged_official_public_smoke_run": 40577227438,
+        "frozen_public_replication_run": 40577227741,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "static_correct": 330,
+        "local_baseline_correct": 362,
+        "absolute_correct": 362,
+        "relative_correct": 362,
+        "absolute_forecasts": 0,
+        "relative_forecasts": 0,
+        "independent_other_game_supported_rules_per_target": {
+          "absolute": 0,
+          "relative": 0
+        },
+        "level_advances": 0,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "artifact_id": 12767209016,
+        "artifact_zip_sha256": "ce2559cbb211055d3d2df889e134531c28dfa796771bfb0c0d5478d174e90abe"
+      },
+      "interpretation": "A new anchor-relative representation does not create two-independent-donor unanimous moving rules on this frozen PUBLIC sample. No counterfactual forecasts or gain. Synthetic tests verify positive ability and static/conflict/one-game vetoes. Negative evidence for these hypotheses on these data, not impossibility of general world factorization.",
+      "constraints": [
+        "No target outcome in donors",
+        "Exact ACTION6 coordinates retained",
+        "Ambiguous movers and invalid geometry abstain",
+        "Donor games may be globally later: not global prequential or hidden holdout",
+        "Agent/policy unchanged; no Kaggle submission, money, tokens, terms, license/publication, prize or income claim"
+      ]
+    },
+    "pre_action_three_world_probe_readiness": {
+      "status": "VERIFIED_NEGATIVE_READINESS_GATE_SHADOW_ONLY",
+      "protocol": "arc-agi3.pre-action-three-world-probe-readiness-v1",
+      "hypotheses": [
+        "H0 static scene",
+        "H1 absolute single-object displacement",
+        "H2 nearest-anchor toward/away displacement"
+      ],
+      "paths": [
+        "competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py",
+        "competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py",
+        ".github/workflows/arc-agent-remaining-public.yml"
+      ],
+      "method": "Read-only pre-action gate: H1 and H2 each require >=2 distinct OTHER donor games with unanimous nonstatic effect and static/conflict veto; all three forecasts must be pairwise distinct. Exact legal action, ACTION6 coordinates, unambiguous bounded mover, and a PRIOR same-target episode A->B->A object-scene reversal are required. Never execute candidate actions; object-scene reversal is not proof of latent-state safety.",
+      "test_first": {
+        "red_commit": "dff40799c3abbff451ccaaf11a29815dcd959bb7",
+        "red_contract_run": 40584540784,
+        "red_reason": "expected ModuleNotFoundError",
+        "implementation_commit": "8dfd0255e300c30c3baebab3bcc6b8b276d06c4d",
+        "workflow_commit": "0d3d39cb8a9948237726b889571073ebe46bccb1",
+        "green_contract": "252/252 PASS",
+        "green_contract_run": 40584800931,
+        "system_proof_run": 40584800706,
+        "unchanged_official_public_smoke_run": 40584800710,
+        "frozen_public_replication_run": 40584801090,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "observed_A_B_A_object_scene_reversals": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probe_candidates": 0,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7",
+        "artifact_id": 12772126040,
+        "artifact_zip_sha256": "a10d73c11a9063a01e1eff352b8e4523dbbfcffcd6a9195b605fbe956846ae48"
+      },
+      "interpretation": "Nine A->B->A object-scene reversals were observed prequentially, but zero independent-donor-supported three-world forecast disagreements were available. This is negative evidence for probe readiness on reused PUBLIC traces; no new independent causal evidence, no agent gain and no intervention. Donor games may be globally later.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "constraints": [
+        "No target outcome used before its action is evaluated",
+        "Two independent OTHER games per nonstatic hypothesis; conflicts/static veto",
+        "Observed object-scene reversal does not guarantee true safe reversibility",
+        "PUBLIC donor chronology post-hoc; no hidden holdout",
+        "No Kaggle submission, money, tokens, terms, license/publication decision, score, prize or income claim"
+      ]
+    },
+    "reversal_chronology_gate": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.reversal-proof-chronology-v1",
+      "purpose": "Prevent future or noncontiguous A->B->A object-scene reversal evidence from authorizing a counterfactual shadow candidate.",
+      "paths": [
+        "competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py",
+        "competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py"
+      ],
+      "behavior": "Every proof must carry integer start_turn/restored_turn, with 0 <= start_turn, restored_turn == start_turn + 1 and restored_turn < current_turn. Missing, malformed, future or nonadjacent proof abstains. Current-turn outcome remains unavailable until after scoring. RESET/level/discontinuity continue to clear episode history.",
+      "test_first": {
+        "red_commit": "71d6b2c3688e736c0b1ac2c9d43d566dd91adc7e",
+        "red_contract_run": 40592052848,
+        "red_result": "EXPECTED_FAILURE; new test call requires missing current_turn parameter",
+        "green_commit": "52e49c58b1f17515744f74f889b142604ceb8a08",
+        "green_contract_run": 40592138219,
+        "green_tests": "254/254 PASS",
+        "system_proof_run": 40592138337,
+        "unchanged_official_public_smoke_run": 40592138146,
+        "frozen_public_replication_run": 40592138255,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "observed_reversal_proofs": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probe_candidates": 0,
+        "comparison": "UNCHANGED_FROM_PRIOR_CHECKPOINT"
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "A real chronological lookahead vulnerability in the shadow probe API is closed by a tested fail-closed pre-action proof contract. No new independent causal evidence, supported probe, score gain, or policy promotion.",
+      "constraints": [
+        "No new game action or policy import",
+        "No hidden Kaggle submission, spend, tokens, terms, license/publication decision, prize or income claim"
+      ]
+    },
+    "episode_scoped_reversal_gate": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.reversal-proof-episode-scope-v1",
+      "purpose": "Reject A->B->A reversal proofs from an earlier RESET/level/discontinuous episode even when game, level, exact action, and object scene match.",
+      "paths": [
+        "competitions/arc-agi-3/tests/test_counterfactual_probe_readiness.py",
+        "competitions/arc-agi-3/experiments/counterfactual_probe_readiness.py"
+      ],
+      "behavior": "propose_probe requires explicit integer episode_start_turn, 0<=episode_start_turn<=current_turn; every reversal proof must start on/after this boundary, have adjacent start/restored turns and finish strictly before current_turn. The public shadow auditor resets episode_start_turn on discontinuity, RESET and level advance. Missing/malformed/future/cross-episode proof abstains.",
+      "test_first": {
+        "initial_test_fixture_typo_commit": "28f79ac8c641d775dd4d375288136a322c607603",
+        "typo_failure_run": 40600094162,
+        "corrected_red_commit": "a9964718a787f0632dffe6fc0437d525b9be90e6",
+        "red_contract_run": 40600232202,
+        "red_result": "EXPECTED semantic TypeError: propose_probe missing episode_start_turn (21 errors); fixture syntax typo corrected before implementation",
+        "implementation_commit": "8ee06a3691ece485f9a959bfbdf75cc87af139bd",
+        "green_contract_run": 40600394323,
+        "green_tests": "255/255 PASS",
+        "system_proof_run": 40600394296,
+        "unchanged_official_public_smoke_run": 40600394320,
+        "frozen_public_replication_run": 40600395107,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "object_effect_witnesses": 1318,
+        "observed_reversal_proofs": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probe_candidates": 0,
+        "comparison": "UNCHANGED_FROM_PRIOR_CHECKPOINT"
+      },
+      "unchanged_agent_public_suite": {
+        "games": 25,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "interpretation": "Confirmed a synthetic cross-episode proof-acceptance gap in the external shadow-probe API; closed with explicit episode boundary and tested abstention. No new independent causal evidence, gameplay gain, or policy promotion.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "constraints": [
+        "No new gameplay action or policy import",
+        "No Kaggle submission, spend, token, terms, license/publication decision, hidden score, prize or income claim"
+      ]
+    },
+    "prospective_counterfactual_ledger": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v1",
+      "purpose": "Freeze H0 static, H1 absolute displacement, H2 anchor-relative displacement BEFORE a prospective PUBLIC treatment; then score a visible-scene matched control from a separate episode, without claiming latent-state equivalence or causal identification.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "b188f25babd9eaca8aea423d843453b3fd55bd0c",
+        "red_contract_run": 40606923963,
+        "red": "EXPECTED ModuleNotFoundError: prospective_counterfactual_ledger",
+        "green_commit": "24fe697e56a80116b651309e34d7092e475a946b",
+        "green_contract_run": 40607063500,
+        "green_tests": "262/262 PASS",
+        "system_proof_run": 40607063468,
+        "unchanged_official_public_smoke_run": 40607063548,
+        "frozen_public_replication_run": 40607063507,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "controls": [
+        "Sealing accepts only exact pre-action plan fields, exact three distinct scene forecasts, bounded legal treatment/control actions, donor snapshot SHA256 and explicit episode/turn",
+        "Outcome scoring is separate and verifies commitment integrity, exact action, same visible before-scene, game, turn, distinct treatment/control episodes",
+        "Rejects future/outcome fields at seal time, mismatched contexts, altered plans, malformed evidence",
+        "Pure shadow code; no gameplay execution or agent import"
+      ],
+      "interpretation": "Synthetic contract and four CI gates verified; no new independent PUBLIC observations, no actual prospective sealed trial, no gameplay gain. A SHA256 digest alone cannot prove chronology: an independently timestamped Git/CI commitment must precede action. Visible-scene matched control cannot establish latent-state equivalence or causal effect.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "constraints": [
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income claim"
+      ]
+    },
+    "prospective_forecast_translation_invariant": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v1",
+      "purpose": "Prevent arbitrary scene edits being sealed as H1 absolute or H2 anchor-relative displacement forecasts.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "af371d9d8adf40af1ea24a58987c30c12b8682d4",
+        "red_contract_run": 40613664767,
+        "red_result": "EXPECTED 7 semantic failures in 265 tests: recolor, area change, diagonal motion, two movers, creation, deletion, impossible area",
+        "green_commit": "45dddcad1ed6e4e7890a0f41037b6286ea532dae",
+        "green_contract_run": 40613775579,
+        "green_tests": "265/265 PASS",
+        "system_proof_run": 40613775816,
+        "unchanged_official_public_smoke_run": 40613775877,
+        "frozen_nine_public_replication_run": 40613775619,
+        "ci_conclusions": "ALL_FOUR_SUCCESS"
+      },
+      "behavior": "seal_trial now validates every six-field descriptor area <= its bounding-box capacity; each H1/H2 forecast must preserve object count, color, area, width/height and every other object while moving exactly one rigid descriptor along exactly one cardinal axis. Competing worlds may move different objects. No game ID heuristic or target outcome input.",
+      "evidence": "Synthetic tests prove rejection of six non-translation effects and impossible descriptor; public CI regression checks pass. No new independent PUBLIC intervention or donor consensus.",
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "observed_A_B_A_reversals": 9,
+        "supported_three_world_disagreements": 0,
+        "eligible_shadow_probes": 0,
+        "comparison": "UNCHANGED"
+      },
+      "unchanged_agent_public_suite": {
+        "games": 25,
+        "first_levels_completed": 6,
+        "raw_local_scorecard": 0.5010037315187991
+      },
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Syntactic/physical forecast consistency does not prove causal correctness, donor support or external pre-action timestamp.",
+        "No actual preregistered matched PUBLIC trial or new independent evidence.",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_control_episode_precommit": {
+      "status": "VERIFIED_CONTRACT_TEST_FIRST_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v2",
+      "purpose": "Prevent post-hoc favorable control selection: bind exact control_episode in the outcome-blind Git-committed plan before any treatment/control observations.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "dabac11ba230e6be2138206d87f3626ba531f583",
+        "red_contract_run": 40619194883,
+        "red_result": "EXPECTED six errors from new mandatory pre-action control_episode field, 266 tests run",
+        "implementation_commit": "db54d497fd8f25ca15d13bf404459bceb1d2c9b4",
+        "version_commit": "59bfeafc315aa2b7f52d71711301ea7caf7e6796",
+        "green_contract_run": 40619429458,
+        "green_tests": "266/266 PASS",
+        "system_proof_run": 40619429496,
+        "unchanged_official_public_smoke_run": 40619429676,
+        "frozen_public_replication_run": 40619429509,
+        "ci_conclusions": "3 SUCCESS; FROZEN_REPLICATION_IN_PROGRESS_AT_STATE_WRITE"
+      },
+      "behavior": "seal_trial requires explicit nonempty control_episode distinct from treatment episode and includes it in canonical SHA256 commitment; evaluate_pair rejects control outcomes from any other episode. v2 is a breaking contract version; old v1 plans cannot silently be scored as v2.",
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "new_public_observations": 0,
+      "gameplay_gain": "NOT_DEMONSTRATED",
+      "limitations": [
+        "A Git-committed hash must still be independently timestamped before actual gameplay; code alone does not prove chronology.",
+        "Visible-scene matching does not prove latent-state equivalence or causality.",
+        "No new donor-supported three-world disagreement; no new Kaggle submission, spend, credentials, terms, licensing or publication decision."
+      ]
+    },
+    "chronological_prior_donor_worlds": {
+      "status": "VERIFIED_NEGATIVE_LESSON_SHADOW_ONLY",
+      "protocol": "arc-agi3.chronological-prior-game-donors-v1",
+      "purpose": "Compare H0 local replay/static, H1 absolute displacement, H2 anchor-relative movement with strict completed-earlier-game donors, eliminating globally future donor support and vetoes.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py"
+      ],
+      "test_first": {
+        "red_commit": "215c35a344366eae15039a3e2fda375cfdb2ceef",
+        "red_contract_run": 40625259745,
+        "red_result": "EXPECTED 3 errors of 269 tests: absent eligible_games argument and chronological report",
+        "implementation_commits": [
+          "4c761f696b0577fac01569f216bc3c67a849fed4",
+          "ade93edee0036c007546cdc5bcb3b293c2800d60"
+        ],
+        "green_tests": "269/269 PASS",
+        "green_contract_run": 40625449849
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40625449886,
+        "unchanged_public_smoke": "SUCCESS",
+        "public_smoke_run": 40625449809,
+        "frozen_nine_public": "SUCCESS",
+        "frozen_run": 40625449876
+      },
+      "frozen_public": {
+        "games": 9,
+        "same_level_transitions": 857,
+        "legacy_posthoc_absolute_forecasts": 0,
+        "legacy_posthoc_relative_forecasts": 0,
+        "strict_prior_absolute_forecasts": 0,
+        "strict_prior_relative_forecasts": 0,
+        "strict_prior_supported_rules_all_targets": 0,
+        "local_baseline_correct": 362,
+        "strict_prior_absolute_correct": 362,
+        "strict_prior_relative_correct": 362,
+        "source_trace_sha256": "1288b51222f910bb6e8c7869dfdea2777c5ab7ccf0dad72e606f0678e6e82bd7"
+      },
+      "interpretation": "Chronological donor eligibility removes future-game support and future-game veto leakage in shadow analysis. The stricter PUBLIC replay still has ZERO supported rules or moving forecasts; no predictive improvement, no new independent observations or hidden holdout. Synthetic tests verify future donors cannot authorize or veto an earlier prediction.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED",
+      "constraints": [
+        "Prior-game order is the frozen CI trace order, not independently timestamped intervention evidence",
+        "No new public intervention or policy promotion",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize or income claim"
+      ]
+    },
+    "prospective_anchor_axis_semantic_gate": {
+      "status": "VERIFIED_FAIL_CLOSED_SHADOW_ONLY",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v2",
+      "purpose": "Reject H2 anchor-relative forecasts that are orthogonal to the unique nearest pre-action anchor, or have tied/diagonal nearest anchors; H1 remains arbitrary single cardinal translation.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "fd678f410180f172c81f7cfc25a6aca68951f448",
+        "red_contract_run": 40630654113,
+        "red_result": "EXPECTED three semantic failures in 272 tests: orthogonal motion, diagonal nearest anchor, equidistant anchor tie",
+        "implementation_commit": "34707028b2b65375b1c3c7f086c821f84e1af744",
+        "green_contract_run": 40630763745,
+        "green_tests": "272/272 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public": "SUCCESS",
+        "system_run": 40630763616,
+        "public_smoke_run": 40630763755,
+        "frozen_run": 40630763560
+      },
+      "behavior": "H2 forecasts must move one rigid object along the axis of its uniquely nearest pre-action anchor (doubled bounding-box centers, Manhattan distance); either toward or away is permitted. Ambiguous ties and diagonal anchors abstain. Existing valid different-mover positive fixture preserved.",
+      "interpretation": "Synthetic semantic contract repair, not a new donor-supported world hypothesis, independent PUBLIC trial, gameplay improvement or causal effect. H0/H1/H2 still have zero eligible independent three-world probes in prior frozen data.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "policy_integration": "REJECTED_NO_NEW_EVIDENCE",
+      "constraints": [
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "outcome_blind_public_probe_schedule": {
+      "status": "VERIFIED_CONTRACT_ONLY_COLLECTION_NOT_EXECUTED",
+      "protocol": "arc-agi3.outcome-blind-public-probe-v1",
+      "purpose": "Freeze a nine-PUBLIC-game, 24-turn-per-game, game-agnostic legal-action-only schedule and strictly chronological earlier-game H0/H1/H2 donor audit before collecting new episodes.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "350d013ff86d8247e9d6de312f9d24360e69cda5",
+        "red_run": 40636877880,
+        "red_result": "EXPECTED ModuleNotFoundError for missing prospective_probe_schedule; 273 tests",
+        "implementation_commit": "9b46a025d44573220fd559005d8c5358ffc6b02c",
+        "fixture_fix_commit": "42bf5e8dfea8c1fdaf2dc13d49db25cacdc978e7",
+        "fixture_fix_note": "Initial green attempt failed 1/280 because manifest field no_outcome_conditioning violated test's outcome-field-free key rule; renamed to action_inputs; no agent regression.",
+        "green_run": 40637247308,
+        "green_tests": "280/280 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40637247311,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40637247320,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40637247318
+      },
+      "frozen_contract": {
+        "sample_size": 9,
+        "action_horizon": 24,
+        "selection": "SHA256 of fixed seed + public game ID, never score-ranked",
+        "action_choice": "turn number and advertised legal set only; ACTION1..6 cyclic with deterministic fallback; ACTION6 fixed grid clicks",
+        "donor_gate": "only earlier completed OTHER public games, no future-game support or veto",
+        "trace_provenance": "plan SHA256 required in every record",
+        "automatic_policy_promotion": false
+      },
+      "collection_attempt": "A separate PUBLIC collector script write was blocked by tool safety checks; it was not committed or executed. Do not infer new observations.",
+      "new_independent_public_observations": 0,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "interpretation": "Pre-action research protocol and audit contracts verified; no prospective episode collected, no independent causal evidence, no policy gain.",
+      "constraints": [
+        "Existing draft PR only; no game-ID action heuristic or target-outcome leakage",
+        "No Kaggle submission, spend, token/secret request, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_public_probe_continuity_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Reject stitched or incomplete consecutive visible observation chains in the frozen nine-game prospective PUBLIC probe audit before H0/H1/H2 donor scoring.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "9cb63ded39971cdd6d2923654b142f2c1436970a",
+        "red_contract_run": 40642334223,
+        "red_result": "EXPECTED five assertion failures (three malformed digest subtests, scene-chain mismatch, visible-frame-hash mismatch) among 284 tests; positive contiguous fixture passed.",
+        "implementation_commit": "48fcecf08f8ede8018268c261424c6dcffd6bb6a",
+        "green_contract_run": 40642475252,
+        "green_tests": "284/284 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40642475362,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40642475241,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40642475376
+      },
+      "gate": [
+        "Require lowercase 64-character SHA256 syntax for both pre/post visible-frame digests on every prospective row",
+        "Require adjacent same-game transitions to chain previous after_scene to next before_scene",
+        "Require adjacent same-game transitions to chain previous after_frame_sha256 to next before_frame_sha256 and previous level_after to next level_before",
+        "Reject any discontinuity before generating cross-game witnesses; no attempt to repair/guess frames"
+      ],
+      "limitations": [
+        "Digest shape and continuity do not authenticate the collector or independently prove timestamp, new data, or hidden latent state",
+        "The scheduled collector remains uncreated/unexecuted after prior safety block; no bypass attempted",
+        "Existing frozen nine-game PUBLIC replication is a separate prior dataset, not new scheduled probe evidence"
+      ],
+      "new_independent_public_observations": 0,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "next": "Collect new bounded PUBLIC observations only via an approved runner, with independently timestamped plan and trace provenance; then test H0/H1/H2 and matched controls without automatic promotion.",
+      "constraints": [
+        "No Kaggle submission, spending, tokens, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "horizon_complete_donor_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent prematurely terminated one-turn PUBLIC probe games from being counted as completed independent earlier-game donors for H1/H2.",
+      "protocol": "arc-agi3.outcome-blind-public-probe-v2",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "b57a31b750857393812330faaf583b85402230c1",
+        "red_contract_run": 40648007525,
+        "red_result": "EXPECTED one semantic failure among 285 tests: short first game incorrectly listed as completed prior donor",
+        "green_commit": "2e475e9fb06b1956131ea4ca29525d53400d8c88",
+        "green_contract_run": 40648145900,
+        "green_tests": "285/285 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_official_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "system_run": 40648145892,
+        "public_smoke_run": 40648145901,
+        "frozen_run": 40648145951
+      },
+      "gate": "Earlier game enters H1/H2 independent donor pool only after exactly 24 contiguous scheduled observations; shorter games are explicitly excluded even if collector advanced. Early wins remain conservatively excluded until separately authenticated terminal provenance is supported.",
+      "manifest": "Protocol version bumped v1->v2, so old v1 trace digests fail closed; roster, seed, action cycle, 24-turn horizon unchanged. No prospective collection had occurred.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Fixes synthetic donor-completion loophole; does not validate new world predictions or improve gameplay. Public frozen CI is unchanged agent and old data, not new prospective observations.",
+      "constraints": [
+        "No bypass of prior collector safety block",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "interrupted_full_horizon_donor_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Exclude a 24-row scheduled PUBLIC trace interrupted by mid-episode GAME_OVER/RESET from the pool of completed independent earlier-game H1/H2 donors.",
+      "protocol": "arc-agi3.outcome-blind-public-probe-v2",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "b853ccaabb4f6f17d11545fe1cdd4944435451b3",
+        "red_run": 40654563697,
+        "red_result": "EXPECTED one semantic assertion failure among 286 tests: full 24-row prior game containing a mid-episode RESET wrongly counted as eligible donor.",
+        "green_commit": "5aed549a54fe660b2929748272ff241088f7e732",
+        "green_run": 40654722287,
+        "green_tests": "286/286 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40654722250,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40654722206,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40654722201
+      },
+      "gate": "24-row earlier games qualify as donors only if there is no RESET after the initial row. Initial bootstrap RESET is allowed; any later RESET indicates interrupted episode and is reported under ineligible_interrupted_prior_games. Short games remain separately excluded.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Synthetic interrupted-episode donor leakage fixed. No new public game observations, causal forecast gain, score improvement or policy promotion.",
+      "constraints": [
+        "Previously blocked collector not executed or bypassed",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_public_scene_integrity_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Fail closed on invalid or physically impossible public object descriptors, including RESET rows previously skipped by downstream witnesses, and on negative level identifiers before H0/H1/H2 donor evaluation.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "17d579ba6b018e2584d3eb85c8020376dbd00f0c",
+        "red_contract_run": 40661866773,
+        "red_result": "EXPECTED three semantic failures among 289 tests: invalid RESET descriptor, area > bbox capacity, negative level",
+        "green_commit": "7d513f0e01e9f33bcb8f57c53de981973eaf6ff2",
+        "green_contract_run": 40662031579,
+        "green_tests": "289/289 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "system_run": 40662031575,
+        "unchanged_public_smoke": "SUCCESS",
+        "public_smoke_run": 40662031550,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40662032042
+      },
+      "gate": [
+        "Validate both pre- and post-scene descriptors on every row including RESET via existing _scene schema",
+        "Require descriptor area not to exceed bounding-box pixel capacity",
+        "Require nonnegative integer level_before and level_after before scoring"
+      ],
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Synthetic provenance/scene semantic contract hardening only; no new independent public episode, causal forecast, policy improvement, hidden score or prize claim.",
+      "constraints": [
+        "Previously blocked collector not executed or bypassed",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_horizon_completeness_reporting_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent a one-row-per-game partial prospective PUBLIC trace from being interpreted as a completed nine-game 24-turn H0/H1/H2 comparison.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "d8c50ed406416c571247275fdc7cddeb78e19eeb",
+        "red_contract_run": 40670242072,
+        "red_result": "EXPECTED two KeyError failures among 291 tests for missing horizon-completeness reporting fields",
+        "green_commit": "91e3b8fec88042004acdbfd34024928b7309177b",
+        "green_contract_run": 40670406732,
+        "green_tests": "291/291 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "system_run": 40670406765,
+        "public_smoke_run": 40670406679,
+        "frozen_run": 40670406657
+      },
+      "gate": "Trace returns trace_horizon_complete=false and enumerates incomplete_games unless EVERY preselected game has exactly 24 records; partial trace interpretation explicitly disallows horizon comparison. Complete trace reports completeness of row counts ONLY, not independently authenticated source or pre-action timing.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "interpretation": "Synthetic completeness-reporting contract only. No new public game observations, world-hypothesis evidence, causal identification, policy improvement, hidden score or prize claim.",
+      "constraints": [
+        "No bypass of previously blocked collector",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim"
+      ]
+    },
+    "prospective_interrupted_horizon_reporting_gate": {
+      "status": "VERIFIED_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "test_first": {
+        "red_commit": "f13eb92e51c51f3fa0678787eaa852392317936c",
+        "red_contract_run": 40677752805,
+        "red_result": "EXPECTED one semantic assertion failure: interrupted full-row-count trace incorrectly reported complete (292 tests)",
+        "implementation_commit": "c07637748ca7c9106478444f7c5825957cc3da23",
+        "green_result": "292/292 PASS"
+      },
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "behavior": "A 24-row game containing a mid-horizon GAME_OVER/RESET is reported in interrupted_games; trace_horizon_complete=false and interpretation rejects uninterrupted horizon comparison, even if all nine games contain 24 rows. Full uninterrupted synthetic controls retain previous interpretation. Frozen v2 schedule, manifest, donor gating and competition agent remain unchanged.",
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40677877752,
+        "system_proof": "SUCCESS",
+        "system_run": 40677877781,
+        "unchanged_public_smoke": "SUCCESS",
+        "public_smoke_run": 40677877711,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40677877834
+      },
+      "interpretation": "Synthetic reporting-integrity correction only. No new public episode, independent timestamp, H0/H1/H2 causal forecast, matched control, gameplay gain or Kaggle submission. Prior collector safety block not bypassed."
+    },
+    "public_probe_prestate_enum_integrity": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "method": "Fail closed on pre-action GameState enum before H0/H1/H2 witness construction: NOT_PLAYED/GAME_OVER require RESET, WIN cannot continue, NOT_FINISHED alone authorizes scheduled legal action; reject arbitrary nonempty strings.",
+      "source": "https://github.com/arcprize/ARC-AGI",
+      "test_path": "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py",
+      "implementation_path": "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+      "test_first": {
+        "red_commit": "a38211f5e771c9fc149de089cc15a787883bb11b",
+        "red_run": 40685105663,
+        "red_failure": "4 expected invalid-state subtests failed (293 tests)",
+        "negative_evidence": "Initial implementation commit a8099e097ae21d1cea2f66322088255cc20dc659 incorrectly used synthetic IN_PROGRESS as running state. Official SDK running state is NOT_FINISHED. This erroneous assumption was NOT promoted; corrected test-first via RED commit 992be798a4254969b64ce065522aabdbdb579803 (7 errors / 293 tests) and corrected implementation.",
+        "corrected_red_commit": "992be798a4254969b64ce065522aabdbdb579803",
+        "corrected_red_run": 40685528304,
+        "corrected_implementation_commit": "2b9bfad8b1b7d95959add3ea19fa96adc74e36a4"
+      },
+      "ci": {
+        "contract": "SUCCESS 293/293 run 40685623438",
+        "system_proof": "SUCCESS run 40685623546",
+        "unchanged_public_smoke": "SUCCESS run 40685623345",
+        "frozen_remaining_public_replication": "SUCCESS run 40685623337"
+      },
+      "effect_on_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Synthetic test fixtures only; no authenticated prospective public episode collection",
+        "The previous blocked collector was not run or bypassed",
+        "No Kaggle submission, spending, terms, secrets or legal decision"
+      ]
+    },
+    "public_probe_frame_scene_identity_gate": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent fabricated H1/H2 donor motion when identical visible-frame SHA256 maps to contradictory deterministic object scenes, including across different public games.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "160a68fa42056f73447e6116cd9065b6b5fd7cb9",
+        "red_run": 40693157188,
+        "red_result": "EXPECTED 2 semantic assertion failures among 296 tests: within-row and cross-game same-frame contradictory scenes; third control permits distinct frame digests with identical scenes.",
+        "green_commit": "0cd47f3ec5b0a394a1e08edbb6ab7df3df88cc27",
+        "green_run": 40693360236,
+        "green_result": "296/296 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40693360236,
+        "system_proof": "SUCCESS",
+        "system_run": 40693360224,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40693360247,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40693360226
+      },
+      "behavior": "Within and across the preregistered nine PUBLIC games, one visible-frame digest must map to exactly one canonical deterministic object scene. Distinct digests may map to the same scene (e.g., HUD/animation). The gate rejects conflicting object motion before constructing prior-game H0/H1/H2 witnesses.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "A matching SHA256 is not independent proof that a frame came from the official engine or that its timestamp precedes action.",
+        "Synthetic tests only; no new prospective public episodes or causal predictions.",
+        "Previously blocked collector was not run or bypassed; no Kaggle submission, spend, secrets, terms, legal/license/publication decision, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_scene_order_invariance": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Treat object detections as an unordered canonical multiset when validating adjacent frames of the same public episode; do not reject valid object-list reorderings while still rejecting genuinely changed scenes or broken frame-hash chains.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "fb533edabc3d23a05e49257ca932c227bbb1f1bc",
+        "red_contract_run": 40703688508,
+        "red_result": "EXPECTED one semantic error among 297 tests: reordered but equivalent object detections rejected as discontinuous public observation chain",
+        "green_commit": "6e3acd86442a28cd091a0ef2a904214505c5943d",
+        "green_contract_run": 40704002019,
+        "green_result": "297/297 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS run 40704002019",
+        "system_proof": "SUCCESS run 40704001936",
+        "unchanged_official_public_smoke": "SUCCESS run 40704001896",
+        "frozen_remaining_public_replication": "SUCCESS run 40704001861"
+      },
+      "behavior": "Consecutive before/after scene continuity uses _scene canonicalized sorted object tuples rather than raw list order. Visible-frame SHA256 continuity and cross-game frame-to-scene identity checks remain unchanged.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "This is an input-order invariance correction, not evidence of improved causal prediction or gameplay.",
+        "No new authenticated prospective public episode, independently timestamped pre-action provenance, or matched control.",
+        "Previously blocked collector not run/bypassed; no Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "matched_counterfactual_disagreement": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "Compare competing H1 absolute-axis and H2 anchor-relative world forecasts only on identical pre-action turns where both issue different concrete predictions; prevent differing forecast coverage from being mistaken for head-to-head predictive superiority.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "463306e0d8f82e86bf0c439a75e03decde5cebaf",
+        "red_contract_run": 40712749516,
+        "red_result": "EXPECTED exactly one KeyError missing paired_disagreements among 298 tests",
+        "green_commit": "934491a5c26779cf6a87f8bb49d599c7374b71e9",
+        "green_contract_run": 40712925885,
+        "green_result": "298/298 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_official_public_smoke": "SUCCESS",
+        "frozen_remaining_public_replication": "SUCCESS",
+        "system_run": 40712926065,
+        "public_smoke_run": 40712925865,
+        "frozen_run": 40712925752
+      },
+      "behavior": "For each eligible same-level turn, count paired_forecasts only when BOTH hypotheses emit concrete forecasts; paired_agreements if identical; paired_disagreements if distinct; then score absolute_wins_on_disagreement, relative_wins_on_disagreement, neither_correct_on_disagreement, and H0 baseline correctness on exactly those disagreement turns. Unpaired forecasts do not create a head-to-head win. No change to frozen v2 plan, donor selection, H0/H1/H2 prediction, competition agent or policy.",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Synthetic test only: no authenticated new prospective public episodes, independent pre-action timestamp, causal intervention or measured score gain.",
+        "Earlier blocked collector was not executed or bypassed.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "strict_prior_research_acceptance_gate": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "purpose": "Prevent post-hoc globally later donor games from satisfying H1/H2 research acceptance gates; only strictly earlier OTHER-game prequential forecasts can pass. Retain all-game forecasts as descriptive diagnostics.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py"
+      ],
+      "test_first": {
+        "red_commit": "ccab7f48d8a394b13df37ac74cdc46745fcb6798",
+        "red_contract_run": 40723597130,
+        "red_result": "EXPECTED 1 missing acceptance_basis KeyError among 299 tests",
+        "green_commit": "e8f4e3a236e7160a0bc4a9b2af261ce2475857c5",
+        "green_contract_run": 40723780367,
+        "green_result": "299/299 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40723780367,
+        "system_proof": "SUCCESS",
+        "system_run": 40723780408,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40723780391,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40723780609
+      },
+      "behavior": "acceptance and research_gates_passed now derive from strict-prior per-game scores, not all-game post-hoc donor rules; chronological_prior_game_only.per_game exposes matched prequential metrics; acceptance_basis=STRICT_PRIOR_GAME_ONLY. Existing post-hoc per_game/total remain diagnostics. Synthetic adversarial gate test shows favorable post-hoc coverage cannot compensate for zero strict-prior forecasts.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Frozen existing public replay is not new prospective evidence or an independent holdout.",
+        "No newly authenticated pre-action episode or independently timestamped matched control.",
+        "Previously blocked collector not executed or bypassed; no Kaggle submission, spend, tokens, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "strict_prior_world_discrimination_gate": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "Prevent H1/H2 research acceptance from passing on aggregate strict-prior forecast coverage and level advances when there is no matched H1-versus-H2 counterfactual discrimination against the same-turn H0 baseline.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/relational_world_factorization.py",
+        "competitions/arc-agi-3/tests/test_relational_world_factorization.py"
+      ],
+      "test_first": {
+        "red_commit": "b48a280fac34451a61069dbdcd0eb159ffa4f16e",
+        "red_contract_run": 40732498893,
+        "red_result": "EXPECTED exactly 1 semantic assertion failure among 300 tests: research gate passed with zero paired H1/H2 disagreements",
+        "implementation_commit": "d7af5ce31a0f77d438835c7062be63b9d311c82e",
+        "green_test_fixture_commit": "9e534ce60a1a0fe00dde459ba560bca1babdaa7d",
+        "green_contract_run": 40732781469,
+        "green_result": "300/300 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "contract_run": 40732781469,
+        "system_proof": "SUCCESS",
+        "system_run": 40732781606,
+        "unchanged_official_public_smoke": "SUCCESS",
+        "public_smoke_run": 40732781496,
+        "frozen_nine_public_replication": "SUCCESS",
+        "frozen_run": 40732781507
+      },
+      "behavior": "Research gate now requires >=3 independent strictly-prior target games with paired H1/H2 disagreement, candidate wins > opposing world wins on those exact turns, and candidate wins > H0 wins on those same turns. Existing positive/negative game, forecast coverage and level-advance gates remain. Discrimination metrics are exposed in acceptance; no new policy import.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "frozen_plan_unchanged": true,
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Synthetic gate contract only; frozen public replay is not a new independent holdout or authenticated pre-action prospective experiment.",
+        "Previously blocked collector not executed or bypassed.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_probe_provenance_reporting": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "A structurally complete 9x24 public probe JSONL is not independent proof of official source or pre-action timestamps. Prevent the audit from labeling unverified trace bytes as NEW PUBLIC action trajectories.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_probe_schedule.py",
+        "competitions/arc-agi-3/tests/test_prospective_probe_schedule.py"
+      ],
+      "test_first": {
+        "red_commit": "6a2a34b4497e657a2a63ffb66bf33dcbaffc16c5",
+        "red_contract_run": 40743177173,
+        "red_result": "EXPECTED 2 semantic failures (1 missing provenance_authenticated KeyError, 1 misleading full-horizon interpretation assertion) among 302 tests",
+        "green_commit": "fbc2602006dfb6a48c8ae244b2255559c13968ff",
+        "green_contract_run": 40743374862,
+        "green_result": "302/302 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40743374862,
+        "system_run": 40743374963,
+        "public_smoke_run": 40743374888,
+        "frozen_run": 40743375139
+      },
+      "behavior": "The structural trace_horizon_complete metric remains separate. provenance_authenticated=false and eligible_for_prospective_evidence=false are explicit. Full 9x24 traces receive STRUCTURALLY_COMPLETE_UNAUTHENTICATED_PUBLIC_PROBE_TRACE, not a NEW_PUBLIC claim. No change to precommitted schedule, H0/H1/H2 forecasts, donor eligibility, contest agent or policy.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "This is reporting contract hardening on synthetic data only; cannot authenticate source or pre-action timestamps.",
+        "Collector safety block respected, not bypassed.",
+        "No Kaggle submission, money, tokens, terms, legal/license/publication choice, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_paired_control_world_forecasts_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "date": "2026-10-28",
+      "purpose": "Prevent a preregistered treatment/control comparison from scoring only treatment-arm H0/H1/H2 forecasts while selecting favorable control predictions after outcomes. Commit both action-conditioned world predictions before observing either arm.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "8378a858d1eb386932a06d515a9cb4be607771b7",
+        "red_contract_run": 40751373445,
+        "red_result": "EXPECTED 2 ValueError errors among 304 tests: old v2 schema rejects control_forecasts",
+        "implementation_commit": "c372fa7538134053292e0af6c54fdd026ae2514d",
+        "fixture_commit": "4b7f18432438508a6bcc2aa2b508540cf3745e63",
+        "green_result": "304/304 PASS",
+        "green_contract_run": 40751646409
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40751646409,
+        "system_run": 40751645668,
+        "public_smoke_run": 40751645509,
+        "frozen_run": 40751645581
+      },
+      "behavior": "Matched-pair ledger protocol v3 requires explicit control_forecasts for H0 static/H1 absolute/H2 anchor-relative in the sealed plan. Control H1/H2 may abstain to static or predict one rigid cardinal translation; moving H2 must follow unique nearest pre-action anchor axis. Evaluator scores each world on treatment and control separately and exposes paired_world_exact_hits, while retaining treatment world_exact_hits for diagnostics. Altered control forecasts invalidate the SHA256 seal; old v2 plans fail closed rather than silently upgrade.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "A SHA256 seal alone does not independently prove it preceded gameplay; timestamped Git/CI receipt still required.",
+        "Control scenes matching visible before-scenes do not prove latent-state equivalence or causal effect.",
+        "No new independently sourced PUBLIC episodes or confirmed H0/H1/H2 prediction advantage; this is synthetic protocol hardening only.",
+        "Previously blocked collector not executed or bypassed; no Kaggle submission, spending, credentials, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_paired_fit_diagnostic_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Expose explicit per-world exact-fit count across the separately preregistered treatment and control arms (0..2), plus the unique world fitting BOTH arms or null; prevent a treatment-only hit being read as a paired-world fit.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "44f5585245d368e2ab2e140872b68e10ece8f9c4",
+        "red_contract_run": 40760387624,
+        "red": "EXPECTED one KeyError: paired_world_fit_counts, among 305 tests",
+        "green_commit": "c9936e652478454bf6e63ea6e9fb50d909570ca9",
+        "green_contract_run": 40760601737,
+        "green": "305/305 PASS",
+        "system_proof_run": 40760601714,
+        "unchanged_public_smoke_run": 40760602106,
+        "frozen_nine_public_replication_run": 40760601724,
+        "ci_conclusions": "ALL_FOUR_SUCCESS"
+      },
+      "diagnostic": "H1 fitting treatment and static control produces H0=1/H1=2/H2=1 and unique H1; H2 treatment gives unique H2; when no treatment world fits, all 1 and unique null. Counts describe visible-scene observational fit only.",
+      "controls": [
+        "Pure read-only shadow diagnostic, no change to sealed plan schema, frozen schedule, action policy, game runner, Kaggle or submission",
+        "Does not authenticate pre-action timestamp, actual public episodes, independent reset or latent-state equivalence",
+        "Causal effect remains false and no automatic policy promotion"
+      ],
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_episodes": 0,
+      "confirmed_gameplay_gain": false
+    },
+    "prospective_paired_world_arm_discrimination_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "A unique world fitting both preregistered treatment and control can still be identified exclusively by treatment forecasts when all control-world forecasts coincide. Expose per-pair discriminating arms so a treatment-only contrast is not misreported as two-arm world discrimination.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "36b869278a86301a6fcde4e68da35b304b7a66e0",
+        "red_contract_run": 40769500580,
+        "red_result": "EXPECTED exactly 1 KeyError pairwise_discriminating_arms among 306 tests",
+        "green_commit": "a07df602b6257985d0e4c43840e51ec5c18b7e6c",
+        "green_contract_run": 40769745739,
+        "green_result": "306/306 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40769745739,
+        "system_run": 40769745710,
+        "public_smoke_run": 40769745610,
+        "frozen_run": 40769745678
+      },
+      "behavior": "pairwise_discriminating_arms maps each H0/H1/H2 pair to the exact preregistered action arms where its visible-scene predictions differ; control_discriminating_pairs counts control-arm separations. Synthetic test shows all-static control predicts 0 control pairs despite a unique H1 full paired fit; H1-moving control gives exactly 2 discriminating pairs. Observational diagnostic only; no causal proof.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Pre-action SHA256 alone is not independent chronology proof; no authenticated new public episodes or latent-state matched resets.",
+        "Frozen probe schedule and competition agent unchanged; blocked collector not executed.",
+        "No Kaggle submission, spending, credentials, terms, license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_paired_world_observed_arm_winners_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Separate precommitted pairwise forecast contrast from observed winners in each treatment/control arm; expose opposing-world outcomes instead of inferring a common winner from potential discrimination.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "81d25cb58775c777a5733df098ec103ee7e8c4fd",
+        "red_contract_run": 40777422940,
+        "red_result": "EXPECTED one KeyError pairwise_observed_winner_by_arm among 307 tests",
+        "implementation_commit": "6029bbe66c96eb351cea6546abe4f80b879b2aaa",
+        "green_contract_run": 40777638709,
+        "green_result": "307/307 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40777638709,
+        "system_run": 40777638716,
+        "public_smoke_run": 40777638883,
+        "frozen_run": 40777638711
+      },
+      "behavior": "For each H0/H1/H2 pair and each preregistered arm, report NON_DISCRIMINATING if forecasts coincide; otherwise report the uniquely exact-hit world or NEITHER. Synthetic adversarial example: H1 wins treatment while H0 wins control for H0/H1, preventing a false common two-arm winner. No policy promotion.",
+      "frozen_plan_unchanged": true,
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_world_forecast_gain": 0,
+      "limitations": [
+        "Visible-scene scoring on synthetic fixtures only; no independent pre-action timestamp, authenticated new public episode, latent-state equivalence, causal proof, or gameplay gain.",
+        "Frozen schedule and competition agent unchanged; previously blocked collector not executed or bypassed.",
+        "No Kaggle submission, spending, tokens, terms, legal/license/publication decision, hidden score, prize, invention or income claim."
+      ]
+    },
+    "prospective_action6_canonical_click_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Reject noncanonical zero-padded ACTION6 coordinates so the same physical click cannot masquerade as distinct preregistered treatment and control actions.",
+      "test_first": {
+        "red_commit": "c044184affe9c10e3dc522b1265165f8d4a56cca",
+        "red_contract_run": 40784846355,
+        "red": "EXPECTED 3 subtest assertion failures among 308 tests: ACTION6@01,1, ACTION6@1,01, ACTION6@001,1 were accepted as different from ACTION6@1,1",
+        "green_commit": "9d55c86574f92b0dd30d17ea0db0a3b1de64377b",
+        "green_contract_run": 40785102462,
+        "green_tests": "308/308 PASS",
+        "system_proof_run": 40785102471,
+        "unchanged_public_smoke_run": 40785102483,
+        "frozen_nine_public_replication_run": 40785102515,
+        "ci_conclusions": "ALL_SUCCESS"
+      },
+      "implementation": "ACTION6 click coordinates must be canonical nonnegative decimal integers with no leading zeros (except literal 0); legal distinct canonical coordinates remain accepted.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "limitations": [
+        "Synthetic contract only; no new independently authenticated PUBLIC episodes or pre-action timestamps",
+        "No demonstrated causal world-model improvement, public score gain or policy promotion",
+        "No collector execution or bypass, Kaggle submission, spending, credentials, terms or legal/publication choice"
+      ]
+    },
+    "prospective_trial_registry_episode_uniqueness_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Fail closed on repeated treatment/control episode identities across independently counted H0/H1/H2 matched-pair preregistrations; prevent double-counting and choosing among conflicting seals for the same episode.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "6f36052b79991ec32c923cd3410c0ff121a4d86b",
+        "red_contract_run": 40791514280,
+        "red_result": "EXPECTED one ImportError for missing audit_trial_registry among 309 tests",
+        "green_commit": "c330b751e3c25c2773ad5e241fbd95136cc16a30",
+        "green_contract_run": 40791627523,
+        "green_result": "309/309 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40791627523,
+        "system_run": 40791627521,
+        "public_smoke_run": 40791627463,
+        "frozen_run": 40791627465
+      },
+      "behavior": "Pure audit_trial_registry validates SHA256 seals and refuses repeated (game, episode) identities in any treatment or control role, including exact duplicates and conflicting forecasts; accepts two distinct pairs. Reports registry counts, but never authenticates chronology or episode provenance.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "registry_applied_to_public_gameplay": false,
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "This is an opt-in read-only integrity helper, not yet wired to an authenticated prospective experiment runner.",
+        "Independent timestamp, official episode provenance, and reset/latent-state equivalence remain unverified.",
+        "Frozen schedule, agent and blocked collector unchanged; no Kaggle submission, spending, credentials, terms or legal/publication decisions."
+      ]
+    },
+    "prospective_pairwise_two_arm_evidence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Classify each H0/H1/H2 pair across both preregistered action arms: two-arm consistent winner versus opposing winners, nondiscriminating arm or neither matching; never promote one-arm evidence to two-arm corroboration.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "22acf7de6ec2d05d7d03758d4b348e4241dde8c4",
+        "red_contract_run": 40798730898,
+        "red_result": "EXPECTED failure for missing pairwise_two_arm_evidence field",
+        "implementation_commit": "e790627c746fdda322b11df99b7c6ea2691456da",
+        "green_contract_run": 40798811353,
+        "green_result": "SUCCESS (full contract suite)"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40798811353,
+        "system_run": 40798811428,
+        "public_smoke_run": 40798811351,
+        "frozen_run": 40798811404
+      },
+      "behavior": "pairwise_two_arm_evidence returns CONSISTENT with winner only when BOTH arms discriminate and the SAME H0/H1/H2 world wins; OPPOSING for different world winners, NON_DISCRIMINATING for an identical forecast in either arm, NEITHER when an arm matches neither world. All synthetic/observational; no causal proof.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "No authenticated pre-action chronology, public episode provenance or latent-state matched reset.",
+        "Frozen contest agent/schedule and blocked collector untouched; no Kaggle submission, spending, tokens, terms or legal/publication decisions."
+      ]
+    },
+    "prospective_registry_two_arm_aggregation_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Aggregate explicit H0/H1/H2 CONSISTENT/OPPOSING/NON_DISCRIMINATING/NEITHER two-arm evidence only after every trial seal and unique episode identity is validated; reject malformed or mismatched matched outcomes before any counts are returned.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "7fc81d218c3f697d613ac4d8e88894c03a50655c",
+        "red_contract_run": 40804827006,
+        "red_result": "EXPECTED contract failure for absent evaluate_trial_registry import",
+        "green_commit": "cbffb84e213f3e65a5954f77ebabf526aac86a82",
+        "green_contract_run": 40804910844,
+        "green_result": "SUCCESS (full contract suite)"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40804910844,
+        "system_run": 40804910838,
+        "public_smoke_run": 40804910840,
+        "frozen_run": 40804910843
+      },
+      "behavior": "Pure evaluate_trial_registry rejects duplicate or conflicting treatment/control episode identities across the batch, rejects invalid matched outcomes, and returns per-world-pair status counts and consistent-winner counts without misclassifying OPPOSING evidence as corroboration. Test fixture: one H1/H1 CONSISTENT and one H1/H0 OPPOSING; duplicate and wrong-action rows fail closed.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "registry_applied_to_authenticated_public_gameplay": false,
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic two-pair test only; no independently authenticated new PUBLIC episode, pre-action timestamp or latent-state matched reset.",
+        "No actual gameplay runner integration, policy promotion, causal gain, Kaggle submission, spending, tokens, terms, legal/license/publication decision.",
+        "Existing frozen agent and schedule, and previously blocked collector unchanged."
+      ]
+    },
+    "prospective_nondiscriminating_miss_priority_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent an identical, nondiscriminating forecast pair from masking an observed miss by both worlds on either preregistered arm; preserve negative competing-world evidence.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "0d6a5dc4b66738de637f821654ccf21ca1dace2c",
+        "red_contract_run": 40810257699,
+        "red_result": "EXPECTED 1 assertion failure among 312 tests: identical control forecasts incorrectly returned NON_DISCRIMINATING despite both missing the actual scene",
+        "green_commit": "8869d5d203ae1ca2fe2c6c3ef210a04929e5e4cb",
+        "green_contract_run": 40810471015,
+        "green_result": "312/312 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40810471015,
+        "system_run": 40810470978,
+        "public_smoke_run": 40810470989,
+        "frozen_run": 40810471030
+      },
+      "behavior": "On an arm with equal H0/H1/H2 pair forecasts, return NEITHER if both forecasts miss the actual visible scene, otherwise NON_DISCRIMINATING; a NEITHER arm takes priority over an otherwise nondiscriminating arm in two-arm classification. Test checks both control-arm miss and treatment-arm miss.",
+      "negative_evidence": "Prior classification suppressed a failed competing-world prediction behind a nondiscriminating label; corrected without claiming causal effect.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic counterfactual ledger tests only; no independently authenticated prospective PUBLIC episodes or pre-action timestamps",
+        "No matched latent reset or demonstrated causal/world-model predictive gain",
+        "Frozen contest agent and probe schedule unchanged; blocked collector not executed or bypassed",
+        "No Kaggle submission, spend, credentials, terms or legal/license/publication decision"
+      ]
+    },
+    "prospective_registry_per_world_falsification_accounting_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Expose explicit per-world treatment/control exact-hit and miss counts and full two-arm fits across validated matched-pair registry, preserving failed world predictions independently of pairwise winners.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "e5436ae9b3a5b0790714bf96e587fb962ebaaf6e",
+        "red_contract_run": 40815922733,
+        "red_result": "EXPECTED one KeyError world_arm_exact_hits among 312 tests",
+        "green_commit": "d7475a4005fce6da32e836fcbdff3ad04a665f60",
+        "green_contract_run": 40816009781,
+        "green_result": "312/312 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40816009781,
+        "system_run": 40816009804,
+        "public_smoke_run": 40816009896,
+        "frozen_run": 40816009827
+      },
+      "behavior": "Pure evaluate_trial_registry reports world_arm_exact_hits, world_arm_misses and world_complete_pair_hits for H0/H1/H2 across every validated treatment/control pair; an observed H1/H1 pair and an H1/H0 opposing pair yield H1 2 treatment hits, 1 control hit, 1 complete-pair hit, and explicit misses for H0/H2. No causal inference.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Only synthetic observational matched-pair fixtures; no independently authenticated PUBLIC episodes, pre-action chronology, or latent-state matched reset.",
+        "Frozen competition agent/schedule and blocked collector untouched.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication choices, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_canonical_trial_identity_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent whitespace-padded game or episode identifiers from disguising one matched PUBLIC observation as multiple independent treatment/control pairs.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "635faa9b35902c83e5ed4dcbb0a35ceff9976c58",
+        "red_contract_run": 40821577410,
+        "red_result": "EXPECTED one assertion failure among 313 tests: whitespace-aliased episode accepted",
+        "implementation_commit": "12aa344cb00f0a7f1b2260735f105473cdf8a7f0",
+        "green_contract_run": 40821713367,
+        "green_result": "313/313 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40821713367,
+        "system_run": 40821713672,
+        "public_smoke_run": 40821713411,
+        "frozen_run": 40821713416
+      },
+      "behavior": "Machine trial game/episode/control_episode identifiers reject whitespace and ASCII controls before sealing, scoring, or registry audit; the original whitespace-alias registry attack fails closed. No normalization of distinct valid identities or claim of authenticated episode provenance.",
+      "negative_evidence": "Before fix, padded episode IDs could bypass duplicate-episode registry protection while passing SHA256 sealing; reproduced by test-first RED.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic integrity test only; no independently authenticated new PUBLIC episodes or pre-action timestamp.",
+        "No latent-state matched reset, causality or score improvement demonstrated.",
+        "Existing agent, frozen public schedule and previously blocked collector untouched.",
+        "No Kaggle submission, spending, tokens, terms or legal/license/publication choices."
+      ]
+    },
+    "prospective_two_arm_probe_design_selection_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Select a candidate H0/H1/H2 preregistered matched treatment/control design by explicit two-arm counterfactual prediction contrasts, abstaining when all controls are nondiscriminating; no action uncertainty or game-ID heuristic.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "1315a23cdc1dd6d9bc1ee6009da183b5f0bbc136",
+        "red_contract_run": 40827338227,
+        "red_result": "EXPECTED ImportError select_discriminating_trial; 1 error in 314 tests",
+        "implementation_commit": "ea464e3bf3eb0d840f5d8f45a35076edac058efa",
+        "adversarial_test_commit": "6a1aa10e29b8f64bf13db75c0ad09e6bae735166",
+        "green_contract_run": 40827539357,
+        "green_result": "314/314 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40827539357,
+        "system_run": 40827539397,
+        "public_smoke_run": 40827539363,
+        "frozen_run": 40827539401
+      },
+      "behavior": "Pure select_discriminating_trial validates every candidate using seal_trial; counts hypothesis pairs with different treatment AND control predictions; prioritizes highest two-arm coverage then control coverage, deterministic action-only tie-break; returns None when zero two-arm contrasts. Invalid candidate fails closed; duplicate candidates do not affect selection. Does not execute gameplay or authenticate timestamps/resets.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic counterfactual plans only; no independently authenticated prospective PUBLIC episode or independent pre-action timestamp.",
+        "Visible-scene differences are not latent-state reset equivalence or causal evidence.",
+        "Contest agent, frozen public probe schedule and blocked collector untouched.",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score or prize claim."
+      ]
+    },
+    "prospective_single_decision_cohort_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent a counterfactual H0/H1/H2 probe selector from cherry-picking high-discrimination plans across different games, turns, episodes, visible pre-action scenes, or donor snapshots; compare action alternatives only at one frozen decision point.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "2bf5d1e5e2366d9649ab69c548d9a802e9dd3218",
+        "red_contract_run": 40833419496,
+        "red_result": "EXPECTED 6 assertion failures in one new test among 315 tests: mismatched game/episode/control_episode/turn/donor/before accepted",
+        "green_commit": "a7ac66036ba9e780b7518b236c09a2b5470fe598",
+        "green_contract_run": 40833560396,
+        "green_result": "315/315 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40833560396,
+        "system_run": 40833560518,
+        "public_smoke_run": 40833560397,
+        "frozen_run": 40833560530
+      },
+      "behavior": "All candidate designs are validated before ranking; their game, treatment/control episode IDs, turn, normalized before scene, and immutable donor snapshot SHA256 must match. Different action/forecast alternatives within the same cohort remain legal; any cross-cohort candidate fails closed.",
+      "negative_evidence": "Prior selector accepted cross-context candidate lists, so a high-discrimination plan could win by switching the decision point rather than comparing actions under the same pre-action evidence. Reproduced in RED contract run.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Only synthetic tests of design consistency, not authenticated PUBLIC gameplay or independent pre-action timestamp.",
+        "Visible before-scene equality and shared donor hash do not prove latent reset equivalence.",
+        "No policy promotion, frozen schedule or blocked collector change, Kaggle submission, spend, tokens, terms, license/publication choice, hidden score or prize claim."
+      ]
+    },
+    "prospective_action_forecast_coherence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent competing pre-action experiment designs from assigning contradictory H0/H1/H2 scene predictions to the same action under one fixed decision point and donor snapshot, including treatment/control arm swaps.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "bb263f8b1e970699b2835b80bf3dcfd35ae9d9cc",
+        "red_contract_run": 40840603274,
+        "red_result": "EXPECTED one assertion failure among 316 tests: conflicting ACTION4 forecast accepted",
+        "implementation_commit": "0635354c5f18e26452340093a6973c33940d219f",
+        "green_commit": "c6e498952c175ad66211b10289d1b409a1596b4e",
+        "green_contract_run": 40840752577,
+        "green_result": "316/316 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40840752577,
+        "system_run": 40840752514,
+        "public_smoke_run": 40840752521,
+        "frozen_run": 40840752509
+      },
+      "behavior": "select_discriminating_trial validates one consistent three-world forecast per action across all candidate plans/arms within the same frozen cohort; exact repeated forecasts remain valid, conflicting forecasts raise before ranking. Distinct-action candidates remain comparable. No agent import or policy integration.",
+      "negative_evidence": "Previously the selector could optimize apparent two-arm discrimination by assigning incompatible H1 forecasts to the same ACTION4 when that action moved between control and treatment. Reproduced in RED contract run.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic pre-action forecast consistency only; no independent public gameplay or independently timestamped preregistration.",
+        "Matching visible scenes and donor snapshot do not establish latent reset equivalence or causal effect.",
+        "Frozen agent/schedule and blocked collector untouched; no Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score or prize claim."
+      ]
+    },
+    "prospective_unicode_trial_identity_gate_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Reject Unicode format/invisible characters and compatibility-normalization aliases in machine trial game/episode/control_episode identities before sealing or registry independence counting.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "ce2d4912b467f9abf72ded5260b4a9f807275866",
+        "red_contract_run": 40846561357,
+        "red_result": "EXPECTED 15 assertion failures in one adversarial test among 317 tests: zero-width, bidi and fullwidth identity aliases accepted",
+        "implementation_commit": "2a59172bfee198a57ab7cb74ef51d2d8790ce530",
+        "green_contract_run": 40846698708,
+        "green_result": "317/317 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40846698708,
+        "system_run": 40846698693,
+        "public_smoke_run": 40846698675,
+        "frozen_run": 40846698808
+      },
+      "behavior": "_text rejects Unicode category C (control, format, surrogate, private-use, unassigned) and non-NFKC-stable identities while retaining canonical NFC international text; rejects misleading episode aliases before sealing/scoring/registry audit.",
+      "negative_evidence": "Before fix, an episode with a zero-width suffix or a compatibility fullwidth glyph passed sealing and could bypass registry duplicate identity checks. RED reproduced 15 subtest failures.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetically demonstrated canonicalization integrity, not authenticated episode provenance, independent pre-action chronology, latent-state matched reset or causal prediction gain.",
+        "No change to frozen contest agent, public probe schedule or blocked collector.",
+        "No Kaggle submission, spending, credentials, terms, legal/license/publication choice, hidden score, prize or income claim."
+      ]
+    },
+    "prospective_cross_episode_forecast_coherence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Reject contradictory H0/H1/H2 pre-action forecasts for one physical action across independently named matched episodes when game, turn, normalized visible scene and donor snapshot are identical; different donor model versions remain valid.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "067eee231c9dba089e0b58e407caea30f06d0459",
+        "red_contract_run": 40855016453,
+        "red_result": "EXPECTED exactly one assertion failure among 318 tests: conflicting cross-episode H1 control forecast accepted",
+        "implementation_commit": "2890538756c027b25a212179160781facf3c62a1",
+        "green_contract_run": 40855184729,
+        "green_result": "318/318 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40855184729,
+        "system_run": 40855184857,
+        "public_smoke_run": 40855184583,
+        "frozen_run": 40855184763
+      },
+      "behavior": "audit_trial_registry now enforces one world-forecast map per (game, turn, canonical before-scene, donor snapshot SHA256, physical action) across separate sealed episode pairs and treatment/control arms; conflicting plans fail closed before registry evidence aggregation. A distinct donor snapshot is allowed. Shadow-only; no automatic gameplay or policy integration.",
+      "negative_evidence": "Previously unique episode IDs allowed contradictory forecasts for the same physical action under the same frozen model context, permitting post-hoc fit across registered trials. Reproduced by test-first RED.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic registry-integrity evidence only; no independently authenticated PUBLIC episode or pre-action chronology.",
+        "Matching visible scene/donor does not prove latent-state matched reset or causality.",
+        "Agent, frozen public schedule and blocked collector unchanged.",
+        "No Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income."
+      ]
+    },
+    "prospective_forecast_design_dependence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Separate repeated observational matched-pair counts from independent forecast-design diversity when the same donor snapshot, visible pre-action context, actions and H0/H1/H2 predictions recur under new episode names.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "a14fc87b14d0516c4b83405c31c46670b3fa2572",
+        "red_contract_run": 40863470931,
+        "red_result": "EXPECTED one KeyError distinct_forecast_designs among 319 tests; logs independently inspected",
+        "implementation_commit": "44adae53192509a200e0b283685558a82c2cc084",
+        "green_contract_run": 40863628838,
+        "green_result": "319/319 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40863628838,
+        "system_run": 40863628862,
+        "public_smoke_run": 40863628837,
+        "frozen_run": 40863628815
+      },
+      "behavior": "Registry and scored aggregate now report distinct_forecast_designs and max_forecast_design_reuse. Design SHA256 excludes treatment/control episode labels but includes game, turn, visible before scene, immutable donor digest, both actions, and all three-world forecasts on both arms. Two distinct episodes with identical forecasts remain two observational pairs but one forecast design; different donor snapshot counts as a distinct design. Existing scoring counts are unchanged.",
+      "negative_evidence": "Before this change two repeated identical H1-consistent designs were counted as two consistent observational pairs without any explicit report that both came from one forecast design. RED reproduced missing dependence diagnostic; no claim of statistically independent replication.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Forecast-design diversity is not independent data provenance or proof of separate latent resets.",
+        "Synthetic tests only; no independently authenticated pre-action timestamps or new PUBLIC H0/H1/H2 episodes.",
+        "Agent, frozen public schedule and blocked collector untouched; no Kaggle submission, spend, credentials, terms, legal/license/publication choice, hidden score, prize or income."
+      ]
+    },
+    "prospective_replicated_design_opposing_winners_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Flag incompatible H0/H1/H2 two-arm CONSISTENT winners observed in separate episodes sharing the same sealed forecast design; preserve negative evidence instead of interpreting repeated design observations as independent confirmation.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "f61f07735be85f902f61e0b19d9459ea8aec97f5",
+        "red_contract_run": 40870971215,
+        "red_result": "EXPECTED one KeyError designs_with_opposing_replication_winners_by_pair among 320 tests; logs independently inspected",
+        "green_commit": "f6e29541d77424ff39f72eac777eaf8efb2c34f6",
+        "green_contract_run": 40871136466,
+        "green_result": "320/320 PASS"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40871136466,
+        "system_run": 40871136463,
+        "public_smoke_run": 40871136468,
+        "frozen_run": 40871136548
+      },
+      "behavior": "evaluate_trial_registry now groups valid CONSISTENT H0/H1/H2 pairwise winners by episode-independent normalized forecast-design SHA256, then reports designs_with_opposing_replication_winners_by_pair. An H1/H1 two-arm winner and H0/H0 two-arm winner from one frozen design count as one conflicting design, order-invariant; repeated same winner counts zero; different donor snapshots are distinct designs. Existing winner/score totals unchanged.",
+      "negative_evidence": "Before this change, raw consistent-winner counts could show one H1 and one H0 victory from the same repeated design without explicitly flagging contradictory replication; RED reproduced missing diagnostic.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic outcome fixtures only; opposing observational winners are not authenticated independent resets or causal falsification.",
+        "No independently timestamped pre-action seal, new authenticated PUBLIC episode, or policy/score gain.",
+        "Frozen contest agent/schedule and blocked collector untouched; no Kaggle submission, spending, tokens, terms, legal/license/publication decision, hidden score, prize or income."
+      ]
+    },
+    "prospective_role_invariant_forecast_design_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Prevent treatment/control arm labels from inflating distinct H0/H1/H2 forecast-design counts when two physical actions and all three world predictions are unchanged under a role swap.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "fdbab29ddb357eb01d7eaad7428b1fa805433e73",
+        "red_contract_run": 40879629351,
+        "red_result": "EXPECTED one AssertionError 2 != 1 among 321 tests; GitHub job log independently inspected",
+        "green_commit": "c307cff5465fa583e0b58ec4484edbf78f15b6e8",
+        "green_contract_run": 40879815989,
+        "green_result": "321/321 PASS; GitHub job log independently inspected"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40879815989,
+        "system_run": 40879816002,
+        "public_smoke_run": 40879815976,
+        "frozen_run": 40879816146
+      },
+      "behavior": "Both audit_trial_registry and evaluate_trial_registry now use a shared action-sorted forecast-design SHA256 over game, turn, before scene, donor digest and action-specific H0/H1/H2 predictions. Swapping treatment/control names while preserving physical action forecasts counts as one forecast design and exposes opposing observed winners under the same design. Distinct donor snapshots remain separate; existing per-pair score totals unchanged.",
+      "negative_evidence": "Before fix, role-swapped identical action/forecast designs were counted as 2 distinct designs; RED reproduced. Role labels do not independently diversify counterfactual predictions.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic fixtures only, no independently authenticated PUBLIC gameplay or pre-action seal chronology.",
+        "Role-invariant forecast-design identity does not prove equal latent resets or independent replication.",
+        "Contest agent, frozen schedule and blocked collector unchanged; no Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income."
+      ]
+    },
+    "prospective_repeated_design_action_outcome_divergence_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Report divergent visible outcomes for the SAME physical action under a repeated frozen H0/H1/H2 forecast design, including when neither replication produces opposing complete two-arm world winners. Arm swaps cannot hide divergence.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "c79afeb805abbd2c4265fd425f41ec82ef032a98",
+        "red_contract_run": 40888915695,
+        "red_result": "EXPECTED one KeyError for missing designs_with_divergent_action_outcomes among 322 tests; job log independently inspected",
+        "green_commit": "e45710e55a3988b3af5cc8f514fbe6f1df803aec",
+        "green_contract_run": 40889095127,
+        "green_result": "322/322 PASS; GitHub job log independently inspected"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "SUCCESS",
+        "frozen_nine_public_replication": "SUCCESS",
+        "contract_run": 40889095127,
+        "system_run": 40889095458,
+        "public_smoke_run": 40889095188,
+        "frozen_run": 40889094973
+      },
+      "behavior": "evaluate_trial_registry now emits designs_with_divergent_action_outcomes (distinct forecast designs containing at least one physical action with multiple observed visible scenes) and divergent_design_action_pairs (number of design/action groups with conflicting scenes). Compares outcomes by action within role-invariant forecast-design identity, not episode or arm labels. Previous per-world/pairwise counts remain unchanged.",
+      "negative_evidence": "Previously, repeated identical forecast designs with a different observed scene for ACTION4 but the same ACTION3 scene could evade the opposing-complete-winner diagnostic. Synthetic RED reproduced the missing visibility; this is evidence of protocol blind spot, not independent PUBLIC environment stochasticity.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Synthetic fixtures only; no independently authenticated PUBLIC episodes, pre-action chronology or latent matched resets.",
+        "Divergent visible outcomes can arise from differing hidden reset state, stochasticity, animation/HUD or measurement; cannot assign causal mechanism.",
+        "No agent/policy, frozen schedule, blocked collector, Kaggle submission, spend, credentials, terms, legal/license/publication decision, hidden score, prize or income change."
+      ]
+    },
+    "prospective_repeated_design_stable_world_winners_v3": {
+      "status": "VERIFIED_SYNTHETIC_CONTRACT_ONLY_NO_NEW_PUBLIC_EVIDENCE",
+      "protocol": "arc-agi3.prospective-three-world-matched-pair-v3",
+      "purpose": "Quarantine apparent two-arm H0/H1/H2 observational wins when the same forecast design is repeated but action outcomes diverge, winners oppose, or any pair is nondiscriminating. Do not count differently named episodes as independent evidence.",
+      "paths": [
+        "competitions/arc-agi-3/experiments/prospective_counterfactual_ledger.py",
+        "competitions/arc-agi-3/tests/test_prospective_counterfactual_ledger.py"
+      ],
+      "test_first": {
+        "red_commit": "c9b8f02f30f6da8caaf69b6cb184c75c65d1f879",
+        "red_contract_run": 40898883024,
+        "red_result": "EXPECTED one KeyError for absent repeated_design_stable_winners_by_pair among 323 tests; GitHub job logs independently inspected",
+        "green_commit": "8f349908d75ec5e51019282b8c3cf784b43f5095",
+        "green_contract_run": 40899214281,
+        "green_result": "323/323 PASS; GitHub job log independently inspected"
+      },
+      "ci": {
+        "contract": "SUCCESS",
+        "system_proof": "SUCCESS",
+        "unchanged_public_smoke": "IN_PROGRESS_AT_STATE_WRITE",
+        "frozen_nine_public_replication": "IN_PROGRESS_AT_STATE_WRITE",
+        "contract_run": 40899214281,
+        "system_run": 40899214188,
+        "public_smoke_run": 40899214277,
+        "frozen_run": 40899214280
+      },
+      "behavior": "evaluate_trial_registry now reports repeated_design_stable_winners_by_pair: at most one observational winner per frozen design and hypothesis pair, only when >=2 named pairs for that design have identical visible outcomes for each physical action and unanimously CONSISTENT two-arm winners. Singletons, divergent actions, opposing winners, any NON_DISCRIMINATING/NEITHER and distinct donor snapshots do not count. Raw scoring and prior diagnostics remain unchanged.",
+      "negative_evidence": "Before this gate, raw consistent-winner counts could appear to corroborate a world using duplicated designs even when repeated visible outcomes contradicted each other. Synthetic test-first RED reproduced missing conservative aggregation, not independent PUBLIC model failure.",
+      "effect_on_competition_agent": "NONE_SHADOW_ONLY",
+      "new_independent_public_observations": 0,
+      "confirmed_gameplay_gain": false,
+      "limitations": [
+        "Named episode IDs are not independent reset authentication; this metric is internal consistency only.",
+        "No independently authenticated PUBLIC pre-action chronology, latent matched reset, causal model or gameplay improvement.",
+        "Frozen competition agent, public schedule and blocked collector unchanged.",
+        "No Kaggle submission, spend, tokens, terms, legal/license/publication decision, hidden score, prize or income."
+      ]
+    },
+    "prior_noop_soft_penalty_20261030": {
+      "status": "OFFICIAL_PUBLIC_PAIRED_NULL_NO_ACTION_ENUM_EXPOSURE_NOT_PROMOTED",
+      "intent": "Test a strict-prior soft cardinal-action no-op penalty against the exact frozen agent on the same official public game cohort and action budget, without game-ID routing or Kaggle submission.",
+      "hypotheses": {
+        "H0": "No local-score or action-cost improvement over frozen baseline.",
+        "H1": "Repeated observed exact-state cardinal no-ops can be softly deprioritized to save actions and advance levels.",
+        "H2": "No-ops can be setup or reversible actions; soft penalties may regress useful exploration."
+      },
+      "outcome_before_action_prediction": "Click-only trajectories remain unchanged; mixed-cardinal choices may diverge after prior exact no-ops, potentially saving actions, but not assumed to generalize.",
+      "pre_registered_workflow": ".github/workflows/arc-agent-prior-noop-ab.yml",
+      "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+      "red": {
+        "commit": "32384db970fbd837ee927428b2834905590903ec",
+        "workflow_run": 41129545796,
+        "contract_failure": "ModuleNotFoundError: prior_noop_penalty_variant; 373 tests, 1 import error"
+      },
+      "green": {
+        "commit": "a88fab9a929f2d12080dd87f5639b3d56ec467f4",
+        "contract_run": 41130528174,
+        "contract_result": "377/377 PASS; original frozen agent unchanged"
+      },
+      "official_public_ab": {
+        "source_head": "2284878d577cef77ce68d2083d6f272760d58305",
+        "workflow_run": 41130704282,
+        "job_id": 124320553379,
+        "artifact_id": 13013535798,
+        "artifact_sha256": "758510caf042e8bf10f82500fb20567e9e903600546c6a38414c52a4ef669b8b",
+        "status": "COMPLETED_SUCCESS",
+        "games": 25,
+        "budget_per_game": 500,
+        "baseline_first_levels": 7,
+        "candidate_first_levels": 7,
+        "baseline_local_score": 0.5019709375909188,
+        "candidate_local_score": 0.5019709375909188,
+        "local_score_delta": 0,
+        "action_enum_differences": 0,
+        "pre_action_action_rows_per_arm": 12525,
+        "first_level_observed_pre_action_counts_equal_in_all_7_common_wins": true,
+        "first_level_observed_counts": {
+          "cd82": 43,
+          "lf52": 94,
+          "m0r0": 420,
+          "r11l": 39,
+          "sp80": 98,
+          "tn36": 44,
+          "vc33": 5
+        },
+        "scorecard_comparator_action_cost_available": false,
+        "independent_job_log_action_row_audit": true
+      },
+      "interpretation": "Two independent executions on the same reused official 25 public games and 500-action budget returned exact 7 vs 7 first levels, local 0.5019709375909188 vs 0.5019709375909188, and 0 action enum differences across 12,525 pre-action slots/arm. Second execution preserves complete redacted action traces, and first-level observation counts match for all 7 wins. No measurable policy effect or generalization; isolated candidate NOT PROMOTED. Action6 coordinates not in action-enum trace, but generator only changes cardinal scoring and click-only contract preserved.",
+      "effect_on_competition_agent": "NONE_FROZEN_AGENT_UNCHANGED",
+      "official_evaluation_schedule": "UNCHANGED",
+      "collector": "UNCHANGED",
+      "kaggle_submission": "NONE",
+      "legal_spend_secrets": "NONE",
+      "second_public_ab_with_complete_trace": {
+        "status": "COMPLETED_SUCCESS_SAME_BUDGET_PUBLIC_NULL",
+        "source_head": "e078e3142c65d9e2b046a4e42eeea90864c3e219",
+        "workflow_run": 41131538315,
+        "job_id": 124323421112,
+        "artifact_id": 13013920387,
+        "artifact_sha256": "01fc3afb8fbff579e10eee6db2e273454b82ec384402746b1ca558a883d13336",
+        "zip_crc": "PASS",
+        "games": 25,
+        "budget_per_game": 500,
+        "baseline_first_levels": 7,
+        "candidate_first_levels": 7,
+        "baseline_local_score": 0.5019709375909188,
+        "candidate_local_score": 0.5019709375909188,
+        "local_score_delta": 0,
+        "action_enum_differences": 0,
+        "pre_action_rows_per_arm": 12525,
+        "complete_action_traces": true,
+        "common_first_level_action_cost_delta": 0,
+        "first_level_pre_action_counts": {
+          "cd82": 43,
+          "lf52": 94,
+          "m0r0": 420,
+          "r11l": 39,
+          "sp80": 98,
+          "tn36": 44,
+          "vc33": 5
+        },
+        "new_first_level_games": [],
+        "lost_first_level_games": [],
+        "improved_games": [],
+        "regressed_games": [],
+        "anonymous_api_key_redacted_in_preserved_artifact": true
+      },
+      "logging_fix": {
+        "defect": "Official runner action trace printed to stderr; tee captured stdout only, so initial artifact lacked action rows and comparator reported cost unavailable.",
+        "local_red_green": "Mock stderr ACTION1 trace missing under stdout-only tee; present under 2>&1 | sed redaction | tee, with synthetic secret absent.",
+        "fix_commit": "e078e3142c65d9e2b046a4e42eeea90864c3e219",
+        "scope": "ISOLATED_WORKFLOW_ONLY_OFFICIAL_EVALUATION_SCHEDULE_UNCHANGED"
+      }
+    }
+  }
+}

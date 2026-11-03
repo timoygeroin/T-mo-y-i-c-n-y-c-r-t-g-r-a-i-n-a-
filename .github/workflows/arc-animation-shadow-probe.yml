@@ -1,0 +1,82 @@
+name: ARC-AGI-3 isolated animation-frame shadow public A-B
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-animation-shadow-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public_animation_shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify preregistered shadow instrumentation contract
+        working-directory: competitions/arc-agi-3
+        run: |
+          python -m unittest discover -s tests -p 'test_animation_observability.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Prepare official public engine
+        run: |
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          (cd arc-starter && make setup PYTHON=python3.12)
+      - name: FROZEN same-budget 25 public games at 500 actions
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-animation-frozen.log
+      - name: SHADOW animation instrumented exact frozen source
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/animation_observability_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-animation-shadow.log
+      - name: Same-budget scorecard and transient-frame analysis
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-animation-frozen.log arc-animation-shadow.log --output arc-animation-score-delta.json | tee arc-animation-score-summary.log
+          python - <<'PY'
+          import collections, json, re
+          from pathlib import Path
+          log = Path('arc-animation-shadow.log').read_text()
+          pat = re.compile(r'ARC_ANIMATION_PROBE game=(\S+) step=(\d+) frames=(\d+) transient_distinct=(\d+) reverted=(\d+) level_delta=(-?\d+)')
+          rows = [dict(game=m[0], step=int(m[1]), frames=int(m[2]), distinct=int(m[3]), reverted=int(m[4]), level_delta=int(m[5])) for m in pat.findall(log)]
+          score = json.loads(Path('arc-animation-score-delta.json').read_text())
+          summary = dict(schema='mondayid.arc3.animation_shadow_public.v1',
+                         experiment='SHADOW_OBSERVABILITY_NOT_POLICY_GAIN',
+                         games=score['games'], budget_per_game=500,
+                         frozen_first_levels=score['baseline_completed_levels'],
+                         shadow_first_levels=score['candidate_completed_levels'],
+                         frozen_local_score=score['baseline_local_score'],
+                         shadow_local_score=score['candidate_local_score'],
+                         level_delta=score['candidate_completed_levels']-score['baseline_completed_levels'],
+                         score_delta=score['local_score_delta'],
+                         improved_games=score['improved_games'], regressed_games=score['regressed_games'],
+                         multi_frame_transitions=len(rows),
+                         distinct_intermediate_transitions=sum(r['distinct']>0 for r in rows),
+                         terminal_reversions=sum(r['reverted'] for r in rows),
+                         games_with_reversions=sorted({r['game'] for r in rows if r['reverted']}),
+                         max_frames=max((r['frames'] for r in rows), default=1),
+                         action_coordinate_parity='NOT_LOGGED',
+                         independent_reset_pairing=False, unseen_games=False,
+                         policy_promoted=False, kaggle_hidden_score='UNKNOWN')
+          Path('arc-animation-shadow-result.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(summary,sort_keys=True))
+          if summary['level_delta'] or summary['score_delta']:
+              raise SystemExit('SHADOW POLICY PARITY FAILURE: investigate, no promotion')
+          PY
+      - name: Preserve public raw traces and summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-animation-shadow-public-500
+          path: |
+            arc-animation-frozen.log
+            arc-animation-shadow.log
+            arc-animation-score-delta.json
+            arc-animation-score-summary.log
+            arc-animation-shadow-result.json
+          if-no-files-found: ignore

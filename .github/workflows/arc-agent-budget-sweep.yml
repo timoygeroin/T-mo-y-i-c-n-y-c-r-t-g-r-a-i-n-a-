@@ -1,0 +1,46 @@
+name: ARC-AGI-3 frozen agent action-budget sensitivity
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-agent-budget-sweep.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  budget_sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve official runner and environment
+        run: |
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          cd arc-starter && make setup PYTHON=python3.12
+      - name: Frozen agent baseline at 120-action experiment cap
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=120) | tee arc-budget120.log
+      - name: Identical frozen agent at declared 500-action self-cap
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-budget500.log
+      - name: Compare action budget effects, no policy modification
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-budget120.log arc-budget500.log --output arc-budget-sweep-result.json | tee arc-budget-summary.log
+      - name: Preserve local budget sweep evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-budget-sensitivity
+          path: |
+            arc-budget120.log
+            arc-budget500.log
+            arc-budget-sweep-result.json
+            arc-budget-summary.log
+          if-no-files-found: ignore

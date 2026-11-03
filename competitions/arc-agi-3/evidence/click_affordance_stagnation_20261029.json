@@ -1,0 +1,103 @@
+{
+  "schema": "mondayid.arc-agi3.click-affordance-stagnation.v1",
+  "date_utc": "2026-10-29",
+  "status": "PUBLIC_IN_SAMPLE_POSITIVE_STAGNATION_GATE_NOT_PROMOTED_PENDING_INDEPENDENT_REPLICATION",
+  "source_pr": 196,
+  "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "official_public_protocol": {
+    "runner": "arcprize/ARC-AGI-3-Kaggle-Starter",
+    "python": "3.12",
+    "games": 25,
+    "steps_parameter": 500,
+    "printed_actions_per_game": 501,
+    "seed_pairing_verified": false,
+    "unseen_games": false,
+    "hidden_kaggle_score": false
+  },
+  "preliminary_affordance": {
+    "source_commit": "7110a9afdb90ac4e9c53999707bb128bac95f350",
+    "run": 40930426220,
+    "job": 123647071001,
+    "artifact": 12922197982,
+    "baseline_levels": 7,
+    "candidate_levels": 8,
+    "baseline_local_score": 0.5019709375909188,
+    "candidate_local_score": 0.23498456250078095,
+    "local_score_delta": -0.2669863750901379,
+    "improved_games": [
+      "lp85"
+    ],
+    "regressed_games": [],
+    "first_level_action_index_changes": {
+      "r11l": [
+        39,
+        241
+      ],
+      "vc33": [
+        5,
+        76
+      ],
+      "tn36": [
+        44,
+        260
+      ],
+      "lp85": [
+        null,
+        196
+      ]
+    },
+    "interpretation": "One extra first level but major local-score regression: uniform-first delays three fast click-only wins. Reject unconditional gate."
+  },
+  "stagnation_gate": {
+    "source_commit": "9986e572c5caf565b746469c8abffbec6d5425e4",
+    "run": 40931259433,
+    "job": 123649983859,
+    "artifact": 12923300849,
+    "policy": "Only when available action set is exactly ACTION6, level is zero, and at least 128 prior actions have elapsed, reorder to uniform-first. Otherwise frozen policy unchanged.",
+    "baseline_levels": 7,
+    "candidate_levels": 8,
+    "baseline_local_score": 0.5019709375909188,
+    "candidate_local_score": 0.5055889364012254,
+    "local_score_delta": 0.0036179988103065552,
+    "improved_games": [
+      "ft09"
+    ],
+    "regressed_games": [],
+    "first_level_action_index_changes": {
+      "ft09": [
+        null,
+        311
+      ]
+    },
+    "seven_frozen_first_level_action_indices_preserved": {
+      "tn36": 44,
+      "lf52": 94,
+      "cd82": 43,
+      "vc33": 5,
+      "r11l": 39,
+      "sp80": 98,
+      "m0r0": 420
+    },
+    "decision": "PROMISING_PUBLIC_IN_SAMPLE_NOT_PROMOTED",
+    "caution": "Threshold 128 selected after seeing same-cohort results; no independent held-out game/seed replication. Positive public result is not sufficient evidence of generalizable improvement."
+  },
+  "test_first": {
+    "affordance_red": "33abd0655c44788c95c84f9e077366ebd651f321",
+    "affordance_red_run": 40930302171,
+    "affordance_green": "42b65594818201f24393cb16ef773c055c67a0eb",
+    "stagnation_red": "a16d40c9d1c57daf7bbe72f8193f6aa76023602f",
+    "stagnation_green": "1cbf822824f64d1cb4e9569b25be469f56c411d5",
+    "final_contract_run": 40931259132
+  },
+  "safety": {
+    "competition_agent_mutated": false,
+    "official_schedule_mutated": false,
+    "collector_mutated": false,
+    "auto_promoted": false,
+    "submission": false,
+    "spend": false,
+    "terms": false,
+    "legal": false
+  },
+  "next_gate": "Independent repeat run and preferably held-out official public games/seeds with outcome-before-action logging. Only then consider policy integration; avoid in-sample threshold tuning."
+}
