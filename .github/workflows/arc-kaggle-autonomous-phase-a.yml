@@ -97,6 +97,57 @@ jobs:
           make submit
           echo "[PHASE A] Kaggle notebook push returned success. Competition rerun still requires a separate authenticated submission."
           make status
+      - name: Submit Kaggle code competition Phase B from completed notebook
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          cd arc-starter
+          export KAGGLE_API_TOKEN="$(cat .kaggle/access_token)"
+          KERNEL="mondayid/arc-prize-2026-arc-agi-3-mondayid"
+          COMP="arc-prize-2026-arc-agi-3"
+          complete=0
+          for attempt in $(seq 1 48); do
+            output="$(.venv/bin/kaggle kernels status "$KERNEL" 2>&1)" || output="Transient Kaggle status error"
+            printf '[PHASE A status poll %s] %s\n' "$attempt" "$output"
+            if printf '%s' "$output" | grep -Eiq 'status.*(KernelWorkerStatus[.]COMPLETE|[[:space:]]complete)'; then
+              complete=1
+              break
+            fi
+            if printf '%s' "$output" | grep -Eiq 'status.*(KernelWorkerStatus[.]ERROR|[[:space:]]error|cancel|fail)'; then
+              echo "[GATE] Kaggle Phase A errored; refusing Phase B."
+              exit 1
+            fi
+            sleep 15
+          done
+          test "$complete" = 1 || { echo "[GATE] Phase A did not complete in 12 minutes"; exit 1; }
+          echo "[PHASE A] Kaggle reports COMPLETE."
+          .venv/bin/kaggle competitions submissions "$COMP" -v > ../arc-kaggle-submissions-before.csv
+          if grep -Fq "MONDAYID_ARC3_API_PHASEB_EB7BD0" ../arc-kaggle-submissions-before.csv; then
+            echo "[GATE] Idempotence: Kaggle already lists this bridge submission; no duplicate attempted."
+            exit 0
+          fi
+          .venv/bin/kaggle competitions submit "$COMP" \
+            -k "$KERNEL" -f submission.parquet \
+            -m "MONDAYID_ARC3_API_PHASEB_EB7BD0" \
+            | tee ../arc-kaggle-phase-b.log
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          output=Path('../arc-kaggle-phase-b.log').read_text()
+          match=re.search(r'Submission\s+ref\s*:\s*(\d+)',output,re.I)
+          if not match:
+              raise SystemExit('[GATE] Kaggle did not return an official submission ref')
+          receipt={'schema':'mondayid.arc.kaggle_phase_b.v1',
+                   'competition':'arc-prize-2026-arc-agi-3',
+                   'official_submission_ref':int(match.group(1)),
+                   'notebook':'mondayid/arc-prize-2026-arc-agi-3-mondayid',
+                   'score':'UNVERIFIED',
+                   'prize_eligibility':False,
+                   'note':'Post-deadline Late Submission, not retroactive prize eligibility'}
+          Path('../arc-kaggle-submission-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print('[PHASE B] Official Kaggle submission ref received.')
+          PY
+          .venv/bin/kaggle competitions submissions "$COMP" -v > ../arc-kaggle-submissions-after.csv
       - name: Record gate and verify non-competition status
         if: always()
         env:
@@ -109,7 +160,7 @@ jobs:
             'schema':'mondayid.arc.kaggle_bridge.v1',
             'kaggle_secret_present':os.environ.get('AUTH_READY')=='true',
             'offline_source_frozen':'eb7bd0288cfa794f7997f6a93191c0a0c2c2787c',
-            'phase_b_competition_submitted':False,
+            'phase_b_competition_submitted':__import__('pathlib').Path('arc-kaggle-submission-receipt.json').exists(),
             'prize_eligibility':False,
             'disclaimer':'GitHub job success alone is NOT Kaggle competition submission ID'
           },indent=2)+'\n')
@@ -120,5 +171,8 @@ jobs:
           name: arc-kaggle-autonomous-phase-a-receipt
           path: |
             arc-kaggle-bridge-receipt.json
+            arc-kaggle-submission-receipt.json
+            arc-kaggle-submissions-before.csv
+            arc-kaggle-submissions-after.csv
             arc-starter/notebooks/submission.ipynb
           if-no-files-found: ignore
