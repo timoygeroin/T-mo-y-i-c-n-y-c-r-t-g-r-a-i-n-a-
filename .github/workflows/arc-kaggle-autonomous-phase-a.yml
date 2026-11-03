@@ -94,8 +94,24 @@ jobs:
             printf '%s' "$KAGGLE_KEY" > arc-starter/.kaggle/access_token
           fi
           cd arc-starter
-          make submit
-          echo "[PHASE A] Kaggle notebook push returned success. Competition rerun still requires a separate authenticated submission."
+          # Do not use 'make submit' here: its 'notebook' prerequisite
+          # regenerates submission.ipynb and silently REMOVES the hardened
+          # subprocess(check=True) cells built in the preceding step.
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("notebooks/submission.ipynb")
+          nb=json.loads(p.read_text())
+          assert nb["metadata"].get("mondayid_fail_fast_shell_v1") is True, "hardening was removed"
+          assert nb["metadata"]["kaggle"]["isInternetEnabled"] is False
+          assert nb["metadata"]["kaggle"]["isGpuEnabled"] is False
+          code="\n".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"]=="code")
+          assert "subprocess.run(" in code and "check=True" in code
+          assert "!curl " not in code and "!cp " not in code
+          print("[PHASE A GATE] hardened notebook survives until direct Kaggle push")
+          PY
+          KAGGLE_API_TOKEN="$(cat .kaggle/access_token)" .venv/bin/kaggle kernels push -p notebooks/
+          echo "[PHASE A] Hardened notebook pushed; competition submission not yet proven."
           make status
       - name: Submit Kaggle code competition Phase B from completed notebook
         if: steps.gate.outputs.ready == 'true'
@@ -176,3 +192,8 @@ jobs:
             arc-kaggle-submissions-after.csv
             arc-starter/notebooks/submission.ipynb
           if-no-files-found: ignore
+      - name: Refuse a green result without Kaggle authorization
+        if: always() && steps.gate.outputs.ready != 'true'
+        run: |
+          echo "::error title=Kaggle authentication missing::No API token; no Kaggle notebook push or competition submission. This is not a successful competition run."
+          exit 1
