@@ -1,3 +1,4 @@
+import { assessDelegatedAuthority } from './delegated-authority.mjs';
 const clamp01=value=>Math.max(0,Math.min(1,Number.isFinite(Number(value))?Number(value):0));
 
 export const DECISION_WEIGHTS=Object.freeze({
@@ -19,6 +20,8 @@ export const DECISION_WEIGHTS=Object.freeze({
 
 export function scoreDecisionRoute(route = {}) {
   const hardVetoes=[];
+  const delegation=assessDelegatedAuthority(route);
+  if (delegation.status === 'HUMAN_GATE') hardVetoes.push('DELEGATED_AUTHORITY_GATE:'+delegation.code);
   if(route.authorized === false) hardVetoes.push('UNAUTHORIZED_ROUTE');
   if(route.evidenceReady === false) hardVetoes.push('EVIDENCE_GATE_UNSATISFIED');
   if(route.irreversible === true && route.irreversibleAuthorized !== true) {
@@ -50,7 +53,8 @@ export function scoreDecisionRoute(route = {}) {
     admissible:hardVetoes.length===0,
     score:Number(score.toFixed(6)),
     metrics:Object.freeze(metrics),
-    hardVetoes:Object.freeze(hardVetoes)
+    hardVetoes:Object.freeze(hardVetoes),
+    delegation
   });
 }
 
