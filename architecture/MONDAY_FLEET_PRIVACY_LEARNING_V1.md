@@ -51,3 +51,14 @@ Reuse MondayID Worldline/event sourcing, Effect ABI, trusted effectors, independ
 
 ## Economics
 Zero-owner-spend prototype; measure per-tenant hosting/model/API cost and delivery hours before quoting. Proposed 490 ILS Monday Rescue is a price hypothesis, not a confirmed market price. Recurring license only after reliable real-world results.
+
+## Monday Guardian: incident-response access policy (design amendment)
+- Company owner is a governance role, NOT a universal decryption key. Customer data access is not granted solely by ownership or curiosity.
+- Tier 0 routine: instance health, versions, action types and aggregate metrics; no personal content by default.
+- Tier 1 anomaly: alert on suspicious permission escalation, export bursts, unusual effector usage; metadata minimized, thresholds tested for false positives.
+- Tier 2 investigation: specific incident ticket, lawful basis and customer notice/consent when required, purpose and time limits, minimal scope, independent dual approval, audited access and post-incident review. For business tenants, administrator rights must be expressly disclosed and contractually scoped.
+- Tier 3 emergency: revoke credentials, quarantine a connector, suspend a dangerous action or service; emergency access to content only where legally permitted and technically provisioned, never a blanket silent backdoor. Every break-glass action logged, independently reviewed, and time-limited.
+- Data collection and retention: transparent tenant settings, separate consent for model training, deletion/export, access transparency report, regional/legal review before deployment. Incident security processing is not equivalent to training consent.
+- Cryptographic constraint: if data is end-to-end encrypted solely under customer-held keys, operator cannot read plaintext without customer-assisted access. Any optional recovery/escrow changes this property and must be explicit, opt-in and separately secured.
+- Abuse handling focuses on observable system behavior, not speculative employee intentions. Never silently surveil staff, bypass tenant permissions, or train on private conversations by default.
+- Acceptance tests: owner account compromise cannot decrypt tenant content; emergency revoke works without content access; unauthorized break-glass is denied; approved access creates immutable audit trail; consent withdrawal stops future training data flow.
