@@ -1,0 +1,86 @@
+{
+  "schema": "mondayid.company.execution.v1",
+  "date": "2026-11-08",
+  "ownerMandate": "Operate existing MondayID and MondayOS as a zero-new-owner-cash AI company; reversible technical work authorized; spending, public launches, third-party outreach, legal/IP commitments and irreversible actions require separate approval.",
+  "northStar": "Verified user outcomes delivered by existing MondayID product per active user, with real costs and independent effect receipts",
+  "companyFunctions": {
+    "product": "Existing Surface 02 + runtime integration",
+    "engineering": "Trusted host receptors and independent readback",
+    "sales": "Private prospect/problem hypothesis and offer testing before authorized outreach",
+    "finance": "Track verified cash in/out; no revenue claims from forecasts; ROI undefined at zero costs",
+    "research": "Competitive alternatives and evidence-bound novelty review",
+    "operations": "Branch isolation, rollback, access and data controls"
+  },
+  "existingEvidence": [
+    {
+      "path": "surfaces/02/README.md",
+      "status": "SOURCE_VERIFIED",
+      "facts": [
+        "local-first PWA",
+        "threads and backups",
+        "no live AI",
+        "no cross-device sync"
+      ]
+    },
+    {
+      "path": "ops/monday-surface-02-release-cursor-20261021.json",
+      "status": "HISTORICAL_RECEIPT_ONLY",
+      "facts": [
+        "15/15 isolated browser acceptance reported on 2026-10-21",
+        "physical iPhone acceptance absent",
+        "historical mirror deployment, current availability not checked"
+      ]
+    },
+    {
+      "path": "src/terminal-effect-proof.mjs",
+      "status": "SOURCE_VERIFIED",
+      "facts": [
+        "independent host-reader proof required for material completion"
+      ]
+    }
+  ],
+  "firstSellableJob": {
+    "customer": "Small team deploying AI agents",
+    "problem": "Agent claims completion without verifiable real-world effects",
+    "offer": "Existing MondayID evidence-gated execution with independent receipt and replayable failures",
+    "buyerValidation": "NOT_STARTED",
+    "paidCustomerCount": 0,
+    "verifiedRevenueUsd": 0
+  },
+  "priorityGates": [
+    {
+      "id": "G1",
+      "goal": "Inventory actual deployed Surface 02 and active runtime; independently verify reachability and source match",
+      "status": "OPEN"
+    },
+    {
+      "id": "G2",
+      "goal": "Wire one permissioned real agent action to Surface 02 through existing runtime; reject self-attested/no-op completion",
+      "status": "OPEN"
+    },
+    {
+      "id": "G3",
+      "goal": "Reproduce browser and negative-control tests on candidate",
+      "status": "OPEN"
+    },
+    {
+      "id": "G4",
+      "goal": "Privately demonstrate buyer-relevant agent outcome with receipt, failure replay and cost accounting",
+      "status": "OPEN"
+    },
+    {
+      "id": "G5",
+      "goal": "Seek owner approval before public release, outreach or payment activation",
+      "status": "BLOCKED_ON_EXPLICIT_APPROVAL"
+    }
+  ],
+  "guardrails": {
+    "ownerOutOfPocketNewSpendUsd": 0,
+    "publicRelease": false,
+    "thirdPartyOutreach": false,
+    "legalOrIpTransfer": false,
+    "unauthorizedSystemAccess": false,
+    "autonomyClaim": "Only actual active sessions and configured automations",
+    "productStatus": "CANDIDATE_NOT_SHIPPED"
+  }
+}
