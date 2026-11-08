@@ -62,8 +62,7 @@ code{font-size:12px}a{color:#bdd3ff}
 <nav class="bottomnav" aria-label="Primary"><div class="navinner" id="nav">
 <button data-tab="home"><b>⌂</b>Home</button><button data-tab="chats"><b>☰</b>Chats</button><button data-tab="create"><b>＋</b>Create</button><button data-tab="spaces"><b>◈</b>Spaces</button><button data-tab="you"><b>◯</b>You</button>
 </div></nav><div id="modals"></div><div id="toast" role="status" aria-live="polite"></div><input hidden id="importFile" type="file" accept=".json,application/json">
-<script type="module">
-import {executeContinuumCommand} from '/src/continuum-command-receptor.mjs';
+<script>
 'use strict';
 const KEY='monday.continuum.local.v1', VERSION=1;
 const MONDAY_SHORTCUT='MONDAYID — REENTRY', BRIDGE_PENDING='monday.shortcut.pending.v1';
@@ -123,6 +122,9 @@ toast('Saved on this device — not sent to a model');}
 async function executeLocalCommand(raw){
   const text=String(raw||'').trim();
   if(!text)return toast('Enter a command first');
+  let executeContinuumCommand;
+  try{({executeContinuumCommand}=await import('/src/continuum-command-receptor.mjs'));}
+  catch{return toast('Local command engine unavailable');}
   const result=await executeContinuumCommand({
     text,
     load:()=>JSON.parse(localStorage.getItem(KEY)||'null')||blank(),
