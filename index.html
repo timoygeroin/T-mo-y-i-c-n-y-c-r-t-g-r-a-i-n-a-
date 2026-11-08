@@ -62,7 +62,8 @@ code{font-size:12px}a{color:#bdd3ff}
 <nav class="bottomnav" aria-label="Primary"><div class="navinner" id="nav">
 <button data-tab="home"><b>⌂</b>Home</button><button data-tab="chats"><b>☰</b>Chats</button><button data-tab="create"><b>＋</b>Create</button><button data-tab="spaces"><b>◈</b>Spaces</button><button data-tab="you"><b>◯</b>You</button>
 </div></nav><div id="modals"></div><div id="toast" role="status" aria-live="polite"></div><input hidden id="importFile" type="file" accept=".json,application/json">
-<script>
+<script type="module">
+import {executeContinuumCommand} from '/src/continuum-command-receptor.mjs';
 'use strict';
 const KEY='monday.continuum.local.v1', VERSION=1;
 const MONDAY_SHORTCUT='MONDAYID — REENTRY', BRIDGE_PENDING='monday.shortcut.pending.v1';
@@ -119,10 +120,37 @@ if(kind==='note'){if(!save('notes',{id:id(),title:t.slice(0,64),body:t,spaceId:n
 else if(kind==='task'){if(!save('tasks',{id:id(),title:t,done:false,checkpoints:[],createdAt:now(),updatedAt:now()},'opened'))return;}
 else{const thread={id:id(),title:t.slice(0,68),messages:[{id:id(),role:'user',text:t,at:now()}],createdAt:now(),updatedAt:now()};if(!save('threads',thread,'started'))return;activeThread=thread.id;render();}
 toast('Saved on this device — not sent to a model');}
+async function executeLocalCommand(raw){
+  const text=String(raw||'').trim();
+  if(!text)return toast('Enter a command first');
+  const result=await executeContinuumCommand({
+    text,
+    load:()=>JSON.parse(localStorage.getItem(KEY)||'null')||blank(),
+    save:async next=>{data=next;return persist();},
+    nextId:id
+  });
+  if(!result.ok){
+    const labels={NOT_LOCAL_COMMAND:'Try: добавь задачу: Подготовить встречу',LOCAL_DUPLICATE:'Already saved; no duplicate created',POSSIBLE_SECRET_IN_MEMORY:'Private keys and passwords are not saved',LOCAL_WRITE_FAILED:'Could not save; no action confirmed',LOCAL_READBACK_MISMATCH:'Saved effect could not be verified'};
+    return toast(labels[result.code]||('No confirmed action: '+result.code));
+  }
+  event('command_executed','local-command',result.receiptId,result.kind);
+  persist();
+  render();
+  toast('✓ '+result.kind+' saved and read back on this device');
+}
+
 function drawHome(view){append(view,heading('Welcome to your space','Your world, in one place.','Capture an idea, continue a thread, or move your work forward. Your content is not sent to an AI model. This local edition does not run AI inference.'));
 const hero=mk('section','glass hero');append(hero,mk('div','eyebrow','Continuum'),mk('h2','','What matters right now?'));
 const seg=mk('div','segment');[['note','Note'],['task','Task'],['thread','Thread']].forEach(([key,label])=>{const b=act(label,()=>{mode=key;render()},mode===key?'active':'');seg.appendChild(b)});append(hero,seg);
 const form=mk('form','composer'),inp=mk('input');inp.name='capture';inp.placeholder=mode==='task'?'Something to accomplish…':mode==='thread'?'Start a private thread…':'A thought worth keeping…';inp.setAttribute('aria-label','Capture your thought');const send=mk('button','primary','Save');send.type='submit';append(form,inp,send);form.addEventListener('submit',e=>{e.preventDefault();quickCapture(inp.value,mode)});append(hero,form,mk('p','hint','Local-first. Your data stays in this browser until you export it.'));append(view,hero);
+const command=mk('section','glass card');
+append(command,mk('div','eyebrow','MONDAY · LOCAL EXECUTION'),mk('h2','','Say it. See it happen.'),mk('p','muted','Give Monday a direct command. Each supported change is saved and checked by reading it back.'));
+const commandForm=mk('form','composer'),commandInput=mk('input');
+commandInput.name='command';commandInput.placeholder='добавь задачу: Подготовить встречу';commandInput.maxLength=1200;commandInput.setAttribute('aria-label','Monday local command');
+const execute=mk('button','primary','Execute');execute.type='submit';
+append(commandForm,commandInput,execute);
+commandForm.addEventListener('submit',async e=>{e.preventDefault();execute.disabled=true;try{await executeLocalCommand(commandInput.value);}finally{execute.disabled=false;}});
+append(command,commandForm,mk('p','hint','Works locally without paid AI. Local receipts are not proof of cloud execution.'));append(view,command);
 const deus=mk('section','glass card');append(deus,mk('div','eyebrow','MONDAY WORK / DEUS-0'),mk('h2','','Explore possible futures'),mk('p','muted','A bounded model of alternative paths. Real-world action and AI inference are not implied.'));const deusLink=mk('a','primary deus-link','Open DEUS-0 World Lab');deusLink.href='/deus0';append(deus,deusLink);append(view,deus);
 append(view,section('Your continuum','Right where you left off'));const stats=mk('div','grid');[['Threads',data.threads.length,'chats'],['Open tasks',data.tasks.filter(x=>!x.done).length,'create'],['Notes',data.notes.length,'library'],['Spaces',data.spaces.length,'spaces']].forEach(([name,num,dest])=>{const c=mk('button','glass tile');append(c,mk('span','',name),mk('strong','',num),mk('span','','Open →'));c.addEventListener('click',()=>navTo(dest));stats.appendChild(c)});append(view,stats);
 const all=[...data.threads.map(x=>({...x,kind:'thread'})),...data.notes.map(x=>({...x,kind:'note'})),...data.tasks.map(x=>({...x,kind:'task'}))].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,7);
