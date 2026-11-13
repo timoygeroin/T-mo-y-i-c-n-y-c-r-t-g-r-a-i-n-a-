@@ -138,6 +138,8 @@ export class TrustedWorldlineReceptor {
       ok:Boolean(same),
       mode:'external-exact-readback',
       eventId:result.event.eventId,
+      // Stable reference to the independently readable event, not a self-attested host receipt.
+      evidenceRef:same ? `worldline:v4:event:${result.event.eventId}` : null,
       conflictCount:conflicts.length,
       writerKeyId:event?.writerKeyId ?? null
     };
