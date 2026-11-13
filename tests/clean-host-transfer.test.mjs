@@ -66,6 +66,7 @@ test('clean-host transfer performs external write/readback and the next fresh ho
   const out=await proveCleanHostTransfer({
     baseUrl:'https://worldline.test',
     token:'token',
+    readerToken:'reader-token',
     fetchImpl,
     signalId:'transfer-canary'
   });
@@ -73,6 +74,9 @@ test('clean-host transfer performs external write/readback and the next fresh ho
   assert.equal(out.state,'VERIFIED');
   assert.equal(out.code,'CLEAN_HOST_TRANSFER_PASS');
   assert.equal(out.proof.firstHost.verification.mode,'external-exact-readback');
+  assert.equal(out.proof.firstHost.verification.independentProof.source,'HOST_READER');
+  assert.equal(out.proof.firstHost.verification.independentProof.effectObserved,true);
+  assert.ok(out.proof.firstHost.verification.independentProof.evidenceRef.startsWith('worldline:v4:'));
   assert.equal(out.proof.nextHost.inheritedEffect,true);
 });
 
@@ -81,4 +85,11 @@ test('clean-host transfer fails closed at the human credential gate without a wr
   assert.equal(out.ok,false);
   assert.equal(out.state,'HUMAN_GATE');
   assert.equal(out.code,'WORLDLINE_WRITER_TOKEN_REQUIRED');
+});
+
+test('clean-host transfer refuses unauthenticated independent readback',async()=>{
+  const out=await proveCleanHostTransfer({baseUrl:'https://worldline.test',token:'writer',readerToken:null});
+  assert.equal(out.ok,false);
+  assert.equal(out.state,'HUMAN_GATE');
+  assert.equal(out.code,'WORLDLINE_READER_TOKEN_REQUIRED');
 });
