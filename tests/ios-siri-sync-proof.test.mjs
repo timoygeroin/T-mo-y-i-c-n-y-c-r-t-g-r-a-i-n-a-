@@ -44,6 +44,6 @@ test('existing Apple adapter and iPhone app both surface the sync-check intent',
   assert.match(source, /struct CheckMondaySyncIntent: AppIntent/);
   assert.match(adapter, /intent: CheckMondaySyncIntent\(\)/);
   assert.match(host, /intent: CheckMondaySyncIntent\(\)/);
-  assert.match(adapter, /Check sync in \\(\.applicationName\)/);
-  assert.match(host, /Check sync in \\(\.applicationName\)/);
+  assert.ok(adapter.includes('Check sync in ' + String.fromCharCode(92) + '(.applicationName)'));
+  assert.ok(host.includes('Check sync in ' + String.fromCharCode(92) + '(.applicationName)'));
 });
