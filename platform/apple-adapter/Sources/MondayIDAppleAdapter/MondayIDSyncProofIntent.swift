@@ -41,7 +41,7 @@ public enum MondayIDSyncProof {
 
     /// No token or write permission is needed. This records only local GitHub readback.
     public static func verifyOnDevice(session: URLSession = .shared) async throws -> String {
-        #if targetEnvironment(simulator)
+        #if !os(iOS) || targetEnvironment(simulator)
         throw Failure.physicalDeviceRequired
         #else
         var request = URLRequest(url: sourceURL)
