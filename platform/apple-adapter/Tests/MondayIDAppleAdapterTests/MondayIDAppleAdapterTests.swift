@@ -91,7 +91,7 @@ private let healthy = MondayIDRuntimeHealth(
 }
 
 @Test func libraryShortcutProviderDeclaresSixShortcuts() {
-    #expect(MondayIDShortcuts.appShortcuts.count == 5)
+    #expect(MondayIDShortcuts.appShortcuts.count == 6)
 }
 
 @Suite(.serialized)
