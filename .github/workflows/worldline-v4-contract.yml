@@ -1,0 +1,27 @@
+name: MondayID Worldline v4 end-to-end
+on:
+  pull_request:
+    paths:
+      - 'src/worldline-*'
+      - 'src/trusted-*'
+      - 'src/transfer-*'
+      - 'tests/worldline-v4-*'
+      - 'tests/clean-host-transfer.test.mjs'
+      - 'package.json'
+      - '.github/workflows/worldline-v4-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Full MondayID tests (including live loopback HTTP handoff)
+        run: npm test

@@ -2,22 +2,26 @@ import { recoverWorldline } from './remote-worldline.mjs';
 import { MondayRuntime } from './runtime.mjs';
 import { OrganismCell } from './organism-cell.mjs';
 import { TrustedWorldlineReceptor } from './trusted-worldline-receptor.mjs';
+import { createWorldlineIndependentReadback } from './trusted-host-reader.mjs';
 import { discoverCapabilities } from './capability-discovery.mjs';
 
 export async function proveCleanHostTransfer({
   baseUrl,
   token,
+  readerToken=process.env.MONDAYID_WORLDLINE_READ_TOKEN,
   fetchImpl=globalThis.fetch,
   signalId=`clean-host-transfer:${Date.now()}`,
   hostId='mondayid:clean-host-proof'
 }={}) {
   if(!baseUrl) return {ok:false,state:'HUMAN_GATE',code:'WORLDLINE_URL_REQUIRED'};
   if(!token) return {ok:false,state:'HUMAN_GATE',code:'WORLDLINE_WRITER_TOKEN_REQUIRED'};
+  if(!readerToken) return {ok:false,state:'HUMAN_GATE',code:'WORLDLINE_READER_TOKEN_REQUIRED'};
 
   const recovered=await recoverWorldline({
     baseUrl,
     limit:50,
     trust:'trusted',
+    readerToken,
     fetchImpl
   });
   if(!recovered.ok){
@@ -27,6 +31,7 @@ export async function proveCleanHostTransfer({
   const receptor=new TrustedWorldlineReceptor({
     baseUrl,
     token,
+    readerToken,
     host:hostId,
     identityFingerprint:'mondayid:g5:clean-host-transfer',
     sourceRef:'clean-host-transfer-proof',
@@ -59,13 +64,19 @@ export async function proveCleanHostTransfer({
 
   const runtime=new MondayRuntime({
     worldline:recovered.worldline,
-    capabilities:discovered.capabilities
+    capabilities:discovered.capabilities,
+    independentReadback:createWorldlineIndependentReadback({
+      baseUrl,readerToken,fetchImpl,host:hostId,
+      identityFingerprint:'mondayid:g5:clean-host-transfer',
+      sourceRef:'clean-host-transfer-proof'
+    })
   });
   const cell=new OrganismCell({id:hostId,runtime});
   const signal={
     id:signalId,
     text:'prove clean-host transfer by writing and independently reading back one continuity event',
     domains:['continuity'],
+    requireDomainReceptor:true,
     exactObject:'canonical trusted MondayID Worldline',
     desiredEffect:'fresh host performs a real external effect, verifies it, and makes the evidence recoverable by the next fresh host',
     effect:'prove clean-host transfer with external write/readback',
@@ -92,8 +103,9 @@ export async function proveCleanHostTransfer({
 
   const next=await recoverWorldline({
     baseUrl,
-    limit:50,
+    limit:1000,
     trust:'trusted',
+    readerToken,
     fetchImpl
   });
   if(!next.ok){
