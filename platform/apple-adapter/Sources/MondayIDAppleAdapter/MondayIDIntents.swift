@@ -190,7 +190,7 @@ public struct MondayIDShortcuts: AppShortcutsProvider {
         )
         AppShortcut(
             intent: CheckMondaySyncIntent(),
-            phrases: ["Check sync in \\(.applicationName)"],
+            phrases: ["Check sync in \(.applicationName)"],
             shortTitle: "Check Monday Sync",
             systemImageName: "checkmark.shield"
         )
