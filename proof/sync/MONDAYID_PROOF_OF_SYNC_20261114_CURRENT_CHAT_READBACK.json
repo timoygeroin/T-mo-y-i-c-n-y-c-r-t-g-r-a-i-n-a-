@@ -1,0 +1,16 @@
+{
+  "schema": "mondayid.proof-of-sync.ack.v1",
+  "acknowledgement_id": "mondayid-pos-20261114-current-chat-readback-001",
+  "references_event_id": "mondayid-pos-20261114-chatgpt-001",
+  "event_path": "proof/sync/MONDAYID_PROOF_OF_SYNC_20261114_CHATGPT.json",
+  "event_git_blob_sha": "63a4211932681b8fff8aa0cdd3fed7f690fe1246",
+  "observer": "ChatGPT session accessed via iOS client",
+  "observed_channel": "connected GitHub fetch_file tool, authenticated repository read",
+  "result": "EVENT_READ_AND_ID_VERIFIED",
+  "independence_scope": "separate conversation read via a GitHub connector; NOT verified independent physical machine or production Worldline service",
+  "did_not_require_user_to_copy_event": true,
+  "production_worldline_v4": "NOT_VERIFIED",
+  "standalone_iphone_agent_execution": "NOT_VERIFIED",
+  "created_on": "2026-11-14",
+  "notes": "Receipt written in the existing Worldline v4 feature branch. The source event remains PENDING_REMOTE_ACK until its own acceptance semantics are satisfied. This record only proves connector-backed readback in this ChatGPT session."
+}
