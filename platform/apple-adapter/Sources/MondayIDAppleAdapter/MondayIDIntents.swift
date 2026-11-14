@@ -189,6 +189,12 @@ public struct MondayIDShortcuts: AppShortcutsProvider {
             systemImageName: "archivebox"
         )
         AppShortcut(
+            intent: CheckMondaySyncIntent(),
+            phrases: ["Check sync in \\(.applicationName)"],
+            shortTitle: "Check Monday Sync",
+            systemImageName: "checkmark.shield"
+        )
+        AppShortcut(
             intent: RunFieldDigestIntent(),
             phrases: ["Run field digest in \(.applicationName)"],
             shortTitle: "Field Digest",
