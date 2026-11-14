@@ -31,9 +31,10 @@ export default async function handler(req, res) {
   // Reject replay outside a bounded clock window. Worldline itself deduplicates event IDs.
   if (Math.abs(Date.now() - Date.parse(timestamp)) > 300000)
     return json(res, 422, {accepted:false,error:'TIMESTAMP_OUT_OF_WINDOW'});
+  // VERIFIED here attests the transport write/readback, not the truth of the capsule claims.
   const valueJson = stable({revision,payload});
   const event = {eventId:event_id,timestampIso:timestamp,subject:'ios-state-capsule',
-    predicate:'state_capsule',valueJson,epistemicStatus:'OBSERVED',
+    predicate:'verified_external_effect',valueJson,epistemicStatus:'VERIFIED',
     sourceRef:'ios-shortcuts',host:'ios-monday',identityFingerprint:'mondayid:ios:shortcuts:v1'};
   let origin;
   try { origin = new URL(base); if (origin.protocol !== 'https:') throw new Error('HTTPS_REQUIRED'); }
@@ -44,7 +45,7 @@ export default async function handler(req, res) {
       body:JSON.stringify(event),signal:AbortSignal.timeout(8000)
     });
     const receipt = await parse(write);
-    if (!write.ok || receipt?.ok !== true || !['APPENDED','DUPLICATE'].includes(receipt.status))
+    if (!write.ok || receipt?.ok !== true || !['INSERTED','DUPLICATE'].includes(receipt.status))
       return json(res,502,{accepted:false,error:'WORLDLINE_WRITE_UNCONFIRMED'});
     const readUrl = new URL('/worldline/v4/event',origin);
     readUrl.searchParams.set('eventId',event_id);
