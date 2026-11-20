@@ -30,4 +30,4 @@ jobs:
         with:
           node-version: '22'
       - name: Full MondayID tests (including live loopback HTTP handoff)
-        run: npm test
+        run: node --test --test-concurrency=1 tests/*.test.mjs
