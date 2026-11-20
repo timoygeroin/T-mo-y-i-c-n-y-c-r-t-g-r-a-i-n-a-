@@ -1,6 +1,10 @@
 import { TrustedWorldlineReceptor } from '../src/trusted-worldline-receptor.mjs';
 
 const trustedWorldlineUrl = process.env.MONDAYID_WORLDLINE_URL || 'https://adamant-raven-783.eu-west-1.convex.site';
+const sourceRevision = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA || null;
+if (!/^[a-f0-9]{40}$/i.test(sourceRevision || '')) {
+  throw new Error('SOURCE_REVISION_REQUIRED_FOR_BUILD_PROOF');
+}
 
 const receptor = new TrustedWorldlineReceptor({
   baseUrl: trustedWorldlineUrl,
@@ -11,10 +15,10 @@ const receptor = new TrustedWorldlineReceptor({
 });
 
 const action = Object.freeze({
-  objectiveId: 'mondayid-production:trusted-write-readback',
+  objectiveId: `mondayid-production:trusted-write-readback:${sourceRevision}`,
   sourceSignal: 'mondayid:vercel-build:proof',
   domain: 'continuity',
-  effect: 'prove the exact production source revision can persist and exact-readback one authenticated external effect'
+  effect: `prove that source revision ${sourceRevision} can persist and exact-readback one authenticated continuity event`
 });
 
 const write = await receptor.execute(action);
@@ -37,7 +41,7 @@ const receipt = {
     mode: verification.mode || null,
     eventId: verification.event?.eventId || verification.eventId || write.event?.eventId || null
   },
-  sourceRevision: process.env.VERCEL_GIT_COMMIT_SHA || null
+  sourceRevision
 };
 
 if (!receipt.eventId || receipt.verification.eventId !== receipt.eventId) {
