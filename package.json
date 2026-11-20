@@ -6,6 +6,8 @@
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "boot": "node src/boot.mjs",
-    "transfer:proof": "node src/transfer-proof.mjs"
+    "transfer:proof": "node src/transfer-proof.mjs",
+    "worldline:serve": "node src/worldline-v4-cli.mjs",
+    "transfer:receive": "node src/worldline-receive.mjs"
   }
 }

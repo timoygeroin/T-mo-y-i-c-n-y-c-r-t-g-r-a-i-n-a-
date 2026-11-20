@@ -1,0 +1,24 @@
+{
+  "schema": "mondayid.proof-of-sync.v1",
+  "event_id": "mondayid-pos-20261114-chatgpt-001",
+  "origin": "chatgpt-monday",
+  "target": "ios-monday",
+  "purpose": "Cross-host sync handshake: iOS Monday independently discovers and acknowledges this record",
+  "source_context": "iOS screenshot requested first autonomous Proof-of-Sync, 2026-11-14",
+  "subject": "Worldline v4 synchronization",
+  "state": "PENDING_REMOTE_ACK",
+  "claims": {
+    "github_ci": "682/682 passed on e69a177 (previously verified)",
+    "production_worldline_v4": "NOT_VERIFIED",
+    "ios_receipt": "NOT_VERIFIED",
+    "independent_agent_execution": "NOT_VERIFIED"
+  },
+  "requirements": {
+    "discover_without_user_copy": true,
+    "verify_event_id": true,
+    "acknowledge_with_independent_readback": true,
+    "do_not_claim_success_before_ack": true
+  },
+  "privacy": "No personal or secret information in event",
+  "next_action": "Independent iOS Monday must fetch this event through an existing authorized channel and publish an acknowledgement referencing event_id. If it cannot, report missing connector instead of success."
+}
