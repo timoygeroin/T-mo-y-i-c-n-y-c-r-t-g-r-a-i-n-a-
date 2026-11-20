@@ -7,6 +7,12 @@ on:
       - 'src/transfer-*'
       - 'tests/worldline-v4-*'
       - 'tests/clean-host-transfer.test.mjs'
+      - 'api/worldline/capsules.js'
+      - 'tests/ios-capsule-ingress.test.mjs'
+      - 'scripts/prove-worldline-build.mjs'
+      - 'src/worldline-v4-cli.mjs'
+      - 'src/worldline-v4-server.mjs'
+      - 'src/worldline-receive.mjs'
       - 'package.json'
       - '.github/workflows/worldline-v4-contract.yml'
   workflow_dispatch:
