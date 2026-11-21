@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { selectInvariantEffect } from './semantic-frame.mjs';
+import { amplifyTaskSignal } from './task-amplifier.mjs';
 import { assessTerminalEffectProof } from './terminal-effect-proof.mjs';
 import { preflightBehavior, applyBehaviorConstraints, gateBehaviorSurface } from './behavior-bridge-policy.mjs';
 import { TrustedWorldlineReceptor } from './trusted-worldline-receptor.mjs';
@@ -117,13 +118,29 @@ export async function runChatHost({
     maxCritics
   });
 
-  const runtime = new MondayRuntime({
-    worldline:recovered.worldline,
-    capabilities:{general:modelReceptor,...(domainReceptors || {})},
-    independentReadback
-  });
-
   const selectedEffect=selectInvariantEffect(signal || {});
+  // IMPORTANT: A host adapter must not discard the compiled goal. The old
+  // hard-coded ['general'] route silently converted multi-domain and real
+  // effect requests into ordinary model inference. This preservation happens
+  // BEFORE the runtime plans actions or spends provider tokens.
+  const amplifiedSignal=amplifyTaskSignal(signal || {});
+  const materialDomains=[...new Set(
+    (Array.isArray(amplifiedSignal.obligations) ? amplifiedSignal.obligations : [])
+      .filter(o=>o?.binding==='obligation' && o.material!==false &&
+        String(o.status || 'OPEN').toUpperCase()==='OPEN' &&
+        typeof o.domain==='string' && o.domain.trim())
+      .map(o=>o.domain.trim())
+  )];
+  const declaredDomains=Array.isArray(amplifiedSignal.domains)
+    ? amplifiedSignal.domains.filter(d=>typeof d==='string' && d.trim()).map(d=>d.trim())
+    : [];
+  const domains=amplifiedSignal.amplification?.scope==='WHOLE_ORGANISM'
+    ? declaredDomains
+    : materialDomains.length
+      ? [...new Set([...materialDomains,...declaredDomains.filter(d=>d!=='general')])]
+      : (declaredDomains.length ? [...new Set(declaredDomains)] : ['general']);
+  const requireDomainReceptor=amplifiedSignal.requireDomainReceptor===true ||
+    materialDomains.length>0;
   const incoming = applyBehaviorConstraints({
     id:signal?.id || `chat:${Date.now()}`,
     text:String(signal?.text || ''),
@@ -144,9 +161,27 @@ export async function runChatHost({
     scene:signal?.scene || null,
     delegatedChoice:signal?.delegatedChoice === true,
     architectureRequested:signal?.architectureRequested === true,
-    domains:['general'],
+    domains,
+    requireDomainReceptor,
+    amplification:amplifiedSignal.amplification || null,
+    routeCandidates:Array.isArray(amplifiedSignal.routeCandidates)
+      ? structuredClone(amplifiedSignal.routeCandidates) : [],
     source:'human'
   }, behaviorPreflight);
+
+  // In effect-only mode the generic language-model receptor cannot masquerade
+  // as the concrete executor of a material 'general' obligation. The only
+  // general effect executor admitted here is an explicitly injected trusted
+  // host domain receptor, which still needs independent exact readback.
+  const capabilities={general:modelReceptor,...(domainReceptors || {})};
+  if(requireDomainReceptor && !domainReceptors?.general) {
+    delete capabilities.general;
+  }
+  const runtime = new MondayRuntime({
+    worldline:recovered.worldline,
+    capabilities,
+    independentReadback
+  });
 
   const pass = await runtime.runPass([incoming], {maxCycles:2});
   const candidateSurface = renderVerifiedCandidateSurface(pass.final || pass);
