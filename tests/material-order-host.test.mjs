@@ -12,14 +12,14 @@ const env={MONDAYID_MODEL_EXECUTION_ENABLED:'true',MONDAYID_API_SPEND_ENABLED:'t
   MONDAYID_WORLDLINE_URL:'https://worldline.test'};
 
 test('a material change order cannot ship as model-only prose',async()=>{
-  const provider={async generate(){return {ok:true,text:'Все мутации применены.'};}};
+  let calls=0;
+  const provider={async generate(){calls++;return {ok:true,text:'Все мутации применены.'};}};
   const result=await runChatHost({signal:{id:'material-veto-1',
     text:'Измени всю систему MondayID',computeTier:'LOW'},env,fetchImpl,provider});
   assert.equal(result.ok,false);
-  assert.equal(result.surface.released,false);
+  assert.equal(result.code,'MATERIAL_EFFECTOR_UNAVAILABLE');
   assert.equal(result.behavior.preflight.selectedFamily,'MATERIAL_EXECUTION');
-  assert.equal(result.behavior.gate.code,'MATERIAL_ORDER_EFFECT_UNVERIFIED');
-  assert.equal(result.completionProof.code,'MATERIAL_OBLIGATIONS_UNSPECIFIED');
+  assert.equal(calls,0);
 });
 
 test('an exact independently witnessed change can pass for material order',async()=>{
@@ -27,10 +27,10 @@ test('an exact independently witnessed change can pass for material order',async
     async execute(){return {ok:true,text:'External target changed.'};},
     async verify(){return {ok:true,mode:'external-exact-readback',evidenceRef:'provider:one'};}};
   const signal={id:'material-proof-1',text:'Измени систему MondayID',materialOrder:true,
-    requireDomainReceptor:true,computeTier:'LOW',
+    computeTier:'LOW',
     obligations:[{binding:'obligation',id:'one',domain:'general',status:'OPEN',
       effect:'Observe a bounded target change',requiredVerificationMode:'external-exact-readback'}]};
-  const result=await runChatHost({signal,env,fetchImpl,
+  const result=await runChatHost({signal,env:{MONDAYID_WORLDLINE_URL:env.MONDAYID_WORLDLINE_URL},fetchImpl,
     provider:{async generate(){throw Error('model output must not substitute');}},
     domainReceptors:{general:domain},
     async independentReadback({action}){return {ok:true,effectId:action.id,
@@ -38,6 +38,7 @@ test('an exact independently witnessed change can pass for material order',async
       evidenceRef:'external:readback:one',effectObserved:true,noOpControlPassed:false};}
   });
   assert.equal(result.ok,true);
+  assert.equal(result.budget.maxOutputTokens,0);
   assert.equal(result.completionProof.verified,true);
   assert.deepEqual([...result.completionProof.evidenceRefs],['external:readback:one']);
 });

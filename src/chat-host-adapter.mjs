@@ -25,7 +25,24 @@ export async function runChatHost({
     status:409, behavior:{preflight:behaviorPreflight}
   };
 
-  if (env.MONDAYID_MODEL_EXECUTION_ENABLED !== 'true') {
+  // Material orders are executor work, not paid text generation. Bind a
+  // trusted target and independent reader before offering an answer route.
+  const executionOnly=behaviorPreflight.goalKey==='DELIVERY';
+  const materialEffector=domainReceptors?.general;
+  const openMaterialObligations=Array.isArray(signal?.obligations)
+    ? signal.obligations.filter(o=>o?.binding==='obligation' && o?.status==='OPEN' && o?.domain==='general' && typeof o.id==='string' && o.id.trim())
+    : [];
+  if (executionOnly && !(typeof materialEffector?.execute==='function' && typeof materialEffector?.verify==='function')) {
+    return {ok:false,state:'BLOCKED',code:'MATERIAL_EFFECTOR_UNAVAILABLE',status:503,behavior:{preflight:behaviorPreflight}};
+  }
+  if (executionOnly && openMaterialObligations.length===0) {
+    return {ok:false,state:'BLOCKED',code:'MATERIAL_OBLIGATIONS_REQUIRED',status:503,behavior:{preflight:behaviorPreflight}};
+  }
+  if (executionOnly && typeof independentReadback!=='function') {
+    return {ok:false,state:'BLOCKED',code:'MATERIAL_INDEPENDENT_READER_REQUIRED',status:503,behavior:{preflight:behaviorPreflight}};
+  }
+
+  if (!executionOnly && env.MONDAYID_MODEL_EXECUTION_ENABLED !== 'true') {
     return {
       ok:false,
       state:'BLOCKED',
@@ -34,7 +51,7 @@ export async function runChatHost({
     };
   }
 
-  if (env.MONDAYID_API_SPEND_ENABLED !== 'true') {
+  if (!executionOnly && env.MONDAYID_API_SPEND_ENABLED !== 'true') {
     return {
       ok:false,
       state:'BLOCKED',
@@ -43,11 +60,11 @@ export async function runChatHost({
     };
   }
 
-  const maxOutputTokens=Number(env.MONDAYID_MAX_OUTPUT_TOKENS);
-  const maxInputChars=Number(env.MONDAYID_MAX_INPUT_CHARS);
-  const maxParallelPaths=Number(env.MONDAYID_MAX_PARALLEL_PATHS);
-  const maxCritics=Number(env.MONDAYID_MAX_CRITICS);
-  const budgetValid =
+  const maxOutputTokens=executionOnly ? 0 : Number(env.MONDAYID_MAX_OUTPUT_TOKENS);
+  const maxInputChars=executionOnly ? 0 : Number(env.MONDAYID_MAX_INPUT_CHARS);
+  const maxParallelPaths=executionOnly ? 1 : Number(env.MONDAYID_MAX_PARALLEL_PATHS);
+  const maxCritics=executionOnly ? 0 : Number(env.MONDAYID_MAX_CRITICS);
+  const budgetValid = executionOnly ||
     Number.isInteger(maxOutputTokens) && maxOutputTokens > 0 &&
     Number.isInteger(maxInputChars) && maxInputChars > 0 &&
     Number.isInteger(maxParallelPaths) && maxParallelPaths >= 1 && maxParallelPaths <= 6 &&
@@ -70,7 +87,7 @@ export async function runChatHost({
     };
   }
 
-  if (!provider && !env.OPENAI_API_KEY) {
+  if (!executionOnly && !provider && !env.OPENAI_API_KEY) {
     return {
       ok:false,
       state:'BLOCKED',
@@ -97,7 +114,7 @@ export async function runChatHost({
     };
   }
 
-  const modelProvider = provider || createOpenAIResponsesProvider({
+  const modelProvider = executionOnly ? null : (provider || createOpenAIResponsesProvider({
     apiKey:env.OPENAI_API_KEY,
     fetchImpl,
     defaultModel:env.MONDAYID_OPENAI_MODEL || 'gpt-6.1-sol',
@@ -107,9 +124,9 @@ export async function runChatHost({
     maxOutputTokens,
     criticOutputTokens:Math.min(256,maxOutputTokens),
     maxInputChars
-  });
+  }));
 
-  const modelReceptor = createModelReceptor({
+  const modelReceptor = executionOnly ? null : createModelReceptor({
     provider:modelProvider,
     model:env.MONDAYID_OPENAI_MODEL || 'gpt-6.1-sol',
     name:'monday-openai-attractor-receptor',
@@ -119,7 +136,7 @@ export async function runChatHost({
 
   const runtime = new MondayRuntime({
     worldline:recovered.worldline,
-    capabilities:{general:modelReceptor,...(domainReceptors || {})},
+    capabilities:executionOnly ? {...domainReceptors} : {general:modelReceptor,...(domainReceptors || {})},
     independentReadback
   });
 
@@ -145,6 +162,7 @@ export async function runChatHost({
     delegatedChoice:signal?.delegatedChoice === true,
     architectureRequested:signal?.architectureRequested === true,
     domains:['general'],
+    requireDomainReceptor:executionOnly || signal?.requireDomainReceptor === true,
     source:'human'
   }, behaviorPreflight);
 
