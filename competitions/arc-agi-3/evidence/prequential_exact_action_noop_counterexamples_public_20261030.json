@@ -1,0 +1,214 @@
+{
+  "schema": "mondayid.arc3.prequential_exact_action_noop_audit.v1",
+  "date_utc": "2026-10-30",
+  "status": "REAL_OFFICIAL_PUBLIC_TRACE_OBSERVATIONAL_NEGATIVE_VETO_EVIDENCE",
+  "source": {
+    "pr": 196,
+    "head_before": "185c4c863815869380a29bd8954586a9335fe79a",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "state_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+    "run": 40996189172,
+    "job": 123869752891,
+    "artifact": 12952100906,
+    "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40996189172"
+  },
+  "preregistered_for_this_readback": false,
+  "hypotheses": {
+    "H0": "Two prior static outcomes for the same visible level/state/physical action do NOT guarantee a static next outcome; latent state, animation or delayed mechanics may invalidate a hard veto.",
+    "H1": "A strictly prior same-level visible-state and physical-action no-op history has high selective precision and may justify a bounded SOFT penalty, subject to a new same-budget public A/B.",
+    "H2": "A permanent blacklist based on two no-ops would discard later visually responsive actions, even with identical observed state/action."
+  },
+  "method": {
+    "source_type": "Official public Python 3.12 A/B/C workflow log, no new gameplay; three arms from explicit public-suite start boundaries, not game order.",
+    "exact_physical_action": "ACTION1..7 plus ACTION6 x,y; per-game, per-level, masked visible state hash, current action.",
+    "strict_prior": "At each action, only earlier contiguous step->step+1 observed outcomes of that exact key are counted. Predict static only after at least n earlier static outcomes and ZERO earlier changed outcomes for the same key. Evaluate current outcome, then update history.",
+    "outcome": "Next pre-action visible level and masked state hash at step+1. Exclude missing or noncontiguous next rows; this is NOT a latent state or direct gameplay-causality measurement.",
+    "action_budget": "500 and 2000 step prefixes, same already-recorded arms. No new run, no new seed, no held-out game.",
+    "verified_log_rows": {
+      "frozen": 49399,
+      "gate96": 49384,
+      "gate128": 49383
+    },
+    "frozen_contiguous_pairs": 49374,
+    "frozen_observed_first_level_transitions": 10,
+    "frozen_static_pairs": 15646
+  },
+  "results": {
+    "frozen": {
+      "cap500": {
+        "n1": {
+          "eligible": 538,
+          "static": 535,
+          "changed": 3,
+          "immediate_progress": 0,
+          "games": 6
+        },
+        "n2": {
+          "eligible": 120,
+          "static": 120,
+          "changed": 0,
+          "immediate_progress": 0,
+          "games": 4
+        },
+        "n3": {
+          "eligible": 14,
+          "static": 14,
+          "changed": 0,
+          "immediate_progress": 0,
+          "games": 3
+        }
+      },
+      "cap2000": {
+        "n1": {
+          "eligible": 5319,
+          "static": 5268,
+          "changed": 51,
+          "immediate_progress": 0,
+          "games": 11
+        },
+        "n2": {
+          "eligible": 3370,
+          "static": 3349,
+          "changed": 21,
+          "immediate_progress": 0,
+          "games": 8
+        },
+        "n3": {
+          "eligible": 2629,
+          "static": 2620,
+          "changed": 9,
+          "immediate_progress": 0,
+          "games": 6
+        },
+        "n5": {
+          "eligible": 1838,
+          "static": 1833,
+          "changed": 5,
+          "immediate_progress": 0,
+          "games": 6
+        },
+        "n10": {
+          "eligible": 607,
+          "static": 607,
+          "changed": 0,
+          "immediate_progress": 0,
+          "games": 3
+        }
+      }
+    },
+    "gate96": {
+      "cap500": {
+        "n2": {
+          "eligible": 102,
+          "static": 102,
+          "changed": 0,
+          "immediate_progress": 0,
+          "games": 3
+        }
+      },
+      "cap2000": {
+        "n2": {
+          "eligible": 3016,
+          "static": 2996,
+          "changed": 20,
+          "immediate_progress": 0,
+          "games": 7
+        }
+      }
+    },
+    "gate128": {
+      "cap500": {
+        "n2": {
+          "eligible": 102,
+          "static": 102,
+          "changed": 0,
+          "immediate_progress": 0,
+          "games": 3
+        }
+      },
+      "cap2000": {
+        "n2": {
+          "eligible": 2957,
+          "static": 2938,
+          "changed": 19,
+          "immediate_progress": 0,
+          "games": 7
+        }
+      }
+    }
+  },
+  "frozen_n2_counterexamples": {
+    "count": 21,
+    "games": [
+      "su15",
+      "vc33",
+      "s5i5",
+      "tn36"
+    ],
+    "selected": [
+      {
+        "game": "su15",
+        "step": 1389,
+        "level": 0,
+        "action": "ACTION6",
+        "x": 32,
+        "y": 31,
+        "prior_static": 2,
+        "next_visible_changed": true,
+        "immediate_progress": false
+      },
+      {
+        "game": "vc33",
+        "step": 1056,
+        "level": 1,
+        "action": "ACTION6",
+        "x": 16,
+        "y": 54,
+        "prior_static": 4,
+        "next_visible_changed": true,
+        "immediate_progress": false
+      },
+      {
+        "game": "s5i5",
+        "step": 1900,
+        "level": 0,
+        "action": "ACTION6",
+        "x": 10,
+        "y": 43,
+        "prior_static": 7,
+        "next_visible_changed": true,
+        "immediate_progress": false
+      },
+      {
+        "game": "tn36",
+        "step": 1387,
+        "level": 1,
+        "action": "ACTION6",
+        "x": 34,
+        "y": 9,
+        "prior_static": 7,
+        "next_visible_changed": true,
+        "immediate_progress": false
+      }
+    ]
+  },
+  "interpretation": "Strict-prior physical-action/state no-op prediction is selective, but a two-no-op hard blacklist is falsified by 21 real public visible-outcome counterexamples in the 2000-step frozen trace. At 500 steps the n2 rule had 120/120 static predictions across just four reused games; this does NOT establish deterministic safety, causal value, or an improved agent. No immediate level progress followed n2 forecasts in the inspected trace, but delayed progress cannot be excluded. A soft penalty requires a preregistered official same-budget A/B and independent held-out/latent-reset evidence before any promotion.",
+  "blockers": [
+    "All 25 official public games repeatedly reused; no unseen public holdout.",
+    "Official starter play-local lacks an independent seed argument; effective independent latent reset pairing not demonstrated.",
+    "Exact-match visible-state/action comparisons are observational; animations, hidden variables and delayed causal effects remain unresolved.",
+    "No authenticated Kaggle Phase-A notebook execution or Phase-B submission; hidden score unknown.",
+    "STATE.json write previously safety-blocked; no bypass or forced rewrite."
+  ],
+  "controls": {
+    "competition_agent_unchanged": true,
+    "official_schedule_unchanged": true,
+    "collector_unchanged": true,
+    "no_new_worker_or_branch": true,
+    "no_new_gameplay_run": true,
+    "no_policy_promotion": true,
+    "no_kaggle_submission": true,
+    "spend": 0,
+    "no_terms_or_licensing_decision": true
+  }
+}

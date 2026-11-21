@@ -1,0 +1,69 @@
+{
+  "schema": "mondayid.arc.public_ab.negative.v1",
+  "experiment": "UL003b-strong-cardinal-visible-effect-momentum",
+  "status": "VERIFIED_OFFICIAL_PUBLIC_NULL_NO_ACTION_ENUM_DIVERGENCE_NOT_PROMOTED",
+  "hypotheses": {
+    "H0": "Frozen novelty policy remains no worse.",
+    "H1": "Force stronger short-term cardinal persistence after >=4 masked visible changed pixels in a new state; predict changed action choices and potentially better first-level efficiency.",
+    "H2": "Invert visible-change condition as negative control; if change predicts useful movement, inversion should not outperform H1."
+  },
+  "test_first": {
+    "red_commit": "fa7aa5fe5f81f7043a1c7943de2c4487223004b3",
+    "red_run": 40964621398,
+    "red_job": 123765815310,
+    "red_result": "350 tests, one expected AssertionError for absent 3.00 strength; job log inspected",
+    "green_commit": "ce2263a5d23f70d04c5584ac444ac657a5b5a142",
+    "green_run": 40964721584,
+    "green_result": "SUCCESS"
+  },
+  "official_public": {
+    "runner": "official ARC-AGI-3 Kaggle Starter Python 3.12, make play-local STEPS=500",
+    "run": 40964721728,
+    "job": 123766161145,
+    "artifact": 12937093425,
+    "conclusion": "SUCCESS",
+    "games": 25,
+    "configured_steps_per_game": 500,
+    "printed_actions_per_game": 501,
+    "baseline": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "H1_strong_effect": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "H2_strong_inverted": {
+      "first_levels": 7,
+      "local_score": 0.5019709375909188
+    },
+    "matched_game_action_index_action_enum_rows_per_arm": 12381,
+    "action_enum_differences_H1": 0,
+    "action_enum_differences_H2": 0,
+    "level_state_differences_H1": 0,
+    "level_state_differences_H2": 0,
+    "improved_level_games_H1": 0,
+    "regressed_level_games_H1": 0,
+    "improved_level_games_H2": 0,
+    "regressed_level_games_H2": 0,
+    "first_level_action_counts_unchanged": {
+      "tn36": 44,
+      "lf52": 94,
+      "vc33": 5,
+      "cd82": 43,
+      "m0r0": 420,
+      "r11l": 39,
+      "sp80": 98
+    }
+  },
+  "interpretation": "Both strong conditional bonuses leave printed action enums, first-level completion times and public scores unchanged. The hypothesized intervention did not produce a distinguishable action-enum contrast in this cohort. Cannot infer visible-change causality or generalizable performance from this null. ACTION6 coordinates and independent latent-state pairing not available in this workflow.",
+  "decision": "REJECT_H1_AND_H2_REVERT_TEMPORARY_FILES",
+  "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "limitations": [
+    "All 25 official public games previously used; no unseen/held-out cohort or independently paired latent resets.",
+    "Action enum equality does not prove identical ACTION6 coordinates or latent trajectories.",
+    "Two attempts at conditional cardinal bonus (+0.85 and +3.00) failed to change action enums; future causal probe needs direct trigger/action readback before repeating.",
+    "STATE.json prior full rewrite safety-blocked; no bypass.",
+    "No Kaggle hidden score/submission, spend, tokens, terms, legal/license/publication decision or prize."
+  ]
+}

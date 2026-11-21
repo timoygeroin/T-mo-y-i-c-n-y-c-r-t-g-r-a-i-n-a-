@@ -1,0 +1,53 @@
+{
+  "schema": "mondayid.arc-agi3.negative-evidence.v1",
+  "date_utc": "2026-10-29",
+  "experiment": "isolated_witnessed_frontier_bfs_public_ab",
+  "status": "REJECTED_PUBLIC_REGRESSION_REVERTED",
+  "hypotheses": {
+    "H0": "Frozen local novelty policy is at least as effective.",
+    "H1": "Witnessed state-graph BFS to untried action frontier improves performance."
+  },
+  "test_first": {
+    "red_commit": "bd01e32f9de0df2f9b54cb86c9ce0934bdf7858c",
+    "red_contract_run": 40901586708,
+    "red": "328 tests: 1 expected assertion failure and 4 expected missing-method errors",
+    "green_commit": "67b6a11a8e5d77a9a57e7aa8ba2f2034b2e75a86",
+    "green_contract_run": 40901642699,
+    "green": "328/328 PASS"
+  },
+  "public_ab": {
+    "workflow_run": 40901947624,
+    "workflow_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40901947624",
+    "source": "official public runner",
+    "games": 25,
+    "action_cap_per_game": 120,
+    "baseline_completed_levels": 6,
+    "candidate_completed_levels": 5,
+    "baseline_local_score": 0.5010037315187991,
+    "candidate_local_score": 0.4714440655954968,
+    "local_score_delta": -0.02955966592330228,
+    "improved_games": [],
+    "regressed_games": [
+      "sp80"
+    ],
+    "recorded_actions_each_arm": 3025,
+    "seed_pairing_verified": false,
+    "hidden_kaggle_score": false
+  },
+  "rollback": {
+    "baseline_agent_changed": false,
+    "candidate_promoted": false,
+    "removed": [
+      ".github/workflows/arc-agent-frontier-ab.yml",
+      "competitions/arc-agi-3/tests/test_frontier_candidate.py",
+      "competitions/arc-agi-3/agent/candidate_frontier_agent.py"
+    ],
+    "rollback_head": "33fb3f0d04ecbe234d7a48639b4896691e86df9c"
+  },
+  "retained_validated_tool": "competitions/arc-agi-3/tools/compare_public_logs.py",
+  "limitations": [
+    "Single run, not independent seed-matched replication.",
+    "No causal world-model gain, hidden score or prize claim.",
+    "No Kaggle submission, spend, credentials, terms or legal decisions."
+  ]
+}

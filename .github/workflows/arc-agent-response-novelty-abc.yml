@@ -1,0 +1,115 @@
+name: ARC-AGI-3 action-conditioned interior and novelty public ABC
+# Preregistered before execution 2026-11-02. Frozen agent blob eb7bd0288cfa794f7997f6a93191c0a0c2c2787c.
+# H0: neither candidate improves official public score over frozen policy.
+# H1: strict-prior interior scene responsiveness improves action selection.
+# H2: strict-prior genuinely novel state transitions improve action selection.
+# H3: visual motion is irrelevant or confounded; either candidate regresses.
+# Same previously used 25 public games, not held-out. Equal 500-action cap.
+# No automatic promotion, main changes, Kaggle submission, or secrets.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-agent-response-novelty-abc.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  official_public_abc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Frozen source guard and two independent reversible policy mutations
+        run: |
+          set -euo pipefail
+          test "$(git hash-object competitions/arc-agi-3/agent/my_agent.py)" = "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          src=Path('competitions/arc-agi-3/agent/my_agent.py').read_text()
+          init='        self._successes: Counter[str] = Counter()\n'
+          record='        delta = self._delta(self._last_grids, grids)\n'
+          score='            value=1.0/(1.0+times) + 0.42*global_exploration + 0.12*historical_success\n'
+          assert all(src.count(s)==1 for s in (init,record,score)), 'frozen source seam mismatch'
+          cardinal="('ACTION1','ACTION2','ACTION3','ACTION4')"
+          for kind in ('interior','novelty'):
+              update=[
+                  "        if self._last_move in "+cardinal+":",
+                  "            self._response_trials[self._last_move] += 1",
+              ]
+              if kind=='interior':
+                  update += [
+                      "            if self._last_grids and grids:",
+                      "                a,b=self._last_grids[-1],grids[-1]",
+                      "                if len(a)==len(b)==64 and all(len(row)==64 for row in a+b):",
+                      "                    signal=sum(a[y][x]!=b[y][x] for y in range(8,56) for x in range(8,56))",
+                      "                else:",
+                      "                    signal=delta",
+                      "                if signal>=2:",
+                      "                    self._response_hits[self._last_move] += 1",
+                  ]
+              else:
+                  update += [
+                      "            if current not in self._visits:",
+                      "                self._response_hits[self._last_move] += 1",
+                  ]
+              bonus=[
+                  "            if identity in "+cardinal+" and self._response_trials[identity]>=3:",
+                  "                prior_rate=(self._response_hits[identity]+1)/(self._response_trials[identity]+2)",
+                  "                value += 0.65*(prior_rate-0.5)",
+              ]
+              out=src.replace(init,init+"        self._response_trials: Counter[str] = Counter()\n        self._response_hits: Counter[str] = Counter()\n",1)
+              out=out.replace(record,record+"\n".join(update)+"\n",1)
+              out=out.replace(score,score+"\n".join(bonus)+"\n",1)
+              assert out!=src and out.count('prior_rate=')==1
+              compile(out,'<isolated-'+kind+'>','exec')
+              Path('candidate_'+kind+'.py').write_text(out)
+              print(kind,hashlib.sha256(out.encode()).hexdigest())
+          # Negative no-op: the control is exactly the original, not a rewritten imitation.
+          Path('candidate_noop.py').write_text(src)
+          assert Path('candidate_noop.py').read_bytes()==Path('competitions/arc-agi-3/agent/my_agent.py').read_bytes()
+          PY
+          python -m py_compile candidate_interior.py candidate_novelty.py candidate_noop.py
+          (cd competitions/arc-agi-3 && python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v)
+      - name: Fetch official ARC-AGI-3 public engine
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official Python 3.12 runner
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: FROZEN baseline 25 public games x 500 actions
+        run: |
+          set -o pipefail
+          cp candidate_noop.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-response-baseline.log
+      - name: G1 interior response policy 25 public games x 500 actions
+        run: |
+          set -o pipefail
+          cp candidate_interior.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-response-interior.log
+      - name: G2 novelty response policy 25 public games x 500 actions
+        run: |
+          set -o pipefail
+          cp candidate_novelty.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) 2>&1 | sed -E 's/(Got anonymous API key: ).*/\1[REDACTED]/' | tee arc-response-novelty.log
+      - name: Independently compare official scorecards; never promote automatically
+        run: |
+          set -euo pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-response-baseline.log arc-response-interior.log --expected-games 25 --output arc-response-interior-result.json | tee arc-response-interior-summary.log
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-response-baseline.log arc-response-novelty.log --expected-games 25 --output arc-response-novelty-result.json | tee arc-response-novelty-summary.log
+      - name: Preserve exact public traces, no hidden score claim
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-response-novelty-abc-public
+          path: |
+            arc-response-baseline.log
+            arc-response-interior.log
+            arc-response-novelty.log
+            arc-response-interior-result.json
+            arc-response-novelty-result.json
+            arc-response-interior-summary.log
+            arc-response-novelty-summary.log
+          if-no-files-found: ignore

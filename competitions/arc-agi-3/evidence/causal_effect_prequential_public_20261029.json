@@ -1,0 +1,114 @@
+{
+  "schema": "mondayid.arc3.public-causal-effect-evidence.v1",
+  "date_utc": "2026-10-29",
+  "status": "REAL_OFFICIAL_PUBLIC_PREQUENTIAL_PREDICTIVE_GAIN_FOR_VISIBLE_CHANGE_NO_PROGRESS_OR_GAMEPLAY_GAIN_NO_PROMOTION",
+  "worldline": {
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "source_head": "feef7f4b1952344499025798093e838278f8ae1b",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "state_json_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7"
+  },
+  "pre_action_hypotheses": {
+    "H0_static": "The masked visible scene and level remain unchanged.",
+    "H1_action": "The last strictly prior same-game, same-level exact-physical-action (including ACTION6 x,y) binary visible-change/progress outcome repeats; abstain without donor.",
+    "H2_exact": "The last strictly prior same-game, same-level same-visible-state exact-physical-action binary outcome repeats; abstain without donor."
+  },
+  "test_first": {
+    "red_commit": "8573bac8b6c81bc42bdd25ab76a77071ceae4f46",
+    "red_contract_run": 40967411396,
+    "red_result": "EXPECTED import error for missing causal_effect_probe module; CI log inspected",
+    "first_green_candidate": "8c8670995851ee9d7778aba70e54d3f4a5707e9f",
+    "first_green_result": "350 tests, one parser validation error",
+    "green_fix_commit": "1eb6c2783fc6b12777c6b715f5be1ba4c0f387ae",
+    "green_contract_run": 40967642069,
+    "green_result": "SUCCESS; all 350 tests pass",
+    "workflow_commit": "7cc53fcb1647e2063df11a465dc370101904b913"
+  },
+  "official_public": {
+    "engine": "official ARC-AGI-3 Kaggle Starter, Python 3.12, make play-local STEPS=500",
+    "workflow_run": 40967700011,
+    "job": 123776277279,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12938663006,
+    "artifact_zip_sha256": "5097acb1536ac57103d01d99f6cce9f04ff469d5e4c6735d0a722d225c5afc57",
+    "games": 25,
+    "configured_action_cap_per_game": 500,
+    "frozen": {
+      "completed_first_levels": 7,
+      "raw_local_score": 0.5019709375909188
+    },
+    "shadow": {
+      "completed_first_levels": 7,
+      "raw_local_score": 0.5019709375909188
+    },
+    "score_delta": 0,
+    "level_delta": 0,
+    "improved_games": [],
+    "regressed_games": [],
+    "printed_action_enum_rows_per_arm": 12381,
+    "matched_game_action_index_rows": 12381,
+    "action_enum_differences": 0,
+    "level_state_differences": 0,
+    "paired_latent_seed_verified": false,
+    "unseen_heldout_games": false,
+    "forecast_records": 12381,
+    "observed_outcomes": 12212,
+    "censored_forecasts": 169,
+    "masked_visible_change_outcomes": 7950,
+    "observed_level_progress_outcomes": 7,
+    "h1_action": {
+      "eligible": 10823,
+      "visible_change_correct": 8729,
+      "static_visible_change_correct_same_subset": 3277,
+      "level_progress_correct": 10819,
+      "static_level_progress_correct_same_subset": 10819,
+      "per_game_visible_change_accuracy_better_than_static": 23,
+      "worse_than_static": 2
+    },
+    "h2_exact": {
+      "eligible": 2290,
+      "visible_change_correct": 2283,
+      "static_visible_change_correct_same_subset": 525,
+      "level_progress_correct": 2290,
+      "static_level_progress_correct_same_subset": 2290
+    },
+    "h1_change_vs_progress": {
+      "predicted_change": {
+        "n": 7740,
+        "actual_change": 6596,
+        "level_progress": 2
+      },
+      "predicted_static": {
+        "n": 3083,
+        "actual_change": 950,
+        "level_progress": 2
+      }
+    }
+  },
+  "interpretation": [
+    "Real public evidence that strict-prior same-action and same-visible-state outcome replay predicts the binary visible-change event substantially better than static-scene control on their respective eligible subsets.",
+    "Visible change is not verified gameplay progress. H1 progress prediction is tied with static (10819/10823), H2 tied with static (2290/2290), and only seven first-level progress events were observed.",
+    "H1-predicted visible change did not establish an improvement in level progress rate; 2/7740 predicted-change vs 2/3083 predicted-static observed level advances. Do not reward visible-change alone as a proxy for progress.",
+    "Action-enum and level-state traces match, but ACTION6 baseline coordinates and independently paired latent resets are not authenticated. No independent held-out public games; no causal policy evidence.",
+    "Pre-action chronology is witnessed inside one CI stdout stream, not independently sealed by an external pre-action timestamp. This is a shadow prediction diagnostic, not a causal intervention."
+  ],
+  "decision": "RETAIN_READ_ONLY_SHADOW_RESEARCH; NO_COMPETITION_AGENT_PROMOTION; DO_NOT_BUILD_VISIBLE_CHANGE_REWARD_FROM_THIS_EVIDENCE",
+  "safety": {
+    "submission_agent_changed": false,
+    "official_schedule_changed": false,
+    "collector_changed": false,
+    "spend": false,
+    "kaggle_submission": false,
+    "terms": false,
+    "legal_or_license": false,
+    "hidden_score_claim": false,
+    "prize_claim": false
+  },
+  "limitations": [
+    "STATE.json remains at frozen blob because prior full-file write was safety-blocked; do not bypass.",
+    "No independent paired latent seeds or uncontaminated public heldout.",
+    "The action-level effect predictor may exploit animation/visual persistence rather than transferable game mechanics.",
+    "Censored terminal forecasts excluded; not a proof of next-action policy value."
+  ]
+}

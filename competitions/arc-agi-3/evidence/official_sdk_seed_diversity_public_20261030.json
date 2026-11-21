@@ -1,0 +1,83 @@
+{
+  "schema": "mondayid.arc3.official_sdk_seed_diversity_evidence.v1",
+  "date_utc": "2026-10-30",
+  "worldline": {
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "source_head_before_probe": "f011eb43b6fb9fa1ba80b79fcc2c643f0df6e0de",
+    "temporary_probe_commit": "8dcae35f94831da98d66e378af9c29bfbec41577",
+    "state_blob": "643b523d3962375bf29bbd32a557cbfc3dbeade7",
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c"
+  },
+  "source": {
+    "official_sdk": "arc-agi Python 3.12 through official ARC-AGI-3-Kaggle-Starter",
+    "official_starter_play_local_blob": "6e11153821c5716f64971fba853351ec64636080",
+    "sdk_make_explicit_seed_parameter": true,
+    "workflow_run": 41053775898,
+    "workflow_job": 124056061111,
+    "workflow_conclusion": "SUCCESS",
+    "artifact_id": 12976645027,
+    "artifact_zip_sha256": "6fd8fc9a940fe442d69881d30da62f9a3794f9ccd85c7299735caf333fd24611",
+    "artifact_crc": "PASS",
+    "workflow_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/41053775898"
+  },
+  "method": {
+    "purpose": "Independently test whether the official SDK's explicit seed argument produces observable public reset/trajectory diversity beyond earlier seed 0-3 tests.",
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      7,
+      17,
+      42,
+      2026,
+      65535
+    ],
+    "public_game_count": 25,
+    "cap_per_episode": 16,
+    "recorded_pre_action_rows_including_reset_per_episode": 17,
+    "frozen_agent_sha256": "4ce707c6d7861fa8f64a49c30885913662d363b86b9627138945db528a4bbaad",
+    "seed_passed_to": "Arcade.make(game_id,seed=seed)",
+    "per_action_identity": "full visible frame SHA256 truncated to 20 hex chars + levels_completed + action enum + ACTION6 payload when dict",
+    "independent_audit": "Downloaded artifact ZIP, CRC verified, parsed JSON independently in Python and recomputed all game/seed comparisons; no missing episodes."
+  },
+  "results": {
+    "expected_episodes": 250,
+    "completed_episodes": 250,
+    "errors": 0,
+    "preaction_rows": 4250,
+    "initial_frame_games_with_seed_difference": 0,
+    "game_ids_with_any_logged_trajectory_difference": 0,
+    "game_seed_pairs_with_different_initial_frame": 0,
+    "game_seed_pairs_with_different_logged_trajectory": 0,
+    "game_seed_pairs_with_level_difference": 0,
+    "observed_different_action_lengths": 0
+  },
+  "hypotheses_not_preregistered_as_policy_trial": {
+    "H0": "Changing the explicit SDK seed does not produce observable variation in first 16 actions for the public games and frozen policy.",
+    "H1": "Some seeds produce different initial visible states or early transitions, enabling a stronger within-game repeated-seed probe.",
+    "H2": "The engine has latent or later-emerging seed effects not detectable by first-16 visible observations."
+  },
+  "interpretation": "H1 was not observed in this bounded test. The SDK accepts explicit seed, so CLI absence alone is not the blocker; the tested public games and early frozen trajectories did not exhibit observable independent reset variation even for larger seed values. This does not establish deterministic latent state, independent seeded pairing, or generalizable agent performance.",
+  "limitations": [
+    "Previously reused 25 official public games; zero unseen games.",
+    "No treatment candidate or same-budget policy A/B was performed in this probe.",
+    "Visible frame/action equality cannot certify equal latent states; 16 actions cannot rule out delayed seed effects.",
+    "Previous separate 500-action public sweep tested only seeds 0-3 with no observed diversification; no new 500-step seeded sweep here.",
+    "Runner startup/download failures must be excluded; this completed all 250 episodes without errors.",
+    "No Kaggle hidden score or submission; no performance gain or promotion."
+  ],
+  "decision": {
+    "promotion": false,
+    "frozen_agent": "UNCHANGED",
+    "official_evaluation_schedule": "UNCHANGED",
+    "collector": "UNCHANGED",
+    "state_json": "UNCHANGED_PREEXISTING_SAFETY_BLOCK_NOT_BYPASSED",
+    "temporary_workflow": "REMOVE_AFTER_EVIDENCE",
+    "kaggle_submission": false,
+    "spend": 0,
+    "terms_or_license_decision": false
+  }
+}

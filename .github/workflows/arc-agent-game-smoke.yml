@@ -1,0 +1,130 @@
+name: ARC-AGI-3 public-game smoke
+on:
+  pull_request:
+    paths:
+      - 'competitions/arc-agi-3/**'
+      - '.github/workflows/arc-agent-game-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch official ARC starter
+        run: git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+      - name: Install official ARC offline environment
+        working-directory: arc-starter
+        run: make setup PYTHON=python3.12
+      - name: Install MondayID agent into starter
+        run: cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+      - name: Play two public games and record scorecard
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          make verify-local | tee ../arc-agi3-public-game-smoke.log
+      - name: Enumerate public game suite
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          make list-games | tee ../arc-agi3-public-games.log
+      - name: Extended two-game 120-action benchmark
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          make play-local GAME=ls20,vc33 STEPS=120 | tee ../arc-agi3-public-game-extended.log
+      - name: Inspect public-game state transitions
+        run: |
+          set -o pipefail
+          arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-public-game-diagnostics.log
+      - name: Evaluate prequential public-game hypotheses (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/shadow_trace.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-causal-shadow-metrics.json
+      - name: Audit public-game scene aliasing (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/scene_alias_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-scene-alias-metrics.json
+      - name: Audit fixed spatial edge/interior deltas (read-only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/spatial_delta_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-spatial-delta-metrics.json
+      - name: Inspect pre-registered disjoint public games (shadow only)
+        run: |
+          set -o pipefail
+          MONDAYID_ARC_PUBLIC_SAMPLE=disjoint arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-disjoint-public-diagnostics.log
+      - name: Audit frozen spatial partition on disjoint public games
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/spatial_delta_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-disjoint-spatial-metrics.json
+          python competitions/arc-agi-3/experiments/scene_alias_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-disjoint-scene-alias-metrics.json
+      - name: Prequential edge-signal predictive controls (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/edge_predictive_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-edge-predictive-diagnostic.json
+          python competitions/arc-agi-3/experiments/edge_predictive_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-edge-predictive-disjoint.json
+      - name: Action-conditioned counterfactual edge control (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/action_conditioned_audit.py arc-agi3-public-transition-traces.jsonl | tee arc-agi3-action-control-diagnostic.json
+          python competitions/arc-agi-3/experiments/action_conditioned_audit.py arc-agi3-disjoint-public-transition-traces.jsonl | tee arc-agi3-action-control-disjoint.json
+      - name: Collect frozen longer prospective public trace (shadow only)
+        run: |
+          set -o pipefail
+          MONDAYID_ARC_PUBLIC_SAMPLE=prospective arc-starter/.venv/bin/python competitions/arc-agi-3/scripts/inspect_public_games.py | tee arc-agi3-prospective-public-diagnostics.log
+      - name: Compare prospective concrete world and action-conditioned hypotheses
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/shadow_trace.py arc-agi3-prospective-public-transition-traces.jsonl | tee arc-agi3-prospective-causal-shadow.json
+          python competitions/arc-agi-3/experiments/action_conditioned_audit.py arc-agi3-prospective-public-transition-traces.jsonl | tee arc-agi3-prospective-action-control.json
+      - name: Prequential one-object action effects vs exact replay and static (shadow only)
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/experiments/single_object_prequential.py arc-agi3-prospective-public-transition-traces.jsonl | tee arc-agi3-prospective-single-object-control.json
+      - name: All-public-game benchmark (120 actions per game)
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          make play-local STEPS=120 | tee ../arc-agi3-public-suite.log
+      - name: Official random baseline across public games (same 120-step cap)
+        working-directory: arc-starter
+        run: |
+          set -o pipefail
+          git show HEAD:agent/my_agent.py > agent/my_agent.py
+          sed -i 's/MAX_ACTIONS = 80/MAX_ACTIONS = 120/' agent/my_agent.py
+          make play-local STEPS=120 | tee ../arc-agi3-random-suite.log
+      - name: Preserve benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-agi3-public-game-smoke
+          path: |
+            arc-agi3-public-game-smoke.log
+            arc-agi3-public-game-diagnostics.log
+            arc-agi3-public-transition-traces.jsonl
+            arc-agi3-causal-shadow-metrics.json
+            arc-agi3-scene-alias-metrics.json
+            arc-agi3-spatial-delta-metrics.json
+            arc-agi3-disjoint-public-diagnostics.log
+            arc-agi3-disjoint-public-transition-traces.jsonl
+            arc-agi3-disjoint-spatial-metrics.json
+            arc-agi3-disjoint-scene-alias-metrics.json
+            arc-agi3-edge-predictive-diagnostic.json
+            arc-agi3-edge-predictive-disjoint.json
+            arc-agi3-action-control-diagnostic.json
+            arc-agi3-action-control-disjoint.json
+            arc-agi3-prospective-public-diagnostics.log
+            arc-agi3-prospective-public-transition-traces.jsonl
+            arc-agi3-prospective-causal-shadow.json
+            arc-agi3-prospective-action-control.json
+            arc-agi3-prospective-single-object-control.json
+            arc-agi3-public-game-extended.log
+            arc-agi3-public-games.log
+            arc-agi3-public-suite.log
+            arc-agi3-random-suite.log
+          if-no-files-found: ignore

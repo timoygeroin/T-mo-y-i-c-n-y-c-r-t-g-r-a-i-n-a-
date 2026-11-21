@@ -1,0 +1,71 @@
+{
+  "schema": "mondayid.arc3.click_consistency500_official_public_ab.v1",
+  "date_utc": "2026-10-30",
+  "status": "OFFICIAL_PUBLIC_SAME_BUDGET_NULL_REJECTED",
+  "worldline": {
+    "pr": 196,
+    "branch": "monday/arc-agi3-offline-agent-20261026",
+    "source_head": "286abe3e388af61fc0d6113fc000b983de8139d4",
+    "temporary_workflow_commit": "1a37c471021760c3d8253d3b393cb92438797e68"
+  },
+  "preaction_hypotheses": {
+    "H0": "Frozen novelty agent is no worse on official public games at the same 500-action budget.",
+    "H1": "Meaningful local/large visual click-effect consistency plus replay of a level-advancing click improves first levels or local score without game-level regression.",
+    "H2": "Animation-filtering and click replay alter behavior but do not improve first levels/score, or regress."
+  },
+  "method": {
+    "engine": "Official ARC-AGI-3 Kaggle Starter Python 3.12",
+    "games": 25,
+    "cap_per_game": 500,
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "candidate_path": "competitions/arc-agi-3/agent/candidate_click_consistency.py",
+    "candidate_unchanged": true,
+    "game_id_special_cases": false,
+    "paired_game_ids": true,
+    "independent_seed_or_latent_reset_pairing": false,
+    "held_out": false,
+    "reused_public_games": true,
+    "existing_candidate_tests": "6/6 PASS",
+    "scorecard_comparator_tests": "3/3 PASS"
+  },
+  "official_public_run": {
+    "workflow_id": 41009455676,
+    "job_id": 123911788772,
+    "conclusion": "SUCCESS",
+    "artifact_id": 12956702705,
+    "artifact_sha256": "727a0f81ecbed3c80a4900174e4b8390a4e450fc4d835f8066b3f21fc4e6bc9f",
+    "url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/41009455676"
+  },
+  "performance": {
+    "frozen_first_levels": 7,
+    "candidate_first_levels": 7,
+    "frozen_local_score": 0.5019709375909188,
+    "candidate_local_score": 0.5019709375909188,
+    "delta_first_levels": 0,
+    "delta_local_score": 0,
+    "improved_games": [],
+    "regressed_games": [],
+    "recorded_runner_actions_including_reset_frozen": 12525,
+    "recorded_runner_actions_including_reset_candidate": 12525,
+    "first_level_action_index": "NOT_RECORDED_BY_SCORECARD"
+  },
+  "interpretation": "The preexisting isolated click-consistency candidate had no measured public gameplay or action-budget advantage at 500 actions, extending the earlier 120-step null. No evidence to promote. Runner action count includes reset, not first-level completion timing.",
+  "disposition": "REJECT_NO_POLICY_PROMOTION_REMOVE_TEMP_WORKFLOW_RETAIN_NEGATIVE_EVIDENCE",
+  "limitations": [
+    "All 25 public games reused, no independent held-out set or effective seed diversity",
+    "No authenticated latent-state paired resets",
+    "No per-game first-level action-index measurement from scorecard",
+    "No hidden Kaggle score, Kaggle submission, prize or victory",
+    "STATE.json full rewrite previously safety-blocked; leave frozen without bypass"
+  ],
+  "controls": {
+    "contest_agent_unchanged": true,
+    "official_evaluation_schedule_unchanged": true,
+    "collector_unchanged": true,
+    "spend": 0,
+    "kaggle_submission": false,
+    "tokens_exposed": false,
+    "terms_accepted_by_agent": false,
+    "licensing_publication_decision": false
+  }
+}

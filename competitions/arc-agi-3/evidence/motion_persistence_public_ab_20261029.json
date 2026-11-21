@@ -1,0 +1,83 @@
+{
+  "schema": "mondayid.arc-agi3.negative-evidence.v1",
+  "date_utc": "2026-10-29",
+  "experiment": "isolated_directional_persistence_bonus_0_55_to_1_35",
+  "status": "REJECTED_NO_SAME_BUDGET_PUBLIC_GAIN_REVERTED",
+  "hypotheses": {
+    "H0": "Frozen +0.55 directional continuation bonus performs at least as well.",
+    "H1": "After a visible new-state directional action, stronger +1.35 continuation improves generalizable exploration without repeating no-ops.",
+    "H2": "The effect is heterogeneous and may be neutral or harmful across games."
+  },
+  "predeclared_changes": [
+    "Only candidate directional continuation bonus changed from +0.55 to +1.35.",
+    "Frozen agent, official schedule, collector and game roster unchanged."
+  ],
+  "test_first": {
+    "red_commit": "c843d4c66afa52c103eeb5698078dadb9873c91f",
+    "red_contract_run": 40909466987,
+    "red_result": "Expected 1 FileNotFoundError among 333 tests (candidate absent); job log independently inspected.",
+    "green_commit": "952afe75058783269499c693474f9f399f50f1a2",
+    "green_contract_run": 40909628551,
+    "green_result": "335/335 PASS; 3 new behavioral tests."
+  },
+  "official_public_ab": {
+    "workflow_run": 40909813348,
+    "workflow_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40909813348",
+    "engine": "official public Python 3.12 runner",
+    "game_count": 25,
+    "seed_pairing_verified": false,
+    "auto_promoted": false,
+    "same_budget_120": {
+      "baseline_levels": 6,
+      "candidate_levels": 6,
+      "baseline_local_score": 0.5010037315187991,
+      "candidate_local_score": 0.5010037315187991,
+      "score_delta": 0,
+      "improved_games": [],
+      "regressed_games": [],
+      "recorded_actions_each_arm": 3025
+    },
+    "same_budget_500": {
+      "baseline_levels": 7,
+      "candidate_levels": 7,
+      "baseline_local_score": 0.5019709375909188,
+      "candidate_local_score": 0.5019709375909188,
+      "score_delta": 0,
+      "improved_games": [],
+      "regressed_games": [],
+      "recorded_actions_each_arm": 12525
+    },
+    "predeclared_public_subgroup": {
+      "games": [
+        "su15",
+        "bp35",
+        "wa30",
+        "ft09",
+        "sk48",
+        "re86",
+        "m0r0",
+        "s5i5",
+        "sb26"
+      ],
+      "baseline_levels_120": 0,
+      "candidate_levels_120": 0,
+      "baseline_levels_500": 1,
+      "candidate_levels_500": 1,
+      "note": "All nine were previously aggregate-benchmarked PUBLIC games, not uncontaminated holdout."
+    }
+  },
+  "rollback": {
+    "candidate_promoted": false,
+    "frozen_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "removed": [
+      "competitions/arc-agi-3/agent/candidate_motion_persistence.py",
+      "competitions/arc-agi-3/tests/test_motion_persistence_candidate.py",
+      ".github/workflows/arc-agent-motion-persistence-ab.yml"
+    ]
+  },
+  "limitations": [
+    "One A/B run per budget; not independently paired stochastic seeds.",
+    "No new hidden/unseen public game cohort; public local score only.",
+    "No Kaggle submission, tokens, spend, terms, licensing, hidden score, prize or earnings."
+  ]
+}

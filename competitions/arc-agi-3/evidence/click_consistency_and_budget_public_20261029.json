@@ -1,0 +1,92 @@
+{
+  "schema": "mondayid.arc-agi3.public-experiment-receipt.v1",
+  "date_utc": "2026-10-29",
+  "baseline_head": "41037532cbde0d95ed4535311e92183c8bf7b86b",
+  "branch": "monday/arc-agi3-offline-agent-20261026",
+  "status": "VERIFIED_PUBLIC_NO_SAME_BUDGET_POLICY_GAIN",
+  "frozen_agent_blob_sha": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+  "contract": {
+    "run": 40912364438,
+    "conclusion": "SUCCESS",
+    "tests": "332 PASS",
+    "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40912364438"
+  },
+  "click_consistency": {
+    "hypotheses": {
+      "H0": "Original novelty policy is no worse on official public games.",
+      "H1": "Rejecting remote tiny animation as successful ACTION6 and replaying a proven level-advancing click once improves performance."
+    },
+    "run": 40912364279,
+    "job": 123583428488,
+    "artifact": 12915305447,
+    "conclusion": "SUCCESS",
+    "games": 25,
+    "steps_parameter": 120,
+    "baseline_levels": 6,
+    "candidate_levels": 6,
+    "baseline_local_score": 0.5010037315187991,
+    "candidate_local_score": 0.5010037315187991,
+    "delta": 0,
+    "improved_games": [],
+    "regressed_games": [],
+    "recorded_actions_each_arm": 3025,
+    "seed_pairing_verified": false,
+    "disposition": "NO_PROMOTION_ZERO_DELTA",
+    "source": "Official public Python 3.12 runner",
+    "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40912364279"
+  },
+  "action_budget": {
+    "hypotheses": {
+      "H0": "The same frozen policy has no extra successes after the 500-action cap.",
+      "H1": "Allowing more actions permits extra first-level completions."
+    },
+    "run": 40912364426,
+    "job": 123583428750,
+    "artifact": 12913788458,
+    "conclusion": "SUCCESS",
+    "games": 25,
+    "steps_parameter": 2000,
+    "control_agent_max_actions": 500,
+    "treatment_agent_max_actions": 2000,
+    "control_levels": 7,
+    "treatment_levels": 10,
+    "control_local_score": 0.5019709375909188,
+    "treatment_local_score": 0.5024346195754061,
+    "delta": 0.00046368198448731857,
+    "improved_games": [
+      "ar25",
+      "ft09",
+      "lp85"
+    ],
+    "regressed_games": [],
+    "recorded_control_actions": 12525,
+    "recorded_treatment_actions": 50025,
+    "seed_pairing_verified": false,
+    "disposition": "BUDGET_SENSITIVITY_ONLY_NOT_SAME_BUDGET_POLICY_GAIN",
+    "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40912364426"
+  },
+  "frozen_budget_sweep": {
+    "run": 40912364413,
+    "conclusion": "SUCCESS",
+    "levels_at_120": 6,
+    "levels_at_500": 7,
+    "source": "Same frozen agent at different STEPS, not a matched-budget policy comparison",
+    "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40912364413"
+  },
+  "other_exact_head_workflows": {
+    "system_proof": 40912364521,
+    "public_smoke": 40912364379,
+    "frozen_nine_public": 40912364504,
+    "notebook_draft": 40912364536,
+    "conclusion": "SUCCESS"
+  },
+  "limitations": [
+    "No independent seed pairing; public games previously seen in evaluations.",
+    "Budget change from 500 to 2000 is four times the allowed actions, not a same-budget policy improvement.",
+    "Notebook draft packaging success is not authenticated Kaggle Phase-B execution or submission.",
+    "No new causal world-model improvement or held-out hidden Kaggle score.",
+    "STATE.json still at blob 643b523d3962375bf29bbd32a557cbfc3dbeade7; previous full-file update was safety-blocked; do not bypass.",
+    "Candidate remains isolated and unpromoted; official agent, evaluation schedule and blocked collector unchanged."
+  ],
+  "promotion_gate": "NO_POLICY_PROMOTION_UNTIL_POSITIVE_SAME_BUDGET_PUBLIC_AB_WITH_REPLICATION"
+}

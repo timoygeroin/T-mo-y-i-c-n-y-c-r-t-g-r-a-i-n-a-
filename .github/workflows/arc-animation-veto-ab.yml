@@ -1,0 +1,51 @@
+name: ARC-AGI-3 isolated animation-veto public A-B
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/arc-animation-veto-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  animation_veto_ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify candidate behavioral contracts and comparator
+        working-directory: competitions/arc-agi-3
+        run: |
+          python -m unittest discover -s tests -p 'test_animation_veto_candidate.py' -v
+          python -m unittest discover -s tests -p 'test_compare_public_logs.py' -v
+      - name: Prepare official public runner
+        run: |
+          git clone --depth 1 https://github.com/arcprize/ARC-AGI-3-Kaggle-Starter.git arc-starter
+          (cd arc-starter && make setup PYTHON=python3.12)
+      - name: FROZEN unchanged 25 public games, 500 actions
+        run: |
+          set -o pipefail
+          cp competitions/arc-agi-3/agent/my_agent.py arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-animation-veto-frozen.log
+      - name: ISOLATED transient-aware candidate 25 public games, 500 actions
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/animation_veto_variant.py --source competitions/arc-agi-3/agent/my_agent.py --output arc-starter/agent/my_agent.py
+          (cd arc-starter && make play-local STEPS=500) | tee arc-animation-veto-candidate.log
+      - name: Compare paired game scorecards; no automatic promotion
+        run: |
+          set -o pipefail
+          python competitions/arc-agi-3/tools/compare_public_logs.py arc-animation-veto-frozen.log arc-animation-veto-candidate.log --output arc-animation-veto-result.json | tee arc-animation-veto-summary.log
+      - name: Preserve positive and negative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arc-animation-veto-public-ab-500
+          path: |
+            arc-animation-veto-frozen.log
+            arc-animation-veto-candidate.log
+            arc-animation-veto-result.json
+            arc-animation-veto-summary.log
+          if-no-files-found: ignore

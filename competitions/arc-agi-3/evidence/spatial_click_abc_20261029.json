@@ -1,0 +1,83 @@
+{
+  "schema": "mondayid.arc-agi3.spatial-click-abc.v1",
+  "date_utc": "2026-10-29",
+  "status": "REJECTED_PUBLIC_REGRESSION_NO_POLICY_PROMOTION",
+  "source_pr": 196,
+  "source_commit": "ab6b256c53e519432e31331e698949feb9ff826b",
+  "run_id": 40929095329,
+  "job_id": 123642422744,
+  "run_url": "https://github.com/timoygeroin/T-mo-y-i-c-n-y-c-r-t-g-r-a-i-n-a-/actions/runs/40929095329",
+  "artifact_id": 12921049721,
+  "artifact_name": "arc-spatial-click-public-abc",
+  "engine": "official ARC-AGI-3 Kaggle Starter Python 3.12 public offline runner",
+  "protocol": {
+    "games": 25,
+    "steps_parameter": 500,
+    "printed_actions_per_game": 501,
+    "unchanged_baseline_agent_blob": "eb7bd0288cfa794f7997f6a93191c0a0c2c2787c",
+    "seed_pairing_verified": false,
+    "official_public_games_only": true,
+    "hidden_kaggle_score": false
+  },
+  "hypotheses": {
+    "H0": "Widening and reordering click target candidates produces no public performance improvement under equal 500-step cap.",
+    "H1": "Retaining all 8x8 stratified click targets after salient components improves public first-level completions or local score.",
+    "H2": "Uniform-first spatial probes outperform rare-color salient-first selection on general public games.",
+    "H3": "Broad uniform exploration dilutes task-relevant salience and regresses game-specific score."
+  },
+  "arms": {
+    "baseline": {
+      "first_levels_completed": 7,
+      "local_score": 0.5019709375909188,
+      "improved_games": [],
+      "regressed_games": []
+    },
+    "coverage": {
+      "first_levels_completed": 7,
+      "local_score": 0.49578265690263285,
+      "score_delta": -0.006188280688285974,
+      "improved_games": [],
+      "regressed_games": [],
+      "decision": "REJECT"
+    },
+    "grid_first": {
+      "first_levels_completed": 7,
+      "local_score": 0.038432520788299035,
+      "score_delta": -0.46353841680261976,
+      "improved_games": [
+        "lp85"
+      ],
+      "regressed_games": [
+        "cd82"
+      ],
+      "decision": "REJECT"
+    }
+  },
+  "test_first": {
+    "red_commit": "542a63a93324df2b26c6539a53c4ff8e040c6a55",
+    "red_contract_run": 40928906642,
+    "red_expected_missing_generator": true,
+    "green_commit": "e86d7ab9d7bdd65e50f235e1e1e8455d4f80570e",
+    "green_contract_run": 40928984920,
+    "green_contract_success": true,
+    "isolated_candidate_tests": 5,
+    "comparator_tests": 3
+  },
+  "safety": {
+    "competition_agent_mutated": false,
+    "official_collector_mutated": false,
+    "official_schedule_mutated": false,
+    "submission": false,
+    "spend": false,
+    "terms": false,
+    "auto_promoted": false
+  },
+  "limitations": [
+    "No independent paired random seeds or held-out unseen game cohort; same 25 public games previously used.",
+    "Same action cap and printed total actions do not prove identical latent trajectories or click coordinates.",
+    "Scorecard aggregate is a public local metric, not Kaggle hidden score.",
+    "One win and one loss in grid-first arm are not generalizable improvement; aggregate score strongly regresses.",
+    "State JSON previously safety-blocked for full rewrite; leave its blob unchanged rather than bypass."
+  ],
+  "next_gate": "Study observed click outcome and task-local object response on prospective public games; preregister before policy integration, retain frozen original until paired positive evidence."
+}
