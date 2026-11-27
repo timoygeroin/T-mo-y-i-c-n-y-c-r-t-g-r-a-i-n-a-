@@ -14,7 +14,7 @@ function section(from, to) {
 }
 
 test('only a real saved on-device answer begins device acceptance', () => {
-  const submit = section('@MainActor private func submit() async', '@MainActor private func onDeviceResponse(');
+  const submit = section('@MainActor private func submit(', '@MainActor private func onDeviceResponse(');
   const inference = submit.indexOf('let response = try await onDeviceResponse(');
   const saved = submit.indexOf('store.appendChat(role: "monday", text: response, receiptID: receiptID)');
   const invalidated = submit.indexOf('MondayDeviceAcceptanceStore.beginOnDeviceReceipt(receiptID)');
