@@ -6,7 +6,7 @@ cd "$root"
 work="${RUNNER_TEMP:-/tmp}/monday-velvet-build"
 mkdir -p "$work" ThirdParty
 if [[ ! -d ThirdParty/onnxruntime.xcframework ]]; then
-  curl -fsSL --retry 3 https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime/1.22.1/microsoft.ml.onnxruntime.1.22.1.nupkg -o "$work/ort.nupkg"
+  curl --http1.1 -fsSL --retry 4 --retry-all-errors --connect-timeout 15 --max-time 240 https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime/1.22.1/microsoft.ml.onnxruntime.1.22.1.nupkg -o "$work/ort.nupkg"
   echo "7b091e012dcfef2f9cc965f2252041101b1840c748ffbc1c18ba047bd6508b1c  $work/ort.nupkg" | shasum -a 256 -c -
   unzip -p "$work/ort.nupkg" runtimes/ios/native/onnxruntime.xcframework.zip > "$work/ort.zip"
   unzip -q "$work/ort.zip" -d ThirdParty
