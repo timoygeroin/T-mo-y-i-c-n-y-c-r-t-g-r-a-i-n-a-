@@ -11,13 +11,13 @@ if [[ ! -d ThirdParty/onnxruntime.xcframework ]]; then
   unzip -p "$work/ort.nupkg" runtimes/ios/native/onnxruntime.xcframework.zip > "$work/ort.zip"
   unzip -q "$work/ort.zip" -d ThirdParty
 fi
-# The public checkout can be compiled without distributing the owner's four assets.
+# The public checkout can be compiled without distributing the owner's scene and model assets.
 # Keep the private project's normal resource phase intact when they are present.
 if [[ ! -e platform/apple-host/MondayIDHost/VelvetClaire.onnx ]]; then
   python3 - <<'PY'
 from pathlib import Path
 p=Path('platform/apple-host/MondayIDHost.xcodeproj/project.pbxproj')
-files={'VelvetListening.usdz','VelvetStudio.usdz','VelvetChannels.json','VelvetClaire.onnx'}
+files={'VelvetListening.usdz','VelvetEvening.usdz','VelvetStreet.usdz','VelvetStudio.usdz','VelvetChannels.json','VelvetClaire.onnx'}
 lines=p.read_text().splitlines(keepends=True)
 p.write_text(''.join(line for line in lines if not any(('/* '+name+' in Resources */') in line for name in files)))
 PY

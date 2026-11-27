@@ -14,23 +14,39 @@ struct VelvetRoom: View {
     @State private var problem = ""
     @State private var loadingIssue = ""
     @State private var waiting = false
-    @State private var palette = 0
-    @State private var camera = 0
+    @AppStorage("velvet.palette") private var palette = 0
+    @AppStorage("velvet.outfit") private var outfit = 0
+    @AppStorage("velvet.lighting") private var lighting = 0
+    @AppStorage("velvet.camera") private var camera = 0
     @State private var showKeyboard = false
     @State private var active = true
-    private let colors: [Color] = [.gray, .teal, .orange]
+    private let outfits = ["Спортивный", "Вечерний", "Городской"]
+    private let palettes = ["Ткань комплекта", "Морская волна", "Медь"]
+    private let lights = ["Дневной свет", "Закат", "Ночной город"]
     var body: some View {
         ZStack {
-            VelvetStage(audio: audio, palette: palette, camera: camera, problem: $loadingIssue).ignoresSafeArea()
+            VelvetStage(audio: audio, palette: palette, outfit: outfit, lighting: lighting, camera: camera, problem: $loadingIssue).ignoresSafeArea()
             VStack {
                 HStack {
                     Button { dismiss() } label: { Image(systemName: "chevron.down").frame(width: 36, height: 36) }
                     Spacer()
-                    Button { camera += 1 } label: { Image(systemName: "viewfinder").frame(width: 36, height: 36) }
+                    Button { camera = (camera + 1) % 3 } label: { Image(systemName: "viewfinder").frame(width: 36, height: 36) }
                         .accessibilityLabel("Сменить расстояние")
-                    Button { palette = (palette + 1) % colors.count } label: {
-                        Image(systemName: "tshirt.fill").foregroundStyle(palette == 0 ? .white : colors[palette]).frame(width: 36, height: 36)
-                    }.accessibilityLabel("Цвет одежды")
+                    Menu {
+                        Picker("Комплект", selection: $outfit) {
+                            ForEach(outfits.indices, id: \.self) { Text(outfits[$0]).tag($0) }
+                        }
+                        Picker("Цвет ткани", selection: $palette) {
+                            ForEach(palettes.indices, id: \.self) { Text(palettes[$0]).tag($0) }
+                        }
+                    } label: { Image(systemName: "tshirt").frame(width: 36, height: 36) }
+                        .accessibilityLabel("Гардероб")
+                    Menu {
+                        Picker("Освещение", selection: $lighting) {
+                            ForEach(lights.indices, id: \.self) { Text(lights[$0]).tag($0) }
+                        }
+                    } label: { Image(systemName: "sun.max").frame(width: 36, height: 36) }
+                        .accessibilityLabel("Свет студии")
                 }.padding(8).background(.ultraThinMaterial, in: Capsule())
                 Spacer()
                 VStack(spacing: 9) {
@@ -80,7 +96,7 @@ struct VelvetRoom: View {
 }
 
 @MainActor private struct VelvetStage: UIViewRepresentable {
-    let audio: VelvetAudio, palette: Int, camera: Int
+    let audio: VelvetAudio, palette: Int, outfit: Int, lighting: Int, camera: Int
     @Binding var problem: String
     func makeCoordinator() -> Coordinator { Coordinator(audio: audio) }
     func makeUIView(context: Context) -> ARView {
@@ -91,12 +107,18 @@ struct VelvetRoom: View {
     func updateUIView(_ view: ARView, context: Context) {
         context.coordinator.selectCamera(camera)
         context.coordinator.tint(palette)
+        context.coordinator.light(lighting)
+        context.coordinator.wear(outfit) { problem = $0 }
     }
     static func dismantleUIView(_ uiView: ARView, coordinator: Coordinator) { coordinator.close() }
 
     @MainActor final class Coordinator: NSObject {
         private let audio: VelvetAudio, root = AnchorEntity(world: .zero), camera = PerspectiveCamera()
         private var task: Task<Void,Never>?, link: CADisplayLink?, cameraIndex = -1, tintIndex = 0
+        private var avatarTask: Task<Void, Never>?
+        private var selectedOutfit: Int?
+        private var avatar: Entity?
+        private var lamps: [DirectionalLight] = []
         private var face: [Entity] = [], clothes: [(Entity, ModelComponent)] = []
         private var yaw: Float = 0.08, pitch: Float = 0.11, distance: Float = 1.15
         private var center = SIMD3<Float>(0, 1.15, 0)
@@ -109,7 +131,7 @@ struct VelvetRoom: View {
             camera.camera.fieldOfViewInDegrees = 51
             for (position, intensity, color) in [(SIMD3<Float>(-1.6,2.7,1.8), Float(1800), UIColor(red: 1,green: 0.89,blue: 0.81,alpha: 1)), (SIMD3<Float>(1.6,1.5,1.0),Float(800),UIColor(red: 0.72,green: 0.86,blue: 1,alpha: 1))] {
                 let light = DirectionalLight(); light.light.intensity = intensity; light.light.color = color
-                root.addChild(light); light.look(at: [0,1,0],from: position,relativeTo: nil)
+                lamps.append(light); root.addChild(light); light.look(at: [0,1,0],from: position,relativeTo: nil)
             }
             let one = UIPanGestureRecognizer(target: self,action: #selector(orbit(_:))); one.maximumNumberOfTouches = 1
             let two = UIPanGestureRecognizer(target: self,action: #selector(moveCenter(_:))); two.minimumNumberOfTouches = 2
@@ -117,28 +139,81 @@ struct VelvetRoom: View {
             view.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(zoom(_:))))
             task = Task {
                 do {
-                    guard let roomURL = Bundle.main.url(forResource: "VelvetStudio", withExtension: "usdz"),
-                          let bodyURL = Bundle.main.url(forResource: "VelvetListening", withExtension: "usdz")
-                    else { throw VelvetIssue.message("Файлы сцены не найдены.") }
-                    let room = try await Entity(contentsOf: roomURL), body = try await Entity(contentsOf: bodyURL)
-                    try Task.checkCancellation(); root.addChild(room); root.addChild(body)
-                    @MainActor func inspect(_ entity: Entity, costume: Bool) {
-                        let isSuit = costume || entity.name == "TrainingSet" || entity.name == "female_sportsuit01"
-                        if let model = entity.components[ModelComponent.self] {
-                            let component = entity.components[BlendShapeWeightsComponent.self] ?? BlendShapeWeightsComponent(weightsMapping: .init(meshResource: model.mesh))
-                            if !component.weightSet.isEmpty { entity.components.set(component); face.append(entity) }
-                            if isSuit { clothes.append((entity,model)) }
-                        }
-                        if let clip = entity.availableAnimations.first { entity.playAnimation(clip.repeat()) }
-                        for child in entity.children { inspect(child, costume: isSuit) }
-                    }
-                    inspect(body, costume: false); applyTint()
-                    if face.isEmpty { error("Сцена открыта. Устройство не загрузило каналы мимики.") }
+                    guard let roomURL = Bundle.main.url(forResource: "VelvetStudio", withExtension: "usdz")
+                    else { throw VelvetIssue.message("Файл студии не найден.") }
+                    let room = try await Entity(contentsOf: roomURL)
+                    try Task.checkCancellation()
+                    root.addChild(room)
                     let display = CADisplayLink(target:self,selector:#selector(tick(_:)));display.preferredFramesPerSecond = 24;display.add(to:.main,forMode:.common);link = display
                 } catch is CancellationError {} catch let failure { if !Task.isCancelled { error(failure.localizedDescription) } }
             }
         }
-        func close() { task?.cancel(); link?.invalidate(); link = nil; root.removeFromParent(); face.removeAll(); clothes.removeAll() }
+        func wear(_ index: Int, error: @escaping @MainActor (String) -> Void) {
+            let resources = ["VelvetListening", "VelvetEvening", "VelvetStreet"]
+            guard resources.indices.contains(index), selectedOutfit != index else { return }
+            selectedOutfit = index
+            avatarTask?.cancel()
+            avatarTask = Task {
+                do {
+                    guard let url = Bundle.main.url(forResource: resources[index], withExtension: "usdz")
+                    else { throw VelvetIssue.message("Комплект отсутствует в сборке.") }
+                    let fresh = try await Entity(contentsOf: url)
+                    try Task.checkCancellation()
+                    face.removeAll()
+                    clothes.removeAll()
+                    inspect(fresh, costume: false)
+                    avatar?.removeFromParent()
+                    root.addChild(fresh)
+                    avatar = fresh
+                    applyTint()
+                    error(face.isEmpty ? "Мимика недоступна на этом устройстве." : "")
+                } catch is CancellationError {
+                } catch let failure {
+                    if !Task.isCancelled { error(failure.localizedDescription) }
+                }
+            }
+        }
+
+        private func inspect(_ entity: Entity, costume: Bool) {
+            let suit = costume || entity.name == "TrainingSet" || entity.name.hasPrefix("female_")
+            if let model = entity.components[ModelComponent.self] {
+                let morphs = entity.components[BlendShapeWeightsComponent.self] ?? BlendShapeWeightsComponent(weightsMapping: .init(meshResource: model.mesh))
+                if !morphs.weightSet.isEmpty {
+                    entity.components.set(morphs)
+                    face.append(entity)
+                }
+                if suit { clothes.append((entity, model)) }
+            }
+            if let clip = entity.availableAnimations.first { entity.playAnimation(clip.repeat()) }
+            for child in entity.children { inspect(child, costume: suit) }
+        }
+
+        private var lightIndex: Int?
+        func light(_ index: Int) {
+            guard lamps.count == 2, lightIndex != index else { return }
+            lightIndex = index
+            let setup: (UIColor, Float, UIColor, Float, Float)
+            switch index {
+            case 1: setup = (UIColor(red: 1, green: 0.57, blue: 0.33, alpha: 1), 1670, .systemPink, 570, -0.55)
+            case 2: setup = (UIColor(red: 0.43, green: 0.67, blue: 1, alpha: 1), 1050, .systemPink, 820, -1.6)
+            default: setup = (UIColor(red: 1, green: 0.89, blue: 0.81, alpha: 1), 1800, UIColor(red: 0.72, green: 0.86, blue: 1, alpha: 1), 800, 0)
+            }
+            lamps[0].light.color = setup.0
+            lamps[0].light.intensity = setup.1
+            lamps[1].light.color = setup.2
+            lamps[1].light.intensity = setup.3
+            view?.environment.lighting.intensityExponent = setup.4
+        }
+
+        func close() {
+            task?.cancel()
+            avatarTask?.cancel()
+            link?.invalidate()
+            link = nil
+            root.removeFromParent()
+            face.removeAll()
+            clothes.removeAll()
+        }
         func selectCamera(_ index: Int) {
             guard cameraIndex != index else { return }; cameraIndex = index
             let presets: [(Float, Float, SIMD3<Float>)] = [(0.08,1.19,[0,1.16,0]),(-0.15,2.23,[0,0.81,0]),(-0.62,2.7,[0.05,1.04,-0.08])]
