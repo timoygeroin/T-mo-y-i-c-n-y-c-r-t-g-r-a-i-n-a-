@@ -9,8 +9,15 @@ struct VelvetRoom: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var audio = VelvetAudio()
     @StateObject private var mic = VelvetMic()
-    @State private var draft = "", reply = "", problem = "", loadingIssue = ""
-    @State private var waiting = false, palette = 0, camera = 0, showKeyboard = false, active = true
+    @State private var draft = ""
+    @State private var reply = ""
+    @State private var problem = ""
+    @State private var loadingIssue = ""
+    @State private var waiting = false
+    @State private var palette = 0
+    @State private var camera = 0
+    @State private var showKeyboard = false
+    @State private var active = true
     private let colors: [Color] = [.gray, .teal, .orange]
     var body: some View {
         ZStack {
@@ -115,7 +122,7 @@ struct VelvetRoom: View {
                     else { throw VelvetIssue.message("Файлы сцены не найдены.") }
                     let room = try await Entity(contentsOf: roomURL), body = try await Entity(contentsOf: bodyURL)
                     try Task.checkCancellation(); root.addChild(room); root.addChild(body)
-                    func inspect(_ entity: Entity, costume: Bool) {
+                    @MainActor func inspect(_ entity: Entity, costume: Bool) {
                         let isSuit = costume || entity.name == "TrainingSet" || entity.name == "female_sportsuit01"
                         if let model = entity.components[ModelComponent.self] {
                             let component = entity.components[BlendShapeWeightsComponent.self] ?? BlendShapeWeightsComponent(weightsMapping: .init(meshResource: model.mesh))
