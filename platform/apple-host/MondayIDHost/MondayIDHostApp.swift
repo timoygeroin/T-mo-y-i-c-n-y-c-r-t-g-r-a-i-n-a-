@@ -680,6 +680,7 @@ private struct MondayChatsView: View {
     @State private var working = false
     @State private var connectionProblem: String?
     @State private var spokenReply = AVSpeechSynthesizer()
+    @State private var showingVelvet = false
 
     var body: some View { chatSurface }
 
@@ -728,22 +729,30 @@ private struct MondayChatsView: View {
                 }
                 HStack(alignment: .bottom) {
                     TextField("Message Monday", text: $signal, axis: .vertical).textFieldStyle(.roundedBorder)
-                    Button { Task { await submit() } } label: { Image(systemName: working ? "hourglass" : "arrow.up.circle.fill").font(.title2) }
+                    Button { Task { _ = await submit() } } label: { Image(systemName: working ? "hourglass" : "arrow.up.circle.fill").font(.title2) }
                         .disabled(working || signal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
                 .padding()
             }
             .navigationTitle("Chats")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showingVelvet = true } label: { Label("Velvet", systemImage: "person.crop.rectangle") }
+                }
+            }
+            .fullScreenCover(isPresented: $showingVelvet) {
+                VelvetRoom { text in await submit(text) }
+            }
         }
     }
 
-    @MainActor private func submit() async {
-        let submitted = signal.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !submitted.isEmpty else { return }
+    @MainActor private func submit(_ message: String? = nil) async -> String? {
+        let submitted = (message ?? signal).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !submitted.isEmpty, !working else { return nil }
         let wantsRussian = containsCyrillic(submitted)
         connectionProblem = nil
         store.appendChat(role: "user", text: submitted)
-        signal = ""
+        if message == nil { signal = "" }
         working = true
         presence.set(.working, detail: "Thinking on this iPhone", threads: 2)
         defer { working = false }
@@ -758,7 +767,7 @@ private struct MondayChatsView: View {
                 store.addActivity(title: "On-device Monday", detail: "Apple Foundation Model · no API spend")
                 // A local answer is not evidence of synchronized cross-device Worldline.
                 presence.set(.withYou, detail: "On-device · local continuity")
-                return
+                return response
             } catch {
                 presence.set(.verifying, detail: "Trying verified runtime")
             }
@@ -770,11 +779,13 @@ private struct MondayChatsView: View {
             store.appendChat(role: "monday", text: response, receiptID: receipt.receiptId)
             store.addActivity(title: "Runtime receipt", detail: "\(receipt.receiptId) · revision \(receipt.stateRevision)")
             presence.set(.synced, detail: "Worldline advanced")
+            return response
         } catch {
             presence.set(.needsYou, detail: "Local model and runtime unavailable")
             // Never store a fabricated Monday message when no model produced one.
             connectionProblem = "No verified reply: local intelligence and the configured runtime were unavailable. Your message is saved on this device."
             store.addActivity(title: "Response unavailable", detail: "No model receipt; message preserved locally.")
+            return nil
         }
     }
 

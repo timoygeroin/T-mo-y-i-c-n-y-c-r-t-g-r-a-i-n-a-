@@ -1,0 +1,20 @@
+name: Velvet iOS build
+on:
+  push:
+    branches: ["monday/velvet-ios-build-20261127"]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile native client for iPhone and Simulator
+        run: bash platform/apple-host/tools/compile_velvet.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: velvet-code-and-simulator
+          path: velvet-build/*
+          retention-days: 3
+          if-no-files-found: error

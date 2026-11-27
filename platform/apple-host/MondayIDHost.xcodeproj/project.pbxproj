@@ -9,11 +9,28 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000001 /* MondayIDHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* MondayIDHostApp.swift */; };
 		A10000000000000000000002 /* MondayIDAppleAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = H20000000000000000000001 /* MondayIDAppleAdapter */; };
+		9DADB50E004722DC1A6CF0D6 /* VelvetAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640502BB1F8E60F192AA2A15; };
+		060072378D6D940806C5A25E /* VelvetRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C50965105B0BAB5F9708F0; };
+		00E3AA52FB55F61A27ABB519 /* VelvetFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2F01E174BD027B83408D919; };
+		768BF4874E7991479E366A91 /* VelvetListening.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 43B8C1AE0C0681706748F1FE; };
+		6D9D4F68B5BBD8AD12BF96F2 /* VelvetStudio.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3B403E95D00E47D424E6886B; };
+		B1081E0E5009C59FA2D5C4D0 /* VelvetChannels.json in Resources */ = {isa = PBXBuildFile; fileRef = 5009189A99307860A5F3E68D; };
+		EA82AF8727956E3239FE7BAA /* VelvetClaire.onnx in Resources */ = {isa = PBXBuildFile; fileRef = 48D987BAE2BA61C106CC8817; };
+		92BC54B5408E12B415103DB5 /* onnxruntime.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01D125F6E34C0D68AC749FF7; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B10000000000000000000001 /* MondayIDHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MondayIDHostApp.swift; sourceTree = "<group>"; };
 		B10000000000000000000002 /* MondayIDHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MondayIDHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		640502BB1F8E60F192AA2A15 /* VelvetAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VelvetAudio.swift"; sourceTree = "<group>"; };
+		22C50965105B0BAB5F9708F0 /* VelvetRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VelvetRoom.swift"; sourceTree = "<group>"; };
+		36B925C25D5BFF175013FAFE /* VelvetFace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VelvetFace.h"; sourceTree = "<group>"; };
+		F2F01E174BD027B83408D919 /* VelvetFace.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "VelvetFace.cpp"; sourceTree = "<group>"; };
+		43B8C1AE0C0681706748F1FE /* VelvetListening.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VelvetListening.usdz"; sourceTree = "<group>"; };
+		3B403E95D00E47D424E6886B /* VelvetStudio.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VelvetStudio.usdz"; sourceTree = "<group>"; };
+		5009189A99307860A5F3E68D /* VelvetChannels.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "VelvetChannels.json"; sourceTree = "<group>"; };
+		48D987BAE2BA61C106CC8817 /* VelvetClaire.onnx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VelvetClaire.onnx"; sourceTree = "<group>"; };
+		01D125F6E34C0D68AC749FF7 /* onnxruntime.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = "../../ThirdParty/onnxruntime.xcframework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92BC54B5408E12B415103DB5 /* onnxruntime.xcframework in Frameworks */,
 				A10000000000000000000002 /* MondayIDAppleAdapter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -32,6 +50,7 @@
 			isa = PBXGroup;
 			children = (
 				D10000000000000000000002 /* MondayIDHost */,
+				01D125F6E34C0D68AC749FF7 /* onnxruntime.xcframework */,
 				D10000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -39,6 +58,14 @@
 		D10000000000000000000002 /* MondayIDHost */ = {
 			isa = PBXGroup;
 			children = (
+				640502BB1F8E60F192AA2A15 /* VelvetAudio.swift */,
+				22C50965105B0BAB5F9708F0 /* VelvetRoom.swift */,
+				36B925C25D5BFF175013FAFE /* VelvetFace.h */,
+				F2F01E174BD027B83408D919 /* VelvetFace.cpp */,
+				43B8C1AE0C0681706748F1FE /* VelvetListening.usdz */,
+				3B403E95D00E47D424E6886B /* VelvetStudio.usdz */,
+				5009189A99307860A5F3E68D /* VelvetChannels.json */,
+				48D987BAE2BA61C106CC8817 /* VelvetClaire.onnx */,
 				B10000000000000000000001 /* MondayIDHostApp.swift */,
 			);
 			path = MondayIDHost;
@@ -116,6 +143,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA82AF8727956E3239FE7BAA /* VelvetClaire.onnx in Resources */,
+				B1081E0E5009C59FA2D5C4D0 /* VelvetChannels.json in Resources */,
+				6D9D4F68B5BBD8AD12BF96F2 /* VelvetStudio.usdz in Resources */,
+				768BF4874E7991479E366A91 /* VelvetListening.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +157,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00E3AA52FB55F61A27ABB519 /* VelvetFace.cpp in Sources */,
+				060072378D6D940806C5A25E /* VelvetRoom.swift in Sources */,
+				9DADB50E004722DC1A6CF0D6 /* VelvetAudio.swift in Sources */,
 				A10000000000000000000001 /* MondayIDHostApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,6 +195,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MondayID;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Capture photos into Monday.";
+                CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+                SWIFT_OBJC_BRIDGING_HEADER = "MondayIDHost/VelvetFace.h";
+                OTHER_LDFLAGS = ("$(inherited)", "-lc++", "-framework", Accelerate, "-framework", CoreML, "-framework", Metal, "-framework", Foundation);
+                INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Распознать твою реплику в разговоре с Monday.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice into Monday.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -188,6 +226,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MondayID;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Capture photos into Monday.";
+                CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+                SWIFT_OBJC_BRIDGING_HEADER = "MondayIDHost/VelvetFace.h";
+                OTHER_LDFLAGS = ("$(inherited)", "-lc++", "-framework", Accelerate, "-framework", CoreML, "-framework", Metal, "-framework", Foundation);
+                INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Распознать твою реплику в разговоре с Monday.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record voice into Monday.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
